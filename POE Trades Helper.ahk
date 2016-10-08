@@ -789,7 +789,7 @@ Check_Update() {
 	; Using 'true' above and the call below allows the script to remain responsive.
 	whr.WaitForResponse(10) ; 10 seconds
 	versionNumber := whr.ResponseText
-	if ( whr.versionNumber != "" ) && !(RegExMatch(versionNumber, "NotFound")) && !(RegExMatch(versionNumber, "404: Not Found")) {
+	if ( versionNumber != "" ) && !(RegExMatch(versionNumber, "NotFound")) && !(RegExMatch(versionNumber, "404: Not Found")) {
 		newVersion := versionNumber
 		StringReplace, newVersion, newVersion, `n,,1 ; remove the 2nd white line
 		newVersion = %newVersion% ; remove any whitespace
