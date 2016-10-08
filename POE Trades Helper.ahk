@@ -19,7 +19,7 @@ SetWorkingDir, %A_ScriptDir%
 ;___Some_Variables___;
 global userprofile, iniFilePath, programName, programVersion, programPID
 EnvGet, userprofile, userprofile
-programVersion := "0.9" , programName := "POE Trades Helper"
+programVersion := "0.91" , programName := "POE Trades Helper"
 iniFilePath := userprofile "\Documents\AutoHotKey\" programName "\Preferences.ini"
 
 ;___Creating_INI_Dir___;
@@ -49,8 +49,12 @@ if ( VALUE_HK_1_ALT = 1 )
 	hotkey1 := "!" hotkey1
 if ( VALUE_HK_1_SHIFT = 1 )
 	hotkey1 := "+" hotkey1
-if ( VALUE_HK_1_Toggle = 1 )
+if ( VALUE_HK_1_Toggle = 1 ) {
+	Hotkey,IfWinActive,ahk_exe PathOfExile.exe
 	Hotkey,% hotkey1,Hotkey_Hideout
+	Hotkey,IfWinActive,ahk_exe PathOfExileSteam.exe
+	Hotkey,% hotkey1,Hotkey_Hideout
+}
 
 ;___Window Switch Detect___;
 Gui +LastFound 
@@ -842,7 +846,7 @@ Gui_Update(newVersion, updaterPath, updaterDL) {
 
 	Gui_Update_Open_Page:
 		Gui, Submit
-		Run, % "https://autohotkey.com/boards/viewtopic.php?t=9455"
+		Run, % "https://github.com/lemasato/POE-Trades-Helper/releases"
 	return
 }
 
