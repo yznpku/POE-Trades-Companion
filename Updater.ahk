@@ -80,8 +80,8 @@ Close_Program_Instancies() {
 ;			Retrieve the PID and file name stored in the ini file
 ;			Close all possible instancie of the program
 ;			Also delete all possible file name
-	IniRead, programPID,% iniFilePath,SETTINGS,PID
-	IniRead, fileName,% iniFilePath,SETTINGS,FileName
+	IniRead, programPID,% iniFilePath,PROGRAM,PID
+	IniRead, fileName,% iniFilePath,PROGRAM,FileName
 	Loop {
 		if ( programPID != "ERROR" ) && ( programPID != "" )
 			Process, Close, %programPID%
