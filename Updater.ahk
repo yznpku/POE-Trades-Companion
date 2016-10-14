@@ -10,7 +10,7 @@
 #SingleInstance Force
 SetWorkingDir, A_ScriptDir
 EnvGet, userprofile, userprofile
-global programName := "POE Trades Helper"
+global programName := "POE Trades Helper" 
 global iniFilePath := userprofile "\Documents\AutoHotKey\" programName "\Preferences.ini"
 global newVersionPath := "poe_trades_helper_newversion.exe"
 global programDL := "https://raw.githubusercontent.com/lemasato/POE-Trades-Helper/master/POE Trades Helper.exe"
