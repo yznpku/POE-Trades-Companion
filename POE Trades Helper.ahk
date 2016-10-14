@@ -1,26 +1,33 @@
 ﻿/*
-*					POE Trades GUI
-*					See all the information about the trade request upon receiving a poe.trade whisper
-*					
-*					Known issues:
-*
-*					Future updates:
-*						UPDATE GUI
-*						ABOUT GUI
-*						Add the whisper tray feature
-*						When there are 10 tabs or more, the buttons are not placed correctly
+*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+*					POE Trades Helper																												*
+*					See all the information about the trade request upon receiving a poe.trade whisper			*
+*					https://github.com/lemasato/POE-Trades-Helper																*
+*					_INSERT_REDDIT_LINK_HERE_
+*																																								*	
+*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+*																																								*
+*					Known issues:																														*
+*						-																																		*
+*																																								*
+*					Future updates:																													*
+*						-																																		*
+*																																								*
+*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
 */
 
-;~ OnExit("Exit_Func")
+
+OnExit("Exit_Func")
 #SingleInstance Off
-#SingleInstance Force ; Uncomment when using .ahk version
+;~ #SingleInstance Force ; Uncomment when using .ahk version
 SetWorkingDir, %A_ScriptDir%
 
 ;___Some_Variables___;
-global userprofile, iniFilePath, programName, programVersion, programPID
+global userprofile, iniFilePath, programName, programVersion, programPID, sfxFolderPath
 EnvGet, userprofile, userprofile
-programVersion := "0.91" , programName := "POE Trades Helper"
+programVersion := "1.0" , programName := "POE Trades Helper"
 iniFilePath := userprofile "\Documents\AutoHotKey\" programName "\Preferences.ini"
+sfxFolderPath := userprofile "\Documents\AutoHotKey\" programName "\SFX"
 
 ;___Creating_INI_Dir___;
 if !( InStr(FileExist("\Documents\AutoHotkey"), "D") )
@@ -36,6 +43,7 @@ Declare_INI_Settings(settingsArray)
 Create_Tray_Menu()
 IniRead, tempVar,% iniFilePath,PROGRAM,First_Time_Running
 if ( tempVar = 1 ) {
+	Extract_Sound_Files()
 	MsgBox, ,Welcome!,Welcome & thank you for trying out this program!`n`Seems like it's your first time running %programName%...`nWorry not! The interface is simple and easy to understand.`n`nThe settings window will now open.`nThe "Help?" setting has been enabled: Hover the controls to see helpful tooltips!`n`nIf you would like to access the Settings menu again,`n  right click on the tray icon and pick [Settings]!
 	Gui_Settings()
 }
@@ -79,6 +87,296 @@ ShellMessage( wParam,lParam) {
 
 ;___Logs Monitoring AKA Trades GUI___;
 Monitor_Logs()
+
+;==================================================================================================================
+;
+;																														LOGS MONITORING
+;
+;==================================================================================================================
+
+Monitor_Logs() {
+;			Gets the logs location based on VALUE_Logs_Mode
+;			Read trough the logs file for new whisper/trades
+;			Pass the trade message infos to Gui_Trades()
+;			Clipboard the item's info if the user enabled
+;			Play a sound or tray notification (if the user enabled) on whisper/trade
+	global VALUE_Whisper_Tray, VALUE_Logs_Mode, VALUE_Clip_New_Items, VALUE_Trade_Toggle, VALUE_Trade_Sound_Path, VALUE_Whisper_Toggle, VALUE_Whisper_Sound_Path
+
+	gameExe := Get_Exe_From_Mode(VALUE_Logs_Mode, "VALUE_Logs_Mode")
+	WinGet, exeLocation, ProcessPath, ahk_exe %gameExe%
+	SplitPath, exeLocation, ,exeDir
+	logsFile := exeDir "\logs\Client.txt"
+	if !( WinExist("ahk_exe " gameExe) ) {
+		Gui_Trades(,"exenotfound")
+		Sleep 30000
+		Monitor_Logs()
+	}
+	else 
+		Gui_Trades()
+	
+	fileObj := FileOpen(logsFile, "r")
+	fileObj.pos := fileObj.length
+	Loop {
+		if ( fileObj.pos < fileObj.length ) {
+			lastMessage := fileObj.Read() ; Stores the last message into a var
+			if ( RegExMatch( lastMessage, ".*@From (.*): (.*)", subPat ) ) ; Whisper found
+			{
+				whispName := subPat1, whispMsg := subPat2
+				if ( VALUE_Whisper_Tray = 1 ) && !( WinActive("ahk_exe" gameExe) ) {
+					TrayTip, Whisper Received:,%whispName%: %whispMsg%
+					TrayTip, Whisper Received:,%whispName%: %whispMsg%
+					if ( VALUE_Whisper_Toggle = 1 ) && ( FileExist(VALUE_Whisper_Sound_Path) )
+						SoundPlay,%VALUE_Whisper_Sound_Path%
+				}
+				messages := whispName . ": " whispMsg "`n"
+				if ( RegExMatch( messages, "Hi, I would like to buy your (.*) listed for (.*) in (.*)", subPat ) ) ; Trade message found
+				{
+					tradeItem := subPat1, tradePrice := subPat2, tradeStash := subPat3
+					if tradeItem contains % " 0`%"
+						StringReplace, tradeItem, tradeItem, 0`%
+					messagesArray := Gui_Trades_AddNewItem(whispName, tradeItem, tradePrice, tradeStash)
+					Gui_Trades(messagesArray)
+					if ( VALUE_Clip_New_Items = 1 )
+						Clipboard := tradeitem
+					if ( VALUE_Trade_Toggle = 1 ) && ( FileExist(VALUE_Trade_Sound_Path) )
+						SoundPlay,%VALUE_Trade_Sound_Path%
+				}
+			}
+		}
+		sleep 500
+	}
+}
+
+;==================================================================================================================
+;
+;																														HOTKEYS
+;
+;==================================================================================================================
+
+Hotkey_HideOut:
+	Hotkey_HideOut_Func()
+return
+
+Hotkey_HideOut_Func() {
+;		Sends /hideout into the chat
+	if WinActive("ahk_exe PathOfExile.exe") || WinActive("ahk_exe PathOfExileSteam.exe") {
+		BlockInput On
+		SendInput {Space}{Enter}	; Close potential opened window and open the chat
+		sleep 2
+		SendInput, {Space}{/}hideout{Enter}	; First space is in case the current channel is whisper and there is no space after the name
+		SendInput {Enter}{Up}{Up}{Escape}	; Send back to the chat channel
+		BlockInput Off
+	}
+}
+
+;==================================================================================================================
+;
+;																														TRADES GUI
+;
+;==================================================================================================================
+	
+Gui_Trades(messagesArray="",errorMsg="") {
+;			Trades GUI. Each new item will be added in a new tab
+;			Clicking on a button will do its corresponding action
+;			Switching tab will clipboard the item's infos if the user enabled
+;			Is transparent and click-trough when there is no trade on queue
+	global
+	static tabWidth, tabHeight, tradesCount, index, element, varText, varName, tabName, trans, priceArray, btnID, Clipboard_Backup, gameExe, itemArray, itemName, itemPrice, messageToSend
+	static nameArray, playerName, 
+	messagesArray := Object()
+	;~ Loop 50
+		;~ messagesArray.Insert("Name: iSellStuff`nItem: Faster Attack Support`nPrice: 5 alteration`nLocation: Essence (stash tab ""~b/o 1 fuse"")")
+	Gui, Trades:Destroy
+	Gui, Trades:New, +ToolWindow +AlwaysOnTop -Border +hwndGuiTradesHandler +LabelGui_Trades_ +LastFound
+	Gui, Trades:Default
+	tabWidth := 390, tabHeight := 140
+	if (messagesArray.Length() = "" || messagesArray.Length() = "0") {
+		messagesArray := Object()
+		if ( errorMsg = "exenotfound" )
+			messagesArray.Insert(0, "ERROR: Process not found, retrying in 30seconds...`n`nRight click on the tray icon`nthen [Settings] to set your preferences.")
+		else 
+			messagesArray.Insert(0, "No trade on queue!`n`nRight click on the tray icon`nthen [Settings] to set your preferences.")
+		tabWidth := 325, tabHeight := 95	; Tab size is smaller when there is no item
+		IniWrite,0,% iniFilePath,PROGRAM,Tabs_Number
+	}
+	tradesCount := messagesArray.Length()
+	tabHeight := tabHeight +  18*( Floor( tradesCount/10 ) ) ; Adds 18 in height for every 10 tabs
+	Gui, Add, Tab3,x10 y10 vTab gGui_Trades_OnTabSwitch w%tabWidth% h%tabHeight%
+	for index, element in messagesArray 
+	{
+		tabName := index
+		GuiControl,,Tab,%tabName%
+		if ( index=0 ) { ; allows to have the "No trade in queue" on tab 0 and trades on 1,2,3...
+			Gui, Tab,% index+1
+			Gui, Add, Text, w300 h55 vtextSlot%index% 0x1,% element ; text is centered
+		}
+		else {
+			Gui, Tab,% index
+			Gui, Add, Text, w300 vtextSlot%index%,% element
+		}
+		if ( index > 0 ) {
+			Gui, Add, Button,w80 h35 x20 yp+65 vcopyBtn%index% -Theme +0x8000 gGui_Trades_CopyItemName,% "Clipboard`nitem infos"
+			Gui, Add, Button,w80 h35 x115 yp vdelBtn%index% -Theme +0x8000 gGui_Trades_RemoveItem,% "Remove`n this tab"
+			Gui, Add, Button,w80 h35 x210 yp vsendBtn%index% -Theme +0x8000 gGui_Trades_SendMessage,% "  Message`none moment"
+			Gui, Add, Button, w80 h35 x305 yp vinviteBtn%index% -Theme +0x8000 gGui_Trades_Invite,% " Invite`nto party"
+		}
+		else {
+			IniRead, trans,% iniFilePath,SETTINGS,Transparency
+			Gui, Trades: +E0x20 
+			WinSet, Transparent, %trans%
+		}
+		IniWrite,%index%,% iniFilePath,PROGRAM,Tabs_Number
+	}
+	Gui, Show, NoActivate Hide AutoSize
+	sleep 100
+	Gui_Trades_Set_Position()
+	return
+	
+	Gui_Trades_OnTabSwitch:
+	;	Clipboard the item's infos on tab switch if the user enabled
+		if ( VALUE_Clip_On_Tab_Switch = 1 ) {
+			Gui, Submit, NoHide
+			if ( Tab = "0" )
+				return
+			GuiControlGet, varText, ,textSlot%Tab%
+			RegExMatch( varText, "Item: (.*)", subPat )
+			itemArray := StrSplit(subPat1, "`n"), itemName := itemArray[1]
+			Clipboard := itemName
+		}
+	return
+	
+	Gui_Trades_CopyItemName:
+	;	Clipboard the item's infos on clicking the button
+		if ( A_GuiControl = "copyBtn0" )
+			return
+		GuiControlGet, varName, Trades:Name, %A_GuiControl%
+		btnID := RegExReplace(varName, "\D")
+		GuiControlGet, varText, ,textSlot%btnID%
+		RegExMatch( varText, "Item: (.*)", subPat )
+		itemArray := StrSplit(subPat1, "`n"), itemName := itemArray[1]						
+		Clipboard := itemName
+	return
+	
+	Gui_Trades_RemoveItem:
+	;	Remove this tab
+		messagesArray := Gui_Trades_RemoveItemFunc()
+		Gui_Trades(messagesArray)
+	return
+	
+	Gui_Trades_SendMessage:
+	;	Sends a message asking for the buyer to wait a moment
+		if ( A_GuiControl = "sendBtn0" )
+			return
+		GuiControlGet, varName, Trades:Name, %A_GuiControl%
+		btnID := RegExReplace(varName, "\D")
+		GuiControlGet, varText, ,textSlot%btnID%
+		RegExMatch( varText, "Item: (.*)", subPat )
+		itemArray := StrSplit(subPat1, "`n"), itemName := itemArray[1]
+		RegExMatch( varText, "Name: (.*)", subPat )
+		nameArray := StrSplit(subPat1, "`n"), playerName := nameArray[1]
+		RegExMatch( varText, "Price: (.*)", subPat )
+		priceArray := StrSplit(subPat1, "`n"), itemPrice := priceArray[1]
+
+		SetKeyDelay, 30, 1
+		messageToSend := "@" playerName " One moment please (" itemName " // " itemPrice ")"
+		Clipboard_Backup := Clipboard
+		Clipboard := messageToSend
+		gameExe := Get_Exe_From_Mode(VALUE_Logs_Mode, "VALUE_Logs_Mode")
+		ControlSend, ,{Enter}^v{Enter},ahk_exe %gameExe%
+		Clipboard := Clipboard_Backup
+	return
+	
+	Gui_Trades_Size:
+	;	Declare the gui width and height
+		tradesGuiWidth := A_GuiWidth
+		tradesGuiHeight := A_GuiHeight
+	return
+	
+	Gui_Trades_Invite:
+	;	Invite the player to your party
+		if ( A_GuiControl = "inviteBtn0" )
+			return
+		GuiControlGet, varName, Trades:Name, %A_GuiControl%
+		btnID := RegExReplace(varName, "\D")
+		GuiControlGet, varText, ,textSlot%btnID%
+		RegExMatch( varText, "Name:(.*)", subPat )
+		nameArray := StrSplit(subPat1, "`n"), playerName := nameArray[1]
+		sleep 100
+		playerName := Gui_Trades_RemoveGuildPrefix(playerName)	
+		SetKeyDelay, 30, 1
+		messageToSend := "/invite " playerName
+		Clipboard_Backup := Clipboard
+		Clipboard := messageToSend
+		gameExe := Get_Exe_From_Mode(VALUE_Logs_Mode, "VALUE_Logs_Mode")
+		ControlSend, ,{Enter}^v{Enter},ahk_exe %gameExe%
+		Clipboard := Clipboard_Backup
+	return
+}
+
+Gui_Trades_RemoveItemFunc() {
+;			Remove the item from the list by re-creating the array
+;			Return the newly arranged array
+	GuiControlGet, varName, Trades:Name, %A_GuiControl%
+	btnID := RegExReplace(varName, "\D")
+	GuiControlGet, varText, ,textSlot%btnID%
+	returnArray := Object()
+	Loop {
+		if ( A_Index < btnID )
+			counter := A_Index
+		else if ( A_Index >= btnID )
+			counter := A_Index+1
+		GuiControlGet, content, ,textSlot%counter%
+		if ( content )
+			returnArray.Insert(A_Index, content)
+		else	break
+	}
+	return returnArray
+}	
+
+Gui_Trades_AddNewItem(name, item, price, location) {
+;			Add a new item to the list by appening it to the array
+;			Return the newly arranged array
+	returnArray := Object()
+	Loop {
+		count := A_Index
+		GuiControlGet, content, ,textSlot%A_Index%
+		if ( content ) {
+			returnArray.Insert(A_Index, content)
+		}
+		else break
+	}
+	name := Gui_Trades_RemoveGuildPrefix(name)
+	newItem := "Name: " . name . "`n" . "Item: " item . "`n" . "Price: " price . "`n" . "Location: " location
+	returnArray.Insert(count, newItem)
+	return returnArray
+}
+
+Gui_Trades_RemoveGuildPrefix(name) {
+;			Remove the guild prefix
+	AutoTrim, On
+	RegExMatch(name, "<.*>(.*)", namePat) ; name contains guild prefix, remove it
+	if ( namePat1 )
+		name := namePat1
+	name = %name% ; Removes whitespaces
+	return name
+}
+
+Gui_Trades_Set_Position(){
+;			Refresh the Trades GUI position
+	global VALUE_Dock_Mode, tradesGuiWidth, tradesGuiHeight, GuiTradesHandler
+	
+	gameExe := Get_Exe_From_Mode(VALUE_Dock_Mode, "VALUE_Dock_Mode")
+	
+	if ( WinExist("ahk_exe " gameExe ) ) {
+		WinGetPos, winX, winY, winWidth, winHeight, ahk_exe %gameExe%
+		Gui, Trades:Show, % "x" winX+winWidth-tradesGuiWidth-14 " y" winY " NoActivate"
+		;~ Gui, Trades:Show, % "x" winX+winWidth-tradesGuiWidth-14 " y" winY " NoActivate"
+	}
+	else {
+		;~ GuiControl, Trades:Move, Tab,% "h" tradesGuiHeight-15
+		Gui, Trades:Show, % "x" A_ScreenWidth-tradesGuiWidth-6 " y0" " NoActivate"
+	}
+}
 
 ;==================================================================================================================
 ;
@@ -174,7 +472,7 @@ Gui_Settings() {
 	return
 	
 	Gui_Settings_Notifications_Browse:
-		FileSelectFile, soundFile, ,C:, Select an audio file (%programName%),Audio (*.wav; *.mp3)
+		FileSelectFile, soundFile, ,% sfxFolderPath, Select an audio file (%programName%),Audio (*.wav; *.mp3)
 		if ( soundFile ) {
 			SplitPath, soundFile, soundFileName
 			if ( A_GuiControl = "NotifyTradeBrowse" ) {
@@ -395,377 +693,6 @@ Get_Control_ToolTip(controlName) {
 
 ;==================================================================================================================
 ;
-;																														INI SETTINGS
-;
-;==================================================================================================================
-
-Get_INI_Settings() {
-;			Retrieve the INI settings
-;			Return a big array containing arrays for each section containing the keys and their values
-	iniFile := iniFilePath
-	
-	returnArray := Object()
-	returnArray := Gui_Settings_Get_Settings_Arrays()
-	
-	sectionArray := returnArray.sectionArray
-	SETTINGS_KeysArray := returnArray.SETTINGS_KeysArray
-	AUTO_CLIP_KeysArray := returnArray.AUTO_CLIP_KeysArray
-	HOTKEYS_KeysArray := returnArray.HOTKEYS_KeysArray
-	NOTIFICATIONS_KeysArray := returnArray.NOTIFICATIONS_KeysArray
-	
-	returnArray.KEYS := Object()
-	returnArray.VALUES := Object()
-	for key, element in sectionArray
-	{
-		sectionName := element
-		for key, element in %sectionName%_KeysArray
-		{
-			keyName := element
-			IniRead, var,% iniFile,% sectionName,% keyName
-			returnArray.KEYS.Insert(keyName)
-			returnArray.VALUES.Insert(var)
-		}
-	}
-	return returnArray
-}
-
-Set_INI_Settings(){
-;			Set the default INI settings if they do not exist
-	iniFile := iniFilePath	
-	
-;	Set the PID and filename, used for the auto updater
-	programPID := DllCall("GetCurrentProcessId")
-	IniWrite,% programPID,% iniFile,PROGRAM,PID
-	IniWrite,% A_ScriptName,% iniFile,PROGRAM,FileName
-	IniRead, firstRun,% iniFile,PROGRAM,First_Time_Running
-	if ( firstRun != 0 && firstRun != 1 )
-		IniWrite,1,% iniFile,PROGRAM,First_Time_Running
-	
-;	Retrieve the settings arrays
-	settingsArray := Gui_Settings_Get_Settings_Arrays()
-	sectionArray := settingsArray.sectionArray
-	SETTINGS_KeysArray := settingsArray.SETTINGS_KeysArray
-	SETTINGS_DefaultValues := settingsArray.SETTINGS_DefaultValues
-	AUTO_CLIP_KeysArray := settingsArray.AUTO_CLIP_KeysArray
-	AUTO_CLIP_DefaultValues := settingsArray.AUTO_CLIP_DefaultValues
-	HOTKEYS_KeysArray := settingsArray.HOTKEYS_KeysArray
-	HOTKEYS_DefaultValues := settingsArray.HOTKEYS_DefaultValues
-	NOTIFICATIONS_KeysArray := settingsArray.NOTIFICATIONS_KeysArray
-	NOTIFICATIONS_DefaultValues := settingsArray.NOTIFICATIONS_DefaultValues
-	
-;	Set the value for each key
-	for key, element in sectionArray
-	{
-		sectionName := element
-		for key, element in %sectionName%_KeysArray
-		{
-			keyName := element
-			value := %sectionName%_DefaultValues[key]
-			IniRead, var,% iniFile,% sectionName,% keyName
-			if ( var = "ERROR" || var = "" ) {
-				IniWrite,% value,% iniFile,% sectionName,% keyName
-			}
-		}
-	}
-}
-
-Declare_INI_Settings(iniArray) {
-;			Declare the settings to global variables
-	global
-	static key, element
-	for key, element in iniArray.KEYS {
-		VALUE_%element% := iniArray.VALUES[key]
-	}
-}
-
-;==================================================================================================================
-;
-;																														HOTKEYS
-;
-;==================================================================================================================
-
-Hotkey_HideOut:
-	Hotkey_HideOut_Func()
-return
-
-Hotkey_HideOut_Func() {
-;		Sends /hideout into the chat
-	if WinActive("ahk_exe PathOfExile.exe") || WinActive("ahk_exe PathOfExileSteam.exe") {
-		BlockInput On
-		SendInput {Space}{Enter}	; Close potential opened window and open the chat
-		sleep 2
-		SendInput, {Space}{/}hideout{Enter}	; First space is in case the current channel is whisper and there is no space after the name
-		SendInput {Enter}{Up}{Up}{Escape}	; Send back to the chat channel
-		BlockInput Off
-	}
-}
-
-;==================================================================================================================
-;
-;																														LOGS MONITORING
-;
-;==================================================================================================================
-
-Monitor_Logs() {
-;			Gets the logs location based on VALUE_Logs_Mode
-;			Read trough the logs file for new whisper/trades
-;			Pass the trade message infos to Gui_Trades()
-;			Clipboard the item's info if the user enabled
-;			Play a sound or tray notification (if the user enabled) on whisper/trade
-	global VALUE_Whisper_Tray, VALUE_Logs_Mode, VALUE_Clip_New_Items, VALUE_Trade_Toggle, VALUE_Trade_Sound_Path
-
-	gameExe := Get_Exe_From_Mode(VALUE_Logs_Mode, "VALUE_Logs_Mode")
-	WinGet, exeLocation, ProcessPath, ahk_exe %gameExe%
-	SplitPath, exeLocation, ,exeDir
-	logsFile := exeDir "\logs\Client.txt"
-	if !( WinExist("ahk_exe " gameExe) ) {
-		Gui_Trades(,"exenotfound")
-		Sleep 30000
-		Monitor_Logs()
-	}
-	else 
-		Gui_Trades()
-	
-	fileObj := FileOpen(logsFile, "r")
-	fileObj.pos := fileObj.length
-	Loop {
-		if ( fileObj.pos < fileObj.length ) {
-			lastMessage := fileObj.Read() ; Stores the last message into a var
-			if ( RegExMatch( lastMessage, ".*@From (.*): (.*)", subPat ) ) ; Whisper found
-			{
-				whispName := subPat1, whispMsg := subPat2
-				;~ if ( VALUE_Whisper_Tray = 1 ) && !( 
-					;~ TrayTip %whispMsg%
-				messages := whispName . ": " whispMsg "`n"
-				if ( RegExMatch( messages, "Hi, I would like to buy your (.*) listed for (.*) in (.*)", subPat ) ) ; Trade message found
-				{
-					tradeItem := subPat1, tradePrice := subPat2, tradeStash := subPat3
-					if tradeItem contains % " 0`%"
-						StringReplace, tradeItem, tradeItem, 0`%
-					messagesArray := Gui_Trades_AddNewItem(whispName, tradeItem, tradePrice, tradeStash)
-					Gui_Trades(messagesArray)
-					if ( VALUE_Clip_New_Items = 1 )
-						Clipboard := tradeitem
-					if ( VALUE_Trade_Toggle = 1 ) && ( FileExist(VALUE_Trade_Sound_Path) )
-						SoundPlay,%VALUE_Trade_Sound_Path%
-				}
-			}
-		}
-		sleep 500
-	}
-}
-
-;==================================================================================================================
-;
-;																														TRADES GUI
-;
-;==================================================================================================================
-	
-Gui_Trades(messagesArray="",errorMsg="") {
-;			Trades GUI. Each new item will be added in a new tab
-;			Clicking on a button will do its corresponding action
-;			Switching tab will clipboard the item's infos if the user enabled
-;			Is transparent and click-trough when there is no trade on queue
-	global
-	static tabWidth, tabHeight, tradesCount, index, element, varText, varName, tabName, trans, priceArray, btnID, Clipboard_Backup, gameExe, itemArray, itemName, itemPrice, messageToSend
-	static nameArray, playerName, 
-	;~ messagesArray := Object()
-	;~ Loop 20
-		;~ messagesArray.Insert("Name: playerName`nItem: itemName`nPrice: itemPrice`nLocation: itemLocation")
-	Gui, Trades:Destroy
-	Gui, Trades:New, +ToolWindow +AlwaysOnTop -Border +hwndGuiTradesHandler +LabelGui_Trades_ +LastFound
-	Gui, Trades:Default
-	tabWidth := 390, tabHeight := 140
-	if (messagesArray.Length() = "" || messagesArray.Length() = "0") {
-		messagesArray := Object()
-		if ( errorMsg = "exenotfound" )
-			messagesArray.Insert(0, "ERROR: Process not found, retrying in 30seconds...`n`nRight click on the tray icon`nthen [Settings] to set your preferences.")
-		else 
-			messagesArray.Insert(0, "No trade on queue!`n`nRight click on the tray icon`nthen [Settings] to set your preferences.")
-		tabWidth := 325, tabHeight := 95	; Tab size is smaller when there is no item
-		IniWrite,0,% iniFilePath,PROGRAM,Tabs_Number
-	}
-	tradesCount := messagesArray.Length()
-	tabHeight := tabHeight +  18*( Floor( tradesCount/10 ) ) ; Adds 18 in height for every 10 tabs
-	Gui, Add, Tab3,x10 y10 vTab gGui_Trades_OnTabSwitch w%tabWidth% h%tabHeight%
-	for index, element in messagesArray 
-	{
-		tabName := index
-		GuiControl,,Tab,%tabName%
-		if ( index=0 ) { ; allows to have the "No trade in queue" on tab 0 and trades on 1,2,3...
-			Gui, Tab,% index+1
-			Gui, Add, Text, w300 h55 vtextSlot%index% 0x1,% element ; text is centered
-		}
-		else {
-			Gui, Tab,% index
-			Gui, Add, Text, w300 h55 vtextSlot%index%,% element
-		}
-		if ( index > 0 ) {
-			Gui, Add, Button,w80 h35 x20 yp+65 vcopyBtn%index% -Theme +0x8000 gGui_Trades_CopyItemName,% "Clipboard`nitem infos"
-			Gui, Add, Button,w80 h35 x115 yp vdelBtn%index% -Theme +0x8000 gGui_Trades_RemoveItem,% "Remove`n this tab"
-			Gui, Add, Button,w80 h35 x210 yp vsendBtn%index% -Theme +0x8000 gGui_Trades_SendMessage,% "  Message`none moment"
-			Gui, Add, Button, w80 h35 x305 yp vinviteBtn%index% -Theme +0x8000 gGui_Trades_Invite,% " Invite`nto party"
-		}
-		else {
-			IniRead, trans,% iniFilePath,SETTINGS,Transparency
-			Gui, Trades: +E0x20 
-			WinSet, Transparent, %trans%
-		}
-		IniWrite,%index%,% iniFilePath,PROGRAM,Tabs_Number
-	}
-	Gui, Show, NoActivate Hide AutoSize
-	sleep 100
-	Gui_Trades_Set_Position()
-	return
-	
-	Gui_Trades_OnTabSwitch:
-	;	Clipboard the item's infos on tab switch if the user enabled
-		if ( VALUE_Clip_On_Tab_Switch = 1 ) {
-			Gui, Submit, NoHide
-			if ( Tab = "0" )
-				return
-			GuiControlGet, varText, ,textSlot%Tab%
-			RegExMatch( varText, "Item: (.*)", subPat )
-			itemArray := StrSplit(subPat1, "`n"), itemName := itemArray[1]
-			Clipboard := itemName
-		}
-	return
-	
-	Gui_Trades_CopyItemName:
-	;	Clipboard the item's infos on clicking the button
-		if ( A_GuiControl = "copyBtn0" )
-			return
-		GuiControlGet, varName, Trades:Name, %A_GuiControl%
-		btnID := RegExReplace(varName, "\D")
-		GuiControlGet, varText, ,textSlot%btnID%
-		RegExMatch( varText, "Item: (.*)", subPat )
-		itemArray := StrSplit(subPat1, "`n"), itemName := itemArray[1]						
-		Clipboard := itemName
-	return
-	
-	Gui_Trades_RemoveItem:
-	;	Remove this tab
-		messagesArray := Gui_Trades_RemoveItemFunc()
-		Gui_Trades(messagesArray)
-	return
-	
-	Gui_Trades_SendMessage:
-	;	Sends a message asking for the buyer to wait a moment
-		if ( A_GuiControl = "sendBtn0" )
-			return
-		GuiControlGet, varName, Trades:Name, %A_GuiControl%
-		btnID := RegExReplace(varName, "\D")
-		GuiControlGet, varText, ,textSlot%btnID%
-		RegExMatch( varText, "Item: (.*)", subPat )
-		itemArray := StrSplit(subPat1, "`n"), itemName := itemArray[1]
-		RegExMatch( varText, "Name: (.*)", subPat )
-		nameArray := StrSplit(subPat1, "`n"), playerName := nameArray[1]
-		RegExMatch( varText, "Price: (.*)", subPat )
-		priceArray := StrSplit(subPat1, "`n"), itemPrice := priceArray[1]
-
-		SetKeyDelay, 10, 10
-		messageToSend := "@" playerName " One moment please (" itemName " // " itemPrice ")"
-		Clipboard_Backup := Clipboard
-		Clipboard := messageToSend
-		gameExe := Get_Exe_From_Mode(VALUE_Logs_Mode, "VALUE_Logs_Mode")
-		ControlSend, ,{Enter}^v{Enter},ahk_exe %gameExe%
-		Clipboard := Clipboard_Backup
-	return
-	
-	Gui_Trades_Size:
-	;	Declare the gui width and height
-		tradesGuiWidth := A_GuiWidth
-		tradesGuiHeight := A_GuiHeight
-	return
-	
-	Gui_Trades_Invite:
-	;	Invite the player to your party
-		if ( A_GuiControl = "inviteBtn0" )
-			return
-		GuiControlGet, varName, Trades:Name, %A_GuiControl%
-		btnID := RegExReplace(varName, "\D")
-		GuiControlGet, varText, ,textSlot%btnID%
-		RegExMatch( varText, "Name:(.*)", subPat )
-		nameArray := StrSplit(subPat1, "`n"), playerName := nameArray[1]
-		sleep 100
-		playerName := Gui_Trades_RemoveGuildPrefix(playerName)	
-		SetKeyDelay, 10, 10
-		messageToSend := "/invite " playerName
-		Clipboard_Backup := Clipboard
-		Clipboard := messageToSend
-		gameExe := Get_Exe_From_Mode(VALUE_Logs_Mode, "VALUE_Logs_Mode")
-		ControlSend, ,{Enter}^v{Enter},ahk_exe %gameExe%
-		Clipboard := Clipboard_Backup
-	return
-}
-
-Gui_Trades_RemoveItemFunc() {
-;			Remove the item from the list by re-creating the array
-;			Return the newly arranged array
-	GuiControlGet, varName, Trades:Name, %A_GuiControl%
-	btnID := RegExReplace(varName, "\D")
-	GuiControlGet, varText, ,textSlot%btnID%
-	returnArray := Object()
-	Loop {
-		if ( A_Index < btnID )
-			counter := A_Index
-		else if ( A_Index >= btnID )
-			counter := A_Index+1
-		GuiControlGet, content, ,textSlot%counter%
-		if ( content )
-			returnArray.Insert(A_Index, content)
-		else	break
-	}
-	return returnArray
-}	
-
-Gui_Trades_AddNewItem(name, item, price, location) {
-;			Add a new item to the list by appening it to the array
-;			Return the newly arranged array
-	returnArray := Object()
-	Loop {
-		count := A_Index
-		GuiControlGet, content, ,textSlot%A_Index%
-		if ( content ) {
-			returnArray.Insert(A_Index, content)
-		}
-		else break
-	}
-	name := Gui_Trades_RemoveGuildPrefix(name)
-	newItem := "Name: " . name . "`n" . "Item: " item . "`n" . "Price: " price . "`n" . "Location: " location
-	returnArray.Insert(count, newItem)
-	return returnArray
-}
-
-Gui_Trades_RemoveGuildPrefix(name) {
-;			Remove the guild prefix
-	AutoTrim, On
-	RegExMatch(name, "<.*>(.*)", namePat) ; name contains guild prefix, remove it
-	if ( namePat1 )
-		name := namePat1
-	name = %name% ; Removes whitespaces
-	return name
-}
-
-Gui_Trades_Set_Position(){
-;			Refresh the Trades GUI position
-	global VALUE_Dock_Mode, tradesGuiWidth, tradesGuiHeight, GuiTradesHandler
-	
-	gameExe := Get_Exe_From_Mode(VALUE_Dock_Mode, "VALUE_Dock_Mode")
-	
-	if ( WinExist("ahk_exe " gameExe ) ) {
-		WinGetPos, winX, winY, winWidth, winHeight, ahk_exe %gameExe%
-		Gui, Trades:Show, % "x" winX+winWidth-tradesGuiWidth-14 " y" winY " NoActivate"
-		;~ Gui, Trades:Show, % "x" winX+winWidth-tradesGuiWidth-14 " y" winY " NoActivate"
-	}
-	else {
-		;~ GuiControl, Trades:Move, Tab,% "h" tradesGuiHeight-15
-		Gui, Trades:Show, % "x" A_ScreenWidth-tradesGuiWidth-6 " y0" " NoActivate"
-	}
-}
-
-;==================================================================================================================
-;
 ;																														UPDATE GUI
 ;
 ;==================================================================================================================
@@ -867,13 +794,13 @@ Gui_About() {
 	Gui, Add, Text, x10 y80 ,Several buttons will let you invite/message the person.
 	Gui, Add, Text, x10 y100,If you would like to change your preferences, head over the [Settings] tray menu.
 	Gui, Add, Link, x10 y130,% "<a href=""https://github.com/lemasato/POE-Trades-Helper"">See on GitHub</a>"
-	;~ Gui, Add, Link, x10 y130,% "<a href=""TO_BE_ADDED"">See on Reddit</a>"
+	Gui, Add, Link, x10 y145,% "<a href=""_INSERT_REDDIT_LINK_HERE_"">See on Reddit</a>"
 	if !( FileExist( A_Temp "\poethpp.png" ) ) {
 		UrlDownloadToFile, % "https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif", % A_Temp "\poethpp.png"
 		if ( ErrorLevel )
-			Gui, Add, Button, x350 y128 gGui_About_Donate hwnddonateHandler,Donations
+			Gui, Add, Button, x350 y143 gGui_About_Donate hwnddonateHandler,Donations
 	}
-	Gui, Add, Picture, x350 y125 gGui_About_Donate hwnddonateHandler,% A_Temp "\poethpp.png"
+	Gui, Add, Picture, x350 y140 gGui_About_Donate hwnddonateHandler,% A_Temp "\poethpp.png"
 	
 	handlersArray := []
 	Loop  {
@@ -894,9 +821,104 @@ Gui_About() {
 
 ;==================================================================================================================
 ;
+;																														INI SETTINGS
+;
+;==================================================================================================================
+
+Get_INI_Settings() {
+;			Retrieve the INI settings
+;			Return a big array containing arrays for each section containing the keys and their values
+	iniFile := iniFilePath
+	
+	returnArray := Object()
+	returnArray := Gui_Settings_Get_Settings_Arrays()
+	
+	sectionArray := returnArray.sectionArray
+	SETTINGS_KeysArray := returnArray.SETTINGS_KeysArray
+	AUTO_CLIP_KeysArray := returnArray.AUTO_CLIP_KeysArray
+	HOTKEYS_KeysArray := returnArray.HOTKEYS_KeysArray
+	NOTIFICATIONS_KeysArray := returnArray.NOTIFICATIONS_KeysArray
+	
+	returnArray.KEYS := Object()
+	returnArray.VALUES := Object()
+	for key, element in sectionArray
+	{
+		sectionName := element
+		for key, element in %sectionName%_KeysArray
+		{
+			keyName := element
+			IniRead, var,% iniFile,% sectionName,% keyName
+			returnArray.KEYS.Insert(keyName)
+			returnArray.VALUES.Insert(var)
+		}
+	}
+	return returnArray
+}
+
+Set_INI_Settings(){
+;			Set the default INI settings if they do not exist
+	iniFile := iniFilePath	
+	
+;	Set the PID and filename, used for the auto updater
+	programPID := DllCall("GetCurrentProcessId")
+	IniWrite,% programPID,% iniFile,PROGRAM,PID
+	IniWrite,% A_ScriptName,% iniFile,PROGRAM,FileName
+	IniRead, firstRun,% iniFile,PROGRAM,First_Time_Running
+	if ( firstRun != 0 && firstRun != 1 )
+		IniWrite,1,% iniFile,PROGRAM,First_Time_Running
+	
+;	Retrieve the settings arrays
+	settingsArray := Gui_Settings_Get_Settings_Arrays()
+	sectionArray := settingsArray.sectionArray
+	SETTINGS_KeysArray := settingsArray.SETTINGS_KeysArray
+	SETTINGS_DefaultValues := settingsArray.SETTINGS_DefaultValues
+	AUTO_CLIP_KeysArray := settingsArray.AUTO_CLIP_KeysArray
+	AUTO_CLIP_DefaultValues := settingsArray.AUTO_CLIP_DefaultValues
+	HOTKEYS_KeysArray := settingsArray.HOTKEYS_KeysArray
+	HOTKEYS_DefaultValues := settingsArray.HOTKEYS_DefaultValues
+	NOTIFICATIONS_KeysArray := settingsArray.NOTIFICATIONS_KeysArray
+	NOTIFICATIONS_DefaultValues := settingsArray.NOTIFICATIONS_DefaultValues
+	
+;	Set the value for each key
+	for key, element in sectionArray
+	{
+		sectionName := element
+		for key, element in %sectionName%_KeysArray
+		{
+			keyName := element
+			value := %sectionName%_DefaultValues[key]
+			IniRead, var,% iniFile,% sectionName,% keyName
+			if ( var = "ERROR" || var = "" ) {
+				IniWrite,% value,% iniFile,% sectionName,% keyName
+			}
+		}
+	}
+}
+
+Declare_INI_Settings(iniArray) {
+;			Declare the settings to global variables
+	global
+	static key, element
+	for key, element in iniArray.KEYS {
+		VALUE_%element% := iniArray.VALUES[key]
+	}
+}
+
+;==================================================================================================================
+;
 ;																														MISC STUFF
 ;
 ;==================================================================================================================
+
+Extract_Sound_Files() {
+;			Extracts the included sfx into the .ini settings folder
+if !( InStr(FileExist(sfxFolderPath), "D") )
+	FileCreateDir, % sfxFolderPath
+	FileInstall, C:\Users\Hatsune\Documents\GitHub\POE-Trades-Helper\SFX\MM_Tatl_Gleam.wav,% sfxFolderPath "\MM_Tatl_Gleam.wav", 1
+	FileInstall, C:\Users\Hatsune\Documents\GitHub\POE-Trades-Helper\SFX\MM_Tatl_Hey.wav,% sfxFolderPath "\MM_Tatl_Hey.wav", 1
+	FileInstall, C:\Users\Hatsune\Documents\GitHub\POE-Trades-Helper\SFX\WW_MainMenu_CopyErase_Start.wav,% sfxFolderPath "\WW_MainMenu_CopyErase_Start.wav", 1
+	FileInstall, C:\Users\Hatsune\Documents\GitHub\POE-Trades-Helper\SFX\WW_MainMenu_Letter.wav,% sfxFolderPath "\WW_MainMenu_Letter.wav", 1
+}
 
 Prevent_Multiple_Instancies() {
 ;			Prevent from running multiple instancies of the program
@@ -980,11 +1002,10 @@ Reload_Func() {
 
 Exit_Func(ExitReason, ExitCode) {
 	if ( ExitReason != "LogOff" ) && ( ExitReason != "ShutDown" ) && ( ExitReason != "Reload" ) && ( ExitReason != "Single" ) {
-		MsgBox, 4, % programName " v" programVersion,Are you sure you wish to close %programName%?
+		MsgBox, 4100, % programName " v" programVersion,Are you sure you wish to close %programName%?
 		IfMsgBox, No
 			return 1  ; OnExit functions must return non-zero to prevent exit.
-		ExitApp
 	}
-	else
-		ExitApp
+	OnExit("Exit_Func", 0)
+	ExitApp
 }
