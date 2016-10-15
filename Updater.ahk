@@ -87,11 +87,13 @@ Close_Program_Instancies() {
 			Process, Close, %programPID%
 		Process, Close, %fileName%
 		Process, Close, POE Trades Helper.exe
+		Process, Close, POE-Trades-Helper.exe
 		sleep 100
 		FileDelete,% fileName
+		FileDelete,% "POE-Trades-Helper.exe"
 		FileDelete,% "POE Trades Helper.exe"
 		sleep 100
-		if !( FileExist(fileName) ) && !( FileExist("POE Trades Helper.exe") )
+		if !( FileExist(fileName) ) && !( FileExist("POE Trades Helper.exe") ) && !( FileExist("POE-Trades-Helper.exe") )
 			break
 	}
 }
