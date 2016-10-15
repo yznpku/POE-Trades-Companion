@@ -3,7 +3,7 @@
 *					POE Trades Helper																												*
 *					See all the information about the trade request upon receiving a poe.trade whisper			*
 *					https://github.com/lemasato/POE-Trades-Helper																*
-*					_INSERT_REDDIT_LINK_HERE_
+*					https://www.reddit.com/r/pathofexile/comments/57oo3h/
 *																																								*	
 *	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
 *																																								*
@@ -794,7 +794,7 @@ Gui_About() {
 	Gui, Add, Text, x10 y80 ,Several buttons will let you invite/message the person.
 	Gui, Add, Text, x10 y100,If you would like to change your preferences, head over the [Settings] tray menu.
 	Gui, Add, Link, x10 y130,% "<a href=""https://github.com/lemasato/POE-Trades-Helper"">See on GitHub</a>"
-	Gui, Add, Link, x10 y145,% "<a href=""_INSERT_REDDIT_LINK_HERE_"">See on Reddit</a>"
+	Gui, Add, Link, x10 y145,% "<a href=""https://www.reddit.com/r/pathofexile/comments/57oo3h/"">See on Reddit</a>"
 	if !( FileExist( A_Temp "\poethpp.png" ) ) {
 		UrlDownloadToFile, % "https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif", % A_Temp "\poethpp.png"
 		if ( ErrorLevel )
