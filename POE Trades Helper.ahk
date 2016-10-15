@@ -185,7 +185,7 @@ Gui_Trades(messagesArray="",errorMsg="") {
 	static nameArray, playerName, 
 	messagesArray := Object()
 	;~ Loop 50
-		;~ messagesArray.Insert("Name: iSellStuff`nItem: Faster Attack Support`nPrice: 5 alteration`nLocation: Essence (stash tab ""~b/o 1 fuse"")")
+		;~ messagesArray.Insert("Name: iSellStuff`nItem: Faster Attack Support`nPrice: 5 alteration`nLocation: Essence (stash tab ""Gems"")")
 	Gui, Trades:Destroy
 	Gui, Trades:New, +ToolWindow +AlwaysOnTop -Border +hwndGuiTradesHandler +LabelGui_Trades_ +LastFound
 	Gui, Trades:Default
