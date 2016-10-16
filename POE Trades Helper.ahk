@@ -25,7 +25,7 @@ SetWorkingDir, %A_ScriptDir%
 ;___Some_Variables___;
 global userprofile, iniFilePath, programName, programVersion, programPID, sfxFolderPath
 EnvGet, userprofile, userprofile
-programVersion := "1.0" , programName := "POE Trades Helper"
+programVersion := "1.0.1" , programName := "POE Trades Helper"
 iniFilePath := userprofile "\Documents\AutoHotKey\" programName "\Preferences.ini"
 sfxFolderPath := userprofile "\Documents\AutoHotKey\" programName "\SFX"
 
@@ -182,8 +182,8 @@ Gui_Trades(messagesArray="",errorMsg="") {
 ;			Is transparent and click-trough when there is no trade on queue
 	global
 	static tabWidth, tabHeight, tradesCount, index, element, varText, varName, tabName, trans, priceArray, btnID, Clipboard_Backup, gameExe, itemArray, itemName, itemPrice, messageToSend
-	static nameArray, playerName, 
-	messagesArray := Object()
+	static nameArray, playerName
+	;~ messagesArray := Object()
 	;~ Loop 50
 		;~ messagesArray.Insert("Name: iSellStuff`nItem: Faster Attack Support`nPrice: 5 alteration`nLocation: Essence (stash tab ""Gems"")")
 	Gui, Trades:Destroy
