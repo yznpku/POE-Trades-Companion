@@ -26,7 +26,7 @@ FileEncoding, UTF-8 ; Required for cyrillic characters
 ;___Some_Variables___;
 global userprofile, iniFilePath, programName, programVersion, programPID, sfxFolderPath
 EnvGet, userprofile, userprofile
-programVersion := "1.1" , programName := "POE Trades Helper"
+programVersion := "1.1.1" , programName := "POE Trades Helper"
 iniFilePath := userprofile "\Documents\AutoHotKey\" programName "\Preferences.ini"
 sfxFolderPath := userprofile "\Documents\AutoHotKey\" programName "\SFX"
 
@@ -587,6 +587,16 @@ Gui_Settings() {
 		if ( whispersSoundFile )
 		IniWrite,% whispersSoundFile,% iniFile,NOTIFICATIONS,Whisper_Sound_Path
 		IniWrite,% NotifyWhisperTray,% iniFile,NOTIFICATIONS,Whisper_Tray
+;	Messages
+;		Wait
+		IniWrite,% MessageWaitToggle,% iniFile,MESSAGES,Wait_Text_Toggle
+		IniWrite,% MessageWait,% iniFile,MESSAGES,Wait_Text
+;		Party
+		IniWrite,% MessageInviteToggle,% iniFile,MESSAGES,Invite_Text_Toggle
+		IniWrite,% MessageInvite,% iniFile,MESSAGES,Invite_Text
+;		Thanks
+		IniWrite,% MessageThanksToggle,% iniFile,MESSAGES,Thanks_Text_Toggle
+		IniWrite,% MessageThanks,% iniFile,MESSAGES,Thanks_Text
 	return
 
 	Gui_Settings_Size:
