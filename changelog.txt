@@ -1,3 +1,6 @@
+v1.1.1
+	Hotfix: Fixed the custom messages not saving.
+
 v1.1
 	Fixed incorrect display of cyrillic characters.
 	Added customization to the messages (Accessible in the Settings).
