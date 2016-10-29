@@ -1,0 +1,12 @@
+v1.1
+	Fixed incorrect display of cyrillic characters.
+	Added customization to the messages (Accessible in the Settings).
+	Added a new GUI button to thanks your buyer.
+	Attributed a default sound effect to the trades notifications.
+	Disabled keyboard interaction with the Trades GUI to avoid mispress.
+
+v1.0.1
+	Fixed the GUI not updating upon receiving a trade whisper.
+
+v1.0
+	Initial release.

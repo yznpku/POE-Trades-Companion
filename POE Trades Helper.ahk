@@ -19,13 +19,14 @@
 
 OnExit("Exit_Func")
 #SingleInstance Off
-;~ #SingleInstance Force ; Uncomment when using .ahk version
+#SingleInstance Force ; Uncomment when using .ahk version
 SetWorkingDir, %A_ScriptDir%
+FileEncoding, UTF-8 ; Required for cyrillic characters
 
 ;___Some_Variables___;
 global userprofile, iniFilePath, programName, programVersion, programPID, sfxFolderPath
 EnvGet, userprofile, userprofile
-programVersion := "1.0.1" , programName := "POE Trades Helper"
+programVersion := "1.1" , programName := "POE Trades Helper"
 iniFilePath := userprofile "\Documents\AutoHotKey\" programName "\Preferences.ini"
 sfxFolderPath := userprofile "\Documents\AutoHotKey\" programName "\SFX"
 
@@ -71,17 +72,28 @@ DllCall( "RegisterShellHookWindow", UInt,Hwnd )
 MsgNum := DllCall( "RegisterWindowMessage", Str,"SHELLHOOK" )
 OnMessage( MsgNum, "ShellMessage")
 
-ShellMessage( wParam,lParam) {
-	global VALUE_Show_Mode, VALUE_Dock_Mode
-	
+ShellMessage(wParam,lParam) {
+	global VALUE_Show_Mode, VALUE_Dock_Mode, guiTradesHandler
 	WinGet, winEXE, ProcessName, ahk_id %lParam%
 	if ( wParam=4 or wParam=32772 ) { ; 4=HSHELL_WINDOWACTIVATED | 32772=HSHELL_RUDEAPPACTIVATED
+;		Set the correct TradesGUI position upon activating a new window
 		gameExe := Get_Exe_From_Mode(VALUE_Dock_Mode, "VALUE_Dock_Mode")
 		if ( VALUE_Show_Mode = "Always" ) || ( ( VALUE_Show_Mode = "InGame" ) && ( winExe = gameExe ) ) {
 			Gui_Trades_Set_Position()
 		}
 		else
 			Gui, Trades:Show, NoActivate Hide
+	}
+	if WinActive("ahk_id" guiTradesHandler) {
+;		Prevent keyboard presses from interacting with the tradesGUI and thus mis-clicking a button
+		Hotkey, IfWinActive, ahk_id %guiTradesHandler%
+		Hotkey, Space, DoNothing, On
+		Hotkey, Tab, DoNothing, On
+		Hotkey, Enter, DoNothing, On
+		Hotkey, Left, DoNothing, On
+		Hotkey, Right, DoNothing, On
+		Hotkey, Up, DoNothing, On
+		Hotkey, Down, DoNothing, On
 	}
 }
 
@@ -182,14 +194,14 @@ Gui_Trades(messagesArray="",errorMsg="") {
 ;			Is transparent and click-trough when there is no trade on queue
 	global
 	static tabWidth, tabHeight, tradesCount, index, element, varText, varName, tabName, trans, priceArray, btnID, Clipboard_Backup, gameExe, itemArray, itemName, itemPrice, messageToSend
-	static nameArray, playerName
+	static nameArray, buyerName
 	;~ messagesArray := Object()
-	;~ Loop 50
-		;~ messagesArray.Insert("Name: iSellStuff`nItem: Faster Attack Support`nPrice: 5 alteration`nLocation: Essence (stash tab ""Gems"")")
+	;~ Loop 10
+		;~ messagesArray.Insert("Name: iSellStuff`nItem: level 1 Faster Attacks Support`nPrice: 5 alteration`nLocation: Essence (stash tab ""Gems""; position: left 6, top 8)")
 	Gui, Trades:Destroy
 	Gui, Trades:New, +ToolWindow +AlwaysOnTop -Border +hwndGuiTradesHandler +LabelGui_Trades_ +LastFound
 	Gui, Trades:Default
-	tabWidth := 390, tabHeight := 140
+	tabWidth := 390, tabHeight := 180
 	if (messagesArray.Length() = "" || messagesArray.Length() = "0") {
 		messagesArray := Object()
 		if ( errorMsg = "exenotfound" )
@@ -215,10 +227,11 @@ Gui_Trades(messagesArray="",errorMsg="") {
 			Gui, Add, Text, w300 vtextSlot%index%,% element
 		}
 		if ( index > 0 ) {
-			Gui, Add, Button,w80 h35 x20 yp+65 vcopyBtn%index% -Theme +0x8000 gGui_Trades_CopyItemName,% "Clipboard`nitem infos"
-			Gui, Add, Button,w80 h35 x115 yp vdelBtn%index% -Theme +0x8000 gGui_Trades_RemoveItem,% "Remove`n this tab"
-			Gui, Add, Button,w80 h35 x210 yp vsendBtn%index% -Theme +0x8000 gGui_Trades_SendMessage,% "  Message`none moment"
-			Gui, Add, Button, w80 h35 x305 yp vinviteBtn%index% -Theme +0x8000 gGui_Trades_Invite,% " Invite`nto party"
+			Gui, Add, Button,w110 h35 x20 yp+65 vcopyBtn%index% -Theme +0x8000 gGui_Trades_CopyItemName,% "Clipboard`nitem infos"
+			Gui, Add, Button,w111 h35 x147 yp vwaitBtn%index% -Theme +0x8000 gGui_Trades_Wait,% "  Message`none moment"
+			Gui, Add, Button,w110 h35 x275 yp vinviteBtn%index% -Theme +0x8000 gGui_Trades_Invite,% " Invite`nto party"
+			Gui, Add, Button,w365 h35 x20 yp+45 vthanksBtn%index% -Theme +0x8000 gGui_Trades_Thanks,% "Message thank you`n  and close this tab"
+			Gui, Add, Button,w20 h20 x370 yp-110 vdelBtn%index% -Theme +0x8000 gGui_Trades_RemoveItem,% "X"
 		}
 		else {
 			IniRead, trans,% iniFilePath,SETTINGS,Transparency
@@ -233,84 +246,93 @@ Gui_Trades(messagesArray="",errorMsg="") {
 	return
 	
 	Gui_Trades_OnTabSwitch:
-	;	Clipboard the item's infos on tab switch if the user enabled
-		if ( VALUE_Clip_On_Tab_Switch = 1 ) {
-			Gui, Submit, NoHide
-			if ( Tab = "0" )
-				return
-			GuiControlGet, varText, ,textSlot%Tab%
-			RegExMatch( varText, "Item: (.*)", subPat )
-			itemArray := StrSplit(subPat1, "`n"), itemName := itemArray[1]
-			Clipboard := itemName
-		}
-	return
-	
-	Gui_Trades_CopyItemName:
-	;	Clipboard the item's infos on clicking the button
-		if ( A_GuiControl = "copyBtn0" )
+;		Clipboard the item's infos on tab switch if the user enabled
+		Gui, Submit, NoHide
+		btnID := %A_GuiControl%
+		if ( btnID = "0" )
 			return
-		GuiControlGet, varName, Trades:Name, %A_GuiControl%
-		btnID := RegExReplace(varName, "\D")
-		GuiControlGet, varText, ,textSlot%btnID%
-		RegExMatch( varText, "Item: (.*)", subPat )
-		itemArray := StrSplit(subPat1, "`n"), itemName := itemArray[1]						
-		Clipboard := itemName
+		tradesInfosArray := Object()
+		tradesInfosArray := Gui_Trades_Get_Trades_Infos(btnID) ; [0] buyerName - [1] itemName - [2] itemPrice
+		if ( VALUE_Clip_On_Tab_Switch = 1 )
+			Clipboard := tradesInfosArray[1]
 	return
-	
+
 	Gui_Trades_RemoveItem:
-	;	Remove this tab
+;		Remove the current tab
 		messagesArray := Gui_Trades_RemoveItemFunc()
 		Gui_Trades(messagesArray)
 	return
 	
-	Gui_Trades_SendMessage:
-	;	Sends a message asking for the buyer to wait a moment
-		if ( A_GuiControl = "sendBtn0" )
+	Gui_Trades_CopyItemName:
+;		Clipboard the item's infos
+		btnID := Gui_Trades_Get_Tab_ID(A_GuiControl)
+		if ( btnID = "0" )
 			return
-		GuiControlGet, varName, Trades:Name, %A_GuiControl%
-		btnID := RegExReplace(varName, "\D")
-		GuiControlGet, varText, ,textSlot%btnID%
-		RegExMatch( varText, "Item: (.*)", subPat )
-		itemArray := StrSplit(subPat1, "`n"), itemName := itemArray[1]
-		RegExMatch( varText, "Name: (.*)", subPat )
-		nameArray := StrSplit(subPat1, "`n"), playerName := nameArray[1]
-		RegExMatch( varText, "Price: (.*)", subPat )
-		priceArray := StrSplit(subPat1, "`n"), itemPrice := priceArray[1]
-
-		SetKeyDelay, 30, 1
-		messageToSend := "@" playerName " One moment please (" itemName " // " itemPrice ")"
-		Clipboard_Backup := Clipboard
-		Clipboard := messageToSend
-		gameExe := Get_Exe_From_Mode(VALUE_Logs_Mode, "VALUE_Logs_Mode")
-		ControlSend, ,{Enter}^v{Enter},ahk_exe %gameExe%
-		Clipboard := Clipboard_Backup
+		tradesInfosArray := Object()
+		tradesInfosArray := Gui_Trades_Get_Trades_Infos(btnID) ; [0] buyerName - [1] itemName - [2] itemPrice
+		Clipboard := tradesInfosArray[1]
 	return
 	
-	Gui_Trades_Size:
-	;	Declare the gui width and height
-		tradesGuiWidth := A_GuiWidth
-		tradesGuiHeight := A_GuiHeight
+	Gui_Trades_Wait:
+;		Send a message asking to wait
+		btnID := Gui_Trades_Get_Tab_ID(A_GuiControl)
+		if ( btnID = "0" )
+			return
+		tradesInfosArray := Object()
+		tradesInfosArray := Gui_Trades_Get_Trades_Infos(btnID) ; [0] buyerName - [1] itemName - [2] itemPrice
+		if ( VALUE_Wait_Text_Toggle = 1 )
+			Send_InGame_Message(VALUE_Wait_Text, "whisper", tradesInfosArray[0], tradesInfosArray[1], tradesInfosArray[2])
 	return
 	
 	Gui_Trades_Invite:
-	;	Invite the player to your party
-		if ( A_GuiControl = "inviteBtn0" )
+;		Send a message and invite the player to the party
+		btnID := Gui_Trades_Get_Tab_ID(A_GuiControl)
+		if ( btnID = "0" )
 			return
-		GuiControlGet, varName, Trades:Name, %A_GuiControl%
-		btnID := RegExReplace(varName, "\D")
-		GuiControlGet, varText, ,textSlot%btnID%
-		RegExMatch( varText, "Name:(.*)", subPat )
-		nameArray := StrSplit(subPat1, "`n"), playerName := nameArray[1]
-		sleep 100
-		playerName := Gui_Trades_RemoveGuildPrefix(playerName)	
-		SetKeyDelay, 30, 1
-		messageToSend := "/invite " playerName
-		Clipboard_Backup := Clipboard
-		Clipboard := messageToSend
-		gameExe := Get_Exe_From_Mode(VALUE_Logs_Mode, "VALUE_Logs_Mode")
-		ControlSend, ,{Enter}^v{Enter},ahk_exe %gameExe%
-		Clipboard := Clipboard_Backup
+		tradesInfosArray := Object()
+		tradesInfosArray := Gui_Trades_Get_Trades_Infos(btnID) ; [0] buyerName - [1] itemName - [2] itemPrice
+		if ( VALUE_Invite_Text_Toggle = 1 )
+			Send_InGame_Message(VALUE_Invite_Text, "whisper", tradesInfosArray[0], tradesInfosArray[1], tradesInfosArray[2])
+		Send_InGame_Message("/invite " tradesInfosArray[0])
 	return
+	
+	Gui_Trades_Thanks:
+;		Send a message to the player and close the tab
+		btnID := Gui_Trades_Get_Tab_ID(A_GuiControl)
+		if ( btnID = "0" )
+			return
+		tradesInfosArray := Object()
+		tradesInfosArray := Gui_Trades_Get_Trades_Infos(btnID) ; [0] buyerName - [1] itemName - [2] itemPrice
+		if ( VALUE_Thanks_Text_Toggle = 1 )
+			Send_InGame_Message(VALUE_Thanks_Text, "whisper", tradesInfosArray[0], tradesInfosArray[1], tradesInfosArray[2])
+		GoSub, Gui_Trades_RemoveItem
+	return
+	
+	Gui_Trades_Size:
+;		Declare the gui width and height
+		tradesGuiWidth := A_GuiWidth
+		tradesGuiHeight := A_GuiHeight
+	return
+}
+
+Gui_Trades_Get_Tab_ID(controlName){
+	GuiControlGet, varName, Trades:Name, %controlName%
+	btnID := RegExReplace(varName, "\D")
+	return btnID
+}
+
+Gui_Trades_Get_Trades_Infos(btnID){
+	GuiControlGet, varText, ,textSlot%btnID%
+	RegExMatch( varText, "Item: (.*)", subPat )
+	itemArray := StrSplit(subPat1, "`n"), itemName := itemArray[1]
+	RegExMatch( varText, "Name: (.*)", subPat )
+	nameArray := StrSplit(subPat1, "`n"), buyerName := nameArray[1]
+	RegExMatch( varText, "Price: (.*)", subPat )
+	priceArray := StrSplit(subPat1, "`n"), itemPrice := priceArray[1]
+	buyerName := Gui_Trades_RemoveGuildPrefix(buyerName)
+	returnArray := Object()
+	returnArray.Insert(0, buyerName, itemName, itemPrice)
+	return returnArray
 }
 
 Gui_Trades_RemoveItemFunc() {
@@ -393,45 +415,73 @@ Gui_Settings() {
 	Gui, Settings:Destroy
 	Gui, Settings:New, +AlwaysOnTop +SysMenu -MinimizeBox -MaximizeBox +OwnDialogs +LabelGui_Settings_ hwndSettingsHandler,% programName " - Settings"
 	Gui, Settings:Default
-;	Trades GUI
-	Gui, Add, GroupBox, x10 y10 w200 h260,Trades GUI
-	Gui, Add, Radio, x20 y30 vShowAlways hwndShowAlwaysHandler,Always show
-	Gui, Add, Radio, x20 y45 vShowInGame hwndShowInGameHandler,Only show while in game
-	Gui, Add, Text, x42 y65,Transparency
-	Gui, Add, Slider, x20 y80 hwndShowTransparencyHandler vShowTransparency ToolTip Range0-100
-	;	Docking
-	Gui, Add, Text, x20 y120,Dock the GUI to:
-	Gui, Add, Radio, x30 y140 vDockGGG hwndDockGGGHandler,GGG
-	Gui, Add, Radio, x30 y155 vDockSteam hwndDockSteamHandler,Steam
-	;	Logs
-	Gui, Add, Text, x20 y185,Logs File:
-	Gui, Add, Radio, x30 y205 vLogsGGG hwndLogsGGGHandler,GGG
-	Gui, Add, Radio, x30 y220 vLogsSteam hwndLogsSteamHandler,Steam
-;	Hotkeys
-	Gui, Add, GroupBox, x220 y10 w200 h70,Hotkeys
-	Gui, Add, Checkbox, x230 y30 hwndHotkey1ToggleHandler vHotkey1Toggle,/hideout
-	Gui, Add, Hotkey, x290 y27 w100 hwndHotkey1Handler vHotkey1 gGui_Settings_Hotkeys
-	Gui, Add, Checkbox, x230 y55 hwndHotkey1CTRLHandler vHotkey1CTRL,CTRL
-	Gui, Add, Checkbox, x280 y55 hwndHotkey1ALTHandler vHotkey1ALT,ALT
-	Gui, Add, Checkbox, x322 y55 hwndHotkey1SHIFTHandler vHotkey1SHIFT,SHIFT
-;	Clipboard
-	Gui, Add, GroupBox, x220 y210 w200 h60,Clipboard
-	Gui, Add, Checkbox, x230 y230 hwndClipNewHandler vClipNew,Clipboard new items
-	Gui, Add, Checkbox, x230 y245 hwndClipTabHandler vClipTab,Clipboard item on tab switch
-;	Notifications
-;		Trade Sound Group
-	Gui, Add, GroupBox, x220 y90 w200 h110,Notifications
-	Gui, Add, Checkbox, x230 y110 vNotifyTradeToggle hwndNotifyTradeToggleHandler,Trade
-	Gui, Add, Edit, x290 y108 w70 h17 vNotifyTradeSound hwndNotifyTradeSoundHandler ReadOnly
-	Gui, Add, Button, x365 y106 h20 vNotifyTradeBrowse gGui_Settings_Notifications_Browse,Browse
-;		Whisper Sound Group
-	Gui, Add, Checkbox, x230 y135 vNotifyWhisperToggle hwndNotifyWhisperToggleHandler,Whisper
-	Gui, Add, Edit, x290 y133 w70 h17 vNotifyWhisperSound hwndNotifyWhisperSoundHandler ReadOnly
-	Gui, Add, Button, x365 y131 h20 vNotifyWhisperBrowse gGui_Settings_Notifications_Browse,Browse
-	Gui, Add, Checkbox, x230 y155 vNotifyWhisperTray hwndNotifyWhisperTrayHandler,Tray notifications for whispers`n when POE is not active.
-;	Apply Button
-	Gui, Add, Button, x10 y280 w330 h30 gGui_Settings_Btn_Apply vApplyBtn,Apply Settings
-	Gui, Add, Button, x340 y280 h30 w80 hwndHelpBtnHandler vHelpBtn gGui_Settings_Btn_Help,Help? (OFF)
+	Gui, Add, Tab3, vTab x10 y10,Settings|Messages
+	Gui, Tab, Settings
+;	Settings Tab
+;		Trades GUI
+		Gui, Add, GroupBox, x20 y40 w200 h260,Trades GUI
+		Gui, Add, Radio, x30 yp+20 vShowAlways hwndShowAlwaysHandler,Always show
+		Gui, Add, Radio, x30 yp+15 vShowInGame hwndShowInGameHandler,Only show while in game
+		Gui, Add, Text, x52 yp+20,Transparency
+		Gui, Add, Text, x30 yp+15,when no trade is on queue
+		Gui, Add, Slider, x30 yp+15 hwndShowTransparencyHandler gGui_Settings_Transparency vShowTransparency AltSubmit ToolTip Range0-100
+;		Docking
+		Gui, Add, Text, x30 y165,Dock the GUI to:
+		Gui, Add, Radio, x30 yp+20 vDockGGG hwndDockGGGHandler,GGG
+		Gui, Add, Radio, x30 yp+15 vDockSteam hwndDockSteamHandler,Steam
+;		Logs
+		Gui, Add, Text, x30 y230,Logs File:
+		Gui, Add, Radio, x30 yp+20 vLogsGGG hwndLogsGGGHandler,GGG
+		Gui, Add, Radio, x30 yp+15 vLogsSteam hwndLogsSteamHandler,Steam
+;		Hotkeys
+		Gui, Add, GroupBox, x230 y40 w200 h70,Hotkeys
+		Gui, Add, Checkbox, x240 yp+20 hwndHotkey1ToggleHandler vHotkey1Toggle,/hideout
+		Gui, Add, Hotkey, x300 yp-3 w100 hwndHotkey1Handler vHotkey1 gGui_Settings_Hotkeys
+		Gui, Add, Checkbox, x240 yp+28 hwndHotkey1CTRLHandler vHotkey1CTRL,CTRL
+		Gui, Add, Checkbox, x290 yp hwndHotkey1ALTHandler vHotkey1ALT,ALT
+		Gui, Add, Checkbox, x332 yp hwndHotkey1SHIFTHandler vHotkey1SHIFT,SHIFT
+;		Notifications
+;			Trade Sound Group
+			Gui, Add, GroupBox, x230 y120 w200 h110,Notifications
+			Gui, Add, Checkbox, x240 yp+20 vNotifyTradeToggle hwndNotifyTradeToggleHandler,Trade
+			Gui, Add, Edit, x300 yp-2 w70 h17 vNotifyTradeSound hwndNotifyTradeSoundHandler ReadOnly
+			Gui, Add, Button, x375 yp-2 h20 vNotifyTradeBrowse gGui_Settings_Notifications_Browse,Browse
+;			Whisper Sound Group
+			Gui, Add, Checkbox, x240 y165 vNotifyWhisperToggle hwndNotifyWhisperToggleHandler,Whisper
+			Gui, Add, Edit, x300 yp-2 w70 h17 vNotifyWhisperSound hwndNotifyWhisperSoundHandler ReadOnly
+			Gui, Add, Button, x375 yp-2 h20 vNotifyWhisperBrowse gGui_Settings_Notifications_Browse,Browse
+			Gui, Add, Checkbox, x240 yp+24 vNotifyWhisperTray hwndNotifyWhisperTrayHandler,Tray notifications for whispers`n when POE is not active.
+;		Clipboard
+		Gui, Add, GroupBox, x230 y240 w200 h60,Clipboard
+		Gui, Add, Checkbox, x240 yp+20 hwndClipNewHandler vClipNew,Clipboard new items
+		Gui, Add, Checkbox, x240 yp+15 hwndClipTabHandler vClipTab,Clipboard item on tab switch
+;		Apply Button
+		Gui, Add, Button, x20 y310 w320 h30 gGui_Settings_Btn_Apply vApplyBtn,Apply Settings
+		Gui, Add, Button, x340 yp h30 w90 hwndHelpBtnHandler vHelpBtn gGui_Settings_Btn_Help,Help? (OFF)
+	
+;	Message Tab
+	Gui, Tab, Messages
+;		Top message
+		Gui, Add, Text, x20 y40,Use these variables in your message to specify the infos about the item:
+		Gui, Add, Text, x30 yp+15,`%buyerName`% %A_Tab%%A_Tab% Contains the buyer's name
+		Gui, Add, Text, x30 yp+15,`%itemName`% %A_Tab%%A_Tab% Contains the item's name
+		Gui, Add, Text, x30 yp+15,`%itemPrice`% %A_Tab%%A_Tab% Contains the item's price
+;		One moment button
+		Gui, Add, Text, x20 y120,"Message one moment" button:
+		Gui, Add, CheckBox, x20 yp+20 vMessageWaitToggle hwndMessageWaitToggleHandler, 
+		Gui, Add, Edit, x45 yp-3 w390 vMessageWait hwndMessageWaitHandler
+;		Invite to party button
+		Gui, Add, Text, x20 y170,"Invite to party" button:
+		Gui, Add, CheckBox, x20 yp+20 vMessageInviteToggle hwndMessageInviteToggleHandler, 
+		Gui, Add, Edit, x45 yp-3 w390 vMessageInvite hwndMessageInviteHandler
+;		Thanks button
+		Gui, Add, Text, x20 y220,"Message thank you" button:
+		Gui, Add, CheckBox, x20 yp+20 vMessageThanksToggle hwndMessageThanksToggleHandler, 
+		Gui, Add, Edit, x45 yp-3 w390 vMessageThanks hwndMessageThanksHandler
+;		Apply Button
+		Gui, Add, Button, x20 y310 w320 h30 gGui_Settings_Btn_Apply vApplyBtn2,Apply Settings
+		Gui, Add, Button, x340 yp h30 w90 hwndHelpBtnHandler2 vHelpBtn2 gGui_Settings_Btn_Help,Help? (OFF)
+	
 	GoSub Gui_Settings_Set_Preferences
 	IniRead, firstTime,% iniFile,PROGRAM,First_Time_Running
 	if ( firstTime = 1 ) {
@@ -442,15 +492,25 @@ Gui_Settings() {
 	sleep 100
 	return
 	
+	Gui_Settings_Transparency:
+	;	Set the transparency
+		Gui, Settings: Submit, NoHide
+		trans := ( ShowTransparency / 100 ) * 255 ; ( value - percentage ) * max // Convert percentage to 0-255 range
+		Gui, Trades: +LastFound
+		WinSet, Transparent,% trans
+	return
+	
 	Gui_Settings_Btn_Help:
 		if ( helpState = 0 ) {
 			OnMessage(0x200,"WM_MOUSEMOVE", 1)
 			GuiControl, Settings:,% HelpBtnHandler,Help? (ON)
+			GuiControl, Settings:,% HelpBtnHandler2,Help? (ON)
 			helpState := 1
 		}
 		else {
 			OnMessage(0x200,"WM_MOUSEMOVE", 0)
 			GuiControl, Settings:,% HelpBtnHandler,Help? (OFF)
+			GuiControl, Settings:,% HelpBtnHandler2,Help? (OFF)
 			helpState := 0
 			Tooltip,
 		}
@@ -527,9 +587,6 @@ Gui_Settings() {
 		if ( whispersSoundFile )
 		IniWrite,% whispersSoundFile,% iniFile,NOTIFICATIONS,Whisper_Sound_Path
 		IniWrite,% NotifyWhisperTray,% iniFile,NOTIFICATIONS,Whisper_Tray
-;	Set the transparency
-		Gui, Trades: +LastFound
-		WinSet, Transparent,% trans
 	return
 
 	Gui_Settings_Size:
@@ -550,6 +607,8 @@ Gui_Settings() {
 		HOTKEYS_HandlersKeysArray := returnArray.HOTKEYS_HandlersKeysArray
 		NOTIFICATIONS_HandlersArray := returnArray.NOTIFICATIONS_HandlersArray
 		NOTIFICATIONS_HandlersKeysArray := returnArray.NOTIFICATIONS_HandlersKeysArray
+		MESSAGES_HandlersArray := returnArray.MESSAGES_HandlersArray
+		MESSAGES_HandlersKeysArray := returnArray.MESSAGES_HandlersKeysArray
 
 		for key, element in sectionArray
 		{
@@ -562,17 +621,17 @@ Gui_Settings() {
 				if ( keyName = "Show_Mode" ) { ; Make sure only one goes trough
 					GuiControl, Settings:,% Show%var%Handler,1
 				}
-				else if ( keyName = "Dock_Mode" ) {
+				else if ( keyName = "Dock_Mode" ) { ; Make sure only one goes trough
 					GuiControl, Settings:, % Dock%var%Handler,1
 				}
-				else if ( keyName = "Transparency" ) {
+				else if ( keyName = "Transparency" ) { ; Convert to pecentage
 					var := ((var - 0) * 100) / (255 - 0)
 					GuiControl, Settings:,% %handler%Handler,% var
 				}
-				else if ( keyName = "Logs_Mode" ) {
+				else if ( keyName = "Logs_Mode" ) { ; Make sure only one goes trough
 					GuiControl, Settings:,% Logs%var%Handler,1
 				}
-				else if ( var != "ERROR" && var != "" ) {
+				else if ( var != "ERROR" && var != "" ) { ; Everything else
 					handler := %sectionName%_HandlersArray[key]
 					GuiControl, Settings:,% %handler%Handler,% var
 				}
@@ -587,7 +646,7 @@ Gui_Settings_Get_Settings_Arrays() {
 ;			Return an array containing all those informations
 	returnArray := Object()
 	returnArray.sectionArray := Object() ; contains all the .ini SECTIONS
-	returnArray.sectionArray.Insert(0, "SETTINGS", "AUTO_CLIP", "HOTKEYS", "NOTIFICATIONS")
+	returnArray.sectionArray.Insert(0, "SETTINGS", "AUTO_CLIP", "HOTKEYS", "NOTIFICATIONS", "MESSAGES")
 	
 	returnArray.SETTINGS_HandlersArray := Object() ; contains all the Gui_Settings HANDLERS from this SECTION
 	returnArray.SETTINGS_HandlersArray.Insert(0, "ShowAlways", "ShowInGame", "ShowTransparency", "DockSteam", "DockGGG", "LogsSteam", "LogsGGG")
@@ -623,8 +682,17 @@ Gui_Settings_Get_Settings_Arrays() {
 	returnArray.NOTIFICATIONS_KeysArray := Object()
 	returnArray.NOTIFICATIONS_KeysArray.Insert(0, "Trade_Toggle", "Trade_Sound", "Trade_Sound_Path", "Whisper_Toggle", "Whisper_Sound", "Whisper_Sound_Path", "Whisper_Tray")
 	returnArray.NOTIFICATIONS_DefaultValues := Object()
-	returnArray.NOTIFICATIONS_DefaultValues.Insert(0, "0", "None", "", "0", "None", "", "1")
-
+	returnArray.NOTIFICATIONS_DefaultValues.Insert(0, "1", "WW_MainMenu_Letter.wav", sfxFolderPath "\WW_MainMenu_Letter.wav", "0", "None", "", "1")
+	
+	returnArray.MESSAGES_HandlersArray := Object()
+	returnArray.MESSAGES_HandlersArray.Insert(0, "MessageWaitToggle", "MessageWait", "MessageInviteToggle","MessageInvite", "MessageThanksToggle","MessageThanks")
+	returnArray.MESSAGES_HandlersKeysArray := Object()
+	returnArray.MESSAGES_HandlersKeysArray.Insert(0, "Wait_Text_Toggle", "Wait_Text", "Invite_Text_Toggle", "Invite_Text", "Thanks_Text_Toggle", "Thanks_Text")
+	returnArray.MESSAGES_KeysArray := Object()
+	returnArray.MESSAGES_KeysArray.Insert(0, "Wait_Text_Toggle", "Wait_Text", "Invite_Text_Toggle", "Invite_Text", "Thanks_Text_Toggle", "Thanks_Text")
+	returnArray.MESSAGES_DefaultValues := Object()
+	returnArray.MESSAGES_DefaultValues.Insert(0, "1", "One moment please! (%itemName% // %itemPrice%)", "1", "Your item is ready to be picked up at my hideout! (%itemName% // %itemPrice%)", "1", "Thank you, good luck & have fun!")
+	
 	return returnArray
 }
 
@@ -635,19 +703,22 @@ Get_Control_ToolTip(controlName) {
 	. "`nAlways show:" A_Tab . A_Tab "The GUI will always appear."
 	. "`nOnly show while in game:" A_Tab "The GUI will only appear when the game's window is active."
 	ShowInGame_TT := ShowAlways_TT
-	ShowTransparency_TT := "Transparency of the GUI when no trade is on queue."
-	. "`n(The GUI is click-trough)"
+	ShowTransparency_TT := "The GUI is click-trough when it is inactive."
+	. "`n"
+	. "`nTransparency of the GUI when no trade is on queue."
+	. "`nWhile moving the slider, you can see a preview of the result."
 	
-	DockGGG_TT := "(Mostly used when running two instancies, one being your shop and the other your main account)"
-	. "`n(If you run only one instancie of the game, make sure that both settings are set to the same PoE executable.)"
+	DockGGG_TT := "Mostly used when running two instancies, one being your shop and the other your main account"
+	. "`nIf you run only one instancie of the game, make sure that both settings are set to the same PoE executable."
+	. "`nWhen the window is not found, it will default on the top right of your primary monitor"
 	. "`n"
 	. "`nDecide on which window should the GUI dock to."
 	. "`nGGG:" A_Tab "Dock the GUI to GGG'executable."
 	. "`nSteam:" A_Tab "Dock the GUI to Steam's executable."
 	DockSteam_TT := DockGGG_TT
 	
-	LogsGGG_TT := "(Mostly used when running two instancies, one being your shop and the other your main account)"
-	. "`n(If you run only one instancie of the game, make sure that both settings are set to the same PoE executable.)"
+	LogsGGG_TT := "Mostly used when running two instancies, one being your shop and the other your main account"
+	. "`nIf you run only one instancie of the game, make sure that both settings are set to the same PoE executable."
 	. "`n"
 	. "`nDecide which log file should be read."
 	. "`nGGG:" A_Tab "Dock the GUI to GGG'executable."
@@ -684,10 +755,28 @@ Get_Control_ToolTip(controlName) {
 	. "`nClipboard item on tab switch:" A_Tab "Active tab's item will be placed on clipboard."
 	ClipTab_TT := ClipNew_TT
 	
-	HelpBtn_TT := "Hover controls to get infos on their use."
+	HelpBtn_TT := "Hover controls to get infos about their function."
+	HelpBtn2_TT := HelpBtn_TT
 	ApplyBtn_TT := "Do not forget that the game needs to be in ""Windowed"" or ""Windowed Fullscreen"" for the GUI to work!"
+	ApplyBtn2_TT := ApplyBtn_TT
+	
+	MessageWait_TT := "Message that will be sent upon clicking the ""Message one moment"" button."
+	. "`nTick the case to enable."
+	MessageWaitToggle_TT := MessageWait_TT
+	
+	MessageInvite_TT := "Message that will be sent upon clicking the ""Invite to party"" button."
+	. "`nTick the case to enable."
+	MessageInviteToggle_TT := MessageInvite_TT
+	
+	MessageThanks_TT := "Message that will be sent upon clicking the ""Message thank you and close this tab"" button."
+	. "`nTick the case to enable."
+	MessageThanksToggle_TT := MessageThanks_TT
 	
 	controlTip := % %controlName%_TT
+	;~ if ( controlTip ) 
+		;~ return controlTip
+	;~ else 
+		;~ controlTip := controlName ; Used to get the control tooltip
 	return controlTip
 }
 
@@ -793,8 +882,10 @@ Gui_About() {
 	Gui, Add, Text, x10 y65 ,The buyer's name, the item, the price listed, and the league/stash tab.
 	Gui, Add, Text, x10 y80 ,Several buttons will let you invite/message the person.
 	Gui, Add, Text, x10 y100,If you would like to change your preferences, head over the [Settings] tray menu.
-	Gui, Add, Link, x10 y130,% "<a href=""https://github.com/lemasato/POE-Trades-Helper"">See on GitHub</a>"
-	Gui, Add, Link, x10 y145,% "<a href=""https://www.reddit.com/r/pathofexile/comments/57oo3h/"">See on Reddit</a>"
+	Gui, Add, Text, x10 y130,See on:
+	Gui, Add, Link, x10 y145,% "<a href=""https://github.com/lemasato/POE-Trades-Helper/"">GitHub</a> - "
+	Gui, Add, Link, x50 y145,% "<a href=""https://www.reddit.com/r/pathofexile/comments/57oo3h/"">Reddit</a> - "
+	Gui, Add, Link, x90 y145,% "<a href=""https://www.pathofexile.com/forum/view-thread/1755148/"">GGG</a>"
 	if !( FileExist( A_Temp "\poethpp.png" ) ) {
 		UrlDownloadToFile, % "https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif", % A_Temp "\poethpp.png"
 		if ( ErrorLevel )
@@ -838,6 +929,7 @@ Get_INI_Settings() {
 	AUTO_CLIP_KeysArray := returnArray.AUTO_CLIP_KeysArray
 	HOTKEYS_KeysArray := returnArray.HOTKEYS_KeysArray
 	NOTIFICATIONS_KeysArray := returnArray.NOTIFICATIONS_KeysArray
+	MESSAGES_KeysArray := returnArray.MESSAGES_KeysArray
 	
 	returnArray.KEYS := Object()
 	returnArray.VALUES := Object()
@@ -878,7 +970,8 @@ Set_INI_Settings(){
 	HOTKEYS_DefaultValues := settingsArray.HOTKEYS_DefaultValues
 	NOTIFICATIONS_KeysArray := settingsArray.NOTIFICATIONS_KeysArray
 	NOTIFICATIONS_DefaultValues := settingsArray.NOTIFICATIONS_DefaultValues
-	
+	MESSAGES_KeysArray := settingsArray.MESSAGES_KeysArray
+	MESSAGES_DefaultValues := settingsArray.MESSAGES_DefaultValues	
 ;	Set the value for each key
 	for key, element in sectionArray
 	{
@@ -910,6 +1003,25 @@ Declare_INI_Settings(iniArray) {
 ;
 ;==================================================================================================================
 
+DoNothing:
+return
+
+Send_InGame_Message(messageToSend, msgType="", buyerName="", itemName="", itemPrice="") {
+;			Sends a message InGame and replace the "variables text" into their content
+	global VALUE_Logs_Mode
+	SetKeyDelay, 30, 1
+	if ( msgType = "whisper" )
+		messageToSend := "@" buyerName " " messageToSend
+	StringReplace, messageToSend, messageToSend, `%buyerName`%, %buyerName%, 1
+	StringReplace, messageToSend, messageToSend, `%itemName`%, %itemName%, 1
+	StringReplace, messageToSend, messageToSend, `%itemPrice`%, %itemPrice%, 1
+	Clipboard_Backup := Clipboard
+	Clipboard := messageToSend
+	gameExe := Get_Exe_From_Mode(VALUE_Logs_Mode, "VALUE_Logs_Mode")
+	ControlSend, ,{Enter}{Space}^v{Enter},ahk_exe %gameExe%
+	Clipboard := Clipboard_Backup
+}
+
 Extract_Sound_Files() {
 ;			Extracts the included sfx into the .ini settings folder
 if !( InStr(FileExist(sfxFolderPath), "D") )
@@ -928,7 +1040,7 @@ Prevent_Multiple_Instancies() {
 	runningPID := ErrorLevel
 	if ( runningPID ) {
 		currentPID := DllCall("GetCurrentProcessId")
-		if ( runningPID <> currentPID ) {
+		if ( runningPID != currentPID ) {
 			OnExit("Exit_Func", 0)
 			ExitApp	
 		}
