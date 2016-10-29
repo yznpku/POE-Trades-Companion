@@ -19,7 +19,7 @@
 
 OnExit("Exit_Func")
 #SingleInstance Off
-#SingleInstance Force ; Uncomment when using .ahk version
+;~ #SingleInstance Force ; Uncomment when using .ahk version
 SetWorkingDir, %A_ScriptDir%
 FileEncoding, UTF-8 ; Required for cyrillic characters
 
