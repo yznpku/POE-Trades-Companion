@@ -26,7 +26,7 @@ FileEncoding, UTF-8 ; Required for cyrillic characters
 ;___Some_Variables___;
 global userprofile, iniFilePath, programName, programVersion, programPID, sfxFolderPath
 EnvGet, userprofile, userprofile
-programVersion := "1.1.1" , programName := "POE Trades Helper"
+programVersion := "1.1.2" , programName := "POE Trades Helper"
 iniFilePath := userprofile "\Documents\AutoHotKey\" programName "\Preferences.ini"
 sfxFolderPath := userprofile "\Documents\AutoHotKey\" programName "\SFX"
 
@@ -213,7 +213,11 @@ Gui_Trades(messagesArray="",errorMsg="") {
 	}
 	tradesCount := messagesArray.Length()
 	tabHeight := tabHeight +  18*( Floor( tradesCount/10 ) ) ; Adds 18 in height for every 10 tabs
-	Gui, Add, Tab3,x10 y10 vTab gGui_Trades_OnTabSwitch w%tabWidth% h%tabHeight%
+	aeroStatus := Get_Aero_Status()
+	if ( aeroStatus = 1 )
+		Gui, Add, Tab3,x10 y10 vTab gGui_Trades_OnTabSwitch w%tabWidth% h%tabHeight%
+	else
+		Gui, Add, Tab3,x10 y10 vTab gGui_Trades_OnTabSwitch w%tabWidth% h%tabHeight% -Theme
 	for index, element in messagesArray 
 	{
 		tabName := index
@@ -415,7 +419,11 @@ Gui_Settings() {
 	Gui, Settings:Destroy
 	Gui, Settings:New, +AlwaysOnTop +SysMenu -MinimizeBox -MaximizeBox +OwnDialogs +LabelGui_Settings_ hwndSettingsHandler,% programName " - Settings"
 	Gui, Settings:Default
-	Gui, Add, Tab3, vTab x10 y10,Settings|Messages
+	aeroStatus := Get_Aero_Status()
+	if ( aeroStatus = 1 )
+		Gui, Add, Tab3, vTab x10 y10,Settings|Messages
+	else
+		Gui, Add, Tab3, vTab x10 y10 -Theme,Settings|Messages
 	Gui, Tab, Settings
 ;	Settings Tab
 ;		Trades GUI
@@ -1012,6 +1020,19 @@ Declare_INI_Settings(iniArray) {
 ;																														MISC STUFF
 ;
 ;==================================================================================================================
+
+Get_Aero_Status(){
+	hr := DllCall("Dwmapi\DwmIsCompositionEnabled", "Int*", isEnabled)
+	If (hr == 0) {
+		if (isEnabled)
+			state := 1
+		else
+			state := 0
+	}
+	else
+		state := "ERROR"
+	return state
+}
 
 DoNothing:
 return
