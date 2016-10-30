@@ -1,5 +1,6 @@
 v1.1.2
-	Fixed Settings and Trades GUI not appearing correctly on system with AERO disabled
+	Fixed Settings and Trades GUI not appearing correctly on systems with AERO disabled.
+	(Thanks to /u/DamJNeT for addressing the issue!)
 
 v1.1.1
 	Hotfix: Fixed the custom messages not saving.
