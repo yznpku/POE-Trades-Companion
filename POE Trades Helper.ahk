@@ -2,8 +2,10 @@
 *	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
 *					POE Trades Helper																												*
 *					See all the information about the trade request upon receiving a poe.trade whisper			*
-*					https://github.com/lemasato/POE-Trades-Helper																*
-*					https://www.reddit.com/r/pathofexile/comments/57oo3h/
+*																																								*
+*					https://github.com/lemasato/POE-Trades-Helper/																*
+*					https://www.reddit.com/r/pathofexile/comments/57oo3h/													*
+*					https://www.pathofexile.com/forum/view-thread/1755148/												*
 *																																								*	
 *	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
 *																																								*
@@ -19,35 +21,40 @@
 
 OnExit("Exit_Func")
 #SingleInstance Off
-;~ #SingleInstance Force ; Uncomment when using .ahk version
+#SingleInstance Force ; Uncomment when using .ahk version
 SetWorkingDir, %A_ScriptDir%
 FileEncoding, UTF-8 ; Required for cyrillic characters
 
 ;___Some_Variables___;
-global userprofile, iniFilePath, programName, programVersion, programPID, sfxFolderPath
+global userprofile, iniFilePath, programName, programVersion, programFolder, programPID, sfxFolderPath, programChangelogFilePath
 EnvGet, userprofile, userprofile
-programVersion := "1.1.2" , programName := "POE Trades Helper"
-iniFilePath := userprofile "\Documents\AutoHotKey\" programName "\Preferences.ini"
-sfxFolderPath := userprofile "\Documents\AutoHotKey\" programName "\SFX"
+programVersion := "1.2" , programName := "POE Trades Helper", programFolder := userprofile "\Documents\AutoHotKey\" programName
+iniFilePath := programFolder "\Preferences.ini"
+sfxFolderPath := programFolder "\SFX"
+programLogsPath := programFolder "\Logs"
+programLogsFilePath := userprofile "\Documents\AutoHotKey\" programName "\Logs\" A_YYYY "-" A_MM "-" A_DD "_" A_Hour "-" A_Min "-" A_Sec ".txt"
+programChangelogFilePath := programFolder "\Logs\changelog.txt"
 
 ;___Creating_INI_Dir___;
-if !( InStr(FileExist("\Documents\AutoHotkey"), "D") )
+if !( InStr(FileExist(userprofile "\Documents"), "D") )
+	FileCreateDir, % userprofile "\Documents"
+if !( InStr(FileExist(userprofile "\Documents\AutoHotkey"), "D") )
 	FileCreateDir, % userprofile "\Documents\AutoHotkey"
-if !( InStr(FileExist("\Documents\AutoHotkey\" programName ), "D") )
+if !( InStr(FileExist(userprofile "\Documents\AutoHotkey\" programName ), "D") )
 	FileCreateDir, % userprofile "\Documents\AutoHotkey\" programName
+if !( InStr(FileExist(sfxFolderPath), "D") )
+	FileCreateDir, % sfxFolderPath
+if !( InStr(FileExist(programLogsPath), "D") )
+	FileCreateDir, % programLogsPath
 
 ;___Function_Calls___;
 Prevent_Multiple_Instancies()
 Set_INI_Settings()
 settingsArray := Get_INI_Settings()
 Declare_INI_Settings(settingsArray)
+Delete_Old_Logs_Files()
 Create_Tray_Menu()
-IniRead, tempVar,% iniFilePath,PROGRAM,First_Time_Running
-if ( tempVar = 1 ) {
-	Extract_Sound_Files()
-	MsgBox, ,Welcome!,Welcome & thank you for trying out this program!`n`Seems like it's your first time running %programName%...`nWorry not! The interface is simple and easy to understand.`n`nThe settings window will now open.`nThe "Help?" setting has been enabled: Hover the controls to see helpful tooltips!`n`nIf you would like to access the Settings menu again,`n  right click on the tray icon and pick [Settings]!
-	Gui_Settings()
-}
+Do_Once()
 Check_Update()
 
 ;___Hotkeys___;
@@ -73,12 +80,12 @@ MsgNum := DllCall( "RegisterWindowMessage", Str,"SHELLHOOK" )
 OnMessage( MsgNum, "ShellMessage")
 
 ShellMessage(wParam,lParam) {
-	global VALUE_Show_Mode, VALUE_Dock_Mode, guiTradesHandler
+	global VALUE_Show_Mode, VALUE_Dock_Mode, guiTradesHandler, tradesGuiWidth
 	WinGet, winEXE, ProcessName, ahk_id %lParam%
 	if ( wParam=4 or wParam=32772 ) { ; 4=HSHELL_WINDOWACTIVATED | 32772=HSHELL_RUDEAPPACTIVATED
 ;		Set the correct TradesGUI position upon activating a new window
 		gameExe := Get_Exe_From_Mode(VALUE_Dock_Mode, "VALUE_Dock_Mode")
-		if ( VALUE_Show_Mode = "Always" ) || ( ( VALUE_Show_Mode = "InGame" ) && ( winExe = gameExe ) ) {
+		if ( VALUE_Show_Mode = "Always" ) && ( tradesGuiWidth > 0 ) || ( ( VALUE_Show_Mode = "InGame" ) && ( winExe = gameExe ) ) && ( tradesGuiWidth > 0 ) {
 			Gui_Trades_Set_Position()
 		}
 		else
@@ -98,7 +105,9 @@ ShellMessage(wParam,lParam) {
 }
 
 ;___Logs Monitoring AKA Trades GUI___;
-Monitor_Logs()
+Logs_Append("Start")
+Monitor_Game_Logs()
+
 
 ;==================================================================================================================
 ;
@@ -106,13 +115,13 @@ Monitor_Logs()
 ;
 ;==================================================================================================================
 
-Monitor_Logs() {
+Monitor_Game_Logs() {
 ;			Gets the logs location based on VALUE_Logs_Mode
 ;			Read trough the logs file for new whisper/trades
 ;			Pass the trade message infos to Gui_Trades()
 ;			Clipboard the item's info if the user enabled
 ;			Play a sound or tray notification (if the user enabled) on whisper/trade
-	global VALUE_Whisper_Tray, VALUE_Logs_Mode, VALUE_Clip_New_Items, VALUE_Trade_Toggle, VALUE_Trade_Sound_Path, VALUE_Whisper_Toggle, VALUE_Whisper_Sound_Path
+	global VALUE_Whisper_Tray, VALUE_Logs_Mode, VALUE_Clip_New_Items, VALUE_Trade_Toggle, VALUE_Trade_Sound_Path, VALUE_Whisper_Toggle, VALUE_Whisper_Sound_Path, fileObj
 
 	gameExe := Get_Exe_From_Mode(VALUE_Logs_Mode, "VALUE_Logs_Mode")
 	WinGet, exeLocation, ProcessPath, ahk_exe %gameExe%
@@ -121,7 +130,7 @@ Monitor_Logs() {
 	if !( WinExist("ahk_exe " gameExe) ) {
 		Gui_Trades(,"exenotfound")
 		Sleep 30000
-		Monitor_Logs()
+		Monitor_Game_Logs()
 	}
 	else 
 		Gui_Trades()
@@ -131,7 +140,7 @@ Monitor_Logs() {
 	Loop {
 		if ( fileObj.pos < fileObj.length ) {
 			lastMessage := fileObj.Read() ; Stores the last message into a var
-			if ( RegExMatch( lastMessage, ".*@From (.*): (.*)", subPat ) ) ; Whisper found
+			if ( RegExMatch( lastMessage, ".*@From (.*?): (.*)", subPat ) ) ; Whisper found -- the "?" makes sure to stop at the first ":", fixing the "stash tab:" error
 			{
 				whispName := subPat1, whispMsg := subPat2
 				if ( VALUE_Whisper_Tray = 1 ) && !( WinActive("ahk_exe" gameExe) ) {
@@ -176,7 +185,7 @@ Hotkey_HideOut_Func() {
 		SendInput {Space}{Enter}	; Close potential opened window and open the chat
 		sleep 2
 		SendInput, {Space}{/}hideout{Enter}	; First space is in case the current channel is whisper and there is no space after the name
-		SendInput {Enter}{Up}{Up}{Escape}	; Send back to the chat channel
+		SendInput {Enter}{Up}{Up}{Escape}	; Send back to the previous chat channel
 		BlockInput Off
 	}
 }
@@ -285,7 +294,7 @@ Gui_Trades(messagesArray="",errorMsg="") {
 		tradesInfosArray := Object()
 		tradesInfosArray := Gui_Trades_Get_Trades_Infos(btnID) ; [0] buyerName - [1] itemName - [2] itemPrice
 		if ( VALUE_Wait_Text_Toggle = 1 )
-			Send_InGame_Message(VALUE_Wait_Text, "whisper", tradesInfosArray[0], tradesInfosArray[1], tradesInfosArray[2])
+			Send_InGame_Message(VALUE_Wait_Text, tradesInfosArray[0], tradesInfosArray[1], tradesInfosArray[2])
 	return
 	
 	Gui_Trades_Invite:
@@ -296,7 +305,7 @@ Gui_Trades(messagesArray="",errorMsg="") {
 		tradesInfosArray := Object()
 		tradesInfosArray := Gui_Trades_Get_Trades_Infos(btnID) ; [0] buyerName - [1] itemName - [2] itemPrice
 		if ( VALUE_Invite_Text_Toggle = 1 )
-			Send_InGame_Message(VALUE_Invite_Text, "whisper", tradesInfosArray[0], tradesInfosArray[1], tradesInfosArray[2])
+			Send_InGame_Message(VALUE_Invite_Text, tradesInfosArray[0], tradesInfosArray[1], tradesInfosArray[2])
 		Send_InGame_Message("/invite " tradesInfosArray[0])
 	return
 	
@@ -308,7 +317,7 @@ Gui_Trades(messagesArray="",errorMsg="") {
 		tradesInfosArray := Object()
 		tradesInfosArray := Gui_Trades_Get_Trades_Infos(btnID) ; [0] buyerName - [1] itemName - [2] itemPrice
 		if ( VALUE_Thanks_Text_Toggle = 1 )
-			Send_InGame_Message(VALUE_Thanks_Text, "whisper", tradesInfosArray[0], tradesInfosArray[1], tradesInfosArray[2])
+			Send_InGame_Message(VALUE_Thanks_Text, tradesInfosArray[0], tradesInfosArray[1], tradesInfosArray[2])
 		GoSub, Gui_Trades_RemoveItem
 	return
 	
@@ -392,15 +401,16 @@ Gui_Trades_Set_Position(){
 	global VALUE_Dock_Mode, tradesGuiWidth, tradesGuiHeight, GuiTradesHandler
 	
 	gameExe := Get_Exe_From_Mode(VALUE_Dock_Mode, "VALUE_Dock_Mode")
+	dpiFactor := Get_DPI_Factor()
 	
 	if ( WinExist("ahk_exe " gameExe ) ) {
 		WinGetPos, winX, winY, winWidth, winHeight, ahk_exe %gameExe%
-		Gui, Trades:Show, % "x" winX+winWidth-tradesGuiWidth-14 " y" winY " NoActivate"
-		;~ Gui, Trades:Show, % "x" winX+winWidth-tradesGuiWidth-14 " y" winY " NoActivate"
+		xpos := ( (winX+winWidth)-tradesGuiWidth * dpiFactor ) - 6
+		Gui, Trades:Show, % "x" xpos " y" winY " NoActivate"
 	}
 	else {
-		;~ GuiControl, Trades:Move, Tab,% "h" tradesGuiHeight-15
-		Gui, Trades:Show, % "x" A_ScreenWidth-tradesGuiWidth-6 " y0" " NoActivate"
+		xpos := ( ( (A_ScreenWidth/dpiFactor) - tradesGuiWidth ) * dpiFactor ) - 6
+		Gui, Trades:Show, % "x" xpos " y0" " NoActivate"
 	}
 }
 
@@ -489,13 +499,8 @@ Gui_Settings() {
 ;		Apply Button
 		Gui, Add, Button, x20 y310 w320 h30 gGui_Settings_Btn_Apply vApplyBtn2,Apply Settings
 		Gui, Add, Button, x340 yp h30 w90 hwndHelpBtnHandler2 vHelpBtn2 gGui_Settings_Btn_Help,Help? (OFF)
-	
+			
 	GoSub Gui_Settings_Set_Preferences
-	IniRead, firstTime,% iniFile,PROGRAM,First_Time_Running
-	if ( firstTime = 1 ) {
-		GoSub Gui_Settings_Btn_Help
-		IniWrite,0,% iniFilePath,PROGRAM,First_Time_Running
-	}
 	Gui, Show, NoActivate
 	sleep 100
 	return
@@ -656,7 +661,6 @@ Gui_Settings() {
 			}
 		}
 	return
-
 }
 
 Gui_Settings_Get_Settings_Arrays() {
@@ -709,7 +713,7 @@ Gui_Settings_Get_Settings_Arrays() {
 	returnArray.MESSAGES_KeysArray := Object()
 	returnArray.MESSAGES_KeysArray.Insert(0, "Wait_Text_Toggle", "Wait_Text", "Invite_Text_Toggle", "Invite_Text", "Thanks_Text_Toggle", "Thanks_Text")
 	returnArray.MESSAGES_DefaultValues := Object()
-	returnArray.MESSAGES_DefaultValues.Insert(0, "1", "One moment please! (%itemName% // %itemPrice%)", "1", "Your item is ready to be picked up at my hideout! (%itemName% // %itemPrice%)", "1", "Thank you, good luck & have fun!")
+	returnArray.MESSAGES_DefaultValues.Insert(0, "1", "@%buyerName% One moment please! (%itemName% // %itemPrice%)", "1", "@%buyerName% Your item is ready to be picked up at my hideout! (%itemName% // %itemPrice%)", "1", "@%buyerName% Thank you, good luck & have fun!")
 	
 	return returnArray
 }
@@ -780,14 +784,17 @@ Get_Control_ToolTip(controlName) {
 	
 	MessageWait_TT := "Message that will be sent upon clicking the ""Message one moment"" button."
 	. "`nTick the case to enable."
+	. "`nIf you wish to reset the message to default, delete its content and reload " programName "."
 	MessageWaitToggle_TT := MessageWait_TT
 	
 	MessageInvite_TT := "Message that will be sent upon clicking the ""Invite to party"" button."
 	. "`nTick the case to enable."
+	. "`nIf you wish to reset the message to default, delete its content and reload " programName "."
 	MessageInviteToggle_TT := MessageInvite_TT
 	
 	MessageThanks_TT := "Message that will be sent upon clicking the ""Message thank you and close this tab"" button."
 	. "`nTick the case to enable."
+	. "`nIf you wish to reset the message to default, delete its content and reload " programName "."
 	MessageThanksToggle_TT := MessageThanks_TT
 	
 	controlTip := % %controlName%_TT
@@ -808,16 +815,35 @@ Check_Update() {
 ;			It works by downloading both the new version and the auto-updater
 ;			then closing the current instancie and renaming the new version
 	static
-	updaterPath := "poe_trades_helper_updater.exe"
+	global programFolder, programChangelogFilePath
 	
+	updaterPath := "poe_trades_helper_updater.exe"
 	updaterDL := "https://raw.githubusercontent.com/lemasato/POE-Trades-Helper/master/Updater.exe"
 	versionDL := "https://raw.githubusercontent.com/lemasato/POE-Trades-Helper/master/version.txt"
+	changelogDL := "https://raw.githubusercontent.com/lemasato/POE-Trades-Helper/master/changelog.txt"
 	
 ;	Delete files remaining from updating
 	if (FileExist(updaterPath))
 		FileDelete,% updaterPath
 	if (FileExist("poe_trades_helper_newversion.exe"))
 		FileDelete,% "poe_trades_helper_newversion.exe"
+	
+;	Retrieve the changelog file and update the local file if required
+	ComObjError(0)
+	whr := ComObjCreate("WinHttp.WinHttpRequest.5.1")
+	whr.Open("GET", changelogDL, true)
+	whr.Send()
+	; Using 'true' above and the call below allows the script to r'emain responsive.
+	whr.WaitForResponse(10) ; 10 seconds
+	changelogText := whr.ResponseText
+	changelogText = %changelogText%
+	if ( changelogText != "" ) && !(RegExMatch(changelogText, "NotFound")) && !(RegExMatch(changelogText, "404: Not Found")) {
+		FileRead, changelogLocal,% programChangelogFilePath
+		if ( changelogLocal != changelogText ) {
+			FileDelete, % programChangelogFilePath
+			UrlDownloadToFile, % changelogDL,% programChangelogFilePath
+		}
+	}
 	
 ;	Retrieve the version number
 	ComObjError(0)
@@ -832,7 +858,8 @@ Check_Update() {
 		StringReplace, newVersion, newVersion, `n,,1 ; remove the 2nd white line
 		newVersion = %newVersion% ; remove any whitespace
 	}
-	else newVersion := programVersion ; couldn't reach the file, cancel update
+	else
+		newVersion := programVersion ; couldn't reach the file, cancel update
 	if ( programVersion != newVersion )
 		Gui_Update(newVersion, updaterPath, updaterDL)
 }
@@ -891,36 +918,65 @@ Gui_Update(newVersion, updaterPath, updaterDL) {
 ;==================================================================================================================
 
 Gui_About() {
+	static
+	global programChangelogFilePath
 	Gui, About:Destroy
 	Gui, About:New, +HwndaboutGuiHandler +AlwaysOnTop +SysMenu -MinimizeBox -MaximizeBox +OwnDialogs,% programName " by masato - " programVersion
 	Gui, About:Default
-	Gui, Add, Text, x10 y10 ,Hello, thank you for using %programName%!
-	Gui, Add, Text, x10 y35  h50,It allows you to keep at sight your trade requests!
-	Gui, Add, Text, x10 y50  h50,Upon receiving a typical whisper from poe.trade, a new tab will appear containing:
-	Gui, Add, Text, x10 y65 ,The buyer's name, the item, the price listed, and the league/stash tab.
-	Gui, Add, Text, x10 y80 ,Several buttons will let you invite/message the person.
-	Gui, Add, Text, x10 y100,If you would like to change your preferences, head over the [Settings] tray menu.
-	Gui, Add, Text, x10 y130,See on:
-	Gui, Add, Link, x10 y145,% "<a href=""https://github.com/lemasato/POE-Trades-Helper/"">GitHub</a> - "
-	Gui, Add, Link, x50 y145,% "<a href=""https://www.reddit.com/r/pathofexile/comments/57oo3h/"">Reddit</a> - "
-	Gui, Add, Link, x90 y145,% "<a href=""https://www.pathofexile.com/forum/view-thread/1755148/"">GGG</a>"
-	if !( FileExist( A_Temp "\poethpp.png" ) ) {
-		UrlDownloadToFile, % "https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif", % A_Temp "\poethpp.png"
-		if ( ErrorLevel )
-			Gui, Add, Button, x350 y143 gGui_About_Donate hwnddonateHandler,Donations
-	}
-	Gui, Add, Picture, x350 y140 gGui_About_Donate hwnddonateHandler,% A_Temp "\poethpp.png"
+	aeroStatus := Get_Aero_Status()
+	if ( aeroStatus = 1 )
+		Gui, Add, Tab3,x10 y10 vTab hwndTabHandler h190 w425,About|Changelogs
+	else
+		Gui, Add, Tab3,x10 y10 vTab hwndTabHandler -Theme
+	Gui, Tab, 1
+		Gui, Add, Text, x20 y40 ,Hello, thank you for using %programName%!
+		Gui, Add, Text, xp yp+15 h50,It allows you to keep at sight your trade requests!
+		Gui, Add, Text, xp yp+20 h50,Upon receiving a typical whisper from poe.trade, a new tab will appear containing:
+		Gui, Add, Text, xp yp+15 ,The buyer's name, the item, the price listed, and the league/stash tab.
+		Gui, Add, Text, xp yp+15 ,Several buttons will let you invite/message the person.
+		Gui, Add, Text, xp yp+20,If you would like to change your preferences, head over the [Settings] tray menu.
+		Gui, Add, Text, xp yp+30,See on:
+		Gui, Add, Link, xp yp+15,% "<a href=""https://github.com/lemasato/POE-Trades-Helper/"">GitHub</a> - "
+		Gui, Add, Link, xp+45 yp,% "<a href=""https://www.reddit.com/r/pathofexile/comments/57oo3h/"">Reddit</a> - "
+		Gui, Add, Link, xp+45 yp,% "<a href=""https://www.pathofexile.com/forum/view-thread/1755148/"">GGG</a>"
+		if !( FileExist( A_Temp "\poethpp.png" ) ) {
+			UrlDownloadToFile, % "https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif", % A_Temp "\poethpp.png"
+			if ( ErrorLevel )
+				Gui, Add, Button, x350 yp-2 gGui_About_Donate hwnddonateHandler,Donations
+		}
+		Gui, Add, Picture, x350 yp gGui_About_Donate hwnddonateHandler,% A_Temp "\poethpp.png"
 	
-	handlersArray := []
-	Loop  {
-		item := handler%A_Index%
-		if ( item <> "" )
-			handlersArray.InsertAt(A_Index, item)
-		else break
-	}	
-	Gui, Show, AutoSize
-	WinWait, ahk_id %aboutGuiHandler%
-	WinWaitClose, ahk_id %aboutGuiHandler%
+	Gui, Tab, 2
+		FileRead, changelogText,% programChangelogFilePath
+		allChanges := Object()
+		Loop {
+			if RegExMatch(changelogText, "sm)\\\\.*?--(.*?)--(.*?)//(.*)", subPat) {
+				version%A_Index% := subPat1, changes%A_Index% := subPat2, changelogText := subPat3
+				StringReplace, changes%A_Index%, changes%A_Index%,`n,% "",0
+				
+				allVersions .= version%A_Index% "|"
+				allChanges.Insert(changes%A_Index%)
+			}
+		else
+			break
+		}
+		Gui, Add, DropDownList, gVersion_Change AltSubmit vVerNum hwndVerNumHandler,%allVersions%
+		Gui, Add, Edit, vChangesText hwndChangesTextHandler w395 h150 ReadOnly,An internet connection is required
+		GuiControl, Choose,%VerNumHandler%,1
+		GoSub, Version_Change
+	Gui, Show, AutoSize NoActivate
+	
+	IniRead, state,% iniFilePath,PROGRAM,Show_Changelogs
+	if ( state = 1 ) {
+		GuiControl,About:Choose,%tabHandler%,2
+		IniWrite, 0,% iniFilePath,PROGRAM,Show_Changelogs
+	}
+	return
+	
+	Version_Change:
+		Gui, Submit, NoHide
+		GuiControl, ,%ChangesTextHandler%,% allChanges[verNum]
+		Gui, Show, AutoSize
 	return
 	
 	Gui_About_Donate:
@@ -963,10 +1019,11 @@ Get_INI_Settings() {
 		}
 	}
 	return returnArray
-}
+} 
 
 Set_INI_Settings(){
 ;			Set the default INI settings if they do not exist
+	global iniFilePath
 	iniFile := iniFilePath	
 	
 ;	Set the PID and filename, used for the auto updater
@@ -974,8 +1031,14 @@ Set_INI_Settings(){
 	IniWrite,% programPID,% iniFile,PROGRAM,PID
 	IniWrite,% A_ScriptName,% iniFile,PROGRAM,FileName
 	IniRead, firstRun,% iniFile,PROGRAM,First_Time_Running
-	if ( firstRun != 0 && firstRun != 1 )
+	if ( firstRun != 0 && firstRun != 1 && )
 		IniWrite,1,% iniFile,PROGRAM,First_Time_Running
+	IniRead, fixBuyer,% iniFile,PROGRAM,FIX_Add_BuyerName
+	if ( fixBuyer != 0 && fixBuyer != 1 )
+		IniWrite,1,% iniFile,PROGRAM,FIX_Add_BuyerName
+	IniRead, showLogs,% iniFile,PROGRAM,Show_Changelogs
+	if ( showLogs != 0 && showLogs != 1 )
+		IniWrite, 0,% iniFile,PROGRAM,Show_Changelogs
 	
 ;	Retrieve the settings arrays
 	settingsArray := Gui_Settings_Get_Settings_Arrays()
@@ -1004,6 +1067,9 @@ Set_INI_Settings(){
 			}
 		}
 	}
+;~ returnArray.MESSAGES_DefaultValues.Insert(0, "1", "@%buyerName% One moment please! (%itemName% // %itemPrice%)", "1", "@%buyerName% Your item is ready to be picked up at my hideout! (%itemName% // %itemPrice%)", "1", "@%buyerName% Thank you, good luck & have fun!")
+	
+	
 }
 
 Declare_INI_Settings(iniArray) {
@@ -1021,7 +1087,154 @@ Declare_INI_Settings(iniArray) {
 ;
 ;==================================================================================================================
 
+Do_Once() {
+;			Things that only need to be done ONCE
+;																			
+;	Run the Settings GUI when the user is using the program for the first time
+	IniRead, state,% iniFilePath,PROGRAM,First_Time_Running
+	if ( state = 1 ) {
+		Extract_Sound_Files()
+		MsgBox, ,Welcome!,Welcome & thank you for trying out this program!`n`Seems like it's your first time running %programName%...`nWorry not! The interface is simple and easy to understand.`n`nThe settings window will now open.`nThe "Help?" setting has been enabled: Hover the controls to see helpful tooltips!`n`nIf you would like to access the Settings menu again,`n  right click on the tray icon and pick [Settings]!
+		Gui_Settings()
+		IniWrite, 0,% iniFilePath,PROGRAM,First_Time_Running
+	}
+;	Add @%buyerName% to the message due to function change in 1.2
+	IniRead, state,% iniFilePath,PROGRAM,FIX_Add_BuyerName
+	if ( state = 1 ) {
+		key1 := "Wait_Text", key2 := "Invite_Text", key3 := "Thanks_Text"
+		Loop 3 {
+			index := A_Index
+			IniRead, msg,% iniFilePath,MESSAGES,% key%index%
+			if !( RegExMatch(msg, "@`%buyerName`%?") ) {
+				msg := "@`%buyerName`% " msg
+				IniWrite,% msg,% iniFilePath,MESSAGES,% key%index%
+				didChange := 1
+			}
+		}
+		IniWrite, 0,% iniFilePath,PROGRAM,FIX_Add_BuyerName
+		if ( didChange = 1 )
+			MsgBox,4096,% programName " v" programVersion,% "Due to a small change in the function,`nyou now need to include ""@`%buyerName`%"" in your`ncustom messages if you wish to send the message as a whisper.`n`nTo make things easier for you, your custom messages`nhave been edited to include the new format!`n`n" programName " will now be reloaded..."
+		Reload_Func()
+	}
+;	Open the changelog menu
+	IniRead, state,% iniFilePath,PROGRAM,Show_Changelogs
+	if ( state = 1 ) {
+		Gui_About()
+		IniWrite, 0,% iniFilePath,PROGRAM_Show_Changelogs
+	}
+}
+
+Get_DPI_Factor() {
+;			Credits to ANT-ilic
+;			autohotkey.com/board/topic/6893-guis-displaying-differently-on-other-machines/?p=77893
+;			Retrieves the current DPI value and returns it
+;			If the key wasn't found or is set at 96, returns default setting
+	RegRead, dpiValue, HKEY_CURRENT_USER, Control Panel\Desktop\WindowMetrics, AppliedDPI 
+	if (errorlevel = 1) || (dpiValue = 96)
+		dpiFactor := 1
+	else
+		dpiFactor := dpiValue/96
+	return dpiFactor
+}
+
+Logs_Append(funcName, paramsArray=""){
+	global programLogsFilePath, programName, programVersion
+	global VALUE_Show_Mode, VALUE_Transparency, VALUE_Dock_Mode, VALUE_Logs_Mode
+	global VALUE_Clip_New_Items, VALUE_Clip_On_Tab_Switch
+	global VALUE_HK_1_Toggle, VALUE_HK_1, VALUE_HK_1_CTRL, VALUE_HK_1_ALT, VALUE_HK_1_SHIFT
+	global VALUE_Wait_Text_Toggle, VALUE_Wait_Text, VALUE_Invite_Text_Toggle, VALUE_Invite_Text, VALUE_Thanks_Text_Toggle, VALUE_Thanks_Text
+	global VALUE_Trade_Toggle, VALUE_Trade_Sound, VALUE_Whisper_Toggle, VALUE_Whisper_Sound, VALUE_Whisper_Tray
+	if ( funcName = "Start" ) {
+		FileAppend,% "__________PROGRAM__________",% programLogsFilePath
+		FileAppend % "`n",% programLogsFilePath
+		FileAppend,% "Successfully started " programName " with PID " programPID,% programLogsFilePath
+		FileAppend % "`n",% programLogsFilePath
+		FileAppend,% "Version: " programVersion,% programLogsFilePath
+		FileAppend % "`n",% programLogsFilePath
+		FileAppend,% "File Name: " A_ScriptName,% programLogsFilePath
+		FileAppend % "`n",% programLogsFilePath
+		FileAppend,% "__________SETTINGS__________",% programLogsFilePath
+		FileAppend % "`n",% programLogsFilePath
+		FileAppend % "Showing Mode:" VALUE_Show_Mode,% programLogsFilePath
+		FileAppend % "`n",% programLogsFilePath
+		FileAppend % "Transparency:" VALUE_Transparency,% programLogsFilePath
+		FileAppend % "`n",% programLogsFilePath
+		FileAppend % "Docking Mode:" VALUE_Dock_Mode,% programLogsFilePath
+		FileAppend % "`n",% programLogsFilePath
+		FileAppend % "Logs Mode:" VALUE_Logs_Mode,% programLogsFilePath
+		FileAppend % "`n",% programLogsFilePath
+		FileAppend,% "__________AUTO_CLIP__________",% programLogsFilePath
+		FileAppend % "`n",% programLogsFilePath
+		FileAppend % "Clip new Items:" VALUE_Clip_New_Items,% programLogsFilePath
+		FileAppend % "`n",% programLogsFilePath
+		FileAppend % "Clip on tab Switch:" VALUE_Clip_On_Tab_Switch,% programLogsFilePath
+		FileAppend % "`n",% programLogsFilePath
+		FileAppend,% "__________HOTKEYS__________",% programLogsFilePath
+		FileAppend % "`n",% programLogsFilePath
+		FileAppend % "State (HK1): " VALUE_HK_1_Toggle " - Key: " VALUE_HK_1,% programLogsFilePath
+		FileAppend % "`n",% programLogsFilePath
+		FileAppend % "Modifiers: CTRL:" VALUE_HK_1_CTRL " - ALT:" VALUE_HK_1_ALT " - SHIFT:" VALUE_HK_1_SHIFT,% programLogsFilePath
+		FileAppend % "`n",% programLogsFilePath
+		FileAppend,% "__________NOTIFICATIONS__________",% programLogsFilePath
+		FileAppend % "`n",% programLogsFilePath
+		FileAppend % "State (Trade Sound): " VALUE_Trade_Toggle " - Sound: " VALUE_Trade_Sound,% programLogsFilePath
+		FileAppend % "`n",% programLogsFilePath
+		FileAppend % "State (Whisper Sound): " VALUE_Whisper_Toggle " - Sound: " VALUE_Whisper_Sound,% programLogsFilePath
+		FileAppend % "`n",% programLogsFilePath
+		FileAppend % "State (Whisper Tray): " VALUE_Whisper_Tray,% programLogsFilePath
+		FileAppend % "`n",% programLogsFilePath
+		FileAppend,% "__________MESSAGES__________",% programLogsFilePath
+		FileAppend % "`n",% programLogsFilePath
+		FileAppend,% "State (Wait): " VALUE_Wait_Text_Toggle " - Content: " VALUE_Wait_Text,% programLogsFilePath
+		FileAppend % "`n",% programLogsFilePath
+		FileAppend,% "State (Invite): " VALUE_Invite_Text_Toggle " - Content: " VALUE_Invite_Text,% programLogsFilePath
+		FileAppend % "`n",% programLogsFilePath
+		FileAppend,% "State (Thanks): " VALUE_Thanks_Text_Toggle " - Content: " VALUE_Thanks_Text,% programLogsFilePath
+		FileAppend % "`n",% programLogsFilePath
+		FileAppend % "`n",% programLogsFilePath
+		FileAppend % "*******************************************************************`n",% programLogsFilePath
+		FileAppend % "*******************************************************************`n",% programLogsFilePath
+	}
+	if ( funcName = "Prevent_Multiple_Instancies" ) {
+		existPID := paramsArray[0], thisPID := paramsArray[1]
+		FileAppend,% "[" A_YYYY "-" A_MM "-" A_DD "_" A_Hour ":" A_Min ":" A_Sec "] -- Blocked new instancie from starting up: (Current PID: " thisPID " - Existing PID: " existPID ")", % programLogsFilePath
+	}
+	if ( funcName = "Send_InGame_Message" ) {
+		messageToSend := paramsArray[0]
+		FileAppend,% "[" A_YYYY "-" A_MM "-" A_DD "_" A_Hour ":" A_Min ":" A_Sec "] -- Sent In-Game message containing the following: " messageToSend , % programLogsFilePath
+	}
+	FileAppend,% "`n",% programLogsFilePath
+}
+
+Delete_Old_Logs_Files() {
+;			Make sure to only keep 10 (+current) logs file
+;			Delete the older logs file
+	global programLogsPath
+	
+	loop, %programLogsPath%\*txt
+	{
+		filesNum := A_Index
+		if ( A_LoopFileName != "changelog.txt" ) {
+			allFiles .= A_LoopFileName "|"
+		}
+	}
+	Sort, allFiles, D|
+	split := StrSplit(allFiles, "|")
+	if ( filesNum > 10 ) {
+		Loop {
+			index := A_Index
+			fileLocation := programLogsPath "\" split[A_Index]
+			FileDelete,% fileLocation
+			filesNum -= 1
+			if ( filesNum <= 10 )
+				break
+		}
+	}
+}
+
 Get_Aero_Status(){
+;			Retrieve the AERO status and returns it
+;			(When AERO is disabled, we have to put -Theme to the GUI that use tabs or text will be blacked out)
 	hr := DllCall("Dwmapi\DwmIsCompositionEnabled", "Int*", isEnabled)
 	If (hr == 0) {
 		if (isEnabled)
@@ -1037,26 +1250,28 @@ Get_Aero_Status(){
 DoNothing:
 return
 
-Send_InGame_Message(messageToSend, msgType="", buyerName="", itemName="", itemPrice="") {
+Send_InGame_Message(messageToSend, buyerName="", itemName="", itemPrice="") {
 ;			Sends a message InGame and replace the "variables text" into their content
 	global VALUE_Logs_Mode
 	SetKeyDelay, 30, 1
-	if ( msgType = "whisper" )
-		messageToSend := "@" buyerName " " messageToSend
+	messageToSendRaw := messageToSend
 	StringReplace, messageToSend, messageToSend, `%buyerName`%, %buyerName%, 1
 	StringReplace, messageToSend, messageToSend, `%itemName`%, %itemName%, 1
 	StringReplace, messageToSend, messageToSend, `%itemPrice`%, %itemPrice%, 1
 	Clipboard_Backup := Clipboard
 	Clipboard := messageToSend
+	sleep 10
 	gameExe := Get_Exe_From_Mode(VALUE_Logs_Mode, "VALUE_Logs_Mode")
-	ControlSend, ,{Enter}{Space}^v{Enter},ahk_exe %gameExe%
+	ControlSend, ,{Enter}{Shift Down}{Home}{Shift Up}{Ctrl Down}v{Ctrl Up}{Enter},ahk_exe %gameExe%
 	Clipboard := Clipboard_Backup
+;-------------------------------------------------------------------------------------------------------------------------
+	paramsArray := Object()
+	paramsArray.Insert(0, messageToSend)
+	Logs_Append(A_ThisFunc, paramsArray)
 }
 
 Extract_Sound_Files() {
 ;			Extracts the included sfx into the .ini settings folder
-if !( InStr(FileExist(sfxFolderPath), "D") )
-	FileCreateDir, % sfxFolderPath
 	FileInstall, C:\Users\Hatsune\Documents\GitHub\POE-Trades-Helper\SFX\MM_Tatl_Gleam.wav,% sfxFolderPath "\MM_Tatl_Gleam.wav", 1
 	FileInstall, C:\Users\Hatsune\Documents\GitHub\POE-Trades-Helper\SFX\MM_Tatl_Hey.wav,% sfxFolderPath "\MM_Tatl_Hey.wav", 1
 	FileInstall, C:\Users\Hatsune\Documents\GitHub\POE-Trades-Helper\SFX\WW_MainMenu_CopyErase_Start.wav,% sfxFolderPath "\WW_MainMenu_CopyErase_Start.wav", 1
@@ -1072,6 +1287,9 @@ Prevent_Multiple_Instancies() {
 	if ( runningPID ) {
 		currentPID := DllCall("GetCurrentProcessId")
 		if ( runningPID != currentPID ) {
+			paramsArray := Object()
+			paramsArray.Insert(0, runningPID, currentPID)
+			Logs_Append(A_ThisFunc, paramsArray)
 			OnExit("Exit_Func", 0)
 			ExitApp	
 		}
@@ -1144,11 +1362,13 @@ Reload_Func() {
 }
 
 Exit_Func(ExitReason, ExitCode) {
+	global fileObj
 	if ( ExitReason != "LogOff" ) && ( ExitReason != "ShutDown" ) && ( ExitReason != "Reload" ) && ( ExitReason != "Single" ) {
 		MsgBox, 4100, % programName " v" programVersion,Are you sure you wish to close %programName%?
 		IfMsgBox, No
 			return 1  ; OnExit functions must return non-zero to prevent exit.
 	}
+	fileObj.Close()
 	OnExit("Exit_Func", 0)
 	ExitApp
 }
