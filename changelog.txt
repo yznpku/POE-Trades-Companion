@@ -1,19 +1,42 @@
-v1.1.2
-	Fixed Settings and Trades GUI not appearing correctly on systems with AERO disabled.
-	(Thanks to /u/DamJNeT for addressing the issue!)
+\\
+--v1.2--
+Changed the way custom messages are sent:
+   From now, you need to specify the channel and buyer name.
+   To make things easier for you, your custom messages have been edited to suit the new format.
+Fixed incorrect position of the GUI with a screen DPI different than default.
+Fixed the GUI not displaying the infos correctly when a premium stash tab was specified.
+   (Thanks to /u/nguy0313 for addressing these two issues!)
+Added program logs. Only 10 of the most recents will be kept.
+Added changelogs in the [About] tray menu.
+   Changelogs will also be shown after updating.
+//
 
-v1.1.1
-	Hotfix: Fixed the custom messages not saving.
+\\
+--v1.1.2--
+Fixed Settings and Trades GUI not appearing correctly on systems with AERO disabled.
+   (Thanks to /u/DamJNeT for addressing the issue!)
+//
 
-v1.1
-	Fixed incorrect display of cyrillic characters.
-	Added customization to the messages (Accessible in the Settings).
-	Added a new GUI button to thanks your buyer.
-	Attributed a default sound effect to the trades notifications.
-	Disabled keyboard interaction with the Trades GUI to avoid mispress.
+\\
+--v1.1.1--
+Hotfix: Fixed the custom messages not saving.
+//
 
-v1.0.1
-	Fixed the GUI not updating upon receiving a trade whisper.
+\\
+--v1.1--
+Fixed incorrect display of cyrillic characters.
+Added customization to the messages (Accessible in the Settings).
+Added a new GUI button to thanks your buyer.
+Attributed a default sound effect to the trades notifications.
+Disabled keyboard interaction with the Trades GUI to avoid mispress.
+//
 
-v1.0
-	Initial release.
+\\
+--v1.0.1--
+Fixed the GUI not updating upon receiving a trade whisper.
+//
+
+\\
+--v1.0--
+Initial release.
+//
