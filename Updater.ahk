@@ -4,6 +4,7 @@
 		v1.0.1: Attempts at fixing the tool
 		v1.1: Greatly enhanced the tool, updates should go smooth now
 		v1.2: Added beta download
+		v1.2.1: Added the setting for Show_Changelogs (POE Trades Helper)
 */
 
 
@@ -110,6 +111,7 @@ Download_New_Version() {
 		}
 	sleep 1000
 	FileMove,% newVersionPath,% "POE Trades Helper.exe",1
+	IniWrite, 1,% iniFilePath,PROGRAM,Show_Changelogs
 	sleep 1000
 	Run, % "POE Trades Helper.exe"
 }
