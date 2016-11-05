@@ -28,7 +28,7 @@ FileEncoding, UTF-8 ; Required for cyrillic characters
 ;___Some_Variables___;
 global userprofile, iniFilePath, programName, programVersion, programFolder, programPID, sfxFolderPath, programChangelogFilePath
 EnvGet, userprofile, userprofile
-programVersion := "1.2" , programName := "POE Trades Helper", programFolder := userprofile "\Documents\AutoHotKey\" programName
+programVersion := "1.2.1" , programName := "POE Trades Helper", programFolder := userprofile "\Documents\AutoHotKey\" programName
 iniFilePath := programFolder "\Preferences.ini"
 sfxFolderPath := programFolder "\SFX"
 programLogsPath := programFolder "\Logs"
@@ -1120,7 +1120,7 @@ Do_Once() {
 	IniRead, state,% iniFilePath,PROGRAM,Show_Changelogs
 	if ( state = 1 ) {
 		Gui_About()
-		IniWrite, 0,% iniFilePath,PROGRAM_Show_Changelogs
+		IniWrite, 0,% iniFilePath,PROGRAM,Show_Changelogs
 	}
 }
 
