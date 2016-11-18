@@ -1,4 +1,9 @@
 \\
+--v1.2.2--
+Added support for POE x64 release.
+//
+
+\\
 --v1.2--
 Changed the way custom messages are sent:
    From now, you need to specify the channel and buyer name.
