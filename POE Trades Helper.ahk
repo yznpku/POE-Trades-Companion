@@ -13,7 +13,7 @@
 *						-																																		*
 *																																								*
 *					Future updates:																													*
-*						-																																		*
+*						-	More, customizable, binds																							*
 *																																								*
 *	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
 */
@@ -28,12 +28,16 @@ FileEncoding, UTF-8 ; Required for cyrillic characters
 ;___Some_Variables___;
 global userprofile, iniFilePath, programName, programVersion, programFolder, programPID, sfxFolderPath, programChangelogFilePath
 EnvGet, userprofile, userprofile
-programVersion := "1.2.1" , programName := "POE Trades Helper", programFolder := userprofile "\Documents\AutoHotKey\" programName
+programVersion := "1.2.2" , programName := "POE Trades Helper", programFolder := userprofile "\Documents\AutoHotKey\" programName
 iniFilePath := programFolder "\Preferences.ini"
 sfxFolderPath := programFolder "\SFX"
 programLogsPath := programFolder "\Logs"
 programLogsFilePath := userprofile "\Documents\AutoHotKey\" programName "\Logs\" A_YYYY "-" A_MM "-" A_DD "_" A_Hour "-" A_Min "-" A_Sec ".txt"
 programChangelogFilePath := programFolder "\Logs\changelog.txt"
+GroupAdd, POEGame, ahk_exe PathOfExile.exe
+GroupAdd, POEGame, ahk_exe PathOfExile_x64.exe
+GroupAdd, POEGameSteam, ahk_exe PathOfExileSteam.exe
+GroupAdd, POEGameSteam, ahk_exe PathOfExile_x64Steam.exe
 
 ;___Creating_INI_Dir___;
 if !( InStr(FileExist(userprofile "\Documents"), "D") )
@@ -66,9 +70,9 @@ if ( VALUE_HK_1_ALT = 1 )
 if ( VALUE_HK_1_SHIFT = 1 )
 	hotkey1 := "+" hotkey1
 if ( VALUE_HK_1_Toggle = 1 ) {
-	Hotkey,IfWinActive,ahk_exe PathOfExile.exe
+	Hotkey,IfWinActive,ahk_group POEGame
 	Hotkey,% hotkey1,Hotkey_Hideout
-	Hotkey,IfWinActive,ahk_exe PathOfExileSteam.exe
+	Hotkey,IfWinActive,ahk_group POEGameSteam
 	Hotkey,% hotkey1,Hotkey_Hideout
 }
 
@@ -84,8 +88,14 @@ ShellMessage(wParam,lParam) {
 	WinGet, winEXE, ProcessName, ahk_id %lParam%
 	if ( wParam=4 or wParam=32772 ) { ; 4=HSHELL_WINDOWACTIVATED | 32772=HSHELL_RUDEAPPACTIVATED
 ;		Set the correct TradesGUI position upon activating a new window
-		gameExe := Get_Exe_From_Mode(VALUE_Dock_Mode, "VALUE_Dock_Mode")
-		if ( VALUE_Show_Mode = "Always" ) && ( tradesGuiWidth > 0 ) || ( ( VALUE_Show_Mode = "InGame" ) && ( winExe = gameExe ) ) && ( tradesGuiWidth > 0 ) {
+		gameGroup := Get_Exe_From_Mode(VALUE_Dock_Mode, "VALUE_Dock_Mode")
+		if ( gameGroup = "POEGame" ) {
+			gameExe1 := "PathOfExile.exe", gameExe2 := "PathOfExile_x64.exe"
+		}
+		else if ( gameGroup = "POEGameSteam" ) {
+			gameExe1 := "PathOfExileSteam.exe", gameExe2 := "PathOfExile_x64Steam.exe"
+		}
+		if ( VALUE_Show_Mode = "Always" ) && ( tradesGuiWidth > 0 ) || ( ( VALUE_Show_Mode = "InGame" ) && ( winExe = gameExe1 || winExe = gameExe2 ) && ( tradesGuiWidth > 0 ) ) {
 			Gui_Trades_Set_Position()
 		}
 		else
@@ -123,11 +133,11 @@ Monitor_Game_Logs() {
 ;			Play a sound or tray notification (if the user enabled) on whisper/trade
 	global VALUE_Whisper_Tray, VALUE_Logs_Mode, VALUE_Clip_New_Items, VALUE_Trade_Toggle, VALUE_Trade_Sound_Path, VALUE_Whisper_Toggle, VALUE_Whisper_Sound_Path, fileObj
 
-	gameExe := Get_Exe_From_Mode(VALUE_Logs_Mode, "VALUE_Logs_Mode")
-	WinGet, exeLocation, ProcessPath, ahk_exe %gameExe%
+	gameGroup := Get_Exe_From_Mode(VALUE_Logs_Mode, "VALUE_Logs_Mode")
+	WinGet, exeLocation, ProcessPath, ahk_group %gameGroup%
 	SplitPath, exeLocation, ,exeDir
 	logsFile := exeDir "\logs\Client.txt"
-	if !( WinExist("ahk_exe " gameExe) ) {
+	if !( WinExist("ahk_group " gameGroup) ) {
 		Gui_Trades(,"exenotfound")
 		Sleep 30000
 		Monitor_Game_Logs()
@@ -143,7 +153,7 @@ Monitor_Game_Logs() {
 			if ( RegExMatch( lastMessage, ".*@From (.*?): (.*)", subPat ) ) ; Whisper found -- the "?" makes sure to stop at the first ":", fixing the "stash tab:" error
 			{
 				whispName := subPat1, whispMsg := subPat2
-				if ( VALUE_Whisper_Tray = 1 ) && !( WinActive("ahk_exe" gameExe) ) {
+				if ( VALUE_Whisper_Tray = 1 ) && !( WinActive("ahk_group" gameGroup) ) {
 					TrayTip, Whisper Received:,%whispName%: %whispMsg%
 					TrayTip, Whisper Received:,%whispName%: %whispMsg%
 					if ( VALUE_Whisper_Toggle = 1 ) && ( FileExist(VALUE_Whisper_Sound_Path) )
@@ -180,7 +190,7 @@ return
 
 Hotkey_HideOut_Func() {
 ;		Sends /hideout into the chat
-	if WinActive("ahk_exe PathOfExile.exe") || WinActive("ahk_exe PathOfExileSteam.exe") {
+	if WinActive("ahk_group POEGame") || WinActive("ahk_group POEGameSteam") {
 		BlockInput On
 		SendInput {Space}{Enter}	; Close potential opened window and open the chat
 		sleep 2
@@ -202,7 +212,7 @@ Gui_Trades(messagesArray="",errorMsg="") {
 ;			Switching tab will clipboard the item's infos if the user enabled
 ;			Is transparent and click-trough when there is no trade on queue
 	global
-	static tabWidth, tabHeight, tradesCount, index, element, varText, varName, tabName, trans, priceArray, btnID, Clipboard_Backup, gameExe, itemArray, itemName, itemPrice, messageToSend
+	static tabWidth, tabHeight, tradesCount, index, element, varText, varName, tabName, trans, priceArray, btnID, Clipboard_Backup, gameGroup, itemArray, itemName, itemPrice, messageToSend
 	static nameArray, buyerName
 	;~ messagesArray := Object()
 	;~ Loop 10
@@ -400,11 +410,11 @@ Gui_Trades_Set_Position(){
 ;			Refresh the Trades GUI position
 	global VALUE_Dock_Mode, tradesGuiWidth, tradesGuiHeight, GuiTradesHandler
 	
-	gameExe := Get_Exe_From_Mode(VALUE_Dock_Mode, "VALUE_Dock_Mode")
+	gameGroup := Get_Exe_From_Mode(VALUE_Dock_Mode, "VALUE_Dock_Mode")
 	dpiFactor := Get_DPI_Factor()
 	
-	if ( WinExist("ahk_exe " gameExe ) ) {
-		WinGetPos, winX, winY, winWidth, winHeight, ahk_exe %gameExe%
+	if ( WinExist("ahk_group " gameGroup ) ) {
+		WinGetPos, winX, winY, winWidth, winHeight, ahk_group %gameGroup%
 		xpos := ( (winX+winWidth)-tradesGuiWidth * dpiFactor ) - 6
 		Gui, Trades:Show, % "x" xpos " y" winY " NoActivate"
 	}
@@ -1261,8 +1271,8 @@ Send_InGame_Message(messageToSend, buyerName="", itemName="", itemPrice="") {
 	Clipboard_Backup := Clipboard
 	Clipboard := messageToSend
 	sleep 10
-	gameExe := Get_Exe_From_Mode(VALUE_Logs_Mode, "VALUE_Logs_Mode")
-	ControlSend, ,{Enter}{Shift Down}{Home}{Shift Up}{Ctrl Down}v{Ctrl Up}{Enter},ahk_exe %gameExe%
+	gameGroup := Get_Exe_From_Mode(VALUE_Logs_Mode, "VALUE_Logs_Mode")
+	ControlSend, ,{Enter}{Shift Down}{Home}{Shift Up}{Ctrl Down}v{Ctrl Up}{Enter},ahk_group %gameGroup%
 	Clipboard := Clipboard_Backup
 ;-------------------------------------------------------------------------------------------------------------------------
 	paramsArray := Object()
@@ -1280,7 +1290,7 @@ Extract_Sound_Files() {
 
 Prevent_Multiple_Instancies() {
 ;			Prevent from running multiple instancies of the program
-;			Check if an instancie already exist and close the current instancie if so
+;			Check if an instancie already exist and close the new instancie if so
 	IniRead, runningProcess,% iniFilePath,PROGRAM,FileName
 	Process, Exist, %runningProcess%
 	runningPID := ErrorLevel
@@ -1313,17 +1323,17 @@ Get_Exe_From_Mode(value, varName) {
 ;			Return the .exe name
 	if ( varName = "VALUE_Logs_Mode" ) {
 		if ( value = "GGG" )
-			gameExe := "PathOfExile.exe"
+			exeGroup := "POEGame"
 		if ( value = "Steam" )
-			gameExe := "PathOfExileSteam.exe"
+			exeGroup := "POEGameSteam"
 	}
 	if ( varName = "VALUE_Dock_Mode" ) {
 		if ( value = "GGG" )
-			gameExe := "PathOfExile.exe"
+			exeGroup := "POEGame"
 		if ( value = "Steam" )
-			gameExe := "PathOfExileSteam.exe"
+			exeGroup := "POEGameSteam"
 	}
-	return gameExe
+	return exeGroup
 }
 
 WM_MOUSEMOVE() {
