@@ -1,4 +1,10 @@
 \\
+--v1.2.3--
+Added support for Russian and Brezilian whispers.
+Small fix about the GUI being slightly offset.
+//
+
+\\
 --v1.2.2--
 Added support for POE x64 release.
 //

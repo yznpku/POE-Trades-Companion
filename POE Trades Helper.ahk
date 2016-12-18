@@ -28,7 +28,7 @@ FileEncoding, UTF-8 ; Required for cyrillic characters
 ;___Some_Variables___;
 global userprofile, iniFilePath, programName, programVersion, programFolder, programPID, sfxFolderPath, programChangelogFilePath
 EnvGet, userprofile, userprofile
-programVersion := "1.2.2" , programName := "POE Trades Helper", programFolder := userprofile "\Documents\AutoHotKey\" programName
+programVersion := "1.2.3" , programName := "POE Trades Helper", programFolder := userprofile "\Documents\AutoHotKey\" programName
 iniFilePath := programFolder "\Preferences.ini"
 sfxFolderPath := programFolder "\SFX"
 programLogsPath := programFolder "\Logs"
@@ -150,7 +150,7 @@ Monitor_Game_Logs() {
 	Loop {
 		if ( fileObj.pos < fileObj.length ) {
 			lastMessage := fileObj.Read() ; Stores the last message into a var
-			if ( RegExMatch( lastMessage, ".*@From (.*?): (.*)", subPat ) ) ; Whisper found -- the "?" makes sure to stop at the first ":", fixing the "stash tab:" error
+			if ( RegExMatch( lastMessage, ".*@(?:From|De|От кого) (.*?): (.*)", subPat ) ) ; Whisper found --  (.*?) makes sure to stop at the first ":", fixing the "stash tab:" error
 			{
 				whispName := subPat1, whispMsg := subPat2
 				if ( VALUE_Whisper_Tray = 1 ) && !( WinActive("ahk_group" gameGroup) ) {
@@ -415,7 +415,11 @@ Gui_Trades_Set_Position(){
 	
 	if ( WinExist("ahk_group " gameGroup ) ) {
 		WinGetPos, winX, winY, winWidth, winHeight, ahk_group %gameGroup%
-		xpos := ( (winX+winWidth)-tradesGuiWidth * dpiFactor ) - 6
+		xpos := ( (winX+winWidth)-tradesGuiWidth * dpiFactor ) -14
+		if xpos is not number
+			xpos := ( ( (A_ScreenWidth/dpiFactor) - tradesGuiWidth ) * dpiFactor ) - 6
+		if ypos is not number
+			ypos := 0
 		Gui, Trades:Show, % "x" xpos " y" winY " NoActivate"
 	}
 	else {
@@ -509,7 +513,7 @@ Gui_Settings() {
 ;		Apply Button
 		Gui, Add, Button, x20 y310 w320 h30 gGui_Settings_Btn_Apply vApplyBtn2,Apply Settings
 		Gui, Add, Button, x340 yp h30 w90 hwndHelpBtnHandler2 vHelpBtn2 gGui_Settings_Btn_Help,Help? (OFF)
-			
+	GuiControl, Choose, Tab, 1
 	GoSub Gui_Settings_Set_Preferences
 	Gui, Show, NoActivate
 	sleep 100
