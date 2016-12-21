@@ -1,4 +1,9 @@
 \\
+--v1.2.4--
+Added support for currency.poe.trade
+//
+
+\\
 --v1.2.3--
 Added support for Russian and Brazilian whispers.
 Small fix about the GUI being slightly offset.

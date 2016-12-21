@@ -28,7 +28,7 @@ FileEncoding, UTF-8 ; Required for cyrillic characters
 ;___Some_Variables___;
 global userprofile, iniFilePath, programName, programVersion, programFolder, programPID, sfxFolderPath, programChangelogFilePath
 EnvGet, userprofile, userprofile
-programVersion := "1.2.3" , programName := "POE Trades Helper", programFolder := userprofile "\Documents\AutoHotKey\" programName
+programVersion := "1.2.4" , programName := "POE Trades Helper", programFolder := userprofile "\Documents\AutoHotKey\" programName
 iniFilePath := programFolder "\Preferences.ini"
 sfxFolderPath := programFolder "\SFX"
 programLogsPath := programFolder "\Logs"
@@ -160,11 +160,13 @@ Monitor_Game_Logs() {
 						SoundPlay,%VALUE_Whisper_Sound_Path%
 				}
 				messages := whispName . ": " whispMsg "`n"
-				if ( RegExMatch( messages, "Hi, I would like to buy your (.*) listed for (.*) in (.*)", subPat ) ) ; Trade message found
+				if ( RegExMatch( messages, ".*Hi, I(?: would|'d) like to buy your (.*) (?:listed for|for my) (.*) in (.*)", subPat ) ) ; Trade message found
 				{
 					tradeItem := subPat1, tradePrice := subPat2, tradeStash := subPat3
 					if tradeItem contains % " 0`%"
 						StringReplace, tradeItem, tradeItem, 0`%
+					;~ if ( RegExMatch( messages, ".*Hi, I'd like to buy your .* for my .* in .*", subPat ) ) ; Trade message found
+						;~ isCurrency := 1
 					messagesArray := Gui_Trades_AddNewItem(whispName, tradeItem, tradePrice, tradeStash)
 					Gui_Trades(messagesArray)
 					if ( VALUE_Clip_New_Items = 1 )
