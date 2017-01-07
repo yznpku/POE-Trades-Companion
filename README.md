@@ -1,5 +1,5 @@
 POE Trades Helper,  
-*You should now, in theory, not forget about that poor skeleton waiting his life for an answer after your uber/map/crash/lunch anymore...*  
+*Keep track of your trades.*  
 
 **Screenshots:**  [Trades GUI](https://raw.githubusercontent.com/lemasato/POE-Trades-Helper/master/Screenshots/GUI%20Trades%20-%20Active.png) - [Settings GUI](https://raw.githubusercontent.com/lemasato/POE-Trades-Helper/master/Screenshots/GUI%20Settings.png)  
 
