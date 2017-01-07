@@ -1,4 +1,29 @@
 \\
+--v1.3--
+What's new:
+Added a new tab in the Settings: Hotkeys.
+	The Hotkeys tab allows you to set up to 6 custom hotkeys.
+Added a new button on the main GUI : "Item Sold"
+	This button allows you to send a message to the person, saying the concerned item was sold.
+	Pressing on this button will also close the concerned tab.
+	You can, as always, customize the message being sent by going into in the Settings > Messages tab
+The game's taskbar button will now blink when a whisper is received while being tabbed out.
+The script will now try to run in admin mode if available.
+	If it fails to do so multiple times, it will allow you to run it wihout admin privilieges
+	(When running without admin privilieges, the Trades GUI buttons won't be working as the script is unable to send inputs to the game)
+A special additional message will be sent to your buyer upon clicking the "Thanks" or the new "Sold" button. Feel free to disable it by going into the [Settings] tray menu.
+
+What's changed:
+Renamed the GUI buttons to make them shorter and prettier.
+The script doesn't block multiple instancies of itself anymore, but tries to close and replace the old one instead.
+
+What's fixed:
+Fixed GUI disappearing when minimizing the game's window.
+Fixed "Clipboard on Tab Switch" not working when closing a tab.
+Fixed GUI buttons being out of place at exactly 19,28,29,37,38,39(and so on) tabs
+//
+
+\\
 --v1.2.4--
 Added support for currency.poe.trade
 //
