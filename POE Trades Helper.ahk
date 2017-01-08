@@ -32,7 +32,7 @@ FileEncoding, UTF-8 ; Required for cyrillic characters
 ;___Some_Variables___;
 global userprofile, iniFilePath, programName, programVersion, programFolder, programPID, sfxFolderPath, programChangelogFilePath
 EnvGet, userprofile, userprofile
-programVersion := "1.3.1", programRedditURL := "https://redd.it/5mns3c"
+programVersion := "1.3.2", programRedditURL := "https://redd.it/5mns3c"
 programName := "POE Trades Helper", programFolder := userprofile "\Documents\AutoHotKey\" programName
 iniFilePath := programFolder "\Preferences.ini"
 sfxFolderPath := programFolder "\SFX"
@@ -848,6 +848,9 @@ return
 ;		Thanks
 		IniWrite,% MessageThanksToggle,% iniFile,MESSAGES,Thanks_Text_Toggle
 		IniWrite,% MessageThanks,% iniFile,MESSAGES,Thanks_Text
+;		Sold
+		IniWrite,% MessageSoldToggle,% iniFile,MESSAGES,Sold_Text_Toggle
+		IniWrite,% MessageSold,% iniFile,MESSAGES,Sold_Text
 ;	Hotkeys
 	;	1 -- Cant use a loop to write all six at once, since the variable has to be globally assigned to make it work
 		IniWrite,% Hotkey1_Toggle,% iniFile,HOTKEYS,HK1_Toggle

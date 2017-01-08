@@ -1,4 +1,10 @@
 \\
+--v1.3.2--
+Bugfix: The "Message Sold" settings were not saving correctly.
+	(Thanks to /u/leglerm for addressing this issue!)
+//
+
+\\
 --v1.3.1--
 Bugfix: The game's window will now only flash when a whisper is received while it is not active.
 //
