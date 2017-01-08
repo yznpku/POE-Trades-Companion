@@ -1,4 +1,9 @@
 \\
+--v1.3.1--
+Bugfix: The game's window will now only flash when a whisper is received while it is not active.
+//
+
+\\
 --v1.3--
 What's new:
 Added a new tab in the Settings: Hotkeys.

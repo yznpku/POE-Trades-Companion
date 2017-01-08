@@ -32,7 +32,7 @@ FileEncoding, UTF-8 ; Required for cyrillic characters
 ;___Some_Variables___;
 global userprofile, iniFilePath, programName, programVersion, programFolder, programPID, sfxFolderPath, programChangelogFilePath
 EnvGet, userprofile, userprofile
-programVersion := "1.3", programRedditURL := "https://redd.it/5mns3c"
+programVersion := "1.3.1", programRedditURL := "https://redd.it/5mns3c"
 programName := "POE Trades Helper", programFolder := userprofile "\Documents\AutoHotKey\" programName
 iniFilePath := programFolder "\Preferences.ini"
 sfxFolderPath := programFolder "\SFX"
@@ -186,7 +186,7 @@ Monitor_Game_Logs() {
 					if ( VALUE_Whisper_Toggle = 1 ) && ( FileExist(VALUE_Whisper_Sound_Path) )
 						SoundPlay,%VALUE_Whisper_Sound_Path%
 				}
-				if ( VALUE_Whisper_Flash = 1 ) {
+				if ( VALUE_Whisper_Flash = 1 ) && !( WinActive("ahk_pid" gamePID) ) {
 					DllCall("FlashWindow", UInt, gameHwnd, Int, 1) ; Flashes the game window
 				}
 				messages := whispName . ": " whispMsg "`n"
