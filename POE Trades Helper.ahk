@@ -4,7 +4,7 @@
 *					See all the information about the trade request upon receiving a poe.trade whisper															*
 *																																								*
 *					https://github.com/lemasato/POE-Trades-Helper/																								*
-*					https://www.reddit.com/r/pathofexile/comments/57oo3h/																						*
+*					https://www.reddit.com/r/pathofexile/comments/5mns3c/																						*
 *					https://www.pathofexile.com/forum/view-thread/1755148/																						*
 *																																								*	
 *	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
@@ -32,7 +32,7 @@ FileEncoding, UTF-8 ; Required for cyrillic characters
 ;___Some_Variables___;
 global userprofile, iniFilePath, programName, programVersion, programFolder, programPID, sfxFolderPath, programChangelogFilePath
 EnvGet, userprofile, userprofile
-programVersion := "1.3", programRedditURL := "https://redd.it/57oo3h"
+programVersion := "1.3", programRedditURL := "https://redd.it/5mns3c"
 programName := "POE Trades Helper", programFolder := userprofile "\Documents\AutoHotKey\" programName
 iniFilePath := programFolder "\Preferences.ini"
 sfxFolderPath := programFolder "\SFX"
@@ -131,7 +131,7 @@ ShellMessage(wParam,lParam) {
 
 ;	Uncomment only for testing purposes -- Simulates trade tabs
 ;	Also comment the Monitor_Game_Logs() line, otherwise the GUI will be overwritten
-;	newArray := Gui_Trades_AddNewItem("iSellStuff", "FIRST TAB", "5 alteartion", "Breach (stash tab ""Gems""; position: left 6, top 8)")
+;	newArray := Gui_Trades_AddNewItem("iSellStuff", "level 1 Faster Attacks Support", "5 alteration", "Breach (stash tab ""Gems""; position: left 6, top 8)")
 ;	Gui_Trades(newArray)
 ;	newArray := Gui_Trades_AddNewItem("iSellStuff", "SECOND TAB", "5 alteration", "Breach (stash tab ""Gems""; position: left 6, top 8)")
 ;	Gui_Trades(newArray)
@@ -746,19 +746,10 @@ return
 
 	Gui_Settings_Support_MsgBox:
 		Gui, Settings: Submit, NoHide
-		if ( MessageSupportToggle = 0 ) {
-			GuiControl, Settings:,% MessageSupportToggleHandler,1
+		if ( MessageSupportToggle = 1 ) {
 			Gui, Trades: +OwnDialogs
-			MsgBox, 4100,:(,% "Are you sure you want to disable the support message?"
-				. "`n(The choice is all yours, I won't blame you or anything!)"
-				. "`n`nIf you are using this program, you surely think others would like to hear about it?"
-				. "`n" programName ", in its current state, isn't very well known."
-				. "`nAny little bit of support would surely help making it more popular!"
-				. "`n`nDisable the support message?"
-			IfMsgBox, Yes
-				GuiControl, Settings:,% MessageSupportToggleHandler,0
-			else
-				Return
+			MsgBox, 4096,:o,% "Thank you for enabling the support message!"
+			.	"`nAlso, feel free to recommend it to your friends!"
 		}
 		
 	Return
@@ -1011,7 +1002,7 @@ Gui_Settings_Get_Settings_Arrays() {
 	returnArray.MESSAGES_KeysArray := Object()
 	returnArray.MESSAGES_KeysArray.Insert(0, "Wait_Text_Toggle", "Wait_Text", "Invite_Text_Toggle", "Invite_Text", "Thanks_Text_Toggle", "Thanks_Text", "Sold_Text_Toggle", "Sold_Text", "Support_Text_Toggle")
 	returnArray.MESSAGES_DefaultValues := Object()
-	returnArray.MESSAGES_DefaultValues.Insert(0, "1", "@%buyerName% One moment please! (%itemName% // %itemPrice%)", "1", "@%buyerName% Your item is ready to be picked up at my hideout! (%itemName% // %itemPrice%)", "1", "@%buyerName% Thank you, good luck & have fun!", "1", "@%buyerName% The requested item was sold! (%itemName% // %itemPrice%)", "1")
+	returnArray.MESSAGES_DefaultValues.Insert(0, "1", "@%buyerName% One moment please! (%itemName% // %itemPrice%)", "1", "@%buyerName% Your item is ready to be picked up at my hideout! (%itemName% // %itemPrice%)", "1", "@%buyerName% Thank you, good luck & have fun!", "1", "@%buyerName% The requested item was sold! (%itemName% // %itemPrice%)", "0")
 	
 	return returnArray
 }
@@ -1271,7 +1262,7 @@ Gui_About() {
 	return
 
 	Gui_About_Donate:
-		Msgbox, 4096,:),% "I would truely appreciate your support..."
+		Msgbox, 4096,:o,% "I would truely appreciate your support..."
 		. "`nbut it'd be even better if you could talk about " programName " to your friends!"
 		. "`n`nAltough, if you really wish to spend money on something..."
 		. "`nI'd recommend you to get anything you like from POE MTX Shop!"

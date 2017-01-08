@@ -11,16 +11,17 @@ The game's taskbar button will now blink when a whisper is received while being 
 The script will now try to run in admin mode if available.
 	If it fails to do so multiple times, it will allow you to run it wihout admin privilieges
 	(When running without admin privilieges, the Trades GUI buttons won't be working as the script is unable to send inputs to the game)
-A special additional message will be sent to your buyer upon clicking the "Thanks" or the new "Sold" button. Feel free to disable it by going into the [Settings] tray menu.
+A special additional message can be sent to your buyer upon clicking the "Thanks" or the new "Sold" button.
+	Feel free to enable it by going into the [Settings] tray menu.
 
 What's changed:
 Renamed the GUI buttons to make them shorter and prettier.
 The script doesn't block multiple instancies of itself anymore, but tries to close and replace the old one instead.
 
 What's fixed:
-Fixed GUI disappearing when minimizing the game's window.
-Fixed "Clipboard on Tab Switch" not working when closing a tab.
-Fixed GUI buttons being out of place at exactly 19,28,29,37,38,39(and so on) tabs
+GUI disappearing when minimizing the game's window.
+"Clipboard on Tab Switch" not working when closing a tab.
+GUI buttons being out of place at exactly 19,28,29,37,38,39(and so on) tabs.
 //
 
 \\
