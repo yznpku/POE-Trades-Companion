@@ -1,4 +1,46 @@
 \\
+--v1.4--
+What's new:
+	You can now set the transparency of the Trades GUI by going into the [Settings] tray menu.
+		The lowest you can go is 30%, to make sure the window is still able to be seen.
+	"Dock Mode" being removed, you can now cycle the Trades GUI between the game's window by using the new [Cycle Overlay] in the tray option (Right click on the tray icon > Cycle Overlay)
+	You can switch the Trades GUI between [Windowed] and [Overlay] by right clicking the tray icon and clicking on the according mode.
+	If the logs file is deleted or characters/lines are being edited out, the script will restart the Logs Monitoring function to make sure it doesn't stall
+		(^ This kind of behaviour should not happend, I consider it as an useless measure of security but I like it "just incase")
+		
+What's changed:
+	You do not need to reload the script after changing a setting anymore, everything is instantly applied.
+	"Dock Mode" and "Logs Mode" have been removed from the [Settings] menu, as it is all automatized now.
+	The Trades GUI buttons now use a much faster method of sending keyboard input.
+	
+What's fixed:
+	Tray icons from previously replaced instances of the script will now correctly disappear if they are not hidden in the sub tray notitication.
+	The script will no longer skip whispers when receving two messages at the very same time.
+	The Trades GUI will no longer flicker while having the "Show in game only" setting activated.
+	Enabling an hotkey without binding it to a key prior will not crash the script anymore.
+	You should no longer randomly receive a tray notification of a prior whisper.
+	
+Troubleshooting:
+	About Logs Mode and Dock Mode being removed due to automatisation:
+		Logs Mode:
+			If the script detect multiple instance of the game, it will check the location of the logs file.
+			If the logs file are located in different folders, it will show a new GUI to ask which one should be used.
+			This only happens once at the very start of the Logs Monitoring function. So if you run a separate instance that doesn't use the same logs file while the script is already loaded, and want to monitor that log instead, you will need to reload the script.
+		Dock Mode:
+			You can still define the window the Trades GUI will dock on by using the new [Cycle Overlay] tray option (Right click on the tray icon > Cycle Overlay)
+	About the new Windowed and the Overlay mode:
+		Windowed:
+			In Windowed mode, you can drag around the Trades GUI. If you want to move it while it's inactive (= click-through), simply open the [Settings].
+			Having the Settings window open allows you to drag the Trades GUI even if it's inactive. Closing the Settings will effectively re-apply the click-through ability.
+		Overlay:
+			In Overlay mode, the Trades GUI will appear borderless and will dock on the top right of your game's window.
+			If you are running multiple instance and the Trades GUI is docked on the wrong window, use the new [Cycle Overlay] accessible by right-clicking the tray icon.
+
+Bug Report Credits:
+	Big thanks to: /u/Bacur, /u/luvz, /u/MercDawg, /u/LPdC_Nazgul, /u/Diabolacal for the bug reports!
+	But also to everyone on Reddit, the GGG Forums and all of you who enjoy POE Trades Helper!
+//
+\\
 --v1.3.2--
 Bugfix: The "Message Sold" settings were not saving correctly.
 	(Thanks to /u/leglerm for addressing this issue!)
