@@ -1,4 +1,8 @@
 \\
+--v1.4.1--
+	Removed the URL from the Support Message as suggested by /u/DrasticKog
+//
+\\
 --v1.4--
 What's new:
 	You can now set the transparency of the Trades GUI by going into the [Settings] tray menu.

@@ -18,7 +18,7 @@ FileEncoding, UTF-8 ; Required for cyrillic characters
 ;___Some_Variables___;
 global userprofile, iniFilePath, programName, programVersion, programFolder, programPID, sfxFolderPath, programChangelogFilePath, POEGameArray, POEGameList
 EnvGet, userprofile, userprofile
-programVersion := "1.4", programRedditURL := "https://redd.it/57oo3h"
+programVersion := "1.4.1", programRedditURL := "https://redd.it/57oo3h"
 programName := "POE Trades Helper", programFolder := userprofile "\Documents\AutoHotKey\" programName
 iniFilePath := programFolder "\Preferences.ini"
 sfxFolderPath := programFolder "\SFX"
@@ -559,7 +559,7 @@ Gui_Trades(infosArray="", errorMsg="", xpos="unspecified", ypos="unspecified") {
 ;			Send_InGame_Message(VALUE_Thanks_Text, 1, goBackUp, tradesInfosArray[0], tradesInfosArray[1], tradesInfosArray[2]) ; __TO_BE_ADDED__ Go back to the previous channel
 			Send_InGame_Message(VALUE_Thanks_Text, tradesInfosArray) 
 			if ( VALUE_Support_Text_Toggle = 1 )
-				Send_InGame_Message("@%buyerName% - - - POE Trades Helper: Keep track of your trades! // URL: " programRedditURL " (not a bot!)", tradesInfosArray)
+				Send_InGame_Message("@%buyerName% - - - POE Trades Helper: Keep track of your trades! // Look it up! (not a bot!)", tradesInfosArray)
 ;				Send_InGame_Message("@%buyerName% . . - POE Trades Helper: Keep track of your trades! // URL: " programRedditURL " (not a bot!)", 1, 3, tradesInfosArray[0], tradesInfosArray[1], tradesInfosArray[2])
 		}
 		GoSub, Gui_Trades_RemoveItem
@@ -580,7 +580,7 @@ Gui_Trades(infosArray="", errorMsg="", xpos="unspecified", ypos="unspecified") {
 ;			Send_InGame_Message(VALUE_Sold_Text, 1, goBackUp, tradesInfosArray[0], tradesInfosArray[1], tradesInfosArray[2]) ;  __TO_BE_ADDED__ Go back to the previous channel
 			Send_InGame_Message(VALUE_Sold_Text, tradesInfosArray)
 			if ( VALUE_Support_Text_Toggle = 1 )
-				Send_InGame_Message("@%buyerName% - - - POE Trades Helper: Keep track of your trades! // URL: " programRedditURL " (not a bot!)", tradesInfosArray)
+				Send_InGame_Message("@%buyerName% - - - POE Trades Helper: Keep track of your trades! // Look it up! (not a bot!)", tradesInfosArray)
 ;				Send_InGame_Message("@%buyerName% . . - POE Trades Helper: Keep track of your trades! // URL: " programRedditURL " (not a bot!)", 1, 3, tradesInfosArray[0], tradesInfosArray[1], tradesInfosArray[2])
 		}
 		GoSub, Gui_Trades_RemoveItem
