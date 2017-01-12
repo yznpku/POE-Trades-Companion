@@ -1,6 +1,20 @@
 \\
+--v1.4.2--
+What's new:
+	Trade whisper about an un-priced item will now be detected.
+		If the item doesn't have a price tag, the price field will be filled with "Unpriced Item" coloured in red.
+	Clicking on the "Say Thanks" button will now also kick your buyer from the party.
+
+What's changed:
+	Increased the delay before showing tooltips upon hovering a control in the [Settings] menu.
+		Moving away from the control will instantly remove the tooltip.
+
+What's fixed:
+	Hotkeys. It just works.
+//
+\\
 --v1.4.1--
-	Removed the URL from the Support Message as suggested by /u/DrasticKog
+Removed the URL from the Support Message as suggested by /u/DrasticKog
 //
 \\
 --v1.4--

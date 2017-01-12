@@ -18,7 +18,7 @@ FileEncoding, UTF-8 ; Required for cyrillic characters
 ;___Some_Variables___;
 global userprofile, iniFilePath, programName, programVersion, programFolder, programPID, sfxFolderPath, programChangelogFilePath, POEGameArray, POEGameList
 EnvGet, userprofile, userprofile
-programVersion := "1.4.1", programRedditURL := "https://redd.it/57oo3h"
+programVersion := "1.4.2", programRedditURL := "https://redd.it/57oo3h"
 programName := "POE Trades Helper", programFolder := userprofile "\Documents\AutoHotKey\" programName
 iniFilePath := programFolder "\Preferences.ini"
 sfxFolderPath := programFolder "\SFX"
@@ -57,9 +57,15 @@ Create_Tray_Menu(1)
 Delete_Old_Logs_Files(10)
 Do_Once()
 Check_Update()
+Enable_Hotkeys()
 
 ;___Hotkeys___;
-Loop 6 {
+Disable_Hotkeys() {
+;	Disable the current hotkeys
+;	Always run Enable_Hotkeys() after to retrieve and assign the new hotkeys
+	titleMatchMode := A_TitleMatchMode
+	SetTitleMatchMode, RegEx
+	Loop 6 {
 	index := A_Index
 	if ( VALUE_HK%index%_Toggle ) {
 			userHotkey%index% := VALUE_HK%index%_KEY
@@ -69,14 +75,36 @@ Loop 6 {
 			userHotkey%index% := "!" userHotkey%index%
 		if ( VALUE_HK%index%_SHIFT )
 			userHotkey%index% := "+" userHotkey%index%
-			titleMatchMode := A_TitleMatchMode
-			SetTitleMatchMode, RegEx
 			Hotkey,IfWinActive,ahk_group POEGame
-			if ( userHotkey%index% != "" && userHotkey%index% != "ERROR" )
-				Hotkey,% userHotkey%index%,Hotkeys_User_%index%
-			SetTitleMatchMode, %titleMatchMode%
+			if ( userHotkey%index% != "" && userHotkey%index% != "ERROR" ) {
+				Hotkey,% userHotkey%index%,Off
+			}
+		}
 	}
+	SetTitleMatchMode, %titleMatchMode%	
+}
 
+Enable_Hotkeys() {
+;	Enable the hotkeys, based on its global VALUE_ content
+	titleMatchMode := A_TitleMatchMode
+	SetTitleMatchMode, RegEx
+	Loop 6 {
+		index := A_Index
+		if ( VALUE_HK%index%_Toggle ) {
+				userHotkey%index% := VALUE_HK%index%_KEY
+			if ( VALUE_HK%index%_CTRL )
+				userHotkey%index% := "^" userHotkey%index%
+			if ( VALUE_HK%index%_ALT )
+				userHotkey%index% := "!" userHotkey%index%
+			if ( VALUE_HK%index%_SHIFT )
+				userHotkey%index% := "+" userHotkey%index%
+			Hotkey,IfWinActive,ahk_group POEGame
+			if ( userHotkey%index% != "" && userHotkey%index% != "ERROR" ) {
+				Hotkey,% userHotkey%index%,Hotkeys_User_%index%,On
+			}
+		}
+	}
+	SetTitleMatchMode, %titleMatchMode%
 }
 
 ;___Window Switch Detect___;
@@ -158,37 +186,6 @@ Return
 ;										LOGS MONITORING
 ;
 ;==================================================================================================================
-
-GUI_Multiple_Instances_OLD(foundMatchArray, foundMatchHandlersArray) {
-	static
-	global tempVar := foundMatchHandlersArray
-	Gui, Instances:Destroy
-	Gui, Instances:New, +ToolWindow +AlwaysOnTop -SysMenu +hwndGUIInstancesHandler
-	Gui, Instances:Add, Text, x10 y10,% "Multiple instances of the game have been found!"
-	. "`nPlease select "
-	Gui, Instances:Add, DropDownList, w230 vHandlersList hwndHandlersListHandler AltSubmit
-	Gui, Instances:Add, Button, gGUI_Instances_Flash w230 h30,MAKE IT FLASH
-	Gui, Instances:Add, Button, gGUI_Instances_Apply w230 h30,APPLY
-	for key, element in foundMatchArray { 
-		GuiControl, Instances:,% HandlersListHandler,% element "|"
-	}
-	GuiControl, Instances:Choose,% HandlersListHandler,1
-	Gui, Instances:Show,,% programName
-	WinWait, ahk_id %GUIInstancesHandler%
-	WinWaitClose, ahk_id %GUIInstancesHandler%
-	Return HandlersList
-
-	GUI_Instances_Flash:
-		Gui, Instances:Submit, NoHide
-		DllCall("FlashWindow", UInt, tempVar[HandlersList], Int, 1) ; Flashes the game window
-	Return
-
-	GUI_Instances_Apply:
-		GuiControl, Instances:-AltSubmit,% HandlersListHandler
-		Gui, Instances:Submit, NoHide
-		Gui, Instances:Destroy
-	Return
-}
 
 GUI_Multiple_Instances(handlersArray) {
 	static
@@ -333,6 +330,22 @@ Monitor_Game_Logs(mode="", previousTrades="", previousX="unspecified", previousY
 						if ( VALUE_Trade_Toggle = 1 ) && ( FileExist(VALUE_Trade_Sound_Path) )
 							SoundPlay,%VALUE_Trade_Sound_Path%
 					}
+					else if ( RegExMatch( messages, ".*Hi, I(?: would|'d) like to buy your (.*)(?!:listed for|for my) in (.*)", subPat ) ) ; Trade message with unpriced item found
+					{
+						tradeItem := subPat1, tradePrice := "Unpriced Item", tradeStash := subPat2
+						if tradeItem contains % " 0`%"
+							StringReplace, tradeItem, tradeItem, 0`%
+						newTradesInfos := Object()
+						newTradesInfos.Insert(0, whispName, tradeItem, tradePrice, tradeStash, gamePID)
+						messagesArray := Gui_Trades_Manage_Trades("Add_New", newTradesInfos)
+						if WinExist("ahk_id " GuiTradesHandler)
+							WinGetPos, xpos, ypos, , ,% "ahk_id " GuiTradesHandler
+						Gui_Trades(messagesArray, ,xpos, ypos)
+						if ( VALUE_Clip_New_Items = 1 )
+							Clipboard := tradeitem
+						if ( VALUE_Trade_Toggle = 1 ) && ( FileExist(VALUE_Trade_Sound_Path) )
+							SoundPlay,%VALUE_Trade_Sound_Path%
+					}
 				}
 			}
 		}
@@ -380,11 +393,11 @@ Hotkeys_User_6:
 	Hotkeys_User_Handler(A_ThisLabel)
 Return
 
-Hotkeys_User_Handler(thisLabel="") {
+Hotkeys_User_Handler(thisLabel) {
 	key := (thisLabel="Hotkeys_User_1")?("HK1"):(thisLabel="Hotkeys_User_2")?("HK2"):(thisLabel="Hotkeys_User_3")?("HK3"):(thisLabel="Hotkeys_User_4")?("HK4"):(thisLabel="Hotkeys_User_5")?("HK5"):(thisLabel="Hotkeys_User_6")?("HK6"):("ERROR")
 	IniRead, textToSend,% iniFilePath,HOTKEYS,% key "_TEXT"
 	;Send_InGame_Message(textToSend, 0, 2) ; __TO_BE_ADDED__ Go back to the previous channel
-	Send_InGame_Message(textToSend)
+	Send_InGame_Message(textToSend, "",1)
 }
 
 ;==================================================================================================================
@@ -447,8 +460,10 @@ Gui_Trades(infosArray="", errorMsg="", xpos="unspecified", ypos="unspecified") {
 			Gui, Add, Text, xp+50 yp vBuyerSlot%index%,% infosArray.BUYERS[index]
 			Gui, Add, Text, w300 xp-50 yp+15 ,% "Item: "
 			Gui, Add, Text, w300 xp+50 yp vItemSlot%index%,% infosArray.ITEMS[index]
-			Gui, Add, Text, w300 xp-50 yp+15 ,% "Price "
+			Gui, Add, Text, w300 xp-50 yp+15 ,% "Price: "
 			Gui, Add, Text, w300 xp+50 yp vPriceSlot%index%,% infosArray.PRICES[index]
+			if ( infosArray.PRICES[index] = "Unpriced Item")
+				GuiControl, Trades: +cRed, PriceSlot%index%
 			Gui, Add, Text, w300 xp-50 yp+15 ,% "Location: "
 			Gui, Add, Text, w300 xp+50 yp vLocationSlot%index%,% infosArray.LOCATIONS[index]
 			Gui, Add, Text, w0 h0 xp yp vPIDSlot%index%,% infosArray.GAMEPID[index]
@@ -562,6 +577,7 @@ Gui_Trades(infosArray="", errorMsg="", xpos="unspecified", ypos="unspecified") {
 				Send_InGame_Message("@%buyerName% - - - POE Trades Helper: Keep track of your trades! // Look it up! (not a bot!)", tradesInfosArray)
 ;				Send_InGame_Message("@%buyerName% . . - POE Trades Helper: Keep track of your trades! // URL: " programRedditURL " (not a bot!)", 1, 3, tradesInfosArray[0], tradesInfosArray[1], tradesInfosArray[2])
 		}
+		Send_InGame_Message("/kick %buyerName%", tradesInfosArray)
 		GoSub, Gui_Trades_RemoveItem
 	return
 	
@@ -596,8 +612,6 @@ Gui_Trades(infosArray="", errorMsg="", xpos="unspecified", ypos="unspecified") {
 GUI_Trades_Mode:
 	thisMenuItem := A_ThisMenuItem
 	global VALUE_Trades_GUI_Mode, iniFilePath
-	if VALUE_Trades_GUI_Mode is not Number
-		VALUE_Trades_GUI_Mode := 1
 	if ( thisMenuItem = "Mode: Overlay") {
 		Menu, Tray, UnCheck,% "Mode: Window"
 		Menu, Tray, Check,% "Mode: Overlay"
@@ -856,12 +870,12 @@ Gui_Settings() {
 		Gui, Add, GroupBox, x20 y40 w200 h260,Trades GUI
 		Gui, Add, Radio, xp+10 yp+20 vShowAlways hwndShowAlwaysHandler,Always show
 		Gui, Add, Radio, xp yp+15 vShowInGame hwndShowInGameHandler,Only show while in game
-
-		Gui, Add, GroupBox, x25 yp+25 w190 h115,Transparency
-		Gui, Add, Text, xp+10 yp+20,Inactive (no trade on queue)
-		Gui, Add, Slider, xp+10 yp+15 hwndShowTransparencyHandler gGui_Settings_Transparency vShowTransparency AltSubmit ToolTip Range0-100
-		Gui, Add, Text, xp-10 yp+30,Active (trades are on queue)
-		Gui, Add, Slider, xp+10 yp+15 hwndShowTransparencyActiveHandler gGui_Settings_Transparency vShowTransparencyActive AltSubmit ToolTip Range30-100
+;			Transparency
+			Gui, Add, GroupBox, x25 yp+25 w190 h115,Transparency
+			Gui, Add, Text, xp+10 yp+20,Inactive (no trade on queue)
+			Gui, Add, Slider, xp+10 yp+15 hwndShowTransparencyHandler gGui_Settings_Transparency vShowTransparency AltSubmit ToolTip Range0-100
+			Gui, Add, Text, xp-10 yp+30,Active (trades are on queue)
+			Gui, Add, Slider, xp+10 yp+15 hwndShowTransparencyActiveHandler gGui_Settings_Transparency vShowTransparencyActive AltSubmit ToolTip Range30-100
 ;		Notifications
 ;			Trade Sound Group
 			Gui, Add, GroupBox, x230 y40 w210 h120,Notifications
@@ -1095,8 +1109,10 @@ return
 		IniWrite,% Hotkey6_ALT,% iniFile,HOTKEYS,HK6_ALT
 		IniWrite,% Hotkey6_SHIFT,% iniFile,HOTKEYS,HK6_SHIFT
 ;	Declare the new settings
+		Disable_Hotkeys()
 		settingsArray := Get_INI_Settings()
 		Declare_INI_Settings(settingsArray)
+		Enable_Hotkeys()
 	return
 
 	Gui_Settings_Size:
@@ -1765,7 +1781,7 @@ Get_Aero_Status(){
 DoNothing:
 return
 
-Send_InGame_Message(messageToSend, infosArray="", goBackUp=0) {
+Send_InGame_Message(messageToSend, infosArray="", isHotkey="0", goBackUp=0) {
 ;			Sends a message InGame and replace the "variables text" into their content
 	global VALUE_Logs_Mode
 
@@ -1777,9 +1793,14 @@ Send_InGame_Message(messageToSend, infosArray="", goBackUp=0) {
 	StringReplace, messageToSend, messageToSend, `%itemPrice`%, %itemPrice%, 1
 	titleMatchMode := A_TitleMatchMode
 	SetTitleMatchMode, RegEx
-	if WinExist("ahk_pid " gamePID) {
+	if ( isHotkey = 1 ) {
+		SendInput,{Enter}/{BackSpace}
+		SendInput,{Raw}%messageToSend%
+		SendInput,{Enter}
+	}
+	else if WinExist("ahk_pid " gamePID) {
 		WinActivate,.* ahk_pid %gamePID%
-		WinWaitActive,.* ahk_pid %gamePID%
+		WinWaitActive,.* ahk_pid %gamePID%, ,5
 		SendInput,{Enter}/{BackSpace}
 		SendInput,{Raw}%messageToSend%
 		SendInput,{Enter}
@@ -1905,7 +1926,11 @@ WM_MOUSEMOVE() {
 	static
 	curControl := A_GuiControl
 	If ( curControl <> prevControl ) {
-		SetTimer, Display_ToolTip, -500 	; shorter wait, shows the tooltip quicker
+		controlTip := Get_Control_ToolTip(curControl)
+		if ( controlTip )
+			SetTimer, Display_ToolTip, -1500
+		Else
+			Gosub, Remove_ToolTip
 		prevControl := curControl
 	}
 	return
@@ -1914,13 +1939,11 @@ WM_MOUSEMOVE() {
 		controlTip := Get_Control_ToolTip(curControl)
 		if ( controlTip ) {
 			try
-				tooltip,% controlTip
-			catch
-				ToolTip,
+				ToolTip,% controlTip
 			SetTimer, Remove_ToolTip, -20000
 		}
 		else {
-			SetTimer, Remove_ToolTip, -1
+			ToolTip,
 		}
 	return
 	
