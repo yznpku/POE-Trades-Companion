@@ -1,3 +1,12 @@
+advanced hotkeys
+hotkeys trades variable
+wiki button
+removed close confirmation
+program logs
+faster message sending
+notification if game window can't be activated
+sound extract
+
 \\
 --v1.4.2--
 What's new:

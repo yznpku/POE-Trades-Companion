@@ -14,11 +14,14 @@ OnExit("Exit_Func")
 #SingleInstance Off
 SetWorkingDir, %A_ScriptDir%
 FileEncoding, UTF-8 ; Required for cyrillic characters
+#KeyHistory 0
+ListLines Off
+SetWinDelay, -1
 
 ;___Some_Variables___;
 global userprofile, iniFilePath, programName, programVersion, programFolder, programPID, sfxFolderPath, programChangelogFilePath, POEGameArray, POEGameList
 EnvGet, userprofile, userprofile
-programVersion := "1.4.2", programRedditURL := "https://redd.it/57oo3h"
+programVersion := "1.5", programRedditURL := "https://redd.it/57oo3h"
 programName := "POE Trades Helper", programFolder := userprofile "\Documents\AutoHotKey\" programName
 iniFilePath := programFolder "\Preferences.ini"
 sfxFolderPath := programFolder "\SFX"
@@ -48,7 +51,7 @@ if !( InStr(FileExist(programLogsPath), "D") )
 ;___Function_Calls___;
 Create_Tray_Menu()
 Run_As_Admin()
-Prevent_Multiple_Instancies()
+Close_Previous_Program_Instance()
 Tray_Refresh()
 Set_INI_Settings()
 settingsArray := Get_INI_Settings()
@@ -56,56 +59,9 @@ Declare_INI_Settings(settingsArray)
 Create_Tray_Menu(1)
 Delete_Old_Logs_Files(10)
 Do_Once()
+Extract_Sound_Files()
 Check_Update()
 Enable_Hotkeys()
-
-;___Hotkeys___;
-Disable_Hotkeys() {
-;	Disable the current hotkeys
-;	Always run Enable_Hotkeys() after to retrieve and assign the new hotkeys
-	titleMatchMode := A_TitleMatchMode
-	SetTitleMatchMode, RegEx
-	Loop 6 {
-	index := A_Index
-	if ( VALUE_HK%index%_Toggle ) {
-			userHotkey%index% := VALUE_HK%index%_KEY
-		if ( VALUE_HK%index%_CTRL )
-			userHotkey%index% := "^" userHotkey%index%
-		if ( VALUE_HK%index%_ALT )
-			userHotkey%index% := "!" userHotkey%index%
-		if ( VALUE_HK%index%_SHIFT )
-			userHotkey%index% := "+" userHotkey%index%
-			Hotkey,IfWinActive,ahk_group POEGame
-			if ( userHotkey%index% != "" && userHotkey%index% != "ERROR" ) {
-				Hotkey,% userHotkey%index%,Off
-			}
-		}
-	}
-	SetTitleMatchMode, %titleMatchMode%	
-}
-
-Enable_Hotkeys() {
-;	Enable the hotkeys, based on its global VALUE_ content
-	titleMatchMode := A_TitleMatchMode
-	SetTitleMatchMode, RegEx
-	Loop 6 {
-		index := A_Index
-		if ( VALUE_HK%index%_Toggle ) {
-				userHotkey%index% := VALUE_HK%index%_KEY
-			if ( VALUE_HK%index%_CTRL )
-				userHotkey%index% := "^" userHotkey%index%
-			if ( VALUE_HK%index%_ALT )
-				userHotkey%index% := "!" userHotkey%index%
-			if ( VALUE_HK%index%_SHIFT )
-				userHotkey%index% := "+" userHotkey%index%
-			Hotkey,IfWinActive,ahk_group POEGame
-			if ( userHotkey%index% != "" && userHotkey%index% != "ERROR" ) {
-				Hotkey,% userHotkey%index%,Hotkeys_User_%index%,On
-			}
-		}
-	}
-	SetTitleMatchMode, %titleMatchMode%
-}
 
 ;___Window Switch Detect___;
 Gui +LastFound 
@@ -114,70 +70,27 @@ DllCall( "RegisterShellHookWindow", UInt,Hwnd )
 MsgNum := DllCall( "RegisterWindowMessage", Str,"SHELLHOOK" )
 OnMessage( MsgNum, "ShellMessage")
 
-ShellMessage(wParam,lParam) {
-	global VALUE_Show_Mode, VALUE_Dock_Mode, guiTradesHandler, tradesGuiWidth, VALUE_Dock_Window
-	if ( wParam=4 or wParam=32772 ) { ; 4=HSHELL_WINDOWACTIVATED | 32772=HSHELL_RUDEAPPACTIVATED
-		if WinActive("ahk_id" guiTradesHandler) {
-;		Prevent keyboard presses from interacting with the tradesGUI and thus mis-clicking a button
-			Hotkey, IfWinActive, ahk_id %guiTradesHandler%
-			Hotkey, NumpadEnter, DoNothing, On
-			Hotkey, Escape, DoNothing, On
-			Hotkey, Space, DoNothing, On
-			Hotkey, Tab, DoNothing, On
-			Hotkey, Enter, DoNothing, On
-			Hotkey, Left, DoNothing, On
-			Hotkey, Right, DoNothing, On
-			Hotkey, Up, DoNothing, On
-			Hotkey, Down, DoNothing, On
-			Return ; returning prevents from triggering Gui_Trades_Set_Position while the GUI is active
-		}
-		if ( VALUE_Trades_GUI_Mode = "Window" )
-			Return
-
-		WinGet, winEXE, ProcessName, ahk_id %lParam%
-		WinGet, winID, ID, ahk_id %lParam%
-		if ( VALUE_Show_Mode = "Always" ) && ( tradesGuiWidth > 0 ) {
-			Gui_Trades_Set_Position()
-		}
-		else if ( ( VALUE_Show_Mode = "InGame" ) && ( tradesGuiWidth > 0 ) && ( VALUE_Dock_Window = winID ) )
-			Gui_Trades_Set_Position()
-		else if ( ( VALUE_Show_Mode = "InGame" ) && ( VALUE_Dock_Window != winID ) )
-			Gui, Trades:Show, NoActivate Hide
-	}
-	if WinActive("ahk_id" guiTradesHandler) {
-;		Prevent keyboard presses from interacting with the tradesGUI and thus mis-clicking a button
-		Hotkey, IfWinActive, ahk_id %guiTradesHandler%
-		Hotkey, NumpadEnter, DoNothing, On
-		Hotkey, Escape, DoNothing, On
-		Hotkey, Space, DoNothing, On
-		Hotkey, Tab, DoNothing, On
-		Hotkey, Enter, DoNothing, On
-		Hotkey, Left, DoNothing, On
-		Hotkey, Right, DoNothing, On
-		Hotkey, Up, DoNothing, On
-		Hotkey, Down, DoNothing, On
-	}
-}
-
 ;	Uncomment only for testing purposes -- Simulates trade tabs
 ;	Also comment the Monitor_Game_Logs() line, otherwise the GUI will be overwritten
-;	newItemInfos := Object()
-;	newItemInfos.Insert(0, "iSellStuff", "level 1 Faster Attacks Support", "5 alteration", "Breach (stash tab ""Gems""; position: left 6, top 8")
-;	newItemArray := Gui_Trades_Manage_Trades("Add_New", newItemInfos)
-;	Gui_Trades(newItemArray)
-;	newItemInfos.Insert(0, "FIRST BUYER", "FIRST ITEM", "FIRST PRICE", "FIRST LOCATION")
-;	newItemArray := Gui_Trades_Manage_Trades("Add_New", newItemInfos)
-;	Gui_Trades(newItemArray)
-;	newItemInfos.Insert(0, "SECOND BUYER", "SECOND ITEM", "SECOND PRICE", "SECOND LOCATION")
-;	newItemArray := Gui_Trades_Manage_Trades("Add_New", newItemInfos)
-;	Gui_Trades(newItemArray)
-;	newItemInfos.Insert(0, "THIRD BUYER", "THIRD ITEM", "THIRD PRICE", "THIRD LOCATION")
-;	newItemArray := Gui_Trades_Manage_Trades("Add_New", newItemInfos)
-;	Gui_Trades(newItemArray)
+/*
+	newItemInfos := Object()
+	newItemInfos.Insert(0, "iSellStuff", "level 1 Faster Attacks Support", "5 alteration", "Breach (stash tab ""Gems""; position: left 6, top 8")
+	newItemArray := Gui_Trades_Manage_Trades("Add_New", newItemInfos)
+	Gui_Trades(newItemArray)
+	newItemInfos.Insert(0, "FIRST BUYER", "FIRST ITEM", "FIRST PRICE", "FIRST LOCATION")
+	newItemArray := Gui_Trades_Manage_Trades("Add_New", newItemInfos)
+	Gui_Trades(newItemArray)
+	newItemInfos.Insert(0, "SECOND BUYER", "SECOND ITEM", "SECOND PRICE", "SECOND LOCATION")
+	newItemArray := Gui_Trades_Manage_Trades("Add_New", newItemInfos)
+	Gui_Trades(newItemArray)
+	newItemInfos.Insert(0, "THIRD BUYER", "THIRD ITEM", "THIRD PRICE", "THIRD LOCATION")
+	newItemArray := Gui_Trades_Manage_Trades("Add_New", newItemInfos)
+	Gui_Trades(newItemArray)
+*/
 
 ;___Logs Monitoring AKA Trades GUI___;
 ;Gui_Settings()
-;Logs_Append("Start")
+Logs_Append("Start", settingsArray)
 Monitor_Game_Logs()
 Return
 
@@ -189,6 +102,7 @@ Return
 
 GUI_Multiple_Instances(handlersArray) {
 	static
+
 	Gui, Instances:Destroy
 	Gui, Instances:New, +ToolWindow +AlwaysOnTop -SysMenu +hwndGUIInstancesHandler
 	Gui, Instances:Add, Text, x10 y10,% "Detected instances are using different logs file."
@@ -203,8 +117,9 @@ GUI_Multiple_Instances(handlersArray) {
 		Gui, Add, Text, x10 yp+32,Path:
 		WinGet, pPath, ProcessPath,ahk_id %element%
 		Gui, Add, Edit, xp+55 yp-3 ReadOnly,% pPath
-		if ( index != handlersArray.MaxIndex() )
+		if ( index != handlersArray.MaxIndex() ) ; Put a 10px margin if it's not the last element
 			Gui, Add, Text, w0 h0 xp yp+10
+		Logs_Append(A_ThisFunc,,element,pPath)
 	}
 	Gui, Instances:Show,NoActivate,% programName " - Multiple instances found"
 	WinWait, ahk_id %GUIInstancesHandler%
@@ -215,6 +130,7 @@ GUI_Multiple_Instances(handlersArray) {
 		btnID := RegExReplace(A_GuiControl, "\D")
 		r := handlersArray[btnID]
 		Gui, Instances:Destroy
+		Logs_Append("GUI_Multiple_Instances_Return",,r)
 	Return
 }
 
@@ -224,23 +140,13 @@ Restart_Monitor_Game_Logs(previousTrades="") {
 
 	WinGetPos, xpos, ypos, , ,% "ahk_id " GuiTradesHandler
 	Monitor_Game_Logs("close")
-	Monitor_Game_Logs(, previousTrades, xpos, ypos)
+	Gui_Trades(previousTrades, ,xpos, ypos)
+	Monitor_Game_Logs()
 }
 
-Monitor_Game_Logs(mode="", previousTrades="", previousX="unspecified", previousY="unspecified") {
-;			Gets the logs location based on VALUE_Logs_Mode
-;			Read trough the logs file for new whisper/trades
-;			Pass the trade message infos to Gui_Trades()
-;			Clipboard the item's info if the user enabled
-;			Play a sound or tray notification (if the user enabled) on whisper/trade
+Get_All_Games_Instances() {
 	static
-	global VALUE_Whisper_Tray, VALUE_Logs_Mode, VALUE_Clip_New_Items, VALUE_Trade_Toggle, VALUE_Trade_Sound_Path, VALUE_Whisper_Toggle, VALUE_Whisper_Sound_Path, VALUE_Whisper_Flash, GuiTradesHandler, POEGameArray, VALUE_Dock_Window
-
-	if (mode = "close") {
-		fileObj.Close()
-		Return
-	}
-	
+	global VALUE_Dock_Window
 	WinGet windows, List
 	matchHandlers := Object()
 	index := 0
@@ -255,9 +161,7 @@ Monitor_Game_Logs(mode="", previousTrades="", previousX="unspecified", previousY
 		}
 	}
 	if ( index = 0 ) { ; No matching process found
-		Gui_Trades(,"exenotfound")
-		Sleep 10000
-		Monitor_Game_Logs()
+		return "exenotfound"
 	}
 	for key, element in matchHandlers {
 		index := A_Index
@@ -283,12 +187,40 @@ Monitor_Game_Logs(mode="", previousTrades="", previousX="unspecified", previousY
 		logsFile := exeDir "\logs\Client.txt"
 		VALUE_Dock_Window := winHandler ; assign global var after choosing the right instance
 	}
-	Gui_Trades(previousTrades, ,previousX, previousY)
+	return logsFile
+}
+
+Monitor_Game_Logs(mode="") {
+;			Gets the logs location based on VALUE_Logs_Mode
+;			Read trough the logs file for new whisper/trades
+;			Pass the trade message infos to Gui_Trades()
+;			Clipboard the item's info if the user enabled
+;			Play a sound or tray notification (if the user enabled) on whisper/trade
+	static
+	global VALUE_Whisper_Tray, VALUE_Logs_Mode, VALUE_Clip_New_Items, VALUE_Trade_Toggle, VALUE_Trade_Sound_Path, VALUE_Whisper_Toggle, VALUE_Whisper_Sound_Path, VALUE_Whisper_Flash, GuiTradesHandler, POEGameArray, VALUE_Dock_Window
+
+	if (mode = "close") {
+		fileObj.Close()
+		Return
+	}
+
+	r := Get_All_Games_Instances()
+	if ( r = "exenotfound" ) {
+		Gui_Trades(,"exenotfound")
+		Sleep 10000
+		Monitor_Game_Logs()
+	}
+	else {
+		Gui_Trades()
+		logsFile := r
+	}
+	Logs_Append(A_ThisFunc,,logsFile)
 
 	fileObj := FileOpen(logsFile, "r")
 	fileObj.pos := fileObj.length
 	Loop {
 		if ( !( FileExist(logsFile) ) || ( fileObj.pos > fileObj.length ) || fileObj.pos = -1 ) ||  {
+			Logs_Append("Monitor_Game_Logs_Break",,fileObj.pos,fileObj.length)
 			Break
 		}
 		if ( fileObj.pos < fileObj.length ) {
@@ -299,7 +231,6 @@ Monitor_Game_Logs(mode="", previousTrades="", previousX="unspecified", previousY
 				{
 					gamePID := subPat1, whispName := subPat2, whispMsg := subPat3
 					if ( VALUE_Whisper_Tray = 1 ) && !( WinActive("ahk_pid " gamePID) ) {
-						gameHwnd := WinExist("ahk_pid " gamePID)
 						TrayTip, Whisper Received:,%whispName%: %whispMsg%
 						TrayTip, Whisper Received:,%whispName%: %whispMsg%
 						SetTimer, Remove_TrayTip, -10000
@@ -307,6 +238,7 @@ Monitor_Game_Logs(mode="", previousTrades="", previousX="unspecified", previousY
 							SoundPlay,%VALUE_Whisper_Sound_Path%
 					}
 					if ( VALUE_Whisper_Flash = 1 ) && !( WinActive("ahk_pid " gamePID) ) {
+						gameHwnd := WinExist("ahk_pid " gamePID)
 						DllCall("FlashWindow", UInt, gameHwnd, Int, 1) ; Flashes the game window
 					}
 					messages := whispName . ": " whispMsg "`n"
@@ -393,11 +325,64 @@ Hotkeys_User_6:
 	Hotkeys_User_Handler(A_ThisLabel)
 Return
 
+Hotkeys_User_7:
+	Hotkeys_User_Handler(A_ThisLabel)
+Return
+
+Hotkeys_User_8:
+	Hotkeys_User_Handler(A_ThisLabel)
+Return
+
+Hotkeys_User_9:
+	Hotkeys_User_Handler(A_ThisLabel)
+Return
+
+Hotkeys_User_10:
+	Hotkeys_User_Handler(A_ThisLabel)
+Return
+
+Hotkeys_User_11:
+	Hotkeys_User_Handler(A_ThisLabel)
+Return
+
+Hotkeys_User_12:
+	Hotkeys_User_Handler(A_ThisLabel)
+Return
+
+Hotkeys_User_13:
+	Hotkeys_User_Handler(A_ThisLabel)
+Return
+
+Hotkeys_User_14:
+	Hotkeys_User_Handler(A_ThisLabel)
+Return
+
+Hotkeys_User_15:
+	Hotkeys_User_Handler(A_ThisLabel)
+Return
+
+Hotkeys_User_16:
+	Hotkeys_User_Handler(A_ThisLabel)
+Return
+
 Hotkeys_User_Handler(thisLabel) {
-	key := (thisLabel="Hotkeys_User_1")?("HK1"):(thisLabel="Hotkeys_User_2")?("HK2"):(thisLabel="Hotkeys_User_3")?("HK3"):(thisLabel="Hotkeys_User_4")?("HK4"):(thisLabel="Hotkeys_User_5")?("HK5"):(thisLabel="Hotkeys_User_6")?("HK6"):("ERROR")
-	IniRead, textToSend,% iniFilePath,HOTKEYS,% key "_TEXT"
+	static
+	global VALUE_Hotkeys_Mode
+	tradesInfosArray := Object()
+	tabID := Gui_Trades_Get_Tab_ID()
+	if ( tabID != 0 ) {
+		tradesInfosArray := Gui_Trades_Get_Trades_Infos(tabID) ; [0] buyerName - [1] itemName - [2] itemPrice
+	}
+	if ( VALUE_Hotkeys_Mode = "Advanced" ) {
+		key := (thisLabel="Hotkeys_User_1")?("HK1"):(thisLabel="Hotkeys_User_2")?("HK2"):(thisLabel="Hotkeys_User_3")?("HK3"):(thisLabel="Hotkeys_User_4")?("HK4"):(thisLabel="Hotkeys_User_5")?("HK5"):(thisLabel="Hotkeys_User_6")?("HK6"):(thisLabel="Hotkeys_User_7")?("HK7"):(thisLabel="Hotkeys_User_8")?("HK8"):(thisLabel="Hotkeys_User_9")?("HK9"):(thisLabel="Hotkeys_User_10")?("HK10"):(thisLabel="Hotkeys_User_11")?("HK11"):(thisLabel="Hotkeys_User_12")?("HK12"):(thisLabel="Hotkeys_User_13")?("HK13"):(thisLabel="Hotkeys_User_14")?("HK14"):(thisLabel="Hotkeys_User_15")?("HK15"):(thisLabel="Hotkeys_User_16")?("HK16"):("ERROR")
+		IniRead, textToSend,% iniFilePath,HOTKEYS_ADVANCED,% key "_ADV_TEXT"
+	}
+	else {
+		key := (thisLabel="Hotkeys_User_1")?("HK1"):(thisLabel="Hotkeys_User_2")?("HK2"):(thisLabel="Hotkeys_User_3")?("HK3"):(thisLabel="Hotkeys_User_4")?("HK4"):(thisLabel="Hotkeys_User_5")?("HK5"):(thisLabel="Hotkeys_User_6")?("HK6"):("ERROR")
+		IniRead, textToSend,% iniFilePath,HOTKEYS,% key "_TEXT"
+	}
 	;Send_InGame_Message(textToSend, 0, 2) ; __TO_BE_ADDED__ Go back to the previous channel
-	Send_InGame_Message(textToSend, "",1)
+	Send_InGame_Message(textToSend, tradesInfosArray,1)
 }
 
 ;==================================================================================================================
@@ -412,7 +397,7 @@ Gui_Trades(infosArray="", errorMsg="", xpos="unspecified", ypos="unspecified") {
 ;			Switching tab will clipboard the item's infos if the user enabled
 ;			Is transparent and click-through when there is no trade on queue
 	global
-	static tabWidth, tabHeight, tradesCount, index, element, varText, varName, tabName, trans, priceArray, btnID, Clipboard_Backup, gameGroup, itemArray, itemName, itemPrice, messageToSend
+	static tabWidth, tabHeight, tradesCount, index, element, varText, varName, tabName, trans, priceArray, btnID, Clipboard_Backup, itemArray, itemName, itemPrice, messageToSend
 	static nameArray, buyerName
 
 	Gui, Trades:Destroy
@@ -561,7 +546,6 @@ Gui_Trades(infosArray="", errorMsg="", xpos="unspecified", ypos="unspecified") {
 	
 	Gui_Trades_Thanks:
 ;		Send a message to the player and close the tab
-		btnID := Gui_Trades_Get_Tab_ID(A_GuiControl)
 		if ( btnID = "0" )
 			return
 		tradesInfosArray := Object()
@@ -610,7 +594,11 @@ Gui_Trades(infosArray="", errorMsg="", xpos="unspecified", ypos="unspecified") {
 }
 
 GUI_Trades_Mode:
-	thisMenuItem := A_ThisMenuItem
+	Gui_Trades_Mode_Func(A_ThisMenuItem)
+Return
+
+Gui_Trades_Mode_Func(thisMenuItem) {
+	static
 	global VALUE_Trades_GUI_Mode, iniFilePath
 	if ( thisMenuItem = "Mode: Overlay") {
 		Menu, Tray, UnCheck,% "Mode: Window"
@@ -625,26 +613,27 @@ GUI_Trades_Mode:
 	IniWrite,% VALUE_Trades_GUI_Mode,% iniFilePath,SETTINGS,Trades_GUI_Mode
 	messagesArray := Gui_Trades_Manage_Trades("Get_All")
 	Gui_Trades(messagesArray)
-Return
+}
 
-Gui_Trades_Get_Tab_ID(controlName){
-	GuiControlGet, varName, Trades:Name, %controlName%
-	btnID := RegExReplace(varName, "\D")
-	return btnID
+Gui_Trades_Get_Tab_ID(controlName=""){
+	static
+	GuiControlGet, tabID, Trades:, Tab
+	return tabID
 }
 
 Gui_Trades_Get_Trades_Infos(btnID){
-	GuiControlGet, buyerName, ,buyerSlot%btnID%
-	GuiControlGet, itemName, ,itemSlot%btnID%
-	GuiControlGet, itemPrice, ,priceSlot%btnID%
-	GuiControlGet, thisPID, ,PIDSlot%btnID%
+	static
+	GuiControlGet, buyerName, Trades:,buyerSlot%btnID%
+	GuiControlGet, itemName, Trades:,itemSlot%btnID%
+	GuiControlGet, itemPrice, Trades:,priceSlot%btnID%
+	GuiControlGet, thisPID, Trades:,PIDSlot%btnID%
 	returnArray := Object()
 	returnArray.Insert(0, buyerName, itemName, itemPrice, thisPID)
 	return returnArray
 }
 
 Gui_Trades_Manage_Trades(mode="", newItemInfos=""){
-;
+;		Allows to retrieve all current trades, add a new or or remove the currently active tab
 ;
 	static
 
@@ -800,6 +789,7 @@ Gui_Trades_Manage_Trades(mode="", newItemInfos=""){
 
 Gui_Trades_RemoveGuildPrefix(name) {
 ;			Remove the guild prefix
+	static
 	AutoTrim, On
 	RegExMatch(name, "<.*>(.*)", namePat) ; name contains guild prefix, remove it
 	if ( namePat1 )
@@ -810,13 +800,12 @@ Gui_Trades_RemoveGuildPrefix(name) {
 
 Gui_Trades_Set_Position(xpos="unspecified", ypos="unspecified"){
 ;			Refresh the Trades GUI position
-	global VALUE_Trades_GUI_Mode, tradesGuiWidth, tradesGuiHeight, GuiTradesHandler, VALUE_Trades_GUI_Last_State, VALUE_Trades_GUI_Current_State, VALUE_Dock_Window
-	
-	gameGroup := Get_Exe_From_Mode(VALUE_Dock_Mode, "VALUE_Dock_Mode")
+	static
+	global VALUE_Trades_GUI_Mode, tradesGuiWidth, tradesGuiHeight, GuiTradesHandler, VALUE_Trades_GUI_Last_State, VALUE_Trades_GUI_Current_State, VALUE_Dock_Window, VALUE_Trades_GUI_Mode
+
 	dpiFactor := Get_DPI_Factor()
 
 	if ( VALUE_Trades_GUI_Mode = "Window" && xpos != "unspecified" && ypos != "unspecified" ) {
-		xpos := xpos * dpiFactor, ypos := ypos * dpiFactor
 		if ( VALUE_Trades_GUI_Last_State = "Inactive" && VALUE_Trades_GUI_Current_State = "Active" ) ; Inactive and Active GUI have different size, so we have to compensate when switching from one to another
 			xpos := xpos - (65*dpiFactor)
 		else if ( VALUE_Trades_GUI_Last_State = "Active" && VALUE_Trades_GUI_Current_State = "Inactive")
@@ -842,6 +831,7 @@ Gui_Trades_Set_Position(xpos="unspecified", ypos="unspecified"){
 		}
 	}
 	VALUE_Trades_GUI_Last_State := VALUE_Trades_GUI_Current_State ; backup of the old state, so we know when we switch from one to another
+;	Logs_Append(A_ThisFunc,, xpos, ypos)
 }
 
 ;==================================================================================================================
@@ -853,8 +843,9 @@ Gui_Trades_Set_Position(xpos="unspecified", ypos="unspecified"){
 Gui_Settings() {
 	static
 	iniFile := iniFilePath
-	global Hotkey1_KEYHandler, Hotkey2_KEYHandler, Hotkey3_KEYHandler, Hotkey4_KEYHandler, Hotkey5_KEYHandler, Hotkey6_KEYHandler, 
+	global Hotkey1_KEYHandler, Hotkey2_KEYHandler, Hotkey3_KEYHandler, Hotkey4_KEYHandler, Hotkey5_KEYHandler, Hotkey6_KEYHandler, VALUE_Hotkeys_Mode
 	
+	guiCreated := 0
 	OnMessage(0x200,"WM_MOUSEMOVE", 1)
 	Gui, Settings:Destroy
 	Gui, Settings:New, +AlwaysOnTop +SysMenu -MinimizeBox -MaximizeBox +OwnDialogs +LabelGui_Settings_ hwndSettingsHandler,% programName " - Settings"
@@ -864,7 +855,8 @@ Gui_Settings() {
 		Gui, Add, Tab3, vTab x10 y10,Settings|Messages|Hotkeys
 	else
 		Gui, Add, Tab3, vTab x10 y10 -Theme,Settings|Messages|Hotkeys
-	Gui, Tab, Settings
+
+	Gui, Tab, 1
 ;	Settings Tab
 ;		Trades GUI
 		Gui, Add, GroupBox, x20 y40 w200 h260,Trades GUI
@@ -898,10 +890,11 @@ Gui_Settings() {
 		Gui, Add, Checkbox, xp+80 yp+20 vMessageSupportToggle hwndMessageSupportToggleHandler gGui_Settings_Support_MsgBox
 		Gui, Add, Text, gGUI_Settings_Tick_Case vMessageSupportToggleText xp-55 yp+13,% "Support the software by allowing`n   an additional message when`nclicking the Thanks/Sold buttons"
 ;		Apply Button
-		Gui, Add, Button, x20 y310 w420 h30 gGui_Settings_Btn_Apply vApplyBtn,Apply Settings
+		Gui, Add, Button, x20 y310 w300 h30 gGui_Settings_Btn_Apply vApplyBtn,Apply Settings
+		Gui, Add, Button, x320 y310 w120 h30 vWikiBtn gGui_Settings_Btn_WIKI,Visit the WIKI
 	
 ;	Message Tab
-	Gui, Tab, Messages
+	Gui, Tab, 2
 ;		Top message
 		Gui, Add, Text, x20 y40,Use these variables in your message to specify the infos about the item:
 		Gui, Add, Text, xp+10 yp+15,`%buyerName`% %A_Tab%%A_Tab% Contains the buyer's name
@@ -924,36 +917,94 @@ Gui_Settings() {
 		Gui, Add, CheckBox, xp yp+20 vMessageSoldToggle hwndMessageSoldToggleHandler,
 		Gui, Add, Edit, xp+25 yp-3 w390 vMessageSold hwndMessageSoldHandler
 ;		Apply Button
-		Gui, Add, Button, x20 y310 w420 h30 gGui_Settings_Btn_Apply vApplyBtn2,Apply Settings
+		Gui, Add, Button, x20 y310 w300 h30 gGui_Settings_Btn_Apply vApplyBtn2,Apply Settings
+		Gui, Add, Button, x320 y310 w120 h30 vWikiBtn2 gGui_Settings_Btn_WIKI,Visit the WIKI
 
 ;	Hotkeys Tab
-	Gui, Tab, Hotkeys
+	Gui, Tab, 3
+	Gui, Add, Button, x130 y35 gGui_Settings_Hotkeys_Switch w200 hwndHotkeys_SwitchToBasicHandler,Switch to Basic
+	xpos := 20, ypos := 70
+	Loop 16 {
+		btnID := A_Index
+		if ( btnID > 1 && btnID <= 8 ) || ( btnID > 9 )
+			ypos += 30
+		else if ( btnID = 9 )
+			xpos := 235, ypos := 70
+		Gui, Add, Checkbox, x%xpos% y%ypos% vHotkeyAdvanced%btnID%_Toggle hwndHotkeyAdvanced%btnID%_ToggleHandler
+		Gui, Add, Edit, xp+30 yp-3 w60 vHotkeyAdvanced%btnID%_KEY hwndHotkeyAdvanced%btnID%_KEYHandler
+		Gui, Add, Edit, xp+65 yp w110 gGui_Settings_Hotkeys_Tooltip vHotkeyAdvanced%btnID%_Text hwndHotkeyAdvanced%btnID%_TextHandler
+		if ( VALUE_Hotkeys_Mode != "Advanced" )  {
+			GuiControl,Settings:Hide,% Hotkeys_SwitchToBasicHandler
+			GuiControl,Settings:Hide,% HotkeyAdvanced%btnID%_ToggleHandler
+			GuiControl,Settings:Hide,% HotkeyAdvanced%btnID%_KEYHandler
+			GuiControl,Settings:Hide,% HotkeyAdvanced%btnID%_TextHandler
+		}
+	}
 
-	ypos := 30,	xpos := 20
+	Gui, Add, Button, x130 y35 gGui_Settings_Hotkeys_Switch w200 hwndHotkeys_SwitchToAdvancedHandler,Switch to Advanced
+	xpos := 20, ypos := 55
 	Loop 6 {
 		btnID := A_Index
-		if (btnID > 1 && btnID <= 3)
-			ypos += 90
+		if (btnID > 1 && btnID <= 3) || (btnID > 4)
+			ypos += 80
 		else if (btnID = 4)
-			xpos := 235, ypos := 30
-		else if (btnID > 4)
-			ypos +=90
-		Gui, Add, GroupBox, x%xpos% y%ypos% w200 h95
+			xpos := 230, ypos := 55
+		Gui, Add, GroupBox, x%xpos% y%ypos% w209 h90 hwndHotkey%btnID%_GroupBox
 		Gui, Add, Checkbox, xp+10 yp+20 vHotkey%btnID%_Toggle hwndHotkey%btnID%_ToggleHandler
 		Gui, Add, Edit, xp+30 yp-4 w150 vHotkey%btnID%_Text hwndHotkey%btnID%_TextHandler,
-		Gui, Add, Hotkey, xp yp+25 vHotkey%btnID%_KEY hwndHotkey%btnID%_KEYHandler gGui_Settings_Hotkeys,
+		Gui, Add, Hotkey, xp yp+25 w150 vHotkey%btnID%_KEY hwndHotkey%btnID%_KEYHandler gGui_Settings_Hotkeys,
 		Gui, Add, Checkbox, xp yp+28 vHotkey%btnID%_CTRL hwndHotkey%btnID%_CTRLHandler,CTRL
 		Gui, Add, Checkbox, xp+50 yp vHotkey%btnID%_ALT hwndHotkey%btnID%_ALTHandler,ALT
 		Gui, Add, Checkbox, xp+42 yp vHotkey%btnID%_SHIFT hwndHotkey%btnID%_SHIFTHandler,SHIFT
+		if ( VALUE_Hotkeys_Mode != "Basic" ) {
+			GuiControl,Settings:Hide,% Hotkeys_SwitchToAdvancedHandler
+			GuiControl,Settings:Hide,% Hotkey%btnID%_GroupBox
+			GuiControl,Settings:Hide,% Hotkey%btnID%_ToggleHandler
+			GuiControl,Settings:Hide,% Hotkey%btnID%_TextHandler
+			GuiControl,Settings:Hide,% Hotkey%btnID%_KEYHandler
+			GuiControl,Settings:Hide,% Hotkey%btnID%_CTRLHandler
+			GuiControl,Settings:Hide,% Hotkey%btnID%_ALTHandler
+			GuiControl,Settings:Hide,% Hotkey%btnID%_SHIFTHandler
+		}
 	}
-	Gui, Add, Button, x20 y310 w420 h30 gGui_Settings_Btn_Apply vApplyBtn3,Apply Settings
-
+	Gui, Add, Button, x20 y310 w300 h30 gGui_Settings_Btn_Apply vApplyBtn3 gGui_Settings_Btn_WIKI,Apply Settings
+	Gui, Add, Button, x320 y310 w120 h30 vWikiBtn3 ,Visit the WIKI
 	GuiControl, Choose, Tab, 1
-	GoSub Gui_Settings_Set_Preferences
+	GoSub, Gui_Settings_Set_Preferences
+	GuiControl, +gGui_Settings_Hotkeys_Tooltip, Settings:
 	Gui, Trades: -E0x20
 	Gui, Show
-	sleep 100
+	guiCreated := 1
 return
+
+	Gui_Settings_Btn_WIKI:
+		Run, % "https://github.com/lemasato/POE-Trades-Helper/wiki"
+	Return
+	
+	Gui_Settings_Hotkeys_Tooltip:
+		if ( guiCreated = 0 )
+			Return
+		Gui, Settings:Submit, NoHide
+		RegExMatch(A_GuiControl, "\d+", btnID)
+		ctrlHandler := (btnID=1)?(HotkeyAdvanced1_TextHandler):(btnID=2)?(HotkeyAdvanced2_TextHandler):(btnID=3)?(HotkeyAdvanced3_TextHandler):(btnID=4)?(HotkeyAdvanced4_TextHandler):(btnID=5)?(HotkeyAdvanced5_TextHandler):(btnID=6)?(HotkeyAdvanced6_TextHandler):(btnID=7)?(HotkeyAdvanced7_TextHandler):(btnID=8)?(HotkeyAdvanced8_TextHandler):(btnID=9)?(HotkeyAdvanced9_TextHandler):(btnID=10)?(HotkeyAdvanced10_TextHandler):(btnID=11)?(HotkeyAdvanced11_TextHandler):(btnID=12)?(HotkeyAdvanced12_TextHandler):(btnID=13)?(HotkeyAdvanced13_TextHandler):(btnID=14)?(HotkeyAdvanced14_TextHandler):(btnID=15)?(HotkeyAdvanced15_TextHandler):(btnID=16)?(HotkeyAdvanced16_TextHandler):("ERROR")
+		GuiControlGet, ctrlContent, Settings:,% ctrlHandler
+		try 
+			ToolTip,% ctrlContent
+	Return
+
+	Gui_Settings_Hotkeys_Switch:
+		if ( A_GuiControl = "Switch to Advanced" ) {
+			IniWrite,% "Advanced",% iniFilePath, SETTINGS,Hotkeys_Mode
+			VALUE_Hotkeys_Mode := "Advanced"
+		}
+		else {
+			IniWrite,% "Basic",% iniFilePath, SETTINGS,Hotkeys_Mode
+			VALUE_Hotkeys_Mode := "Basic"
+		}
+		GoSub Gui_Settings_Btn_Apply
+		Gui_Settings()
+		GuiControl, Settings:Choose, Tab, 3
+	Return
 
 	Gui_Settings_Support_MsgBox:
 		Gui, Settings: Submit, NoHide
@@ -962,7 +1013,6 @@ return
 			MsgBox, 4096,:o,% "Thank you for enabling the support message!"
 			.	"`nAlso, feel free to recommend " programName " to your friends!"
 		}
-		
 	Return
 
 	
@@ -1018,12 +1068,9 @@ return
 	return
 	
 	Gui_Settings_Hotkeys:
-		Gui, +OwnDialogs
-		thisControl := A_GuiControl
-		hotkeyHandler := %thisControl%Handler
-		GuiControlGet, strHotkey, ,% hotkeyHandler
-		if strHotKey contains ^,!,+ ; Prevent modifier keys from slipping trough
-			GuiControl, Settings: ,% hotkeyHandler, None
+		RegExMatch(A_GuiControl, "\d+", btnID)
+		hotkeyHandler := (btnID="1")?(Hotkey1_KEYHandler):(btnID="2")?(Hotkey2_KEYHandler):(btnID="3")?(Hotkey3_KEYHandler):(btnID="4")?(Hotkey4_KEYHandler):(btnID="5")?(Hotkey5_KEYHandler):(btnID="6")?(Hotkey6_KEYHandler):("ERROR")
+		Gui_Settings_Hotkeys_Func(hotkeyHandler)
 	return
 	
 	Gui_Settings_Btn_Apply:
@@ -1047,7 +1094,7 @@ return
 		IniWrite,% NotifyWhisperToggle,% iniFile,NOTIFICATIONS,Whisper_Toggle
 		IniWrite,% NotifyWhisperSound,% iniFile,NOTIFICATIONS,Whisper_Sound
 		if ( whispersSoundFile )
-		IniWrite,% whispersSoundFile,% iniFile,NOTIFICATIONS,Whisper_Sound_Path
+			IniWrite,% whispersSoundFile,% iniFile,NOTIFICATIONS,Whisper_Sound_Path
 		IniWrite,% NotifyWhisperTray,% iniFile,NOTIFICATIONS,Whisper_Tray
 		IniWrite,% NotifyWhisperFlash,% iniFile,NOTIFICATIONS,Whisper_Flash
 ;	Support
@@ -1066,7 +1113,7 @@ return
 		IniWrite,% MessageSoldToggle,% iniFile,MESSAGES,Sold_Text_Toggle
 		IniWrite,% MessageSold,% iniFile,MESSAGES,Sold_Text
 ;	Hotkeys
-	;	1 -- Cant use a loop to write all six at once, since the variable has to be globally assigned to make it work
+	;	1
 		IniWrite,% Hotkey1_Toggle,% iniFile,HOTKEYS,HK1_Toggle
 		IniWrite,% Hotkey1_Text,% iniFile,HOTKEYS,HK1_Text
 		IniWrite,% Hotkey1_KEY,% iniFile,HOTKEYS,HK1_KEY
@@ -1108,6 +1155,22 @@ return
 		IniWrite,% Hotkey6_CTRL,% iniFile,HOTKEYS,HK6_CTRL
 		IniWrite,% Hotkey6_ALT,% iniFile,HOTKEYS,HK6_ALT
 		IniWrite,% Hotkey6_SHIFT,% iniFile,HOTKEYS,HK6_SHIFT
+;	Hotkeys Advanced
+		Loop 16 {
+			index := A_Index
+			KEY := (index=1)?("HK1_ADV_Toggle"):(index=2)?("HK2_ADV_Toggle"):(index=3)?("HK3_ADV_Toggle"):(index=4)?("HK4_ADV_Toggle"):(index=5)?("HK5_ADV_Toggle"):(index=6)?("HK6_ADV_Toggle"):(index=7)?("HK7_ADV_Toggle"):(index=8)?("Hk8_ADV_Toggle"):(index=9)?("HK9_ADV_Toggle"):(index=10)?("HK10_ADV_Toggle"):(index=11)?("HK11_ADV_Toggle"):(index=12)?("HK12_ADV_Toggle"):(index=13)?("HK13_ADV_Toggle"):(index=14)?("HK14_ADV_Toggle"):(index=15)?("HK15_ADV_Toggle"):(index=16)?("HK16_ADV_Toggle"):("ERROR")
+			CONTENT := (index=1)?(HotkeyAdvanced1_Toggle):(index=2)?(HotkeyAdvanced2_Toggle):(index=3)?(HotkeyAdvanced3_Toggle):(index=4)?(HotkeyAdvanced4_Toggle):(index=5)?(HotkeyAdvanced5_Toggle):(index=6)?(HotkeyAdvanced6_Toggle):(index=7)?(HotkeyAdvanced7_Toggle):(index=8)?(HotkeyAdvanced8_Toggle):(index=9)?(HotkeyAdvanced9_Toggle):(index=10)?(HotkeyAdvanced10_Toggle):(index=11)?(HotkeyAdvanced11_Toggle):(index=12)?(HotkeyAdvanced12_Toggle):(index=13)?(HotkeyAdvanced13_Toggle):(index=14)?(HotkeyAdvanced14_Toggle):(index=15)?(HotkeyAdvanced15_Toggle):(index=16)?(HotkeyAdvanced16_Toggle):("ERROR")
+			IniWrite,% CONTENT,% iniFile,HOTKEYS_ADVANCED,% KEY
+
+			KEY := (index=1)?("HK1_ADV_KEY"):(index=2)?("HK2_ADV_KEY"):(index=3)?("HK3_ADV_KEY"):(index=4)?("HK4_ADV_KEY"):(index=5)?("HK5_ADV_KEY"):(index=6)?("HK6_ADV_KEY"):(index=7)?("HK7_ADV_KEY"):(index=8)?("HK8_ADV_KEY"):(index=9)?("HK9_ADV_KEY"):(index=10)?("HK10_ADV_KEY"):(index=11)?("HK11_ADV_KEY"):(index=12)?("HK12_ADV_KEY"):(index=13)?("HK13_ADV_KEY"):(index=14)?("HK14_ADV_KEY"):(index=15)?("HK15_ADV_KEY"):(index=16)?("HK16_ADV_KEY"):("ERROR")
+			CONTENT := (index=1)?(HotkeyAdvanced1_KEY):(index=2)?(HotkeyAdvanced2_KEY):(index=3)?(HotkeyAdvanced3_KEY):(index=4)?(HotkeyAdvanced4_KEY):(index=5)?(HotkeyAdvanced5_KEY):(index=6)?(HotkeyAdvanced6_KEY):(index=7)?(HotkeyAdvanced7_KEY):(index=8)?(HotkeyAdvanced8_KEY):(index=9)?(HotkeyAdvanced9_KEY):(index=10)?(HotkeyAdvanced10_KEY):(index=11)?(HotkeyAdvanced11_KEY):(index=12)?(HotkeyAdvanced12_KEY):(index=13)?(HotkeyAdvanced13_KEY):(index=14)?(HotkeyAdvanced14_KEY):(index=15)?(HotkeyAdvanced15_KEY):(index=16)?(HotkeyAdvanced16_KEY):("ERROR")
+			IniWrite,% CONTENT,% iniFile,HOTKEYS_ADVANCED,% KEY
+
+			KEY := (index=1)?("HK1_ADV_Text"):(index=2)?("HK2_ADV_Text"):(index=3)?("HK3_ADV_Text"):(index=4)?("HK4_ADV_Text"):(index=5)?("HK5_ADV_Text"):(index=6)?("HK6_ADV_Text"):(index=7)?("HK7_ADV_Text"):(index=8)?("HK8_ADV_Text"):(index=9)?("HK9_ADV_Text"):(index=10)?("HK10_ADV_Text"):(index=11)?("HK11_ADV_Text"):(index=12)?("HK12_ADV_Text"):(index=13)?("hK13_ADV_Text"):(index=14)?("HK14_ADV_Text"):(index=15)?("HK15_ADV_Text"):(index=16)?("HK16_ADV_Text"):("ERROR")
+			CONTENT := (index=1)?(HotkeyAdvanced1_Text):(index=2)?(HotkeyAdvanced2_Text):(index=3)?(HotkeyAdvanced3_Text):(index=4)?(HotkeyAdvanced4_Text):(index=5)?(HotkeyAdvanced5_Text):(index=6)?(HotkeyAdvanced6_Text):(index=7)?(HotkeyAdvanced7_Text):(index=8)?(HotkeyAdvanced8_Text):(index=9)?(HotkeyAdvanced9_Text):(index=10)?(HotkeyAdvanced10_Text):(index=11)?(HotkeyAdvanced11_Text):(index=12)?(HotkeyAdvanced12_Text):(index=13)?(HotkeyAdvanced13_Text):(index=14)?(HotkeyAdvanced14_Text):(index=15)?(HotkeyAdvanced15_Text):(index=16)?(HotkeyAdvanced16_Text):("ERROR")
+			IniWrite,% CONTENT,% iniFile,HOTKEYS_ADVANCED,% KEY
+
+		}
 ;	Declare the new settings
 		Disable_Hotkeys()
 		settingsArray := Get_INI_Settings()
@@ -1135,6 +1198,8 @@ return
 		NOTIFICATIONS_HandlersKeysArray := returnArray.NOTIFICATIONS_HandlersKeysArray
 		MESSAGES_HandlersArray := returnArray.MESSAGES_HandlersArray
 		MESSAGES_HandlersKeysArray := returnArray.MESSAGES_HandlersKeysArray
+		HOTKEYS_ADVANCED_HandlersArray := returnArray.HOTKEYS_ADVANCED_HandlersArray
+		HOTKEYS_ADVANCED_HandlersKeysArray := returnArray.HOTKEYS_ADVANCED_HandlersKeysArray
 
 		for key, element in sectionArray
 		{
@@ -1166,21 +1231,35 @@ return
 	return
 }
 
+Gui_Settings_Hotkeys_Func(ctrlHandler) {
+	GuiControlGet, strHotkey, ,% ctrlHandler
+	if strHotKey contains ^,!,+ ; Prevent modifier keys from slipping trough
+		GuiControl, Settings: ,% ctrlHandler, None
+}
+
+Show_Tooltip(ctrlName, ctrlHandler) {
+	RegExMatch(ctrlName, "\d+", btnID)
+	GuiControlGet, ctrlVar, Settings:,% ctrlHandler
+	ToolTip,% ctrlVar
+}
+
+
 Gui_Settings_Get_Settings_Arrays() {
 ;			Contains all the section/handlers/keys/defaut values for the Settings GUI
 ;			Return an array containing all those informations
+	static
 	returnArray := Object()
 	returnArray.sectionArray := Object() ; contains all the .ini SECTIONS
-	returnArray.sectionArray.Insert(0, "SETTINGS", "AUTO_CLIP", "HOTKEYS", "NOTIFICATIONS", "MESSAGES")
+	returnArray.sectionArray.Insert(0, "SETTINGS", "AUTO_CLIP", "HOTKEYS", "NOTIFICATIONS", "MESSAGES", "HOTKEYS_ADVANCED")
 	
 	returnArray.SETTINGS_HandlersArray := Object() ; contains all the Gui_Settings HANDLERS from this SECTION
 	returnArray.SETTINGS_HandlersArray.Insert(0, "ShowAlways", "ShowInGame", "ShowTransparency", "ShowTransparencyActive")
 	returnArray.SETTINGS_HandlersKeysArray := Object() ; contains all the .ini KEYS for those HANDLERS
 	returnArray.SETTINGS_HandlersKeysArray.Insert(0, "Show_Mode", "Show_Mode", "Transparency", "Transparency_Active")
 	returnArray.SETTINGS_KeysArray := Object() ; contains all the individual .ini KEYS
-	returnArray.SETTINGS_KeysArray.Insert(0, "Show_Mode", "Transparency", "Trades_GUI_Mode", "Transparency_Active")
+	returnArray.SETTINGS_KeysArray.Insert(0, "Show_Mode", "Transparency", "Trades_GUI_Mode", "Transparency_Active", "Hotkeys_Mode")
 	returnArray.SETTINGS_DefaultValues := Object() ; contains all the DEFAULT VALUES for the .ini KEYS
-	returnArray.SETTINGS_DefaultValues.Insert(0, "Always", "150", "Overlay", "255")
+	returnArray.SETTINGS_DefaultValues.Insert(0, "Always", "150", "Overlay", "255", "Basic")
 	
 	returnArray.AUTO_CLIP_HandlersArray := Object()
 	returnArray.AUTO_CLIP_HandlersArray.Insert(0, "ClipNew", "ClipTab")
@@ -1202,12 +1281,12 @@ Gui_Settings_Get_Settings_Arrays() {
 		returnArray.HOTKEYS_HandlersKeysArray.Insert(keyID, "HK" index "_Toggle", "HK" index "_Text", "HK" index "_KEY","HK" index "_CTRL", "HK" index "_ALT", "HK" index "_SHIFT")
 		returnArray.HOTKEYS_KeysArray.Insert(keyID, "HK" index "_Toggle", "HK" index "_Text", "HK" index "_KEY","HK" index "_CTRL", "HK" index "_ALT", "HK" index "_SHIFT")
 		hkToggle := (index=1)?(1) : (0)
-		hkTxtCmd := (index=1)?("/hideout") : (index=2)?("/kick YourName") : (index=4)?("/oos") : ("Insert Command or Message")
+		hkTxtCmd := (index=1)?("/hideout") : (index=2)?("/kick YourName") : (index=3)?("/oos") : ("Insert Command or Message")
 		hkKeyCmd := (index=1)?("F2") : ("")
 		returnArray.HOTKEYS_DefaultValues.Insert(keyID, hkToggle, hkTxtCmd, hkKeyCmd, "0", "0", "0")
 		keyID+=6
 	}
-	
+
 	returnArray.NOTIFICATIONS_HandlersArray := Object()
 	returnArray.NOTIFICATIONS_HandlersArray.Insert(0, "NotifyTradeToggle", "NotifyTradeSound", "NotifyWhisperToggle", "NotifyWhisperSound", "NotifyWhisperTray", "NotifyWhisperFlash")
 	returnArray.NOTIFICATIONS_HandlersKeysArray := Object()
@@ -1225,6 +1304,23 @@ Gui_Settings_Get_Settings_Arrays() {
 	returnArray.MESSAGES_KeysArray.Insert(0, "Wait_Text_Toggle", "Wait_Text", "Invite_Text_Toggle", "Invite_Text", "Thanks_Text_Toggle", "Thanks_Text", "Sold_Text_Toggle", "Sold_Text", "Support_Text_Toggle")
 	returnArray.MESSAGES_DefaultValues := Object()
 	returnArray.MESSAGES_DefaultValues.Insert(0, "1", "@%buyerName% One moment please! (%itemName% // %itemPrice%)", "1", "@%buyerName% Your item is ready to be picked up at my hideout! (%itemName% // %itemPrice%)", "1", "@%buyerName% Thank you, good luck & have fun!", "1", "@%buyerName% The requested item was sold! (%itemName% // %itemPrice%)", "0")
+
+	returnArray.HOTKEYS_ADVANCED_HandlersArray := Object()
+	returnArray.HOTKEYS_ADVANCED_HandlersKeysArray := Object()
+	returnArray.HOTKEYS_ADVANCED_KeysArray := Object()
+	returnArray.HOTKEYS_ADVANCED_DefaultValues := Object()
+	keyID := 0
+	Loop 16 {
+		index := A_Index
+		returnArray.HOTKEYS_ADVANCED_HandlersArray.Insert(keyID, "HotkeyAdvanced" index "_Toggle", "HotkeyAdvanced" index "_Text", "HotkeyAdvanced" index "_KEY")
+		returnArray.HOTKEYS_ADVANCED_HandlersKeysArray.Insert(keyID, "HK" index "_ADV_Toggle", "HK" index "_ADV_Text", "HK" index "_ADV_KEY")
+		returnArray.HOTKEYS_ADVANCED_KeysArray.Insert(keyID, "HK" index "_ADV_Toggle", "HK" index "_ADV_Text", "HK" index "_ADV_KEY")
+		hkToggle := (index=1)?(1) : (0)
+		hkTxtCmd := (index=1)?("{Enter}/hideout{Enter}") : (index=2)?("{Enter}/kick YourCharacter{Enter}{Enter}/kick YourOtherCharacter{Enter}") : (index=3)?("{Enter}/oos{Enter}") : ("")
+		hkKeyCmd := (index=1)?("F2") : ("")
+		returnArray.HOTKEYS_ADVANCED_DefaultValues.Insert(keyID, hkToggle, hkTxtCmd, hkKeyCmd)
+		keyID+=3
+	}
 	
 	return returnArray
 }
@@ -1232,6 +1328,7 @@ Gui_Settings_Get_Settings_Arrays() {
 Get_Control_ToolTip(controlName) {
 ;			Retrieves the tooltip for the corresponding control
 ;			Return a variable conaining the tooltip content
+	static
 	ShowInGame_TT := ShowAlways_TT := "Decide when should the GUI show."
 	. "`nAlways show:" A_Tab . A_Tab "The GUI will always appear."
 	. "`nOnly show while in game:" A_Tab "The GUI will only appear when the game's window is active."
@@ -1512,6 +1609,8 @@ Gui_About() {
 Get_INI_Settings() {
 ;			Retrieve the INI settings
 ;			Return a big array containing arrays for each section containing the keys and their values
+	static
+	global iniFilePath
 	iniFile := iniFilePath
 	
 	returnArray := Object()
@@ -1523,6 +1622,7 @@ Get_INI_Settings() {
 	HOTKEYS_KeysArray := returnArray.HOTKEYS_KeysArray
 	NOTIFICATIONS_KeysArray := returnArray.NOTIFICATIONS_KeysArray
 	MESSAGES_KeysArray := returnArray.MESSAGES_KeysArray
+	HOTKEYS_ADVANCED_KeysArray := returnArray.HOTKEYS_ADVANCED_KeysArray
 	
 	returnArray.KEYS := Object()
 	returnArray.VALUES := Object()
@@ -1542,6 +1642,7 @@ Get_INI_Settings() {
 
 Set_INI_Settings(){
 ;			Set the default INI settings if they do not exist
+	static
 	global iniFilePath
 	iniFile := iniFilePath	
 	
@@ -1555,9 +1656,6 @@ Set_INI_Settings(){
 	IniWrite,% fileProcessName,% iniFile,PROGRAM,FileProcessName
 	DetectHiddenWindows, Off
 
-	IniRead, firstRun,% iniFile,PROGRAM,First_Time_Running
-	if ( firstRun != 0 && firstRun != 1 && )
-		IniWrite,1,% iniFile,PROGRAM,First_Time_Running
 	IniRead, fixBuyer,% iniFile,PROGRAM,FIX_Add_BuyerName
 	if ( fixBuyer != 0 && fixBuyer != 1 )
 		IniWrite,1,% iniFile,PROGRAM,FIX_Add_BuyerName
@@ -1578,6 +1676,8 @@ Set_INI_Settings(){
 	NOTIFICATIONS_DefaultValues := settingsArray.NOTIFICATIONS_DefaultValues
 	MESSAGES_KeysArray := settingsArray.MESSAGES_KeysArray
 	MESSAGES_DefaultValues := settingsArray.MESSAGES_DefaultValues	
+	HOTKEYS_ADVANCED_KeysArray := settingsArray.HOTKEYS_ADVANCED_KeysArray
+	HOTKEYS_ADVANCED_DefaultValues := settingsArray.HOTKEYS_ADVANCED_DefaultValues
 ;	Set the value for each key
 	for key, element in sectionArray
 	{
@@ -1592,9 +1692,6 @@ Set_INI_Settings(){
 			}
 		}
 	}
-;~ returnArray.MESSAGES_DefaultValues.Insert(0, "1", "@%buyerName% One moment please! (%itemName% // %itemPrice%)", "1", "@%buyerName% Your item is ready to be picked up at my hideout! (%itemName% // %itemPrice%)", "1", "@%buyerName% Thank you, good luck & have fun!")
-	
-	
 }
 
 Declare_INI_Settings(iniArray) {
@@ -1608,40 +1705,149 @@ Declare_INI_Settings(iniArray) {
 
 ;==================================================================================================================
 ;
+;												HOTKEYS
+;
+;==================================================================================================================
+
+Disable_Hotkeys() {
+;	Disable the current hotkeys
+;	Always run Enable_Hotkeys() after to retrieve and assign the new hotkeys
+	static
+	global VALUE_Hotkeys_Mode
+	titleMatchMode := A_TitleMatchMode
+	SetTitleMatchMode, RegEx
+	Loop 6 {
+	index := A_Index
+	if ( VALUE_HK%index%_Toggle ) {
+			userHotkey%index% := VALUE_HK%index%_KEY
+		if ( VALUE_HK%index%_CTRL )
+			userHotkey%index% := "^" userHotkey%index%
+		if ( VALUE_HK%index%_ALT )
+			userHotkey%index% := "!" userHotkey%index%
+		if ( VALUE_HK%index%_SHIFT )
+			userHotkey%index% := "+" userHotkey%index%
+			Hotkey,IfWinActive,ahk_group POEGame
+			if ( userHotkey%index% != "" && userHotkey%index% != "ERROR" ) {
+				try {
+					Hotkey,% userHotkey%index%,Off
+				}
+			}
+		}
+	}
+	Loop 16 {
+		index := A_Index
+		if ( VALUE_HK%index%_ADV_Toggle ) {
+			userHotkey%index% := VALUE_HK%index%_ADV_KEY
+			Hotkey,IfWinActive,ahk_group POEGame
+			if ( userHotkey%index% != "" && userHotkey%indzex% != "ERROR" ) {
+				try {
+					Hotkey,% userHotkey%index%,Off
+				}
+			}
+		}
+	}		
+	SetTitleMatchMode, %titleMatchMode%	
+}
+
+Enable_Hotkeys() {
+;	Enable the hotkeys, based on its global VALUE_ content
+	static
+	global VALUE_Hotkeys_Mode
+	titleMatchMode := A_TitleMatchMode
+	SetTitleMatchMode, RegEx
+	if ( VALUE_Hotkeys_Mode = "Advanced" ) {
+		Loop 16 {
+			index := A_Index
+			if ( VALUE_HK%index%_ADV_Toggle ) {
+				userHotkey%index% := VALUE_HK%index%_ADV_KEY
+				Hotkey,IfWinActive,ahk_group POEGame
+				if ( userHotkey%index% != "" && userHotkey%index% != "ERROR" ) {
+					Hotkey,% userHotkey%index%,Hotkeys_User_%index%,On
+				}
+			}
+		}		
+	}
+	else {
+		Loop 6 {
+			index := A_Index
+			if ( VALUE_HK%index%_Toggle ) {
+				userHotkey%index% := VALUE_HK%index%_KEY
+				if ( VALUE_HK%index%_CTRL )
+					userHotkey%index% := "^" userHotkey%index%
+				if ( VALUE_HK%index%_ALT )
+					userHotkey%index% := "!" userHotkey%index%
+				if ( VALUE_HK%index%_SHIFT )
+					userHotkey%index% := "+" userHotkey%index%
+				Hotkey,IfWinActive,ahk_group POEGame
+				if ( userHotkey%index% != "" && userHotkey%index% != "ERROR" ) {
+					Hotkey,% userHotkey%index%,Hotkeys_User_%index%,On
+				}
+			}
+		}
+	}
+	SetTitleMatchMode, %titleMatchMode%
+}
+
+;==================================================================================================================
+;
 ;												MISC STUFF
 ;
 ;==================================================================================================================
 
+ShellMessage(wParam,lParam) {
+	global VALUE_Show_Mode, guiTradesHandler, tradesGuiWidth, VALUE_Dock_Window, VALUE_Trades_GUI_Mode
+	if ( wParam=4 or wParam=32772 ) { ; 4=HSHELL_WINDOWACTIVATED | 32772=HSHELL_RUDEAPPACTIVATED
+		if WinActive("ahk_id" guiTradesHandler) {
+;		Prevent keyboard presses from interacting with the tradesGUI and thus mis-clicking a button
+			Hotkey, IfWinActive, ahk_id %guiTradesHandler%
+			Hotkey, NumpadEnter, DoNothing, On
+			Hotkey, Escape, DoNothing, On
+			Hotkey, Space, DoNothing, On
+			Hotkey, Tab, DoNothing, On
+			Hotkey, Enter, DoNothing, On
+			Hotkey, Left, DoNothing, On
+			Hotkey, Right, DoNothing, On
+			Hotkey, Up, DoNothing, On
+			Hotkey, Down, DoNothing, On
+			Return ; returning prevents from triggering Gui_Trades_Set_Position while the GUI is active
+		}
+		if ( VALUE_Trades_GUI_Mode = "Window" )
+			Return
+
+		WinGet, winEXE, ProcessName, ahk_id %lParam%
+		WinGet, winID, ID, ahk_id %lParam%
+		if ( VALUE_Show_Mode = "Always" ) && ( tradesGuiWidth > 0 ) {
+			Gui_Trades_Set_Position()
+		}
+		else if ( ( VALUE_Show_Mode = "InGame" ) && ( tradesGuiWidth > 0 ) && ( VALUE_Dock_Window = winID ) )
+			Gui_Trades_Set_Position()
+		else if ( ( VALUE_Show_Mode = "InGame" ) && ( VALUE_Dock_Window != winID ) ) {
+			Logs_Append(A_ThisFunc,,VALUE_Show_Mode,VALUE_Dock_Window,winID)
+			Gui, Trades:Show, NoActivate Hide
+		}
+	}
+	if WinActive("ahk_id" guiTradesHandler) {
+;		Prevent keyboard presses from interacting with the tradesGUI and thus mis-clicking a button
+		Hotkey, IfWinActive, ahk_id %guiTradesHandler%
+		Hotkey, NumpadEnter, DoNothing, On
+		Hotkey, Escape, DoNothing, On
+		Hotkey, Space, DoNothing, On
+		Hotkey, Tab, DoNothing, On
+		Hotkey, Enter, DoNothing, On
+		Hotkey, Left, DoNothing, On
+		Hotkey, Right, DoNothing, On
+		Hotkey, Up, DoNothing, On
+		Hotkey, Down, DoNothing, On
+	}
+}
+
 Do_Once() {
 ;			Things that only need to be done ONCE
-;																			
-;	Run the Settings GUI when the user is using the program for the first time
-	IniRead, state,% iniFilePath,PROGRAM,First_Time_Running
-	if ( state = 1 ) {
-		Extract_Sound_Files()
-		MsgBox, ,Welcome!,Welcome & thank you for trying out this program!`n`Seems like it's your first time running %programName%...`nWorry not! The interface is simple and easy to understand.`n`nThe settings window will now open.`nThe "Help?" setting has been enabled: Hover the controls to see helpful tooltips!`n`nIf you would like to access the Settings menu again,`n  right click on the tray icon and pick [Settings]!
-		Gui_Settings()
-		IniWrite, 0,% iniFilePath,PROGRAM,First_Time_Running
-	}
-;	Add @%buyerName% to the message due to function change in 1.2
-	IniRead, state,% iniFilePath,PROGRAM,FIX_Add_BuyerName
-	if ( state = 1 ) {
-		key1 := "Wait_Text", key2 := "Invite_Text", key3 := "Thanks_Text"
-		Loop 3 {
-			index := A_Index
-			IniRead, msg,% iniFilePath,MESSAGES,% key%index%
-			if !( RegExMatch(msg, "@`%buyerName`%?") ) {
-				msg := "@`%buyerName`% " msg
-				IniWrite,% msg,% iniFilePath,MESSAGES,% key%index%
-				didChange := 1
-			}
-		}
-		IniWrite, 0,% iniFilePath,PROGRAM,FIX_Add_BuyerName
-		if ( didChange = 1 )
-			MsgBox,4096,% programName " v" programVersion,% "Due to a small change in the function,`nyou now need to include ""@`%buyerName`%"" in your`ncustom messages if you wish to send the message as a whisper.`n`nTo make things easier for you, your custom messages`nhave been edited to include the new format!`n`n" programName " will now be reloaded..."
-		Reload_Func()
-	}
+;
 ;	Open the changelog menu
+	static
+	global iniFilePath
+
 	IniRead, state,% iniFilePath,PROGRAM,Show_Changelogs
 	if ( state = 1 ) {
 		Gui_About()
@@ -1654,6 +1860,8 @@ Get_DPI_Factor() {
 ;			autohotkey.com/board/topic/6893-guis-displaying-differently-on-other-machines/?p=77893
 ;			Retrieves the current DPI value and returns it
 ;			If the key wasn't found or is set at 96, returns default setting
+	static
+
 	RegRead, dpiValue, HKEY_CURRENT_USER, Control Panel\Desktop\WindowMetrics, AppliedDPI 
 	if (errorlevel = 1) || (dpiValue = 96)
 		dpiFactor := 1
@@ -1662,84 +1870,79 @@ Get_DPI_Factor() {
 	return dpiFactor
 }
 
-Logs_Append(funcName, paramsArray=""){
-	global programLogsFilePath, programName, programVersion
-	global VALUE_Show_Mode, VALUE_Transparency, VALUE_Dock_Mode, VALUE_Logs_Mode
-	global VALUE_Clip_New_Items, VALUE_Clip_On_Tab_Switch
-	global VALUE_HK_1_Toggle, VALUE_HK_1, VALUE_HK_1_CTRL, VALUE_HK_1_ALT, VALUE_HK_1_SHIFT
-	global VALUE_Wait_Text_Toggle, VALUE_Wait_Text, VALUE_Invite_Text_Toggle, VALUE_Invite_Text, VALUE_Thanks_Text_Toggle, VALUE_Thanks_Text
-	global VALUE_Trade_Toggle, VALUE_Trade_Sound, VALUE_Whisper_Toggle, VALUE_Whisper_Sound, VALUE_Whisper_Tray
+Logs_Append(funcName, paramsArray="", params*){
+	static
+	global programLogsFilePath, programName, programVersion, iniFilePath
+
 	if ( funcName = "Start" ) {
-		FileAppend,% "__________PROGRAM__________",% programLogsFilePath
-		FileAppend % "`n",% programLogsFilePath
-		FileAppend,% "Successfully started " programName " with PID " programPID,% programLogsFilePath
-		FileAppend % "`n",% programLogsFilePath
-		FileAppend,% "Version: " programVersion,% programLogsFilePath
-		FileAppend % "`n",% programLogsFilePath
-		FileAppend,% "File Name: " A_ScriptName,% programLogsFilePath
-		FileAppend % "`n",% programLogsFilePath
-		FileAppend,% "__________SETTINGS__________",% programLogsFilePath
-		FileAppend % "`n",% programLogsFilePath
-		FileAppend % "Showing Mode:" VALUE_Show_Mode,% programLogsFilePath
-		FileAppend % "`n",% programLogsFilePath
-		FileAppend % "Transparency:" VALUE_Transparency,% programLogsFilePath
-		FileAppend % "`n",% programLogsFilePath
-		FileAppend % "Docking Mode:" VALUE_Dock_Mode,% programLogsFilePath
-		FileAppend % "`n",% programLogsFilePath
-		FileAppend % "Logs Mode:" VALUE_Logs_Mode,% programLogsFilePath
-		FileAppend % "`n",% programLogsFilePath
-		FileAppend,% "__________AUTO_CLIP__________",% programLogsFilePath
-		FileAppend % "`n",% programLogsFilePath
-		FileAppend % "Clip new Items:" VALUE_Clip_New_Items,% programLogsFilePath
-		FileAppend % "`n",% programLogsFilePath
-		FileAppend % "Clip on tab Switch:" VALUE_Clip_On_Tab_Switch,% programLogsFilePath
-		FileAppend % "`n",% programLogsFilePath
-		FileAppend,% "__________HOTKEYS__________",% programLogsFilePath
-		FileAppend % "`n",% programLogsFilePath
-		FileAppend % "State (HK1): " VALUE_HK_1_Toggle " - Key: " VALUE_HK_1,% programLogsFilePath
-		FileAppend % "`n",% programLogsFilePath
-		FileAppend % "Modifiers: CTRL:" VALUE_HK_1_CTRL " - ALT:" VALUE_HK_1_ALT " - SHIFT:" VALUE_HK_1_SHIFT,% programLogsFilePath
-		FileAppend % "`n",% programLogsFilePath
-		FileAppend,% "__________NOTIFICATIONS__________",% programLogsFilePath
-		FileAppend % "`n",% programLogsFilePath
-		FileAppend % "State (Trade Sound): " VALUE_Trade_Toggle " - Sound: " VALUE_Trade_Sound,% programLogsFilePath
-		FileAppend % "`n",% programLogsFilePath
-		FileAppend % "State (Whisper Sound): " VALUE_Whisper_Toggle " - Sound: " VALUE_Whisper_Sound,% programLogsFilePath
-		FileAppend % "`n",% programLogsFilePath
-		FileAppend % "State (Whisper Tray): " VALUE_Whisper_Tray,% programLogsFilePath
-		FileAppend % "`n",% programLogsFilePath
-		FileAppend,% "__________MESSAGES__________",% programLogsFilePath
-		FileAppend % "`n",% programLogsFilePath
-		FileAppend,% "State (Wait): " VALUE_Wait_Text_Toggle " - Content: " VALUE_Wait_Text,% programLogsFilePath
-		FileAppend % "`n",% programLogsFilePath
-		FileAppend,% "State (Invite): " VALUE_Invite_Text_Toggle " - Content: " VALUE_Invite_Text,% programLogsFilePath
-		FileAppend % "`n",% programLogsFilePath
-		FileAppend,% "State (Thanks): " VALUE_Thanks_Text_Toggle " - Content: " VALUE_Thanks_Text,% programLogsFilePath
-		FileAppend % "`n",% programLogsFilePath
-		FileAppend % "`n",% programLogsFilePath
-		FileAppend % "*******************************************************************`n",% programLogsFilePath
-		FileAppend % "*******************************************************************`n",% programLogsFilePath
-		allSettings := Object()
-		allSettings := Get_INI_Settings()
-		for key, element in allSettings.KEYS {
-			FileAppend,% allSettings.KEYS[A_Index] " is " allSettings.VALUES[A_Index] "`n",% programLogsFilePath
+		dpiFactor := Get_DPI_Factor()
+		FileAppend,% "OS: " A_OSVersion "`n",% programLogsFilePath
+		FileAppend, "DPI: " dpiFactor "`n",% programLogsFilePath
+		FileAppend,% ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>`n",% programLogsFilePath
+		FileAppend,% ">>> PROGRAM SECTION DUMP START`n",% programLogsFilePath
+		IniRead, content,% iniFilePath,PROGRAM
+		FileAppend,% content "`n",% programLogsFilePath
+		FileAppend,% "PROGRAM SECTION DUMP END <<<`n",% programLogsFilePath
+		FileAppend,% "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<`n`n",% programLogsFilePath
+		FileAppend,% ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>`n",% programLogsFilePath
+		FileAppend,% ">>> GLOBAL VALUE_ DUMP START`n",% programLogsFilePath
+		for key, element in paramsArray.KEYS {
+			FileAppend,% paramsArray.KEYS[A_Index] ": """ paramsArray.VALUES[A_Index] """`n",% programLogsFilePath
 		}
+		FileAppend,% "GLOBAL VALUE_ DUMP END <<<`n",% programLogsFilePath
+		FileAppend,% "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<`n",% programLogsFilePath
 	}
-	if ( funcName = "Prevent_Multiple_Instancies" ) {
-		existPID := paramsArray[0], thisPID := paramsArray[1]
-		FileAppend,% "[" A_YYYY "-" A_MM "-" A_DD "_" A_Hour ":" A_Min ":" A_Sec "] -- Blocked new instancie from starting up: (Current PID: " thisPID " - Existing PID: " existPID ")", % programLogsFilePath
+
+	if ( funcName = "GUI_Multiple_Instances" ) {
+		FileAppend,% "[" A_YYYY "-" A_MM "-" A_DD "_" A_Hour ":" A_Min ":" A_Sec "] ",% programLogsFilePath
+		FileAppend,% "Found multiple instances. Handler: " params[1] " - Path: " params[2],% programLogsFilePath
 	}
+	if ( funcName = "GUI_Multiple_Instances_Return" ) {
+		FileAppend,% "[" A_YYYY "-" A_MM "-" A_DD "_" A_Hour ":" A_Min ":" A_Sec "] ",% programLogsFilePath
+		FileAppend,% "Found multiple instances (Return). Handler: " params[1],% programLogsFilePath
+	}
+
+	if ( funcName = "Monitor_Game_Logs" ) {
+		FileAppend,% "[" A_YYYY "-" A_MM "-" A_DD "_" A_Hour ":" A_Min ":" A_Sec "] ",% programLogsFilePath
+		FileAppend,% "Monitoring logs: " params[1],% programLogsFilePath
+	}
+	if ( funcName = "Monitor_Game_Logs_Break" ) {
+		FileAppend,% "[" A_YYYY "-" A_MM "-" A_DD "_" A_Hour ":" A_Min ":" A_Sec "] ",% programLogsFilePath
+		FileAppend,% "Monitoring logs (Break). Obj.pos: " params[1] " - Obj.length: " params[2],% programLogsFilePath
+	}
+
+	if ( funcName = "Gui_Trades_Set_Position" ) {
+		FileAppend,% "[" A_YYYY "-" A_MM "-" A_DD "_" A_Hour ":" A_Min ":" A_Sec "] ",% programLogsFilePath
+		FileAppend,% "Trades GUI Position: x" params[1] " y" params[2] ".",% programLogsFilePath
+	}
+
+	if (funcName = "ShellMessage" ) {
+		FileAppend,% "[" A_YYYY "-" A_MM "-" A_DD "_" A_Hour ":" A_Min ":" A_Sec "] ",% programLogsFilePath
+		FileAppend,% "Trades GUI Hidden: Show_Mode: " params[1] " - Dock_Window ID: " params[2] " - Current Win ID: " winID "."
+	}
+
 	if ( funcName = "Send_InGame_Message" ) {
-		gamePID := paramsArray[0], messageToSend := paramsArray[1]
-		FileAppend,% "[" A_YYYY "-" A_MM "-" A_DD "_" A_Hour ":" A_Min ":" A_Sec "] -- Failed to send message to PID """ gamePID """ containing the following: """ messageToSend """", % programLogsFilePath
+		FileAppend,% "[" A_YYYY "-" A_MM "-" A_DD "_" A_Hour ":" A_Min ":" A_Sec "] ",% programLogsFilePath
+		FileAppend,% "Sending IG Message to PID """ params[3] """ with content: """ params[1] """ | %buyerName%:""" params[2] """",% programLogsFilePath
+		matchsArray := Get_Matching_Windows_Infos("PID")
+		for key, element in matchsArray
+			FileAppend,% " | Instance" key " PID: " element,% programLogsFilePath
 	}
+
+	if ( funcName = "Gui_Trades_Cycle_Func" ) {
+		FileAppend,% "[" A_YYYY "-" A_MM "-" A_DD "_" A_Hour ":" A_Min ":" A_Sec "] ",% programLogsFilePath
+		FileAppend,% "Docking the GUI to ID: " params[1] " - Total matchs found: " params[2] + 1,% programLogsFilePath
+	}
+
 	FileAppend,% "`n",% programLogsFilePath
 }
 
 Delete_Old_Logs_Files(filesToKeep) {
 ;			Make sure to only keep 10 (+current) logs file
 ;			Delete the older logs file
+	static
 	global programLogsPath
+
 	filesToKeep++ ; Or it will delete also the latest
 	
 	loop, %programLogsPath%\*.txt
@@ -1766,6 +1969,8 @@ Delete_Old_Logs_Files(filesToKeep) {
 Get_Aero_Status(){
 ;			Retrieve the AERO status and returns it
 ;			(When AERO is disabled, we have to put -Theme to the GUI that use tabs or text will be blacked out)
+	static
+
 	hr := DllCall("Dwmapi\DwmIsCompositionEnabled", "Int*", isEnabled)
 	If (hr == 0) {
 		if (isEnabled)
@@ -1781,9 +1986,10 @@ Get_Aero_Status(){
 DoNothing:
 return
 
-Send_InGame_Message(messageToSend, infosArray="", isHotkey="0", goBackUp=0) {
+Send_InGame_Message(messageToSend, infosArray="", isHotkey=0, goBackUp=0) {
 ;			Sends a message InGame and replace the "variables text" into their content
-	global VALUE_Logs_Mode
+	static
+	global VALUE_Logs_Mode, VALUE_Hotkeys_Mode, POEGame, programName
 
 	buyerName := infosArray[0], itemName := infosArray[1], itemPrice := infosArray[2], gamePID := infosArray[3]
 
@@ -1791,46 +1997,57 @@ Send_InGame_Message(messageToSend, infosArray="", isHotkey="0", goBackUp=0) {
 	StringReplace, messageToSend, messageToSend, `%buyerName`%, %buyerName%, 1
 	StringReplace, messageToSend, messageToSend, `%itemName`%, %itemName%, 1
 	StringReplace, messageToSend, messageToSend, `%itemPrice`%, %itemPrice%, 1
-	titleMatchMode := A_TitleMatchMode
-	SetTitleMatchMode, RegEx
 	if ( isHotkey = 1 ) {
-		SendInput,{Enter}/{BackSpace}
-		SendInput,{Raw}%messageToSend%
-		SendInput,{Enter}
-	}
-	else if WinExist("ahk_pid " gamePID) {
-		WinActivate,.* ahk_pid %gamePID%
-		WinWaitActive,.* ahk_pid %gamePID%, ,5
-		SendInput,{Enter}/{BackSpace}
-		SendInput,{Raw}%messageToSend%
-		SendInput,{Enter}
-	}
-	else {
-		paramsArray := Object()
-		paramsArray.Insert(0, gamePID, messageToSend)
-		Logs_Append(A_ThisFunc, paramsArray)
-		SetTitleMatchMode, %titleMatchMode%
+		if ( VALUE_Hotkeys_Mode = "Advanced" ) {
+			SendInput,%messageToSend%
+		}
+		else {
+			SendInput,{Enter}/{BackSpace}
+			SendInput,{Raw}%messageToSend%
+			SendInput,{Enter}
+		}
 		Return
 	}
-
+	else {
+		if WinExist("ahk_pid " gamePID " ahk_group POEGame") {
+			WinActivate,ahk_pid %gamePID%
+			WinWaitActive,ahk_pid %gamePID%, ,5
+			if (!ErrorLevel) {
+				sleep 10
+				SendInput,{Enter}/{BackSpace}
+				SendInput,{Raw}%messageToSend%
+				SendInput,{Enter}
+			}
+			else {
+				Loop 2
+					TrayTip,% programName,% "Couldn't activate PID " gamePID "!`nOperation Canceled."
+			}
+		}
+	}
 	if ( goBackUp > 0 ) {
 		SendInput,{Enter}{Up %goBackUp%}{Escape}	; Send back to the previous chat channel
 	}
-
-	SetTitleMatchMode, %titleMatchMode%
+	Logs_Append(A_ThisFunc,, messageToSend, buyerName, gamePID)
+	BlockInput, Off
 }
 
 Extract_Sound_Files() {
 ;			Extracts the included sfx into the .ini settings folder
-	FileInstall, C:\Users\Hatsune\Documents\GitHub\POE-Trades-Helper\SFX\MM_Tatl_Gleam.wav,% sfxFolderPath "\MM_Tatl_Gleam.wav", 1
-	FileInstall, C:\Users\Hatsune\Documents\GitHub\POE-Trades-Helper\SFX\MM_Tatl_Hey.wav,% sfxFolderPath "\MM_Tatl_Hey.wav", 1
-	FileInstall, C:\Users\Hatsune\Documents\GitHub\POE-Trades-Helper\SFX\WW_MainMenu_CopyErase_Start.wav,% sfxFolderPath "\WW_MainMenu_CopyErase_Start.wav", 1
-	FileInstall, C:\Users\Hatsune\Documents\GitHub\POE-Trades-Helper\SFX\WW_MainMenu_Letter.wav,% sfxFolderPath "\WW_MainMenu_Letter.wav", 1
+	static
+	global sfxFolderPath
+
+	FileInstall, C:\Users\Hatsune\Documents\GitHub\POE-Trades-Helper\SFX\MM_Tatl_Gleam.wav,% sfxFolderPath "\MM_Tatl_Gleam.wav", 0
+	FileInstall, C:\Users\Hatsune\Documents\GitHub\POE-Trades-Helper\SFX\MM_Tatl_Hey.wav,% sfxFolderPath "\MM_Tatl_Hey.wav", 0
+	FileInstall, C:\Users\Hatsune\Documents\GitHub\POE-Trades-Helper\SFX\WW_MainMenu_CopyErase_Start.wav,% sfxFolderPath "\WW_MainMenu_CopyErase_Start.wav", 0
+	FileInstall, C:\Users\Hatsune\Documents\GitHub\POE-Trades-Helper\SFX\WW_MainMenu_Letter.wav,% sfxFolderPath "\WW_MainMenu_Letter.wav", 0
 }
 
-Prevent_Multiple_Instancies() {
+Close_Previous_Program_Instance() {
 ;			Prevent from running multiple instancies of the program
 ;			If an instancie already exist, close and replace it by this one
+	static
+	global iniFilePath
+
 	IniRead, lastPID,% iniFilePath,PROGRAM,PID
 	IniRead, lastProcessName,% iniFilePath,PROGRAM,FileProcessName
 
@@ -1854,34 +2071,55 @@ Prevent_Multiple_Instancies() {
 }
 
 GUI_Trades_Cycle:
-	matchHandlers := Get_Matching_Window_Handlers()
-	currentDockID++
-	if ( currentDockID > matchHandlers.MaxIndex() )
-		currentDockID := 0
-	VALUE_Dock_Window := matchHandlers[currentDockID]
-	Gui_Trades_Set_Position()
+	Gui_Trades_Cycle_Func()
 Return
 
-Get_Matching_Window_Handlers() {
-	WinGet windows, List
-	matchHandlers := Object()
+Gui_Trades_Cycle_Func() {
+	static
+	global VALUE_Dock_Window, VALUE_Current_DockID, guiTradesHandler, programName
+
+	if !(guiTradesHandler) {
+		Loop 2
+			TrayTip,% programName,% "Couldn't find the Trades GUI!`nOperation Canceled."
+		Return
+	}
+	matchHandlers := Get_Matching_Windows_Infos("ID")
+	VALUE_Current_DockID++
+	if ( VALUE_Current_DockID > matchHandlers.MaxIndex() )
+		VALUE_Current_DockID := 0
+	VALUE_Dock_Window := matchHandlers[VALUE_Current_DockID]
+	Gui_Trades_Set_Position()
+	Logs_Append(A_ThisFunc,, VALUE_Dock_Window, matchHandlers.MaxIndex())
+}
+
+Get_Matching_Windows_Infos(mode) {
+	static
+
+	matchsArray := Object()
 	index := 0
+
+	WinGet windows, List
 	Loop %windows%
 	{
 		id := windows%A_Index%
-		WinGet ExeLocation, ProcessName,% "ahk_id " id
-		if ExeLocation in %POEGameList%
+		WinGet ExeName, ProcessName,% "ahk_id " id
+		WinGet ExePID, PID,% "ahk_id " id
+		if ExeName in %POEGameList%
 		{
-			matchHandlers.Insert(index, id)
+			if ( mode = "ID" )
+				matchsArray.Insert(index, id)
+			else if ( mode = "PID" )
+				matchsArray.Insert(index, ExePID)
 			index++
 		}
 	}
-	return matchHandlers
+	return matchsArray
 }
 
 Create_Tray_Menu(globalDeclared=0) {
 	static
 	global VALUE_Trades_GUI_Mode
+
 	if ( globalDeclared = 0 ) {
 		Menu, Tray, DeleteAll
 		Menu, Tray, Tip,% programName " v" programVersion
@@ -1900,24 +2138,6 @@ Create_Tray_Menu(globalDeclared=0) {
 	else if ( globalDeclared = 1 ) {
 		Menu, Tray, Check,% "Mode: " VALUE_Trades_GUI_Mode	
 	}
-}
-
-Get_Exe_From_Mode(value, varName) {
-;			Convert the mode to the corresponding .exe name
-;			Return the .exe name
-	if ( varName = "VALUE_Logs_Mode" ) {
-		if ( value = "GGG" )
-			exeGroup := "POEGame"
-		if ( value = "Steam" )
-			exeGroup := "POEGameSteam"
-	}
-	if ( varName = "VALUE_Dock_Mode" ) {
-		if ( value = "GGG" )
-			exeGroup := "POEGame"
-		if ( value = "Steam" )
-			exeGroup := "POEGameSteam"
-	}
-	return exeGroup
 }
 
 WM_MOUSEMOVE() {
@@ -1960,7 +2180,10 @@ Return
 Run_As_Admin() {
 ;			Make sure the program is running as admin
 ;			Works for compiled and uncompiled scripts
+	static
 	global 0
+	global iniFilePath, programName
+
 	IniWrite,% A_IsAdmin,% iniFilePath,PROGRAM,Is_Running_As_Admin
 	if ( A_IsAdmin = 1 ) {
 		IniWrite, 0,% iniFilePath,PROGRAM,Run_As_Admin_Attempts
@@ -2012,10 +2235,11 @@ Run_As_Admin() {
 	ExitApp
 }
 
-Tray_Refresh()
-{
+Tray_Refresh() {
 ;			Refreshes the Tray Icons, to remove any "leftovers"
 ;			Should work both for Windows 7 and 10
+	static
+
 	WM_MOUSEMOVE := 0x200
 	HiddenWindows := A_DetectHiddenWindows
 	DetectHiddenWindows, On
@@ -2066,19 +2290,21 @@ Tray_Refresh()
 }
 
 Reload_Func() {
+	static
+
 	sleep 10
 	Reload
 	Sleep 10000
 }
 
 Exit_Func(ExitReason, ExitCode) {
-	global fileObj
-	if ( ExitReason != "LogOff" ) && ( ExitReason != "ShutDown" ) && ( ExitReason != "Reload" ) && ( ExitReason != "Single" ) {
-		MsgBox, 4100, % programName " v" programVersion,Are you sure you wish to close %programName%?
-		IfMsgBox, No
-			return 1  ; OnExit functions must return non-zero to prevent exit.
-	}
-	fileObj.Close()
-	OnExit("Exit_Func", 0)
+	static
+
+;	if ( ExitReason != "LogOff" ) && ( ExitReason != "ShutDown" ) && ( ExitReason != "Reload" ) && ( ExitReason != "Single" ) {
+;		MsgBox, 4100, % programName " v" programVersion,Are you sure you wish to close %programName%?
+;		IfMsgBox, No
+;			return 1  ; OnExit functions must return non-zero to prevent exit.
+;	}
+;	OnExit("Exit_Func", 0)
 	ExitApp
 }
