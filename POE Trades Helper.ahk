@@ -546,6 +546,7 @@ Gui_Trades(infosArray="", errorMsg="", xpos="unspecified", ypos="unspecified") {
 	
 	Gui_Trades_Thanks:
 ;		Send a message to the player and close the tab
+		btnID := Gui_Trades_Get_Tab_ID(A_GuiControl)
 		if ( btnID = "0" )
 			return
 		tradesInfosArray := Object()
