@@ -967,8 +967,8 @@ Gui_Settings() {
 			GuiControl,Settings:Hide,% Hotkey%btnID%_SHIFTHandler
 		}
 	}
-	Gui, Add, Button, x20 y310 w300 h30 gGui_Settings_Btn_Apply vApplyBtn3 gGui_Settings_Btn_WIKI,Apply Settings
-	Gui, Add, Button, x320 y310 w120 h30 vWikiBtn3 ,Visit the WIKI
+	Gui, Add, Button, x20 y310 w300 h30 gGui_Settings_Btn_Apply vApplyBtn3,Apply Settings
+	Gui, Add, Button, x320 y310 w120 h30 vWikiBtn3 gGui_Settings_Btn_WIKI,Visit the WIKI
 	GuiControl, Choose, Tab, 1
 	GoSub, Gui_Settings_Set_Preferences
 	GuiControl, +gGui_Settings_Hotkeys_Tooltip, Settings:
