@@ -1,4 +1,8 @@
 \\
+--v1.5.1--
+Some weird issue with the file encoding was preventing cyrillic characters from working.
+//
+\\
 --v1.5--
 What's new:
 	Advanced Hotkeys. Up to 16 hotkeys. Can send multiple messages. Read more on the WIKI.
