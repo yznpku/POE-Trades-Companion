@@ -21,7 +21,7 @@ SetWinDelay, 100
 ;___Some_Variables___;
 global userprofile, iniFilePath, programName, programVersion, programFolder, programPID, sfxFolderPath, programChangelogFilePath, POEGameArray, POEGameList
 EnvGet, userprofile, userprofile
-programVersion := "1.5.1", programRedditURL := "https://redd.it/57oo3h"
+programVersion := "1.5.2", programRedditURL := "https://redd.it/57oo3h"
 programName := "POE Trades Helper", programFolder := userprofile "\Documents\AutoHotKey\" programName
 iniFilePath := programFolder "\Preferences.ini"
 sfxFolderPath := programFolder "\SFX"
@@ -1030,6 +1030,7 @@ return
 		Gui, Settings: Submit, NoHide
 		trans := ( ShowTransparency / 100 ) * 255 ; ( value - percentage ) * max // Convert percentage to 0-255 range
 		transActive := ( ShowTransparencyActive / 100 ) * 255 ; ( value - percentage ) * max // Convert percentage to 0-255 range
+		tooltip 
 		Gui, Trades: +LastFound
 		if ( A_GuiControl = "ShowTransparency" )
 			WinSet, Transparent,% trans
@@ -1216,7 +1217,7 @@ return
 				else if ( keyName = "Dock_Mode" ) { ; Make sure only one goes trough
 					GuiControl, Settings:, % Dock%var%Handler,1
 				}
-				else if ( keyName = "Transparency" ) { ; Convert to pecentage
+				else if ( keyName = "Transparency" || keyName = "Transparency_Active" ) { ; Convert to pecentage
 					var := ((var - 0) * 100) / (255 - 0)
 					GuiControl, Settings:,% %handler%Handler,% var
 				}
@@ -1556,6 +1557,7 @@ Gui_About() {
 	Gui, Tab, 2
 		FileRead, changelogText,% programChangelogFilePath
 		allChanges := Object()
+		allVersions := ""
 		Loop {
 			if RegExMatch(changelogText, "sm)\\\\.*?--(.*?)--(.*?)//(.*)", subPat) {
 				version%A_Index% := subPat1, changes%A_Index% := subPat2, changelogText := subPat3

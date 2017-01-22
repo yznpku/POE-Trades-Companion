@@ -1,4 +1,9 @@
 \\
+--v1.5.2--
+Fix: The "Transparency while Active" slider wasn't being positioned correctly.
+Fix: The Changelogs GUI DropDownList's content would be stacking for every time it was opened.
+//
+\\
 --v1.5.1--
 Some weird issue with the file encoding was preventing cyrillic characters from working.
 //
