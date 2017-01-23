@@ -1,4 +1,11 @@
 \\
+--v1.5.3--
+TradesGUI changes:
+	Tabs now only take one row.
+	Buttons use the aero-style if it's enabled.
+	Fix: The buttons would not send the message in game on some machines.
+//
+\\
 --v1.5.2--
 Fix: The "Transparency while Active" slider wasn't being positioned correctly.
 Fix: The Changelogs GUI DropDownList's content would be stacking for every time it was opened.

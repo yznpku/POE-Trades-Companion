@@ -16,12 +16,12 @@ SetWorkingDir, %A_ScriptDir%
 FileEncoding, UTF-8 ; Required for cyrillic characters
 #KeyHistory 0
 ListLines Off
-SetWinDelay, 100
+SetWinDelay, 0
 
 ;___Some_Variables___;
 global userprofile, iniFilePath, programName, programVersion, programFolder, programPID, sfxFolderPath, programChangelogFilePath, POEGameArray, POEGameList
 EnvGet, userprofile, userprofile
-programVersion := "1.5.2", programRedditURL := "https://redd.it/57oo3h"
+programVersion := "1.5.3", programRedditURL := "https://redd.it/57oo3h"
 programName := "POE Trades Helper", programFolder := userprofile "\Documents\AutoHotKey\" programName
 iniFilePath := programFolder "\Preferences.ini"
 sfxFolderPath := programFolder "\SFX"
@@ -427,9 +427,11 @@ Gui_Trades(infosArray="", errorMsg="", xpos="unspecified", ypos="unspecified") {
 	
 	aeroStatus := Get_Aero_Status()
 	if ( aeroStatus = 1 )
-		Gui, Add, Tab3,x10 y10 vTab gGui_Trades_OnTabSwitch w%tabWidth% h%tabHeight%
+		themeState := "+Theme 0x8000"
 	else
-		Gui, Add, Tab3,x10 y10 vTab gGui_Trades_OnTabSwitch w%tabWidth% h%tabHeight% -Theme
+		themeState := "-Theme +0x8000"
+	Gui, Add, Tab3,x10 y10 vTab gGui_Trades_OnTabSwitch w%tabWidth% h%tabHeight% %themeState% -Wrap
+
 	for index, element in infosArray.BUYERS
 	{
 		tabName := index
@@ -455,12 +457,12 @@ Gui_Trades(infosArray="", errorMsg="", xpos="unspecified", ypos="unspecified") {
 			VALUE_Trades_GUI_Current_State := "Active"
 		}
 		if ( index > 0 ) {
-			Gui, Add, Button,w115 h35 x20 yp+25 vcopyBtn%index% -Theme +0x8000 gGui_Trades_CopyItemName,% "Clipboard Item"
-			Gui, Add, Button,w115 h35 x145 yp vwaitBtn%index% -Theme +0x8000 gGui_Trades_Wait,% "Ask to Wait"
-			Gui, Add, Button,w115 h35 x270 yp vinviteBtn%index% -Theme +0x8000 gGui_Trades_Invite,% "Party Invite"
-			Gui, Add, Button,w240 h35 x20 yp+45 vthanksBtn%index% -Theme +0x8000 gGui_Trades_Thanks,% "Say Thanks`n (close tab)"
-			Gui, Add, Button,w115 h35 x270 yp vsoldBtn%index% -Theme +0x8000 gGui_Trades_Sold,% "Say Item Sold`n   (close tab)"
-			Gui, Add, Button,w20 h20 x375 yp-120 vdelBtn%index% -Theme +0x8000 gGui_Trades_RemoveItem,% "X"
+			Gui, Add, Button,w115 h35 x20 yp+25 vcopyBtn%index% %themeState% gGui_Trades_CopyItemName,% "Clipboard Item"
+			Gui, Add, Button,w115 h35 x145 yp vwaitBtn%index% %themeState% gGui_Trades_Wait,% "Ask to Wait"
+			Gui, Add, Button,w115 h35 x270 yp vinviteBtn%index% %themeState% gGui_Trades_Invite,% "Party Invite"
+			Gui, Add, Button,w240 h35 x20 yp+45 vthanksBtn%index% %themeState% gGui_Trades_Thanks,% "Say Thanks`n (close tab)"
+			Gui, Add, Button,w115 h35 x270 yp vsoldBtn%index% %themeState% gGui_Trades_Sold,% "Say Item Sold`n   (close tab)"
+			Gui, Add, Button,w20 h20 x375 yp-120 vdelBtn%index% %themeState% gGui_Trades_RemoveItem,% "X"
 		}
 		else {
 			IniRead, trans,% iniFilePath,SETTINGS,Transparency
@@ -851,11 +853,13 @@ Gui_Settings() {
 	Gui, Settings:Destroy
 	Gui, Settings:New, +AlwaysOnTop +SysMenu -MinimizeBox -MaximizeBox +OwnDialogs +LabelGui_Settings_ hwndSettingsHandler,% programName " - Settings"
 	Gui, Settings:Default
+
 	aeroStatus := Get_Aero_Status()
 	if ( aeroStatus = 1 )
-		Gui, Add, Tab3, vTab x10 y10,Settings|Messages|Hotkeys
-	else
-		Gui, Add, Tab3, vTab x10 y10 -Theme,Settings|Messages|Hotkeys
+		themeState := "+Theme 0x8000"
+	else 
+		themeState := "-Theme +0x8000"
+	Gui, Add, Tab3, vTab x10 y10 %themeState%,Settings|Messages|Hotkeys
 
 	Gui, Tab, 1
 ;	Settings Tab
@@ -1030,7 +1034,6 @@ return
 		Gui, Settings: Submit, NoHide
 		trans := ( ShowTransparency / 100 ) * 255 ; ( value - percentage ) * max // Convert percentage to 0-255 range
 		transActive := ( ShowTransparencyActive / 100 ) * 255 ; ( value - percentage ) * max // Convert percentage to 0-255 range
-		tooltip 
 		Gui, Trades: +LastFound
 		if ( A_GuiControl = "ShowTransparency" )
 			WinSet, Transparent,% trans
@@ -2012,9 +2015,11 @@ Send_InGame_Message(messageToSend, infosArray="", isHotkey=0, goBackUp=0) {
 		Return
 	}
 	else {
-		if WinExist("ahk_pid " gamePID " ahk_group POEGame") {
-			WinActivate,ahk_pid %gamePID%
-			WinWaitActive,ahk_pid %gamePID%, ,5
+		if WinExist("ahk_pid " gamePID) {
+			titleMatchMode := A_TitleMatchMode
+			SetTitleMatchMode, RegEx
+			WinActivate,[a-zA-Z0-9_] ahk_pid %gamePID%
+			WinWaitActive,[a-zA-Z0-9_] ahk_pid %gamePID%, ,5
 			if (!ErrorLevel) {
 				sleep 10
 				SendInput,{Enter}/{BackSpace}
@@ -2025,6 +2030,7 @@ Send_InGame_Message(messageToSend, infosArray="", isHotkey=0, goBackUp=0) {
 				Loop 2
 					TrayTip,% programName,% "Couldn't activate PID " gamePID "!`nOperation Canceled."
 			}
+			SetTitleMatchMode, %titleMatchMode%
 		}
 	}
 	if ( goBackUp > 0 ) {
