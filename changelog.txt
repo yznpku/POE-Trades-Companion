@@ -3,7 +3,7 @@
 TradesGUI changes:
 	Tabs now only take one row.
 	Buttons use the aero-style if it's enabled.
-	Fix: The buttons would not send the message in game on some machines.
+	Fix: The buttons would not send the message in game on some machines. (Big thanks to /u/takeshi23!)
 //
 \\
 --v1.5.2--
