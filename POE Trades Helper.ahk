@@ -21,7 +21,7 @@ SetWinDelay, 0
 ;___Some_Variables___;
 global userprofile, iniFilePath, programName, programVersion, programFolder, programPID, sfxFolderPath, programChangelogFilePath, POEGameArray, POEGameList
 EnvGet, userprofile, userprofile
-programVersion := "1.6", programRedditURL := "https://redd.it/57oo3h"
+programVersion := "1.6.1", programRedditURL := "https://redd.it/57oo3h"
 programName := "POE Trades Helper", programFolder := userprofile "\Documents\AutoHotKey\" programName
 iniFilePath := programFolder "\Preferences.ini"
 sfxFolderPath := programFolder "\SFX"
@@ -206,6 +206,10 @@ Monitor_Game_Logs(mode="") {
 
 	IniRead, tX,% iniFilePath,PROGRAM,X_POS
 	IniRead, tY,% iniFilePath,PROGRAM,Y_POS
+	if ( tX = "ERROR" || tX = "" )
+		tX := "unspecified"
+	if ( tY = "ERROR" || tY = "" )
+		tY := "unspecified"
 	r := Get_All_Games_Instances()
 	if ( r = "exenotfound" ) {
 		Gui_Trades(,"exenotfound",tX,tY)
