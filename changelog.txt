@@ -1,4 +1,15 @@
 \\
+--v1.6--
+What's new:  
+- The Trades GUI now supports up to 9 customizable buttons. You can change their label and their function by going into the [Settings] tray menu and selecting the TradesGUI tab.  
+- Two new buttons "Still interested?" and "Trade Request" have been added. Disabled by default, head to the new TradesGUI tab section of the Settings to enable them.  
+- Timestamp of the trade can be seen in the top right corner of the Trades GUI.  
+- Upon closing the script, if using the Window mode, the current position of the Trades GUI will be saved. On the next launch, it will be reverting to the saved position.
+
+What's changed:
+- The Messages tab in the [Settings] tray menu has been replaced by the new TradesGUI tab.  
+//
+\\
 --v1.5.3--
 TradesGUI changes:
 	Tabs now only take one row.

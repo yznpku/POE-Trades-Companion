@@ -21,7 +21,7 @@ SetWinDelay, 0
 ;___Some_Variables___;
 global userprofile, iniFilePath, programName, programVersion, programFolder, programPID, sfxFolderPath, programChangelogFilePath, POEGameArray, POEGameList
 EnvGet, userprofile, userprofile
-programVersion := "1.5.3", programRedditURL := "https://redd.it/57oo3h"
+programVersion := "1.6", programRedditURL := "https://redd.it/57oo3h"
 programName := "POE Trades Helper", programFolder := userprofile "\Documents\AutoHotKey\" programName
 iniFilePath := programFolder "\Preferences.ini"
 sfxFolderPath := programFolder "\SFX"
@@ -74,16 +74,16 @@ OnMessage( MsgNum, "ShellMessage")
 ;	Also comment the Monitor_Game_Logs() line, otherwise the GUI will be overwritten
 /*
 	newItemInfos := Object()
-	newItemInfos.Insert(0, "iSellStuff", "level 1 Faster Attacks Support", "5 alteration", "Breach (stash tab ""Gems""; position: left 6, top 8")
+	newItemInfos.Insert(0, "iSellStuff", "level 1 Faster Attacks Support", "5 alteration", "Breach (stash tab ""Gems""; position: left 6, top 8", A_Hour ":" A_Min)
 	newItemArray := Gui_Trades_Manage_Trades("Add_New", newItemInfos)
 	Gui_Trades(newItemArray)
-	newItemInfos.Insert(0, "FIRST BUYER", "FIRST ITEM", "FIRST PRICE", "FIRST LOCATION")
+	newItemInfos.Insert(0, "FIRST BUYER", "FIRST ITEM", "FIRST PRICE", "FIRST LOCATION", A_Hour ":" A_Min)
 	newItemArray := Gui_Trades_Manage_Trades("Add_New", newItemInfos)
 	Gui_Trades(newItemArray)
-	newItemInfos.Insert(0, "SECOND BUYER", "SECOND ITEM", "SECOND PRICE", "SECOND LOCATION")
+	newItemInfos.Insert(0, "SECOND BUYER", "SECOND ITEM", "SECOND PRICE", "SECOND LOCATION", A_Hour ":" A_Min)
 	newItemArray := Gui_Trades_Manage_Trades("Add_New", newItemInfos)
 	Gui_Trades(newItemArray)
-	newItemInfos.Insert(0, "THIRD BUYER", "THIRD ITEM", "THIRD PRICE", "THIRD LOCATION")
+	newItemInfos.Insert(0, "THIRD BUYER", "THIRD ITEM", "THIRD PRICE", "THIRD LOCATION", A_Hour ":" A_Min)
 	newItemArray := Gui_Trades_Manage_Trades("Add_New", newItemInfos)
 	Gui_Trades(newItemArray)
 */
@@ -204,14 +204,16 @@ Monitor_Game_Logs(mode="") {
 		Return
 	}
 
+	IniRead, tX,% iniFilePath,PROGRAM,X_POS
+	IniRead, tY,% iniFilePath,PROGRAM,Y_POS
 	r := Get_All_Games_Instances()
 	if ( r = "exenotfound" ) {
-		Gui_Trades(,"exenotfound")
+		Gui_Trades(,"exenotfound",tX,tY)
 		Sleep 10000
 		Monitor_Game_Logs()
 	}
 	else {
-		Gui_Trades()
+		Gui_Trades(,,tX,tY)
 		logsFile := r
 	}
 	Logs_Append(A_ThisFunc,,logsFile)
@@ -252,7 +254,7 @@ Monitor_Game_Logs(mode="") {
 	;					if ( RegExMatch( messages, ".*Hi, I'd like to buy your .* for my .* in .*", subPat ) ) ; Trade message found
 	;						isCurrency := 1
 						newTradesInfos := Object()
-						newTradesInfos.Insert(0, whispName, tradeItem, tradePrice, tradeStash, gamePID)
+						newTradesInfos.Insert(0, whispName, tradeItem, tradePrice, tradeStash, gamePID, A_Hour ":" A_Min)
 						messagesArray := Gui_Trades_Manage_Trades("Add_New", newTradesInfos)
 						if WinExist("ahk_id " GuiTradesHandler)
 							WinGetPos, xpos, ypos, , ,% "ahk_id " GuiTradesHandler
@@ -268,7 +270,7 @@ Monitor_Game_Logs(mode="") {
 						if tradeItem contains % " 0`%"
 							StringReplace, tradeItem, tradeItem, 0`%
 						newTradesInfos := Object()
-						newTradesInfos.Insert(0, whispName, tradeItem, tradePrice, tradeStash, gamePID)
+						newTradesInfos.Insert(0, whispName, tradeItem, tradePrice, tradeStash, gamePID, A_Hour ":" A_Min)
 						messagesArray := Gui_Trades_Manage_Trades("Add_New", newTradesInfos)
 						if WinExist("ahk_id " GuiTradesHandler)
 							WinGetPos, xpos, ypos, , ,% "ahk_id " GuiTradesHandler
@@ -399,11 +401,10 @@ Gui_Trades(infosArray="", errorMsg="", xpos="unspecified", ypos="unspecified") {
 	global
 	static tabWidth, tabHeight, tradesCount, index, element, varText, varName, tabName, trans, priceArray, btnID, Clipboard_Backup, itemArray, itemName, itemPrice, messageToSend
 	static nameArray, buyerName
-
 	Gui, Trades:Destroy
 	Gui, Trades:New, +ToolWindow +AlwaysOnTop -Border +hwndGuiTradesHandler +LabelGui_Trades_ +LastFound -SysMenu
 	Gui, Trades:Default
-	tabWidth := 390, tabHeight := 190
+	tabHeight := Gui_Trades_Get_Tab_Height(), tabWidth := 390
 	if ( VALUE_Trades_GUI_Mode = "Window" ) {
 		Gui, Trades: +Border
 	}
@@ -420,10 +421,6 @@ Gui_Trades(infosArray="", errorMsg="", xpos="unspecified", ypos="unspecified") {
 		if ( tabsCount = "" )
 			tabsCount := 0
 	}
-	tabHeight := tabHeight +  18*( Floor( tabsCount/10 ) ) ; Adds 18 in height for every 10 tabs
-	tabHeight := tabHeight +  18*( Floor( tabsCount/100 ) ) ; Adds 18 in height for every 100 tabs
-	if tabsCount in 19,28,29,37,38,39,46,47,48,49,55,56,57,58,59,64,65,66,67,68,69,73,74,75,76,77,78,79,82,83,84,85,86,87,88,89,91,92,93,94,95,96,97,98,99
-		tabHeight += 18
 	
 	aeroStatus := Get_Aero_Status()
 	if ( aeroStatus = 1 )
@@ -457,12 +454,20 @@ Gui_Trades(infosArray="", errorMsg="", xpos="unspecified", ypos="unspecified") {
 			VALUE_Trades_GUI_Current_State := "Active"
 		}
 		if ( index > 0 ) {
-			Gui, Add, Button,w115 h35 x20 yp+25 vcopyBtn%index% %themeState% gGui_Trades_CopyItemName,% "Clipboard Item"
-			Gui, Add, Button,w115 h35 x145 yp vwaitBtn%index% %themeState% gGui_Trades_Wait,% "Ask to Wait"
-			Gui, Add, Button,w115 h35 x270 yp vinviteBtn%index% %themeState% gGui_Trades_Invite,% "Party Invite"
-			Gui, Add, Button,w240 h35 x20 yp+45 vthanksBtn%index% %themeState% gGui_Trades_Thanks,% "Say Thanks`n (close tab)"
-			Gui, Add, Button,w115 h35 x270 yp vsoldBtn%index% %themeState% gGui_Trades_Sold,% "Say Item Sold`n   (close tab)"
-			Gui, Add, Button,w20 h20 x375 yp-120 vdelBtn%index% %themeState% gGui_Trades_RemoveItem,% "X"
+			Gui, Add, Button,w20 h20 x375 yp-50 vdelBtn%index% %themeState% gGui_Trades_RemoveItem,% "X"
+			Gui, Add, Text,x340 yp vTimeSlot%index%,% infosArray.TIME[index]
+			Loop 9 {
+				btnW := (VALUE_Button%A_Index%_SIZE="Small")?(115):(VALUE_Button%A_Index%_SIZE="Medium")?(240):(VALUE_Button%A_Index%_SIZE="Large")?(365):("ERROR")
+				btnX := (VALUE_Button%A_Index%_H="Left")?(20):(VALUE_Button%A_Index%_H="Center")?(145):(VALUE_Button%A_Index%_H="Right")?(270):("ERROR")
+				btnY := (VALUE_Button%A_Index%_V="Top")?(100):(VALUE_Button%A_Index%_V="Middle")?(140):(VALUE_Button%A_Index%_V="Bottom")?(180):("ERROR")
+				btnName := VALUE_Button%A_Index%_Label
+				btnSub := RegExReplace(VALUE_Button%A_Index%_Action, "[ _+()]", "_")
+				btnSub := RegExReplace(btnSub, "___", "_")
+				btnSub := RegExReplace(btnSub, "__", "_")
+				btnSub := RegExReplace(btnSub, "_", "", ,1,-1)
+				if ( btnW != "ERROR" && btnX != "ERROR" && btnY != "ERROR" && btnSub != "" && btnSub != "ERROR" )
+					Gui, Add, Button,x%btnX% y%btnY% w%btnW% h35 vCustomBtn%A_Index%_%index% gGui_Trades_%btnSub%,% btnName
+			}
 		}
 		else {
 			IniRead, trans,% iniFilePath,SETTINGS,Transparency
@@ -477,6 +482,53 @@ Gui_Trades(infosArray="", errorMsg="", xpos="unspecified", ypos="unspecified") {
 	sleep 100
 	Gui_Trades_Set_Position(xpos, ypos)
 	return
+
+	Gui_Trades_Clipboard_Item:
+		btnID := Gui_Trades_Get_Tab_ID(A_GuiControl)
+		if ( btnID = "0" )
+			return
+		tradesInfosArray := Object()
+		tradesInfosArray := Gui_Trades_Get_Trades_Infos(btnID) ; [0] buyerName - [1] itemName - [2] itemPrice
+		Clipboard := tradesInfosArray[1]
+	Return
+
+	Gui_Trades_Message_Basic:
+		RegExMatch(A_GuiControl, "\d+", btnID)
+		tabID := Gui_Trades_Get_Tab_ID()
+		tradesInfosArray := Object()
+		tradesInfosArray := Gui_Trades_Get_Trades_Infos(tabID)
+		Send_InGame_Message(VALUE_Button%btnID%_Message, tradesInfosArray)
+	Return
+
+	Gui_Trades_Message_Basic_Close_Tab:
+		RegExMatch(A_GuiControl, "\d+", btnID)
+		tabID := Gui_Trades_Get_Tab_ID()
+		tradesInfosArray := Object()
+		tradesInfosArray := Gui_Trades_Get_Trades_Infos(tabID)
+		Send_InGame_Message(VALUE_Button%btnID%_Message, tradesInfosArray)
+		if ( VALUE_Support_Text_Toggle = 1 )
+			Send_InGame_Message("@%buyerName% - - - POE Trades Helper: Keep track of your trades! // Look it up! (not a bot!)", tradesInfosArray)
+		Gosub, Gui_Trades_RemoveItem
+	Return
+
+	Gui_Trades_Message_Advanced:
+		RegExMatch(A_GuiControl, "\d+", btnID)
+		tabID := Gui_Trades_Get_Tab_ID()
+		tradesInfosArray := Object()
+		tradesInfosArray := Gui_Trades_Get_Trades_Infos(tabID)
+		Send_InGame_Message(VALUE_Button%btnID%_Message, tradesInfosArray,0,1)
+	Return
+
+	Gui_Trades_Message_Advanced_Close_Tab:
+		RegExMatch(A_GuiControl, "\d+", btnID)
+		tabID := Gui_Trades_Get_Tab_ID()
+		tradesInfosArray := Object()
+		tradesInfosArray := Gui_Trades_Get_Trades_Infos(tabID)
+		Send_InGame_Message(VALUE_Button%btnID%_Message, tradesInfosArray,0,1)
+		if ( VALUE_Support_Text_Toggle = 1 )
+			Send_InGame_Message("@%buyerName% - - - POE Trades Helper: Keep track of your trades! // Look it up! (not a bot!)", tradesInfosArray)
+		Gosub, Gui_Trades_RemoveItem
+	Return
 	
 	Gui_Trades_OnTabSwitch:
 ;		Clipboard the item's infos on tab switch if the user enabled
@@ -508,92 +560,32 @@ Gui_Trades(infosArray="", errorMsg="", xpos="unspecified", ypos="unspecified") {
 			WinGetPos, xpos, ypos, , ,% "ahk_id " GuiTradesHandler
 		Gui_Trades(messagesArray, ,xpos, ypos)
 	return
-	
-	Gui_Trades_CopyItemName:
-;		Clipboard the item's infos
-		btnID := Gui_Trades_Get_Tab_ID(A_GuiControl)
-		if ( btnID = "0" )
-			return
-		tradesInfosArray := Object()
-		tradesInfosArray := Gui_Trades_Get_Trades_Infos(btnID) ; [0] buyerName - [1] itemName - [2] itemPrice
-		Clipboard := tradesInfosArray[1]
-	return
-	
-	Gui_Trades_Wait:
-;		Send a message asking to wait
-		btnID := Gui_Trades_Get_Tab_ID(A_GuiControl)
-		if ( btnID = "0" )
-			return
-		tradesInfosArray := Object()
-		tradesInfosArray := Gui_Trades_Get_Trades_Infos(btnID) ; [0] buyerName - [1] itemName - [2] itemPrice - [3] thisPID
-		if ( VALUE_Wait_Text_Toggle = 1 ) {
-			Send_InGame_Message(VALUE_Wait_Text, tradesInfosArray)
-			; Send_InGame_Message(VALUE_Wait_Text, 1, 2, tradesInfosArray[0], tradesInfosArray[1], tradesInfosArray[2]) ; __TO_BE_ADDED__ Go back to the previous channel
-		}
-	return
-	
-	Gui_Trades_Invite:
-;		Send a message and invite the player to the party
-		btnID := Gui_Trades_Get_Tab_ID(A_GuiControl)
-		if ( btnID = "0" )
-			return
-		tradesInfosArray := Object()
-		tradesInfosArray := Gui_Trades_Get_Trades_Infos(btnID) ; [0] buyerName - [1] itemName - [2] itemPrice
-		if ( VALUE_Invite_Text_Toggle = 1 ) {
-			Send_InGame_Message(VALUE_Invite_Text, tradesInfosArray)
-		}
-		Send_InGame_Message("/invite " tradesInfosArray[0], tradesInfosArray)
-		; Send_InGame_Message("/invite " tradesInfosArray[0], 1, 3) ; __TO_BE_ADDED__ Go back to the previous channel
-	return
-	
-	Gui_Trades_Thanks:
-;		Send a message to the player and close the tab
-		btnID := Gui_Trades_Get_Tab_ID(A_GuiControl)
-		if ( btnID = "0" )
-			return
-		tradesInfosArray := Object()
-		tradesInfosArray := Gui_Trades_Get_Trades_Infos(btnID) ; [0] buyerName - [1] itemName - [2] itemPrice
-		if ( VALUE_Thanks_Text_Toggle = 1 ) {
-;			if ( VALUE_Support_Text_Toggle = 1 )
-;				goBackUp := 0
-;			Else
-;				goBackUp := 2
-;			Send_InGame_Message(VALUE_Thanks_Text, 1, goBackUp, tradesInfosArray[0], tradesInfosArray[1], tradesInfosArray[2]) ; __TO_BE_ADDED__ Go back to the previous channel
-			Send_InGame_Message(VALUE_Thanks_Text, tradesInfosArray) 
-			if ( VALUE_Support_Text_Toggle = 1 )
-				Send_InGame_Message("@%buyerName% - - - POE Trades Helper: Keep track of your trades! // Look it up! (not a bot!)", tradesInfosArray)
-;				Send_InGame_Message("@%buyerName% . . - POE Trades Helper: Keep track of your trades! // URL: " programRedditURL " (not a bot!)", 1, 3, tradesInfosArray[0], tradesInfosArray[1], tradesInfosArray[2])
-		}
-		Send_InGame_Message("/kick %buyerName%", tradesInfosArray)
-		GoSub, Gui_Trades_RemoveItem
-	return
-	
-	Gui_Trades_Sold:
-;		Send a message to the player and close the tab
-		btnID := Gui_Trades_Get_Tab_ID(A_GuiControl)
-		if ( btnID = "0" )
-			return
-		tradesInfosArray := Object()
-		tradesInfosArray := Gui_Trades_Get_Trades_Infos(btnID) ; [0] buyerName - [1] itemName - [2] itemPrice
-		if ( VALUE_Sold_Text_Toggle = 1 ) {
-;			if ( VALUE_Support_Text_Toggle = 1 )
-;				goBackUp := 0
-;			Else
-;				goBackUp := 2
-;			Send_InGame_Message(VALUE_Sold_Text, 1, goBackUp, tradesInfosArray[0], tradesInfosArray[1], tradesInfosArray[2]) ;  __TO_BE_ADDED__ Go back to the previous channel
-			Send_InGame_Message(VALUE_Sold_Text, tradesInfosArray)
-			if ( VALUE_Support_Text_Toggle = 1 )
-				Send_InGame_Message("@%buyerName% - - - POE Trades Helper: Keep track of your trades! // Look it up! (not a bot!)", tradesInfosArray)
-;				Send_InGame_Message("@%buyerName% . . - POE Trades Helper: Keep track of your trades! // URL: " programRedditURL " (not a bot!)", 1, 3, tradesInfosArray[0], tradesInfosArray[1], tradesInfosArray[2])
-		}
-		GoSub, Gui_Trades_RemoveItem
-	return
 
 	Gui_Trades_Size:
 ;		Declare the GUI width and height
 		tradesGuiWidth := A_GuiWidth
 		tradesGuiHeight := A_GuiHeight
 	return
+}
+
+Gui_Trades_Get_Tab_Height() {
+	static
+	global VALUE_Button1_SIZE, VALUE_Button2_SIZE, VALUE_Button3_SIZE, VALUE_Button4_SIZE
+	global VALUE_Button5_SIZE, VALUE_Button6_SIZE, VALUE_Button7_SIZE, VALUE_Button8_SIZE, VALUE_Button9_SIZE
+	global VALUE_Button1_V, VALUE_Button2_V, VALUE_Button3_V, VALUE_Button4_V
+	global VALUE_Button5_V, VALUE_Button6_V, VALUE_Button7_V, VALUE_Button8_V, VALUE_Button9_V
+
+	tabHeight := 130
+	Loop 9 {
+		index := A_Index
+		if ( VALUE_Button%index%_SIZE != "Disabled" ) {
+			if ( VALUE_Button%index%_V = "Middle" && tabHeight = 130 )
+				tabHeight := 170
+			if ( VALUE_Button%index%_V = "Bottom" && ( tabHeight = 130 || tabHeight = 170 ) )
+				tabHeight := 210
+		}
+	}
+	return tabHeight
 }
 
 GUI_Trades_Mode:
@@ -650,8 +642,8 @@ Gui_Trades_Manage_Trades(mode="", newItemInfos=""){
 	returnArray.PRICES := Object()
 	returnArray.LOCATIONS := Object()
 	returnArray.GAMEPID := Object()
-	GuiControlGet, varName, Trades:Name,% A_GuiControl
-	btnID := RegExReplace(varName, "\D")
+	returnArray.TIME := Object()
+	btnID := Gui_Trades_Get_Tab_ID()
 
 	if ( mode = "Get_All" || mode = "Add_New") {
 	;	___BUYERS___	
@@ -703,10 +695,20 @@ Gui_Trades_Manage_Trades(mode="", newItemInfos=""){
 			}
 			else break
 		}
+
+	;	___TIME___
+		Loop {
+			timeCount := A_Index
+			GuiControlGet, content, Trades:,TimeSlot%A_Index%
+			if ( content ) {
+				returnArray.TIME.Insert(A_Index, content)
+			}
+			else break
+		}
 	}
 
 	if ( mode = "Add_New") {
-		name := newItemInfos[0], item := newItemInfos[1], price := newItemInfos[2], location := newItemInfos[3], gamePID := newItemInfos[4]
+		name := newItemInfos[0], item := newItemInfos[1], price := newItemInfos[2], location := newItemInfos[3], gamePID := newItemInfos[4], time := newItemInfos[5]
 		name := Gui_Trades_RemoveGuildPrefix(name)
 		returnArray.COUNT.Insert(0, bCount)
 		returnArray.BUYERS.Insert(bCount, name)
@@ -714,6 +716,7 @@ Gui_Trades_Manage_Trades(mode="", newItemInfos=""){
 		returnArray.PRICES.Insert(pCount, price)
 		returnArray.LOCATIONS.Insert(lCount, location)
 		returnArray.GAMEPID.Insert(PIDCount, gamePID)
+		returnArray.TIME.Insert(timeCount, time)
 	}
 
 	if ( mode = "Remove_Current") {
@@ -782,6 +785,19 @@ Gui_Trades_Manage_Trades(mode="", newItemInfos=""){
 			if ( content ) {
 				index := A_Index
 				returnArray.GAMEPID.Insert(index, content)
+			}
+			else break
+		}
+;	___TIME___
+		Loop {
+			if ( A_Index < btnID )
+				counter := A_Index
+			else if ( A_Index >= btnID )
+				counter := A_Index+1
+			GuiControlGet, content, Trades:,TimeSlot%counter%
+			if ( content ) {
+				index := A_Index
+				returnArray.TIME.Insert(index, content)
 			}
 			else break
 		}
@@ -859,7 +875,7 @@ Gui_Settings() {
 		themeState := "+Theme 0x8000"
 	else 
 		themeState := "-Theme +0x8000"
-	Gui, Add, Tab3, vTab x10 y10 %themeState%,Settings|Messages|Hotkeys
+	Gui, Add, Tab3, vTab x10 y10 %themeState%,Settings|TradesGUI|Hotkeys
 
 	Gui, Tab, 1
 ;	Settings Tab
@@ -898,32 +914,69 @@ Gui_Settings() {
 		Gui, Add, Button, x20 y310 w300 h30 gGui_Settings_Btn_Apply vApplyBtn,Apply Settings
 		Gui, Add, Button, x320 y310 w120 h30 vWikiBtn gGui_Settings_Btn_WIKI,Visit the WIKI
 	
-;	Message Tab
+;	TradesGUI tab
 	Gui, Tab, 2
-;		Top message
-		Gui, Add, Text, x20 y40,Use these variables in your message to specify the infos about the item:
-		Gui, Add, Text, xp+10 yp+15,`%buyerName`% %A_Tab%%A_Tab% Contains the buyer's name
-		Gui, Add, Text, xp yp+15,`%itemName`% %A_Tab%%A_Tab% Contains the item's infos
-		Gui, Add, Text, xp yp+15,`%itemPrice`% %A_Tab%%A_Tab% Contains the item's price
-;		One moment button
-		Gui, Add, Text, x20 y120,"Ask to Wait" button:
-		Gui, Add, CheckBox, xp yp+20 vMessageWaitToggle hwndMessageWaitToggleHandler,
-		Gui, Add, Edit, xp+25 yp-3 w390 vMessageWait hwndMessageWaitHandler
-;		Invite to party button
-		Gui, Add, Text, x20 y165,"Party Invite" button:
-		Gui, Add, CheckBox, xp yp+20 vMessageInviteToggle hwndMessageInviteToggleHandler,
-		Gui, Add, Edit, xp+25 yp-3 w390 vMessageInvite hwndMessageInviteHandler
-;		Thanks button
-		Gui, Add, Text, x20 y210,"Say Thanks" button:
-		Gui, Add, CheckBox, xp yp+20 vMessageThanksToggle hwndMessageThanksToggleHandler,
-		Gui, Add, Edit, xp+25 yp-3 w390 vMessageThanks hwndMessageThanksHandler
-;		Sold button
-		Gui, Add, Text, x20 y255,"Say Item Sold" button:
-		Gui, Add, CheckBox, xp yp+20 vMessageSoldToggle hwndMessageSoldToggleHandler,
-		Gui, Add, Edit, xp+25 yp-3 w390 vMessageSold hwndMessageSoldHandler
-;		Apply Button
-		Gui, Add, Button, x20 y310 w300 h30 gGui_Settings_Btn_Apply vApplyBtn2,Apply Settings
-		Gui, Add, Button, x320 y310 w120 h30 vWikiBtn2 gGui_Settings_Btn_WIKI,Visit the WIKI
+	DynamicGUIHandlersArray := Object()
+	DynamicGUIHandlersArray.Btn := Object()
+	DynamicGUIHandlersArray.HPOS := Object()
+	DynamicGUIHandlersArray.HPOSText := Object()
+	DynamicGUIHandlersArray.VPOS := Object()
+	DynamicGUIHandlersArray.VPOSText := Object()
+	DynamicGUIHandlersArray.SIZE := Object()
+	DynamicGUIHandlersArray.SIZEText := Object()
+	DynamicGUIHandlersArray.Label := Object()
+	DynamicGUIHandlersArray.LabelText := Object()
+	DynamicGUIHandlersArray.Action := Object()
+	DynamicGUIHandlersArray.ActionText := Object()
+	DynamicGUIHandlersArray.Msg := Object()
+	Loop 9 {
+		index := A_Index
+		xpos := (index=1||index=4||index=7)?(60):(index=2||index=5||index=8)?(175):(index=3||index=6||index=9)?(290):("ERROR")
+		ypos := (index=1||index=2||index=3)?(40):(index=4||index=5||index=6)?(75):(index=7||index=8||index=9)?(110):("ERROR")
+		Gui, Add, Button, x%xpos% y%ypos% %themeState% w115 h35 vTradesBtn%index% hwndTradesBtn%index%Handler gGui_Settings_Custom_Label,% "Custom " index
+
+		Gui, Add, Text, x60 y160 hwndTradesHPOS%index%TextHandler,H-POS:
+		Gui, Add, DropDownList, w70 xp+50 yp-3 vTradesHPOS%index% hwndTradesHPOS%index%Handler,% "Left|Center|Right"
+		Gui, Add, Text, xp+75 yp+3 hwndTradesVPOS%index%TextHandler,V-POS:
+		Gui, Add, DropDownList, w70 xp+40 yp-3 vTradesVPOS%index% hwndTradesVPOS%index%Handler,% "Top|Middle|Bottom"
+		Gui, Add, Text, xp+75 yp+3 hwndTradesSIZE%index%TextHandler,SIZE:
+		Gui, Add, DropDownList, w70 xp+35 yp-3 vTradesSIZE%index% hwndTradesSIZE%index%Handler,% "Disabled|Small|Medium|Large"
+
+		Gui, Add, Text, x60 yp+33 hwndTradesLabel%index%TextHandler,Label:
+		Gui, Add, Edit, xp+50 yp-3 w295 vTradesLabel%index% hwndTradesLabel%index%Handler gGui_Settings_Custom_Label,
+		Gui, Add, Text, x60 yp+33 hwndTradesAction%index%TextHandler,Action:
+		Gui, Add, DropDownList, xp+50 yp-3 w295 vTradesAction%index% hwndTradesAction%index%Handler gGui_Settings_Custom_Label,% "Clipboard Item|Message (Basic)|Message (Basic) + Close Tab|Message (Advanced)|Message (Advanced) + Close Tab"
+		Gui, Add, Edit, xp yp+25 w295 vTradesMsg%index% hwndTradesMsg%index%Handler,
+
+		GuiControl,Settings:Hide,% TradesHPOS%index%Handler
+		GuiControl,Settings:Hide,% TradesHPOS%index%TextHandler
+		GuiControl,Settings:Hide,% TradesVPOS%index%Handler
+		GuiControl,Settings:Hide,% TradesVPOS%index%TextHandler
+		GuiControl,Settings:Hide,% TradesSIZE%index%Handler
+		GuiControl,Settings:Hide,% TradesSIZE%index%TextHandler
+		GuiControl,Settings:Hide,% TradesLabel%index%Handler
+		GuiControl,Settings:Hide,% TradesLabel%index%TextHandler
+		GuiControl,Settings:Hide,% TradesAction%index%Handler
+		GuiControl,Settings:Hide,% TradesAction%index%TextHandler
+		GuiControl,Settings:Hide,% TradesMsg%index%Handler
+
+		DynamicGUIHandlersArray.Btn.Insert(index,TradesBtn%index%Handler)
+		DynamicGUIHandlersArray.HPOS.Insert(index,TradesHPOS%index%Handler)
+		DynamicGUIHandlersArray.HPOSText.Insert(index, TradesHPOS%index%TextHandler)
+		DynamicGUIHandlersArray.VPOS.Insert(index, TradesVPOS%index%Handler)
+		DynamicGUIHandlersArray.VPOSText.Insert(index, TradesVPOS%index%TextHandler)
+		DynamicGUIHandlersArray.SIZE.Insert(index, TradesSIZE%index%Handler)
+		DynamicGUIHandlersArray.SIZEText.Insert(index, TradesSIZE%index%TextHandler)
+		DynamicGUIHandlersArray.Label.Insert(index,TradesLabel%index%Handler)
+		DynamicGUIHandlersArray.LabelText.Insert(index,TradesLabel%index%TextHandler)
+		DynamicGUIHandlersArray.Action.Insert(index,TradesAction%index%Handler)
+		DynamicGUIHandlersArray.ActionText.Insert(index,TradesAction%index%TextHandler)		
+		DynamicGUIHandlersArray.Msg.Insert(index,TradesMsg%index%Handler)		
+	}
+	Gui, Add, Button, x130 y280 w200 gGui_Settings_Trades_Preview,Preview
+	;		Apply Button
+	Gui, Add, Button, x20 y310 w300 h30 gGui_Settings_Btn_Apply vApplyBtn2,Apply Settings
+	Gui, Add, Button, x320 y310 w120 h30 vWikiBtn2 gGui_Settings_Btn_WIKI,Visit the WIKI
 
 ;	Hotkeys Tab
 	Gui, Tab, 3
@@ -976,11 +1029,25 @@ Gui_Settings() {
 	Gui, Add, Button, x320 y310 w120 h30 vWikiBtn3 gGui_Settings_Btn_WIKI,Visit the WIKI
 	GuiControl, Choose, Tab, 1
 	GoSub, Gui_Settings_Set_Preferences
-	GuiControl, +gGui_Settings_Hotkeys_Tooltip, Settings:
 	Gui, Trades: -E0x20
 	Gui, Show
 	guiCreated := 1
 return
+
+	Gui_Settings_Trades_Preview:
+		Gosub, Gui_Settings_Btn_Apply
+		Gui_Trades_Clone()
+	Return
+
+	Gui_Settings_Custom_Label:
+		Gui, Settings:Submit, NoHide
+		thisCtrl := A_GuiControl
+		RegExMatch(thisCtrl, "\d+", btnID)
+		RegExMatch(thisCtrl, "\D+", btnType)
+		actionContent := (btnID=1)?(TradesAction1):(btnID=2)?(TradesAction2):(btnID=3)?(TradesAction3):(btnID=4)?(TradesAction4):(btnID=5)?(TradesAction5):(btnID=6)?(TradesAction6):(btnID=7)?(TradesAction7):(btnID=8)?(TradesAction8):(btnID=9)?(TradesAction9):("ERROR")
+		labelContent := (btnID=1)?(TradesLabel1):(btnID=2)?(TradesLabel2):(btnID=3)?(TradesLabel3):(btnID=4)?(TradesLabel4):(btnID=5)?(TradesLabel5):(btnID=6)?(TradesLabel6):(btnID=7)?(TradesLabel7):(btnID=8)?(TradesLabel8):(btnID=9)?(TradesLabel9):("ERROR")
+		Gui_Settings_Custom_Label_Func(btnType, DynamicGUIHandlersArray, btnID, actionContent, labelContent)
+	Return
 
 	Gui_Settings_Btn_WIKI:
 		Run, % "https://github.com/lemasato/POE-Trades-Helper/wiki"
@@ -1055,6 +1122,7 @@ return
 		IniRead, isActive,% iniFilePath,PROGRAM,Tabs_Number
 		if ( isActive = 0 )
 			Gui, Trades: +E0x20
+		Gui, TradesClone:Destroy
 	return
 	
 	Gui_Settings_Notifications_Browse:
@@ -1163,18 +1231,45 @@ return
 ;	Hotkeys Advanced
 		Loop 16 {
 			index := A_Index
-			KEY := (index=1)?("HK1_ADV_Toggle"):(index=2)?("HK2_ADV_Toggle"):(index=3)?("HK3_ADV_Toggle"):(index=4)?("HK4_ADV_Toggle"):(index=5)?("HK5_ADV_Toggle"):(index=6)?("HK6_ADV_Toggle"):(index=7)?("HK7_ADV_Toggle"):(index=8)?("Hk8_ADV_Toggle"):(index=9)?("HK9_ADV_Toggle"):(index=10)?("HK10_ADV_Toggle"):(index=11)?("HK11_ADV_Toggle"):(index=12)?("HK12_ADV_Toggle"):(index=13)?("HK13_ADV_Toggle"):(index=14)?("HK14_ADV_Toggle"):(index=15)?("HK15_ADV_Toggle"):(index=16)?("HK16_ADV_Toggle"):("ERROR")
+			KEY := "HK" index "_ADV_Toggle"
 			CONTENT := (index=1)?(HotkeyAdvanced1_Toggle):(index=2)?(HotkeyAdvanced2_Toggle):(index=3)?(HotkeyAdvanced3_Toggle):(index=4)?(HotkeyAdvanced4_Toggle):(index=5)?(HotkeyAdvanced5_Toggle):(index=6)?(HotkeyAdvanced6_Toggle):(index=7)?(HotkeyAdvanced7_Toggle):(index=8)?(HotkeyAdvanced8_Toggle):(index=9)?(HotkeyAdvanced9_Toggle):(index=10)?(HotkeyAdvanced10_Toggle):(index=11)?(HotkeyAdvanced11_Toggle):(index=12)?(HotkeyAdvanced12_Toggle):(index=13)?(HotkeyAdvanced13_Toggle):(index=14)?(HotkeyAdvanced14_Toggle):(index=15)?(HotkeyAdvanced15_Toggle):(index=16)?(HotkeyAdvanced16_Toggle):("ERROR")
 			IniWrite,% CONTENT,% iniFile,HOTKEYS_ADVANCED,% KEY
 
-			KEY := (index=1)?("HK1_ADV_KEY"):(index=2)?("HK2_ADV_KEY"):(index=3)?("HK3_ADV_KEY"):(index=4)?("HK4_ADV_KEY"):(index=5)?("HK5_ADV_KEY"):(index=6)?("HK6_ADV_KEY"):(index=7)?("HK7_ADV_KEY"):(index=8)?("HK8_ADV_KEY"):(index=9)?("HK9_ADV_KEY"):(index=10)?("HK10_ADV_KEY"):(index=11)?("HK11_ADV_KEY"):(index=12)?("HK12_ADV_KEY"):(index=13)?("HK13_ADV_KEY"):(index=14)?("HK14_ADV_KEY"):(index=15)?("HK15_ADV_KEY"):(index=16)?("HK16_ADV_KEY"):("ERROR")
+			KEY := "HK" index "_ADV_KEY"
 			CONTENT := (index=1)?(HotkeyAdvanced1_KEY):(index=2)?(HotkeyAdvanced2_KEY):(index=3)?(HotkeyAdvanced3_KEY):(index=4)?(HotkeyAdvanced4_KEY):(index=5)?(HotkeyAdvanced5_KEY):(index=6)?(HotkeyAdvanced6_KEY):(index=7)?(HotkeyAdvanced7_KEY):(index=8)?(HotkeyAdvanced8_KEY):(index=9)?(HotkeyAdvanced9_KEY):(index=10)?(HotkeyAdvanced10_KEY):(index=11)?(HotkeyAdvanced11_KEY):(index=12)?(HotkeyAdvanced12_KEY):(index=13)?(HotkeyAdvanced13_KEY):(index=14)?(HotkeyAdvanced14_KEY):(index=15)?(HotkeyAdvanced15_KEY):(index=16)?(HotkeyAdvanced16_KEY):("ERROR")
 			IniWrite,% CONTENT,% iniFile,HOTKEYS_ADVANCED,% KEY
 
-			KEY := (index=1)?("HK1_ADV_Text"):(index=2)?("HK2_ADV_Text"):(index=3)?("HK3_ADV_Text"):(index=4)?("HK4_ADV_Text"):(index=5)?("HK5_ADV_Text"):(index=6)?("HK6_ADV_Text"):(index=7)?("HK7_ADV_Text"):(index=8)?("HK8_ADV_Text"):(index=9)?("HK9_ADV_Text"):(index=10)?("HK10_ADV_Text"):(index=11)?("HK11_ADV_Text"):(index=12)?("HK12_ADV_Text"):(index=13)?("hK13_ADV_Text"):(index=14)?("HK14_ADV_Text"):(index=15)?("HK15_ADV_Text"):(index=16)?("HK16_ADV_Text"):("ERROR")
+			KEY := "HK" index "_ADV_Text"
 			CONTENT := (index=1)?(HotkeyAdvanced1_Text):(index=2)?(HotkeyAdvanced2_Text):(index=3)?(HotkeyAdvanced3_Text):(index=4)?(HotkeyAdvanced4_Text):(index=5)?(HotkeyAdvanced5_Text):(index=6)?(HotkeyAdvanced6_Text):(index=7)?(HotkeyAdvanced7_Text):(index=8)?(HotkeyAdvanced8_Text):(index=9)?(HotkeyAdvanced9_Text):(index=10)?(HotkeyAdvanced10_Text):(index=11)?(HotkeyAdvanced11_Text):(index=12)?(HotkeyAdvanced12_Text):(index=13)?(HotkeyAdvanced13_Text):(index=14)?(HotkeyAdvanced14_Text):(index=15)?(HotkeyAdvanced15_Text):(index=16)?(HotkeyAdvanced16_Text):("ERROR")
 			IniWrite,% CONTENT,% iniFile,HOTKEYS_ADVANCED,% KEY
+		}
+;	Dynamic TradesGUI
+		Loop 9 {
+			index := A_Index
 
+			KEY := "Button" index "_Label"
+			CONTENT := (index=1)?(TradesLabel1):(index=2)?(TradesLabel2):(index=3)?(TradesLabel3):(index=4)?(TradesLabel4):(index=5)?(TradesLabel5):(index=6)?(TradesLabel6):(index=7)?(TradesLabel7):(index=8)?(TradesLabel8):(index=9)?(TradesLabel9):("ERROR")
+			IniWrite,% CONTENT,% iniFile,TRADES_GUI,% KEY
+
+			KEY := "Button" index "_Action"
+			CONTENT := (index=1)?(TradesAction1):(index=2)?(TradesAction2):(index=3)?(TradesAction3):(index=4)?(TradesAction4):(index=5)?(TradesAction5):(index=6)?(TradesAction6):(index=7)?(TradesAction7):(index=8)?(TradesAction8):(index=9)?(TradesAction9):("ERROR")
+			IniWrite,% CONTENT,% iniFile,TRADES_GUI,% KEY
+
+			KEY := "Button" index "_Message"
+			CONTENT := (index=1)?(TradesMsg1):(index=2)?(TradesMsg2):(index=3)?(TradesMsg3):(index=4)?(TradesMsg4):(index=5)?(TradesMsg5):(index=6)?(TradesMsg6):(index=7)?(TradesMsg7):(index=8)?(TradesMsg8):(index=9)?(TradesMsg9):("ERROR")
+			IniWrite,% CONTENT,% iniFile,TRADES_GUI,% KEY
+
+			KEY := "Button" index "_H"
+			CONTENT := (index=1)?(TradesHPOS1):(index=2)?(TradesHPOS2):(index=3)?(TradesHPOS3):(index=4)?(TradesHPOS4):(index=5)?(TradesHPOS5):(index=6)?(TradesHPOS6):(index=7)?(TradesHPOS7):(index=8)?(TradesHPOS8):(index=9)?(TradesHPOS9):("ERROR")
+			IniWrite,% CONTENT,% iniFile,TRADES_GUI,% KEY
+
+			KEY := "Button" index "_V"
+			CONTENT := (index=1)?(TradesVPOS1):(index=2)?(TradesVPOS2):(index=3)?(TradesVPOS3):(index=4)?(TradesVPOS4):(index=5)?(TradesVPOS5):(index=6)?(TradesVPOS6):(index=7)?(TradesVPOS7):(index=8)?(TradesVPOS8):(index=9)?(TradesVPOS9):("ERROR")
+			IniWrite,% CONTENT,% iniFile,TRADES_GUI,% KEY
+
+			KEY := "Button" index "_SIZE"
+			CONTENT := (index=1)?(TradesSIZE1):(index=2)?(TradesSIZE2):(index=3)?(TradesSIZE3):(index=4)?(TradesSIZE4):(index=5)?(TradesSIZE5):(index=6)?(TradesSIZE6):(index=7)?(TradesSIZE7):(index=8)?(TradesSIZE8):(index=9)?(TradesSIZE9):("ERROR")
+			IniWrite,% CONTENT,% iniFile,TRADES_GUI,% KEY
 		}
 ;	Declare the new settings
 		Disable_Hotkeys()
@@ -1205,6 +1300,8 @@ return
 		MESSAGES_HandlersKeysArray := returnArray.MESSAGES_HandlersKeysArray
 		HOTKEYS_ADVANCED_HandlersArray := returnArray.HOTKEYS_ADVANCED_HandlersArray
 		HOTKEYS_ADVANCED_HandlersKeysArray := returnArray.HOTKEYS_ADVANCED_HandlersKeysArray
+		TRADES_GUI_HandlersArray := returnArray.TRADES_GUI_HandlersArray
+		TRADES_GUI_HandlersKeysArray := returnArray.TRADES_GUI_HandlersKeysArray
 
 		for key, element in sectionArray
 		{
@@ -1227,6 +1324,14 @@ return
 				else if ( keyName = "Logs_Mode" ) { ; Make sure only one goes trough
 					GuiControl, Settings:,% Logs%var%Handler,1
 				}
+				else if ( sectionName = "TRADES_GUI" ) {
+					if keyName contains _H,_V,_SIZE,_ACTION
+						GuiControl, Settings:Choose,% %handler%Handler,% var
+					else {
+						handler := %sectionName%_HandlersArray[key]
+						GuiControl, Settings:,% %handler%Handler,% var
+					}
+				}
 				else if ( var != "ERROR" && var != "" ) { ; Everything else
 					handler := %sectionName%_HandlersArray[key]
 					GuiControl, Settings:,% %handler%Handler,% var
@@ -1234,6 +1339,137 @@ return
 			}
 		}
 	return
+}
+
+Gui_Trades_Clone() {
+;			Trades GUI. Each new item will be added in a new tab
+;			Clicking on a button will do its corresponding action
+;			Switching tab will clipboard the item's infos if the user enabled
+;			Is transparent and click-through when there is no trade on queue
+	static
+	global VALUE_Button1_H, VALUE_Button2_H, VALUE_Button3_H, VALUE_Button4_H, VALUE_Button5_H, VALUE_Button6_H, VALUE_Button7_H, VALUE_Button8_H, VALUE_Button9_H
+	global VALUE_Button1_V, VALUE_Button2_V, VALUE_Button3_V, VALUE_Button4_V, VALUE_Button5_V, VALUE_Button6_V, VALUE_Button7_V, VALUE_Button8_V, VALUE_Button9_V
+	global VALUE_Button1_SIZE, VALUE_Button2_SIZE, VALUE_Button3_SIZE, VALUE_Button4_SIZE, VALUE_Button5_SIZE, VALUE_Button6_SIZE, VALUE_Button7_SIZE, VALUE_Button8_SIZE, VALUE_Button9_SIZE
+	global VALUE_Button1_Label, VALUE_Button2_Label, VALUE_Button3_Label, VALUE_Button4_Label, VALUE_Button5_Label, VALUE_Button6_Label, VALUE_Button7_Label, VALUE_Button8_Label, VALUE_Button9_Label
+
+	Gui, TradesClone:Destroy
+	Gui, TradesClone:New, +ToolWindow +AlwaysOnTop +Border +hwndGuiTradesCloneHandler +LabelGui_TradesClone_ +LastFound
+	Gui, TradesClone:Default
+	infosArray := Object()
+	infosArray.BUYERS := Object()
+	infosArray.ITEMS := Object()
+	infosArray.PRICES := Object()
+	infosArray.LOCATIONS := Object()
+	infosArray.TIME := Object()
+	infosArray.BUYERS.Insert(1,"iSellStuff")
+	infosArray.ITEMS.Insert(1,"level 1 Faster Attacks Support")
+	infosArray.PRICES.Insert(1,"5 alteration")
+	infosArray.LOCATIONS.Insert(1,"Breach (stash tab ""Gems""; position: left 6, top 8)")
+	infosArray.TIME.Insert(1,A_Hour ":" A_Min)
+
+	tabHeight := Gui_Trades_Get_Tab_Height(), tabWidth := 390
+	aeroStatus := Get_Aero_Status()
+	if ( aeroStatus = 1 )
+		themeState := "+Theme 0x8000"
+	else
+		themeState := "-Theme +0x8000"
+	Gui, Add, Tab3,x10 y10 vTab w%tabWidth% h%tabHeight% %themeState% -Wrap
+
+	for index, element in infosArray.BUYERS
+	{
+		tabName := index
+		GuiControl,,Tab,%tabName%
+		if ( index=0 ) { ; allows to have the "No trade in queue" on tab 0 and trades on 1,2,3...
+			Gui, Tab,% index+1
+			Gui, Add, Text, w300 h55 0x1,% infosArray.BUYERS[0]
+			VALUE_Trades_GUI_Current_State := "Inactive"
+		}
+		else {
+			Gui, Tab,% index
+			Gui, Add, Text, ,% "Buyer: "
+			Gui, Add, Text, xp+50 yp ,% infosArray.BUYERS[index]
+			Gui, Add, Text, w300 xp-50 yp+15 ,% "Item: "
+			Gui, Add, Text, w300 xp+50 yp ,% infosArray.ITEMS[index]
+			Gui, Add, Text, w300 xp-50 yp+15 ,% "Price: "
+			Gui, Add, Text, w300 xp+50 yp ,% infosArray.PRICES[index]
+			Gui, Add, Text, w300 xp-50 yp+15 ,% "Location: "
+			Gui, Add, Text, w300 xp+50 yp ,% infosArray.LOCATIONS[index]
+			Gui, Add, Text, w0 h0 xp yp ,% infosArray.GAMEPID[index]
+			VALUE_Trades_GUI_Current_State := "Active"
+		}
+		if ( index > 0 ) {
+			Gui, Add, Button,w20 h20 x375 yp-50 vdelBtn%index% %themeState%,% "X"
+			Gui, Add, Text,x340 yp vTimeSlot%index%,% infosArray.TIME[index]
+			Loop 9 {
+				btnW := (VALUE_Button%A_Index%_SIZE="Small")?(115):(VALUE_Button%A_Index%_SIZE="Medium")?(240):(VALUE_Button%A_Index%_SIZE="Large")?(365):("ERROR")
+				btnX := (VALUE_Button%A_Index%_H="Left")?(20):(VALUE_Button%A_Index%_H="Center")?(145):(VALUE_Button%A_Index%_H="Right")?(270):("ERROR")
+				btnY := (VALUE_Button%A_Index%_V="Top")?(100):(VALUE_Button%A_Index%_V="Middle")?(140):(VALUE_Button%A_Index%_V="Bottom")?(180):("ERROR")
+				btnName := VALUE_Button%A_Index%_Label
+				if ( btnW != "ERROR" && btnX != "ERROR" && btnY != "ERROR" )
+					Gui, Add, Button,x%btnX% y%btnY% w%btnW% h35 vCustomBtn%A_Index%_%index%,% btnName
+			}
+		}
+	}
+	Gui, Show, NoActivate AutoSize x10 y10,% programName " - Preview"
+	sleep 100
+	return
+}
+
+Gui_Settings_Custom_Label_Func(type, controlsArray, btnID, action, label) {
+	static
+
+	if ( type = "TradesBtn" ) {
+		for key, element in controlsArray.HPOS
+			GuiControl,Settings:Hide,% element
+		for key, element in controlsArray.HPOSText
+			GuiControl,Settings:Hide,% element
+
+		for key, element in controlsArray.VPOS
+			GuiControl,Settings:Hide,% element
+		for key, element in controlsArray.VPOSText
+			GuiControl,Settings:Hide,% element
+
+		for key, element in controlsArray.SIZE
+			GuiControl,Settings:Hide,% element
+		for key, element in controlsArray.SIZEText
+			GuiControl,Settings:Hide,% element
+		
+		for key, element in controlsArray.Label
+			GuiControl,Settings:Hide,% element
+		for key, element in controlsArray.LabelText
+			GuiControl,Settings:Hide,% element
+
+		for key, element in controlsArray.Action
+			GuiControl,Settings:Hide,% element	
+		for key, element in controlsArray.ActionText
+			GuiControl,Settings:Hide,% element
+
+		for key, element in controlsArray.Msg
+			GuiControl,Settings:Hide,% element
+
+		GuiControl,Settings:Show,% controlsArray.HPOS[btnID]
+		GuiControl,Settings:Show,% controlsArray.HPOSText[btnID]
+
+		GuiControl,Settings:Show,% controlsArray.VPOS[btnID]
+		GuiControl,Settings:Show,% controlsArray.VPOSText[btnID]
+
+		GuiControl,Settings:Show,% controlsArray.SIZE[btnID]
+		GuiControl,Settings:Show,% controlsArray.SIZEText[btnID]
+
+		GuiControl,Settings:Show,% controlsArray.Label[btnID]
+		GuiControl,Settings:Show,% controlsArray.LabelText[btnID]
+
+		GuiControl,Settings:Show,% controlsArray.Action[btnID]
+		GuiControl,Settings:Show,% controlsArray.ActionText[btnID]
+	}
+
+	if ( type = "TradesLabel" )
+		GuiControl,Settings:,% controlsArray.Btn[btnID],% label
+
+	if ( type = "TradesAction" || type = "TradesBtn" ) && ( action != "Clipboard Item" && action != "" )
+		GuiControl,Settings:Show,% controlsArray.Msg[btnID]
+	if ( type = "TradesAction" || type = "TradesBtn" ) && ( action = "Clipboard Item" || action = "" )
+		GuiControl,Settings:Hide,% controlsArray.Msg[btnID]
 }
 
 Gui_Settings_Hotkeys_Func(ctrlHandler) {
@@ -1255,7 +1491,7 @@ Gui_Settings_Get_Settings_Arrays() {
 	static
 	returnArray := Object()
 	returnArray.sectionArray := Object() ; contains all the .ini SECTIONS
-	returnArray.sectionArray.Insert(0, "SETTINGS", "AUTO_CLIP", "HOTKEYS", "NOTIFICATIONS", "MESSAGES", "HOTKEYS_ADVANCED")
+	returnArray.sectionArray.Insert(0, "SETTINGS", "AUTO_CLIP", "HOTKEYS", "NOTIFICATIONS", "MESSAGES", "HOTKEYS_ADVANCED", "TRADES_GUI")
 	
 	returnArray.SETTINGS_HandlersArray := Object() ; contains all the Gui_Settings HANDLERS from this SECTION
 	returnArray.SETTINGS_HandlersArray.Insert(0, "ShowAlways", "ShowInGame", "ShowTransparency", "ShowTransparencyActive")
@@ -1325,6 +1561,28 @@ Gui_Settings_Get_Settings_Arrays() {
 		hkKeyCmd := (index=1)?("F2") : ("")
 		returnArray.HOTKEYS_ADVANCED_DefaultValues.Insert(keyID, hkToggle, hkTxtCmd, hkKeyCmd)
 		keyID+=3
+	}
+
+	returnArray.TRADES_GUI_HandlersArray := Object()
+	returnArray.TRADES_GUI_HandlersKeysArray := Object()
+	returnArray.TRADES_GUI_KeysArray := Object()
+	returnArray.TRADES_GUI_DefaultValues := Object()
+	keyID := 0
+	keyID2 := 0
+	Loop 9 {
+		index := A_Index
+		returnArray.TRADES_GUI_HandlersArray.Insert(keyID, "TradesBtn" index, "TradesHPOS" index, "TradesVPOS" index, "TradesSIZE" index, "TradesLabel" index, "TradesMsg" index, "TradesAction" index)
+		returnArray.TRADES_GUI_HandlersKeysArray.Insert(keyID, "Button" index "_Label", "Button" index "_H", "Button" index "_V", "Button" index "_SIZE", "Button" index "_Label", "Button" index "_Message", "Button" index "_Action")
+		returnArray.TRADES_GUI_KeysArray.Insert(keyID2, "Button" index "_Label", "Button" index "_Action","Button" index "_Message", "Button" index "_H", "Button" index "_V", "Button" index "_SIZE")
+		btnLabel := (index=1)?("Clipboard Item"):(index=2)?("Ask to Wait"):(index=3)?("Party Invite"):(index=4)?("Thank You"):(index=5)?("Sold It"):(index=6)?("Still Interested?"):(index=7)?("Trade Request"):("[Undefined]")
+		btnAction := (index=1)?("Clipboard Item"):(index=2)?("Message (Basic)"):(index=3)?("Message (Advanced)"):(index=4)?("Message (Advanced) + Close Tab"):(index=5)?("Message (Basic) + Close Tab"):(index=6)?("Message (Basic)"):(index=7)?("Message (Basic)"):("")
+		btnMsg := (index=1)?(""):(index=2)?("@%buyerName% One moment please! (%itemName% // %itemPrice%)"):(index=3)?("{Enter}/invite %buyerName%{Enter}{Enter}@%buyerName% Your item is ready to be picked up at my hideout! (%itemName% // %itemPrice%){Enter}"):(index=4)?("{Enter}/kick %buyerName%{Enter}{Enter}@%buyerName% Thank you, good luck & have fun!{Enter}"):(index=5)?("@%buyerName% The requested item was sold! (%itemName% // %itemPrice%)"):(index=6)?("@%buyerName% Still interested in the item? (%itemName% // %itemPrice%)"):(index=7)?("/tradewith %buyerName%"):("")
+		btnH := (index=1)?("Left"):(index=2)?("Center"):(index=3)?("Right"):(index=4)?("Left"):(index=5)?("Right"):(index=6)?:("")
+		btnV := (index=1)?("Top"):(index=2)?("Top"):(index=3)?("Top"):(index=4)?("Middle"):(index=5)?("Middle"):(index=6)?:("")
+		btnSIZE := (index=1)?("Small"):(index=2)?("Small"):(index=3)?("Small"):(index=4)?("Medium"):(index=5)?("Small"):("Disabled")
+		returnArray.TRADES_GUI_DefaultValues.Insert(keyID2, btnLabel, btnAction, btnMsg, btnH, btnV, btnSIZE)
+		keyID += 6
+		keyID2 += 6
 	}
 	
 	return returnArray
@@ -1405,6 +1663,34 @@ Get_Control_ToolTip(controlName) {
 	Hotkey6_CTRL_TT := Hotkey5_CTRL_TT := Hotkey4_CTRL_TT := Hotkey3_CTRL_TT := Hotkey2_CTRL_TT := Hotkey1_CTRL_TT
 	Hotkey6_ALT_TT := Hotkey5_ALT_TT := Hotkey4_ALT_TT := Hotkey3_ALT_TT := Hotkey2_ALT_TT := Hotkey1_ALT_TT
 	Hotkey6_SHIFT_TT := Hotkey5_SHIFT_TT := Hotkey4_SHIFT_TT := Hotkey3_SHIFT_TT := Hotkey2_SHIFT_TT := Hotkey1_SHIFT_TT
+
+	TradesHPOS1_TT := "Horizontal position of the button."
+	. "`nLeft:" A_Tab . A_Tab "The button will be positioned on the left side."
+	. "`nCenter:" A_Tab . A_Tab "The button will be positioned on the center."
+	. "`nRight:" A_Tab . A_Tab "The button will be positioned on the right side."
+	TradesVPOS1_TT := "Vertical position of the button."
+	. "`nTop:" A_Tab . A_Tab "The button will be positioned on the top row."
+	. "`nCenter:" A_Tab . A_Tab "The button will be positioned on the middle row."
+	. "`nBottom:" A_Tab . A_Tab "The button will be positioned on the bottom row."
+	TradesSIZE1_TT := "Size of the button."
+	. "`nDisabled:" A_Tab "The button will not appear."
+	. "`nSmall:" A_Tab . A_Tab "The button will take one third of the row."
+	. "`nMedium:" A_Tab "The button will take two third of the row."
+	. "`nLarge:" A_Tab . A_Tab "The button will take the whole row."
+	TradesLabel1_TT := "Label of the button."
+	TradesAction1_TT := "Action that will be triggered upon clicking the button."
+	. "`nClipboard Item:" A_Tab . A_Tab "Will put the current tab's item into the clipboard."
+	. "`nMessage (Basic):" A_Tab . A_Tab "Will send a single message."
+	. "`nMessage (Advanced):" A_Tab "Can send multiple messages."
+	. "`nClose Tab:" A_Tab . A_Tab "Will close the tab upon clicking the button."
+	TradesHPOS9_TT := TradesHPOS8_TT := TradesHPOS7_TT := TradesHPOS6_TT := TradesHPOS5_TT := TradesHPOS4_TT := TradesHPOS3_TT := TradesHPOS2_TT := TradesHPOS1_TT
+	TradesVPOS9_TT := TradesVPOS8_TT := TradesVPOS7_TT := TradesVPOS6_TT := TradesVPOS5_TT := TradesVPOS4_TT := TradesVPOS3_TT := TradesVPOS2_TT := TradesVPOS1_TT
+	TradesSIZE9_TT := TradesSIZE8_TT := TradesSIZE7_TT := TradesSIZE6_TT := TradesSIZE5_TT := TradesSIZE4_TT := TradesSIZE3_TT := TradesSIZE2_TT := TradesSIZE1_TT
+	TradesLabel9_TT := TradesLabel8_TT := TradesLabel7_TT := TradesLabel6_TT := TradesLabel5_TT := TradesLabel4_TT := TradesLabel3_TT := TradesLabel2_TT := TradesLabel1_TT
+	TradesAction9_TT := TradesAction8_TT := TradesAction7_TT := TradesAction6_TT := TradesAction5_TT := TradesAction4_TT := TradesAction3_TT := TradesAction2_TT := TradesAction1_TT
+
+	Preview_TT := "Show a preview of the TradesGUI."
+	. "`nNote: The button's function are disabled in preview mode."
 	
 	try
 		controlTip := % %controlName%_TT
@@ -1629,6 +1915,7 @@ Get_INI_Settings() {
 	NOTIFICATIONS_KeysArray := returnArray.NOTIFICATIONS_KeysArray
 	MESSAGES_KeysArray := returnArray.MESSAGES_KeysArray
 	HOTKEYS_ADVANCED_KeysArray := returnArray.HOTKEYS_ADVANCED_KeysArray
+	TRADES_GUI_KeysArray := returnArray.TRADES_GUI_KeysArray
 	
 	returnArray.KEYS := Object()
 	returnArray.VALUES := Object()
@@ -1684,6 +1971,8 @@ Set_INI_Settings(){
 	MESSAGES_DefaultValues := settingsArray.MESSAGES_DefaultValues	
 	HOTKEYS_ADVANCED_KeysArray := settingsArray.HOTKEYS_ADVANCED_KeysArray
 	HOTKEYS_ADVANCED_DefaultValues := settingsArray.HOTKEYS_ADVANCED_DefaultValues
+	TRADES_GUI_KeysArray := settingsArray.TRADES_GUI_KeysArray
+	TRADES_GUI_DefaultValues := settingsArray.TRADES_GUI_DefaultValues
 ;	Set the value for each key
 	for key, element in sectionArray
 	{
@@ -1992,7 +2281,7 @@ Get_Aero_Status(){
 DoNothing:
 return
 
-Send_InGame_Message(messageToSend, infosArray="", isHotkey=0, goBackUp=0) {
+Send_InGame_Message(messageToSend, infosArray="", isHotkey=0, isAdvanced=0) {
 ;			Sends a message InGame and replace the "variables text" into their content
 	static
 	global VALUE_Logs_Mode, VALUE_Hotkeys_Mode, POEGame, programName
@@ -2021,10 +2310,19 @@ Send_InGame_Message(messageToSend, infosArray="", isHotkey=0, goBackUp=0) {
 			WinActivate,[a-zA-Z0-9_] ahk_pid %gamePID%
 			WinWaitActive,[a-zA-Z0-9_] ahk_pid %gamePID%, ,5
 			if (!ErrorLevel) {
-				sleep 10
-				SendInput,{Enter}/{BackSpace}
-				SendInput,{Raw}%messageToSend%
-				SendInput,{Enter}
+				if ( isAdvanced = 1 ) {
+					StringReplace, messageToSend, messageToSend, !, {!}, 1
+					StringReplace, messageToSend, messageToSend, ^, {^}, 1
+					StringReplace, messageToSend, messageToSend, +, {+}, 1
+					StringReplace, messageToSend, messageToSend, #, {#}, 1
+					SendInput,%messageToSend%
+				}
+				else {
+					sleep 10
+					SendInput,{Enter}/{BackSpace}
+					SendInput,{Raw}%messageToSend%
+					SendInput,{Enter}
+				}
 			}
 			else {
 				Loop 2
@@ -2308,6 +2606,12 @@ Reload_Func() {
 
 Exit_Func(ExitReason, ExitCode) {
 	static
+	global GuiTradesHandler, iniFilePath, VALUE_Trades_GUI_Mode
+	if ( VALUE_Trades_GUI_Mode = "Window" ) {
+		WinGetPos, xpos, ypos, , ,% "ahk_id " GuiTradesHandler
+		IniWrite,% xpos,% iniFilePath,PROGRAM,X_POS
+		IniWrite,% ypos,% iniFilePath,PROGRAM,Y_POS
+	}
 
 ;	if ( ExitReason != "LogOff" ) && ( ExitReason != "ShutDown" ) && ( ExitReason != "Reload" ) && ( ExitReason != "Single" ) {
 ;		MsgBox, 4100, % programName " v" programVersion,Are you sure you wish to close %programName%?
