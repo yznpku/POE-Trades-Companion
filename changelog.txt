@@ -1,4 +1,8 @@
 \\
+--v1.6.1--
+--Fix: Starting the script in Window Mode without previously saved position would make the Trades GUI unable to appear.
+//
+\\
 --v1.6--
 What's new:  
 - The Trades GUI now supports up to 9 customizable buttons. You can change their label and their function by going into the [Settings] tray menu and selecting the TradesGUI tab.  
