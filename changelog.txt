@@ -1,6 +1,25 @@
 \\
+--v1.7--
+What's new:  
+- The Trades GUI has been completely re-worked. It now has a brand new custom title bar and a new function that allows you to minimze the GUI! Additonally, the title will turn yellow while trades are on queue.  
+- Trades GUI now has a new "Other:" section. It contains anything that could have been added before and after the trade message, allowing you to see if, for example, the buyer added his offer after the regular trade message.  
+- Trades GUI can automatically minimize itself while no trade are on queue, and un-minimize itself upon receiving a new trade request. The respective settings can be found in the [Settings] tray menu.  
+- Upon receiving a new trade message, the new tab can be automatically focused by enabling the "Focus newly created tabs" in the [Settings] tray menu.  
+- The variable %lastWhisper% has been added for usage in the TradesGUI/Hotkeys tab. It corresponds to the last person who whispered you.
+
+What's changed:  
+- Trades GUI is no longer click-through by default. You can still change this behaviour by ticking the new "Click-through while inactive" checkbox in the [Settings] tray menu.  
+- Upon closing a tab, the script no longer defaults back to the first tab.  
+- Due to the Trades GUI being pre-loaded at the start of the script, any change to the Trades GUI via the TradesGUI tab in the [Settings] menu now require a reload of the script to be taken in count.  
+
+What's fixed:  
+- When the buyer added something after the trade message, the "Location:" section of the Trades GUI would pick it up.  
+- The [Cycle Overlay] would sometimes require to be clicked twice before cycling to the next found instance.  
+- After a game crash, the Trades GUI buttons would no longer work since they were linked to the old PID. Now, if the linked PID does not match a POE instance anymore, the user will have to select between the found matches.  
+//
+\\
 --v1.6.1--
---Fix: Starting the script in Window Mode without previously saved position would make the Trades GUI unable to appear.
+- Fix: Starting the script in Window Mode without previously saved position would make the Trades GUI unable to appear.
 //
 \\
 --v1.6--
