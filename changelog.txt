@@ -1,4 +1,8 @@
 \\
+--v1.7.1--
+- Fix: The new function that allows the user to re-link the game's PID to the Trades GUI after a crash would not be triggered.
+//
+\\
 --v1.7--
 What's new:  
 - The Trades GUI has been completely re-worked. It now has a brand new custom title bar and a new function that allows you to minimize the GUI! Additionally, the title will turn yellow while trades are on queue.  
