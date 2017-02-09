@@ -1,4 +1,8 @@
 \\
+--v1.7.2--
+- Fix: The TradesGUI would be unable to be shown under specific conditions.
+//
+\\
 --v1.7.1--
 - Fix: The new function that allows the user to re-link the game's PID to the Trades GUI after a crash would not be triggered.
 //

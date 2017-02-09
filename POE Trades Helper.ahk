@@ -21,7 +21,7 @@ SetWinDelay, 0
 ;___Some_Variables___;
 global userprofile, iniFilePath, programName, programVersion, programFolder, programPID, sfxFolderPath, programChangelogFilePath, POEGameArray, POEGameList
 EnvGet, userprofile, userprofile
-programVersion := "1.7.1", programRedditURL := "https://redd.it/57oo3h"
+programVersion := "1.7.2", programRedditURL := "https://redd.it/57oo3h"
 programName := "POE Trades Helper", programFolder := userprofile "\Documents\AutoHotKey\" programName
 iniFilePath := programFolder "\Preferences.ini"
 sfxFolderPath := programFolder "\SFX"
@@ -426,7 +426,7 @@ Gui_Trades(infosArray="", errorMsg="", xpos="unspecified", ypos="unspecified") {
 ;			Is transparent and click-through when there is no trade on queue
 	global
 	static tabWidth, tabHeight, tradesCount, index, element, varText, varName, tabName, trans, priceArray, btnID, Clipboard_Backup, itemArray, itemName, itemPrice, messageToSend
-	static nameArray, buyerName, guiX, guiY, guiHeight, guiWidth
+	static nameArray, buyerName, guiX, guiY, guiHeight, guiWidth, defaultX, defaultY
 	if ( errorMsg = "Create" ) {
 		Gui, Trades:Destroy
 		Gui, Trades:New, +ToolWindow +AlwaysOnTop -Border +hwndGuiTradesHandler +LabelGui_Trades_ +LastFound -SysMenu -Caption
@@ -563,10 +563,9 @@ Gui_Trades(infosArray="", errorMsg="", xpos="unspecified", ypos="unspecified") {
 	WinSet, Redraw, ,% "ahk_id " guiTradesHandler ; Make sure to update the GUI appearance (the custom "title bar" would sometimes disappear)
 	IniWrite,% tabsCount,% iniFilePath,PROGRAM,Tabs_Number
 	if ( errorMsg != "Create" ) {
-		if ( xpos = "unspecified" || ypos = "unspecified" ) {
-			xpos := (xpos="unspecified")?(A_ScreenWidth-(guiWidth+5)):(xpos)
-			ypos := (ypos="unspecified")?(0):(ypos)
-		}
+		defaultX := A_ScreenWidth-(guiWidth+5), defaultY := 0
+		xpos := (xpos="unspecified" || xpos="" || (!xpos && xpos!=0))?(defaultX):(xpos)
+		ypos := (ypos="unspecified" || ypos="" || (!ypos && ypos!=0))?(defaultY):(ypos)
 		Gui, Trades:Show,% "NoActivate w" guiWidth+5 " h" guiHeight " x" xpos " y" ypos,% programName " - Queued Trades"
 		Gui, TradesMin:Show,% "x" guiWidth - 49 " y0"
 
