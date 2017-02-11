@@ -12,6 +12,7 @@
 
 OnExit("Exit_Func")
 #SingleInstance Off
+#NoEnv
 SetWorkingDir, %A_ScriptDir%
 FileEncoding, UTF-8 ; Required for cyrillic characters
 #KeyHistory 0
@@ -452,7 +453,7 @@ Gui_Trades(infosArray="", errorMsg="", xpos="unspecified", ypos="unspecified") {
 		tabHeight := Gui_Trades_Get_Tab_Height(), tabWidth := 390
 		Gui, Add, Tab3,x10 y30 vTab gGui_Trades_OnTabSwitch w%tabWidth% h%tabHeight% %themeState% -Wrap
 		VALUE_Trades_GUI_Current_State := "Active"
-		Progress, b w230,Pre-rendering Trades GUI,% programName,% programName
+		Progress, b w230,Initializing,% programName,% programName
 		Gui, Trades:Default
 		Loop 255 {
 			index := A_Index
@@ -567,7 +568,8 @@ Gui_Trades(infosArray="", errorMsg="", xpos="unspecified", ypos="unspecified") {
 		xpos := (xpos="unspecified" || xpos="" || (!xpos && xpos!=0))?(defaultX):(xpos)
 		ypos := (ypos="unspecified" || ypos="" || (!ypos && ypos!=0))?(defaultY):(ypos)
 		Gui, Trades:Show,% "NoActivate w" guiWidth+5 " h" guiHeight " x" xpos " y" ypos,% programName " - Queued Trades"
-		Gui, TradesMin:Show,% "x" guiWidth - 49 " y0"
+		dpiFactor := Get_DPI_Factor()
+		Gui, TradesMin:Show,% "x" (guiWidth-49)*dpiFactor " y0"
 
 		if ( VALUE_Trades_Select_Last_Tab = 1 )
 			GuiControl, Trades:Choose,Tab,% tabsCount
@@ -1108,12 +1110,12 @@ Gui_Settings() {
 ;			Trade Sound Group
 			Gui, Add, GroupBox, x230 y40 w210 h120,Notifications
 			Gui, Add, Checkbox, xp+10 yp+20 vNotifyTradeToggle hwndNotifyTradeToggleHandler,Trade
-			Gui, Add, Edit, xp+60 yp-2 w70 h17 vNotifyTradeSound hwndNotifyTradeSoundHandler ReadOnly
-			Gui, Add, Button, xp+75 yp-2 h20 vNotifyTradeBrowse gGui_Settings_Notifications_Browse,Browse
+			Gui, Add, Edit, xp+65 yp-2 w70 h17 vNotifyTradeSound hwndNotifyTradeSoundHandler ReadOnly
+			Gui, Add, Button, xp+80 yp-2 h20 vNotifyTradeBrowse gGui_Settings_Notifications_Browse,Browse
 ;			Whisper Sound Group
 			Gui, Add, Checkbox, x240 y85 vNotifyWhisperToggle hwndNotifyWhisperToggleHandler,Whisper
-			Gui, Add, Edit, xp+60 yp-2 w70 h17 vNotifyWhisperSound hwndNotifyWhisperSoundHandler ReadOnly
-			Gui, Add, Button, xp+75 yp-2 h20 vNotifyWhisperBrowse gGui_Settings_Notifications_Browse,Browse
+			Gui, Add, Edit, xp+65 yp-2 w70 h17 vNotifyWhisperSound hwndNotifyWhisperSoundHandler ReadOnly
+			Gui, Add, Button, xp+80 yp-2 h20 vNotifyWhisperBrowse gGui_Settings_Notifications_Browse,Browse
 ;			Whisper Tray Notification
 			Gui, Add, Checkbox, x240 yp+24 vNotifyWhisperTray hwndNotifyWhisperTrayHandler,Tray notifications for whispers`n when POE is not active
 			Gui, Add, Checkbox, x240 yp+29 vNotifyWhisperFlash hwndNotifyWhisperFlashHandler,Make the game's taskbar icon flash
@@ -1955,10 +1957,10 @@ Get_Control_ToolTip(controlName) {
 	
 	try
 		controlTip := % %controlName%_TT
-	if ( controlTip ) 
-		return controlTip
-	else 
-		controlTip := controlName ; Used to get the control tooltip
+;	if ( controlTip ) 
+;		return controlTip
+;	else 
+;		controlTip := controlName ; Used to get the control tooltip
 	return controlTip
 }
 
@@ -2114,7 +2116,7 @@ Gui_About() {
 			break
 		}
 		Gui, Add, DropDownList, gVersion_Change AltSubmit vVerNum hwndVerNumHandler,%allVersions%
-		Gui, Add, Edit, vChangesText hwndChangesTextHandler w395 h150 ReadOnly,An internet connection is required
+		Gui, Add, Edit, vChangesText hwndChangesTextHandler w395 R9 ReadOnly,An internet connection is required
 		GuiControl, Choose,%VerNumHandler%,1
 		GoSub, Version_Change
 	Gui, Show, AutoSize
@@ -2796,7 +2798,8 @@ Run_As_Admin() {
 			ExitApp
 		}
 	}
-	SplashTextOn, 525, 80,% programName,% programName " needs to run with Admin privileges.`nOtherwise, you will encounter issues such as hotkeys and GUI buttons not working.`n`nAttempt to restart with admin rights in 3 seconds..."
+	dpiFactor := Get_DPI_Factor()
+	SplashTextOn, 370*dpiFactor, 40*dpiFactor,% programName,% programName " needs to run with Admin .`nAttempt to restart with admin rights in 3 seconds..."
 	sleep 3000
 
 	Loop, %0%
