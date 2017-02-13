@@ -22,7 +22,7 @@ SetWinDelay, 0
 ;___Some_Variables___;
 global userprofile, iniFilePath, programName, programVersion, programFolder, programPID, sfxFolderPath, programChangelogFilePath, POEGameArray, POEGameList
 EnvGet, userprofile, userprofile
-programVersion := "1.7.2", programRedditURL := "https://redd.it/57oo3h"
+programVersion := "1.7.3", programRedditURL := "https://redd.it/57oo3h"
 programName := "POE Trades Helper", programFolder := userprofile "\Documents\AutoHotKey\" programName
 iniFilePath := programFolder "\Preferences.ini"
 sfxFolderPath := programFolder "\SFX"
@@ -238,10 +238,8 @@ Monitor_Game_Logs(mode="") {
 
 	IniRead, tX,% iniFilePath,PROGRAM,X_POS
 	IniRead, tY,% iniFilePath,PROGRAM,Y_POS
-	if ( tX = "ERROR" || tX = "" )
-		tX := "unspecified"
-	if ( tY = "ERROR" || tY = "" )
-		tY := "unspecified"
+	tX := (tX="ERROR"||tX=""||(!tX && tX != 0))?("unspecified"):(tX)
+	tY := (tY="ERROR"||tY=""||(!tY && tY != 0))?("unspecified"):(tY)
 	r := Get_All_Games_Instances()
 	if ( r = "exenotfound" ) {
 		messagesArray := Gui_Trades_Manage_Trades("Get_All")
@@ -318,9 +316,9 @@ Monitor_Game_Logs(mode="") {
 		. "`n- The file doesn't exist anymore."
 		. "`n- Content from the file was deleted."
 		. "`n- The file object used by the program was closed."
-		. "`n`nThe logs monitoring function will be restarting in 10 seconds."
+		. "`n`nThe logs monitoring function will be restarting in 5 seconds."
 	}
-	sleep 10000
+	sleep 5000
 	Restart_Monitor_Game_Logs()
 }
 
@@ -428,7 +426,10 @@ Gui_Trades(infosArray="", errorMsg="", xpos="unspecified", ypos="unspecified") {
 	global
 	static tabWidth, tabHeight, tradesCount, index, element, varText, varName, tabName, trans, priceArray, btnID, Clipboard_Backup, itemArray, itemName, itemPrice, messageToSend
 	static nameArray, buyerName, guiX, guiY, guiHeight, guiWidth, defaultX, defaultY
+
 	if ( errorMsg = "Create" ) {
+		defaultMaxTabs := 10
+
 		Gui, Trades:Destroy
 		Gui, Trades:New, +ToolWindow +AlwaysOnTop -Border +hwndGuiTradesHandler +LabelGui_Trades_ +LastFound -SysMenu -Caption
 		Gui, Trades:Default
@@ -436,10 +437,12 @@ Gui_Trades(infosArray="", errorMsg="", xpos="unspecified", ypos="unspecified") {
 		guiWidth := 403, guiHeight := tabHeight + 38
 		Gui, Add, Text,% "x0 y0 w" guiWidth " h25 +0x4 gGui_Trades_Move hwndguiTradesMoveHandler",% ""
 		Gui, Add, Text,% "x5 y0 w" guiWidth " h25 cFFFFFF BackgroundTrans +0x200 hwndguiTradesTitleHandler",% programName " - Queued Trades: 0"
+		Gui, TradesMin:Destroy
 		Gui, TradesMin:-Caption +Parent%guiTradesMoveHandler%
 		Gui, TradesMin:Color, 696969
 		Gui, TradesMin:Margin, 0, 0
 		Gui, TradesMin:Add, Text,% "x" 0 " y0 h25 cFFFFFF BackgroundTrans Section +0x200 gGui_Trades_Minimize",% "MINIMIZE"
+		Gui, Trades:Default
 		Gui, Add, Text,% "x0 y0 w5 h" guiHeight " +0x4",% "" ; Left
 		Gui, Add, Text,% "x0 y" guiHeight - 5 " w" guiWidth + 5 " h5 +0x4",% "" ; Bottom
 		Gui, Add, Text,% "x" guiWidth " y0 w5 h" guiHeight " +0x4",% "" ; Right
@@ -453,13 +456,15 @@ Gui_Trades(infosArray="", errorMsg="", xpos="unspecified", ypos="unspecified") {
 		tabHeight := Gui_Trades_Get_Tab_Height(), tabWidth := 390
 		Gui, Add, Tab3,x10 y30 vTab gGui_Trades_OnTabSwitch w%tabWidth% h%tabHeight% %themeState% -Wrap
 		VALUE_Trades_GUI_Current_State := "Active"
-		Progress, b w230,Initializing,% programName,% programName
-		Gui, Trades:Default
-		Loop 255 {
+		IniRead, tabsMax,% iniFilePath, PROGRAM, Rendered_Tabs
+		tabsMax := (tabsMax="ERROR"||tabsMax=""||!tabsMax)?(2):(tabsMax)
+		if ( tabsMax > 25 ) {
+			Loop 2
+				TrayTip,% programName,Rendering more tabs,3
+			SetTimer, Remove_TrayTip,-3000
+		}
+		Loop %tabsMax% {
 			index := A_Index
-			percent := ( index / 255 ) * 100
-			Progress, % percent
-			Progress, % percent+1
 			GuiControl, ,Tab,% index
 			Gui, Tab,% index
 
@@ -559,6 +564,24 @@ Gui_Trades(infosArray="", errorMsg="", xpos="unspecified", ypos="unspecified") {
 		GuiControl, Trades:Choose,Tab,%tabID%
 		if ( ErrorLevel )
 			GuiControl, Trades:Choose,Tab,% tabID-1
+
+		if (tabsCount >= tabsMax - 1 && tabsMax != 255) {
+			tabsMax := (tabsMax=defaultMaxTabs)?(25):(tabsMax=25)?(50):(tabsMax=50)?(100):(tabsMax=100)?(255):(50)
+			IniWrite,% tabsMax,% iniFilePath,PROGRAM,Rendered_Tabs
+			tradesArray := Gui_Trades_Manage_Trades("Get_All")
+			WinGetPos, guiX, guiY, , ,% "ahk_id " GuiTradesHandler
+			Gui_Trades(tradesArray,"Create",guiX,guiY)
+			Return
+		}
+		if (tabsCount=0 && tabsMax>defaultMaxTabs) {
+			tabsMax := defaultMaxTabs
+			IniWrite,% tabsMax,% iniFilePath,PROGRAM,Rendered_Tabs
+			tradesArray := Gui_Trades_Manage_Trades("Get_All")
+			WinGetPos, guiX, guiY, , ,% "ahk_id " GuiTradesHandler
+			Gui_Trades(tradesArray,"Create")
+			Gui_Trades(,"Update",guiX,guiY)
+			Return
+		}
 	}
 
 	WinSet, Redraw, ,% "ahk_id " guiTradesHandler ; Make sure to update the GUI appearance (the custom "title bar" would sometimes disappear)
@@ -596,6 +619,9 @@ Gui_Trades(infosArray="", errorMsg="", xpos="unspecified", ypos="unspecified") {
 		IniWrite,% guiX,% iniFilePath,PROGRAM,X_POS
 		IniWrite,% guiY,% iniFilePath,PROGRAM,Y_POS
 		Monitor_Game_Logs()
+	}
+	if ( VALUE_Trades_GUI_Mode = "Overlay") {
+		try	Gui_Trades_Set_Position()
 	}
 	sleep 10
 	return
@@ -2191,6 +2217,7 @@ Set_INI_Settings(){
 	programPID := DllCall("GetCurrentProcessId")
 	IniWrite,% programPID,% iniFile,PROGRAM,PID
 	IniWrite,% A_ScriptName,% iniFile,PROGRAM,FileName
+	IniWrite, 10,% iniFilePath,PROGRAM,Rendered_Tabs
 
 	DetectHiddenWindows On
 	WinGet, fileProcessName, ProcessName, ahk_pid %programPID%
@@ -2302,7 +2329,14 @@ Enable_Hotkeys() {
 				userHotkey%index% := VALUE_HK%index%_ADV_KEY
 				Hotkey,IfWinActive,ahk_group POEGame
 				if ( userHotkey%index% != "" && userHotkey%index% != "ERROR" ) {
-					Hotkey,% userHotkey%index%,Hotkeys_User_%index%,On
+					try	
+						Hotkey,% userHotkey%index%,Hotkeys_User_%index%,On
+					catch {
+						IniWrite,0,% iniFilePath,HOTKEYS_ADVANCED,% "HK" index "_ADV_Toggle"
+						MsgBox, 4096,% programName,% "The following Hotkey is invalid: " userHotkey%index%
+						. "`n`nThe Hotkey will be disabled."
+						. "`nPlease refer to the WIKI."
+					}
 				}
 			}
 		}		
