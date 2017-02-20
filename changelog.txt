@@ -1,4 +1,11 @@
 \\
+--v1.7.4--
+- Fix: TradesGUI would always un-minimize upon receiving a new trade request
+- Fix: TradesGUI borders would not appear if the GUI was minimized when re-creating the GUI after reaching the tabs limit
+- Fix: When no game instance was found, the Trades GUI would minimize itself with the "Minimize when inactive" option enabled after the 10 seconds delay
+- Fix: Double-clicking the MINIMIZE button would put the control's text in the clipboard
+//
+\\
 --v1.7.3--
 - Fix: Various GUI issues with a non-default Screen DPI.
 - Fix: Hotkeys delay that could happen on some systems.
