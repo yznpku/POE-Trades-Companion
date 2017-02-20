@@ -128,18 +128,14 @@ Monitor_Game_Logs(mode="") {
 		Return
 	}
 
-	IniRead, tX,% iniFilePath,PROGRAM,X_POS
-	IniRead, tY,% iniFilePath,PROGRAM,Y_POS
-	tX := (tX="ERROR"||tX=""||(!tX && tX != 0))?("UNSPECIFIED"):(tX)
-	tY := (tY="ERROR"||tY=""||(!tY && tY != 0))?("UNSPECIFIED"):(tY)
 	r := Get_All_Games_Instances()
 	if ( r = "EXE_NOT_FOUND" ) {
 		messagesArray := Gui_Trades_Manage_Trades("GET_ALL")
-		Gui_Trades(messagesArray, "EXE_NOT_FOUND",tX,tY)
+		Gui_Trades(messagesArray, "EXE_NOT_FOUND")
 	}
 	else {
 		messagesArray := Gui_Trades_Manage_Trades("GET_ALL")
-		Gui_Trades(messagesArray, "UPDATE",tX,tY)
+		Gui_Trades(messagesArray, "UPDATE")
 		logsFile := r
 	}
 	Logs_Append(A_ThisFunc,,logsFile)
@@ -192,13 +188,13 @@ Monitor_Game_Logs(mode="") {
 						newTradesInfos := Object()
 						newTradesInfos.Insert(0, whispName, tradeItem, tradePrice, tradeStash, gamePID, A_Hour ":" A_Min, tradeOther)
 						messagesArray := Gui_Trades_Manage_Trades("ADD_NEW", newTradesInfos)
-						if WinExist("ahk_id " GuiTradesHandler)
-							WinGetPos, xpos, ypos, , ,% "ahk_id " GuiTradesHandler
-						Gui_Trades(messagesArray, "UPDATE",xpos, ypos)
-						if ( VALUE_Clip_New_Items = 1 )
+						Gui_Trades(messagesArray, "UPDATE")
+						if ( VALUE_Clip_New_Items = 1 ) {
 							Clipboard := tradeitem
-						if ( VALUE_Trade_Toggle = 1 ) && ( FileExist(VALUE_Trade_Sound_Path) )
+						}
+						if ( VALUE_Trade_Toggle = 1 ) && ( FileExist(VALUE_Trade_Sound_Path) ) {
 							SoundPlay,%VALUE_Trade_Sound_Path%
+						}
 					}
 				}
 			}
@@ -312,14 +308,38 @@ Hotkeys_User_Handler(thisLabel) {
 ;
 ;==================================================================================================================
 	
-Gui_Trades(infosArray="", errorMsg="", xpos="UNSPECIFIED", ypos="UNSPECIFIED") {
+OnLButtonDblClk(wParam, lParam, msg, hwnd) {
+/*			Blocks the default behaviour of placing in clipboard
+ *				when double-clicking a static (text) control
+ *
+ *			Usage: 	OnMessage(0x203, "OnLButtonDblClk", 1) - Enabled
+ *					OnMessage(0x203, "OnLButtonDblClk", 0) - Disabled
+ *
+ *			Credits: Lexikos
+ *			autohotkey.com/board/topic/94962-doubleclick-on-gui-pictures-puts-their-path-in-your-clipboard/?p=682595
+*/
+	WinGetClass class, ahk_id %hwnd%
+	if (class = "Static") {
+		if !A_Gui
+			return 0  ; Just prevent Clipboard change.
+		; Send a WM_COMMAND message to the Gui to trigger the control's g-label.
+		Gui +LastFound
+		id := DllCall("GetDlgCtrlID", "ptr", hwnd) ; Requires AutoHotkey v1.1.
+		static STN_DBLCLK := 1
+		PostMessage 0x111, id | (STN_DBLCLK << 16), hwnd
+		; Return a value to prevent the default handling of this message.
+		return 0
+	}
+}
+
+Gui_Trades(infosArray="", errorMsg="") {
 ;			Trades GUI. Each new item will be added in a new tab
 ;			Clicking on a button will do its corresponding action
 ;			Switching tab will clipboard the item's infos if the user enabled
 ;			Is transparent and click-through when there is no trade on queue
 	global
 	static tabWidth, tabHeight, tradesCount, index, element, varText, varName, tabName, trans, priceArray, btnID, Clipboard_Backup, itemArray, itemName, itemPrice, messageToSend
-	static nameArray, buyerName, guiX, guiY, guiHeight, guiWidth, defaultX, defaultY
+	static nameArray, buyerName, guiX, guiY, guiHeight, guiWidth, defaultX, defaultY, showX, showY
 
 	if ( errorMsg = "CREATE" ) {
 		defaultMaxTabs := 10
@@ -328,11 +348,11 @@ Gui_Trades(infosArray="", errorMsg="", xpos="UNSPECIFIED", ypos="UNSPECIFIED") {
 		Gui, Trades:New, +ToolWindow +AlwaysOnTop -Border +hwndGuiTradesHandler +LabelGui_Trades_ +LastFound -SysMenu -Caption
 		Gui, Trades:Default
 		tabHeight := Gui_Trades_Get_Tab_Height(), tabWidth := 390
-		guiWidth := 403, guiHeight := (VALUE_Trades_GUI_Minimized=1)?(25):(tabHeight+38)
+		guiWidth := 403, guiHeight := tabHeight+38, guiHeightMin := 25
 		Gui, Add, Text,% "x0 y0 w" guiWidth " h25 +0x4 gGui_Trades_Move hwndguiTradesMoveHandler",% ""
 		Gui, Add, Text,% "x5 y0 w" guiWidth " h25 cFFFFFF BackgroundTrans +0x200 hwndguiTradesTitleHandler",% programName " - Queued Trades: 0"
 		Gui, TradesMin:Destroy
-		Gui, TradesMin:-Caption +Parent%guiTradesMoveHandler%
+		Gui, TradesMin:-Caption +AlwaysOnTop +Parent%guiTradesMoveHandler%
 		Gui, TradesMin:Color, 696969
 		Gui, TradesMin:Margin, 0, 0
 		Gui, TradesMin:Add, Text,% "x" 0 " y0 h25 cFFFFFF BackgroundTrans Section +0x200 gGui_Trades_Minimize",% "MINIMIZE"
@@ -423,7 +443,7 @@ Gui_Trades(infosArray="", errorMsg="", xpos="UNSPECIFIED", ypos="UNSPECIFIED") {
 			VALUE_Trades_GUI_Current_State := "Inactive"
 			if ( VALUE_Trades_Click_Through )
 				Gui, Trades: +E0x20
-			WinSet, Transparent,% VALUE_Transparency
+			WinSet, Transparent,% VALUE_Transparency,% "ahk_id " guiTradesHandler
 		}
 		else {
 			showState := "Show"
@@ -433,7 +453,7 @@ Gui_Trades(infosArray="", errorMsg="", xpos="UNSPECIFIED", ypos="UNSPECIFIED") {
 			GuiControl, Trades:-0x1,% BuyerText1Handler,
 			VALUE_Trades_GUI_Current_State := "Active"
 			Gui, Trades: -E0x20
-			WinSet, Transparent,% VALUE_Transparency_Active
+			WinSet, Transparent,% VALUE_Transparency_Active,% "ahk_id " guiTradesHandler
 		}
 		Gui, Trades:Font, c%txtColor%
 		GuiControl, Trades:Font,% guiTradesTitleHandler
@@ -462,45 +482,50 @@ Gui_Trades(infosArray="", errorMsg="", xpos="UNSPECIFIED", ypos="UNSPECIFIED") {
 			tabsMax := (tabsMax=defaultMaxTabs)?(25):(tabsMax=25)?(50):(tabsMax=50)?(100):(tabsMax=100)?(255):(50)
 			IniWrite,% tabsMax,% iniFilePath,PROGRAM,Rendered_Tabs
 			tradesArray := Gui_Trades_Manage_Trades("GET_ALL")
-			WinGetPos, guiX, guiY, , ,% "ahk_id " GuiTradesHandler
-			Gui_Trades(tradesArray,"CREATE",guiX,guiY)
+			Gui_Trades(tradesArray,"CREATE")
 			Return
 		}
 		if (tabsCount=0 && tabsMax>defaultMaxTabs) {
 			tabsMax := defaultMaxTabs
 			IniWrite,% tabsMax,% iniFilePath,PROGRAM,Rendered_Tabs
 			tradesArray := Gui_Trades_Manage_Trades("GET_ALL")
-			WinGetPos, guiX, guiY, , ,% "ahk_id " GuiTradesHandler
 			Gui_Trades(tradesArray,"CREATE")
-			Gui_Trades(,"UPDATE",guiX,guiY)
+			Gui_Trades(,"UPDATE")
 			Return
 		}
 	}
 
 	WinSet, Redraw, ,% "ahk_id " guiTradesHandler ; Make sure to update the GUI appearance (the custom "title bar" would sometimes disappear)
 	IniWrite,% tabsCount,% iniFilePath,PROGRAM,Tabs_Number
-	if ( errorMsg != "CREATE" ) {
-		defaultX := A_ScreenWidth-(guiWidth+5), defaultY := 0
-		xpos := (xpos="UNSPECIFIED" || xpos="" || (!xpos && xpos!=0))?(defaultX):(xpos)
-		ypos := (ypos="UNSPECIFIED" || ypos="" || (!ypos && ypos!=0))?(defaultY):(ypos)
-		Gui, Trades:Show,% "NoActivate w" guiWidth+5 " h" guiHeight " x" xpos " y" ypos,% programName " - Queued Trades"
-		dpiFactor := Get_DPI_Factor()
-		Gui, TradesMin:Show,% "x" (guiWidth-49)*dpiFactor " y0"
 
+	if ( errorMsg = "CREATE" ) {
+		showWidth := guiWidth+5
+		showHeight := (VALUE_Trades_GUI_Minimized=1)?(guiHeightMin):(guiHeight)
+		IniRead, showX,% iniFilePath,PROGRAM,X_POS
+		IniRead, showY,% iniFilePath,PROGRAM,Y_POS
+		showXDefault := A_ScreenWidth-(showWidth), showYDefault := 0
+		showX := (showX="ERROR"||showX=""||(!showX && showX != 0))?(showXDefault):(showX)
+		showY := (showY="ERROR"||showY=""||(!showY && showY != 0))?(showYDefault):(showY)
+		Gui, Trades:Show,% "NoActivate w" showWidth " h" showHeight " x" showX " y" showY,% programName " - Queued Trades"
+
+		dpiFactor := Get_DPI_Factor(), showX := guiWidth-49
+		Gui, TradesMin:Show,% "x" (guiWidth-49)*dpiFactor " y0"
+	}
+	else {
 		if ( VALUE_Trades_Select_Last_Tab = 1 )
 			GuiControl, Trades:Choose,Tab,% tabsCount
 
-		if ( VALUE_Trades_Auto_Minimize || VALUE_Trades_Auto_UnMinimize ) {
-			if ( VALUE_Trades_Auto_Minimize && tabsCount = 0 ) {
-				VALUE_Trades_GUI_Minimized := 0
-				GoSub, Gui_Trades_Minimize
-			}
-			else if ( VALUE_Trades_Auto_UnMinimize && tabsCount > 0 ) {
-				VALUE_Trades_GUI_Minimized := 1
-				GoSub, Gui_Trades_Minimize
-			}
+		if ( VALUE_Trades_Auto_Minimize && tabsCount = 0 && tradesGuiHeight != guiHeightMin && errorMsg != "EXE_NOT_FOUND" ) {
+			VALUE_Trades_GUI_Minimized := 0
+			GoSub, Gui_Trades_Minimize
+		}
+
+		if ( VALUE_Trades_Auto_UnMinimize && tabsCount > 0 && tradesGuiHeight != guiHeight) {
+			VALUE_Trades_GUI_Minimized := 1
+			GoSub, Gui_Trades_Minimize
 		}
 	}
+
 	if ( errorMsg = "EXE_NOT_FOUND" ) {
 		countdown := 10
 		Loop 11 {
@@ -508,9 +533,6 @@ Gui_Trades(infosArray="", errorMsg="", xpos="UNSPECIFIED", ypos="UNSPECIFIED") {
 			countdown--
 			sleep 1000
 		}
-		WinGetPos, guiX, guiY, , ,% "ahk_id " GuiTradesHandler
-		IniWrite,% guiX,% iniFilePath,PROGRAM,X_POS
-		IniWrite,% guiY,% iniFilePath,PROGRAM,Y_POS
 		Monitor_Game_Logs()
 	}
 	if ( VALUE_Trades_GUI_Mode = "Overlay") {
@@ -520,19 +542,21 @@ Gui_Trades(infosArray="", errorMsg="", xpos="UNSPECIFIED", ypos="UNSPECIFIED") {
 	return
 
 	Gui_Trades_Minimize:
+		static tHeight
 		VALUE_Trades_GUI_Minimized := !VALUE_Trades_GUI_Minimized
-		tHeight := tradesGuiHeight
 		if ( VALUE_Trades_GUI_Minimized ) {
+			tHeight := guiHeight
 			Loop {
-				if ( tHeight = 25 )
+				if ( tHeight = guiHeightMin )
 					Break
-				tHeight := (25<tHeight)?(tHeight-30):(25)
-				tHeight := (tHeight-30<25)?(25):(tHeight)
+				tHeight := (guiHeightMin<tHeight)?(tHeight-30):(guiHeightMin)
+				tHeight := (tHeight-30<guiHeightMin)?(guiHeightMin):(tHeight)
 				Gui, Trades:Show, NoActivate h%tHeight%
 				sleep 1
 			}
 		}
 		else  {
+			tHeight := guiHeightMin
 			Loop {
 				if ( tHeight = guiHeight )
 					Break
@@ -628,9 +652,7 @@ Gui_Trades(infosArray="", errorMsg="", xpos="UNSPECIFIED", ypos="UNSPECIFIED") {
 		}
 ;		Remove the current tab
 		messagesArray := Gui_Trades_Manage_Trades("REMOVE_CURRENT")
-		if WinExist("ahk_id " GuiTradesHandler)
-			WinGetPos, xpos, ypos, , ,% "ahk_id " GuiTradesHandler
-		Gui_Trades(messagesArray, "UPDATE",xpos, ypos)
+		Gui_Trades(messagesArray, "UPDATE")
 	return
 
 	Gui_Trades_Size:
@@ -1216,11 +1238,6 @@ return
 
 	Gui_Settings_Support_MsgBox:
 		Gui, Settings: Submit, NoHide
-		if ( MessageSupportToggle = 1 ) {
-			Gui, Trades: +OwnDialogs
-			MsgBox, 4096,:o,% "Thank you for enabling the support message!"
-			.	"`nAlso, feel free to recommend " programName " to your friends!"
-		}
 	Return
 
 	
@@ -2399,7 +2416,11 @@ ShellMessage(wParam,lParam) {
 			Hotkey, Right, DoNothing, On
 			Hotkey, Up, DoNothing, On
 			Hotkey, Down, DoNothing, On
+			OnMessage(0x203, "OnLButtonDblClk", 1)
 			Return ; returning prevents from triggering Gui_Trades_Set_Position while the GUI is active
+		}
+		else {
+			OnMessage(0x203, "OnLButtonDblClk", 0)
 		}
 
 		if ( VALUE_Trades_GUI_Mode = "Window" )
