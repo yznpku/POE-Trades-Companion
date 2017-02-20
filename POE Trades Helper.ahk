@@ -22,7 +22,7 @@ SetWinDelay, 0
 ;___Some_Variables___;
 global userprofile, iniFilePath, programName, programVersion, programFolder, programPID, sfxFolderPath, programChangelogFilePath, POEGameArray, POEGameList
 EnvGet, userprofile, userprofile
-programVersion := "1.7.3", programRedditURL := "https://redd.it/57oo3h"
+programVersion := "1.7.4", programRedditURL := "https://redd.it/57oo3h"
 programName := "POE Trades Helper", programFolder := userprofile "\Documents\AutoHotKey\" programName
 iniFilePath := programFolder "\Preferences.ini"
 sfxFolderPath := programFolder "\SFX"
@@ -2311,7 +2311,7 @@ GUI_Replace_PID(handlersArray, gamePIDArray) {
 		btnID := RegExReplace(A_GuiControl, "\D")
 		r := gamePIDArray[btnID]
 		Gui, ReplacePID:Destroy
-		Logs_Append("GUI_Replace_PID",,r)
+		Logs_Append("GUI_Replace_PID_Return",,r)
 	Return
 }
 
@@ -2474,8 +2474,9 @@ Logs_Append(funcName, paramsArray="", params*) {
 
 	if ( funcName = "START" ) {
 		dpiFactor := Get_DPI_Factor()
-		FileAppend,% "OS: " A_OSVersion "`n",% programLogsFilePath
-		FileAppend, "DPI: " dpiFactor "`n",% programLogsFilePath
+		OSbits := (A_Is64bitOS)?("64bits"):("32bits")
+		FileAppend,% "OS: Type:" A_OSType " - Version:" A_OSVersion " - " OSbits "`n",% programLogsFilePath
+		FileAppend,% "DPI: " dpiFactor "`n",% programLogsFilePath
 		FileAppend,% ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>`n",% programLogsFilePath
 		FileAppend,% ">>> PROGRAM SECTION DUMP START`n",% programLogsFilePath
 		IniRead, content,% iniFilePath,PROGRAM
@@ -2530,6 +2531,11 @@ Logs_Append(funcName, paramsArray="", params*) {
 	if ( funcName = "Gui_Trades_Cycle_Func" ) {
 		FileAppend,% "[" A_YYYY "-" A_MM "-" A_DD "_" A_Hour ":" A_Min ":" A_Sec "] ",% programLogsFilePath
 		FileAppend,% "Docking the GUI to ID: " params[1] " - Total matchs found: " params[2] + 1,% programLogsFilePath
+	}
+
+	if ( funcName = "GUI_Replace_PID_Return") {
+		FileAppend,% "[" A_YYYY "-" A_MM "-" A_DD "_" A_Hour ":" A_Min ":" A_Sec "] ",% programLogsFilePath
+		FileAppend,% "Replacing linked PID (Return). PID: " params[1],% programLogsFilePath
 	}
 
 	FileAppend,% "`n",% programLogsFilePath
