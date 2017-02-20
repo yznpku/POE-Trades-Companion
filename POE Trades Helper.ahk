@@ -71,26 +71,26 @@ DllCall( "RegisterShellHookWindow", UInt,Hwnd )
 MsgNum := DllCall( "RegisterWindowMessage", Str,"SHELLHOOK" )
 OnMessage( MsgNum, "ShellMessage")
 
-Gui_Trades(,"Create")
+Gui_Trades(,"CREATE")
 ;	Uncomment only for testing purposes -- Simulates trade tabs
 ;	Also comment the Monitor_Game_Logs() line, otherwise the GUI will be overwritten
 	; newItemInfos := Object()
 	; newItemInfos.Insert(0, "iSellStuff", "level 1 Faster Attacks Support", "5 alteration", "Breach (stash tab ""Gems""; position: left 6, top 8)", "",A_Hour ":" A_Min, "Offering 1alch?")
-	; newItemArray := Gui_Trades_Manage_Trades("Add_New", newItemInfos)
-	; Gui_Trades(newItemArray, "Update")
+	; newItemArray := Gui_Trades_Manage_Trades("ADD_NEW", newItemInfos)
+	; Gui_Trades(newItemArray, "UPDATE")
 	; newItemInfos.Insert(0, "FIRST BUYER", "FIRST ITEM", "FIRST PRICE", "FIRST LOCATION", "",A_Hour ":" A_Min, "-")
-	; newItemArray := Gui_Trades_Manage_Trades("Add_New", newItemInfos)
-	; Gui_Trades(newItemArray, "Update")
+	; newItemArray := Gui_Trades_Manage_Trades("ADD_NEW", newItemInfos)
+	; Gui_Trades(newItemArray, "UPDATE")
 	; newItemInfos.Insert(0, "SECOND BUYER", "SECOND ITEM", "SECOND PRICE", "SECOND LOCATION", "",A_Hour ":" A_Min, "-")
-	; newItemArray := Gui_Trades_Manage_Trades("Add_New", newItemInfos)
-	; Gui_Trades(newItemArray, "Update")
+	; newItemArray := Gui_Trades_Manage_Trades("ADD_NEW", newItemInfos)
+	; Gui_Trades(newItemArray, "UPDATE")
 	; newItemInfos.Insert(0, "THIRD BUYER", "THIRD ITEM", "THIRD PRICE", "THIRD LOCATION", "",A_Hour ":" A_Min, "-")
-	; newItemArray := Gui_Trades_Manage_Trades("Add_New", newItemInfos)
-	; Gui_Trades(newItemArray, "Update")
+	; newItemArray := Gui_Trades_Manage_Trades("ADD_NEW", newItemInfos)
+	; Gui_Trades(newItemArray, "UPDATE")
 
 ;___Logs Monitoring AKA Trades GUI___;
 ;Gui_Settings()
-Logs_Append("Start", settingsArray)
+Logs_Append("START", settingsArray)
 Monitor_Game_Logs()
 Return
 
@@ -100,78 +100,6 @@ Return
 ;
 ;==================================================================================================================
 
-GUI_Replace_PID(handlersArray, gamePIDArray) {
-;		GUI used when clicking one of the Trades GUI buttons and the PID is not associated with POE anymore
-;		Provided two array containing all the POE handlers and PID, it allows the user to choose which PID to use as a replacement
-	static
-
-	Gui, ReplacePID:Destroy
-	Gui, ReplacePID:New, +ToolWindow +AlwaysOnTop -SysMenu +hwndGUIInstancesHandler
-	Gui, ReplacePID:Add, Text, x10 y10,% "The previous PID is no longer associated to a POE instance."
-	Gui, ReplacePID:Add, Text, x10 y25,% "Please, select the new one you would like to use!"
-	ypos := 30
-	for key, element in handlersArray {
-		index := A_Index - 1
-		Gui, Add, Text, x10 yp+30,Executable:
-		WinGet, pName, ProcessName,ahk_id %element%
-		Gui, Add, Edit, xp+55 yp-3 ReadOnly w150,% pName
-		Gui, Add, Button,xp+155 yp-2 gGUI_Replace_PID_Continue vContinue%index%,Continue with this one
-		Gui, Add, Text, x10 yp+32,Path:
-		WinGet, pPath, ProcessPath,ahk_id %element%
-		Gui, Add, Edit, xp+55 yp-3 ReadOnly,% pPath
-		if ( index != handlersArray.MaxIndex() ) ; Put a 10px margin if it's not the last element
-			Gui, Add, Text, w0 h0 xp yp+10
-		Logs_Append(A_ThisFunc,,element,pPath)
-	}
-	Gui, ReplacePID:Show,NoActivate,% programName " - Replace PID"
-	WinWait, ahk_id %GUIInstancesHandler%
-	WinWaitClose, ahk_id %GUIInstancesHandler%
-	return r
-
-	GUI_Replace_PID_Continue:
-		btnID := RegExReplace(A_GuiControl, "\D")
-		r := gamePIDArray[btnID]
-		Gui, ReplacePID:Destroy
-;		Logs_Append("GUI_Multiple_Instances_Return",,r)
-	Return
-}
-
-GUI_Multiple_Instances(handlersArray) {
-;		GUI used when multiple instances of POE running in different folders have been found upon running the Monitor_Logs() function
-;		Provided an array containing all the POE handlers, it allows the user to choose which logs file to monitor
-	static
-
-	Gui, Instances:Destroy
-	Gui, Instances:New, +ToolWindow +AlwaysOnTop -SysMenu +hwndGUIInstancesHandler
-	Gui, Instances:Add, Text, x10 y10,% "Detected instances are using different logs file."
-	Gui, Instances:Add, Text, x10 y25,% "Please, select the one you would like to use!"
-	ypos := 30
-	for key, element in handlersArray {
-		index := A_Index - 1
-		Gui, Add, Text, x10 yp+30,Executable:
-		WinGet, pName, ProcessName,ahk_id %element%
-		Gui, Add, Edit, xp+55 yp-3 ReadOnly w150,% pName
-		Gui, Add, Button,xp+155 yp-2 gGUI_Multiple_Instances_Continue vContinue%index%,Continue with this one
-		Gui, Add, Text, x10 yp+32,Path:
-		WinGet, pPath, ProcessPath,ahk_id %element%
-		Gui, Add, Edit, xp+55 yp-3 ReadOnly,% pPath
-		if ( index != handlersArray.MaxIndex() ) ; Put a 10px margin if it's not the last element
-			Gui, Add, Text, w0 h0 xp yp+10
-		Logs_Append(A_ThisFunc,,element,pPath)
-	}
-	Gui, Instances:Show,NoActivate,% programName " - Multiple instances found"
-	WinWait, ahk_id %GUIInstancesHandler%
-	WinWaitClose, ahk_id %GUIInstancesHandler%
-	return r
-
-	GUI_Multiple_Instances_Continue:
-		btnID := RegExReplace(A_GuiControl, "\D")
-		r := handlersArray[btnID]
-		Gui, Instances:Destroy
-		Logs_Append("GUI_Multiple_Instances_Return",,r)
-	Return
-}
-
 Restart_Monitor_Game_Logs() {
 ;		
 	static
@@ -180,46 +108,8 @@ Restart_Monitor_Game_Logs() {
 	WinGetPos, xpos, ypos, , ,% "ahk_id " GuiTradesHandler
 	IniWrite,% xpos,% iniFilePath,PROGRAM,X_POS
 	IniWrite,% ypos,% iniFilePath,PROGRAM,Y_POS
-	Monitor_Game_Logs("close")
+	Monitor_Game_Logs("CLOSE")
 	Monitor_Game_Logs()
-}
-
-Get_All_Games_Instances() {
-	static
-	global VALUE_Dock_Window
-	WinGet windows, List
-	matchHandlers := Get_Matching_Windows_Infos("ID")
-
-	if ( matchHandlers.MaxIndex() = "" ) { ; No matching process found
-		return "exenotfound"
-	}
-	for key, element in matchHandlers {
-		index := A_Index
-		WinGet, tempExeLocation, ProcessPath,% "ahk_id " element
-		SplitPath, tempExeLocation, ,tempExeDir
-		tempLogsFile%index% := tempExeDir "\logs\Client.txt"
-	}
-	tempLogsFileBackup := tempLogsFile1
-	Loop %index% {
-		index := A_Index
-			if ( tempLogsFileBackup = tempLogsFile%index% ) {
-				logsFile := tempLogsFileBackup
-				VALUE_Dock_Window := matchHandlers[0]
-			}
-			Else
-				multipleInstances := 1
-		tempLogsFileBackup := tempLogsFile%index%
-	}
-	if ( multipleInstances = 1 ) {
-		winHandler := GUI_Multiple_Instances(matchHandlers)
-		WinGet, exeLocation, ProcessPath,% "ahk_id " winHandler
-		SplitPath, exeLocation, ,exeDir
-		logsFile := exeDir "\logs\Client.txt"
-		VALUE_Dock_Window := winHandler ; assign global var after choosing the right instance
-	}
-
-	r := logsFile
-	return r
 }
 
 Monitor_Game_Logs(mode="") {
@@ -229,25 +119,27 @@ Monitor_Game_Logs(mode="") {
 ;			Clipboard the item's info if the user enabled
 ;			Play a sound or tray notification (if the user enabled) on whisper/trade
 	static
-	global VALUE_Whisper_Tray, VALUE_Logs_Mode, VALUE_Clip_New_Items, VALUE_Trade_Toggle, VALUE_Trade_Sound_Path, VALUE_Whisper_Toggle, VALUE_Whisper_Sound_Path, VALUE_Whisper_Flash, GuiTradesHandler, POEGameArray, VALUE_Dock_Window, VALUE_Last_Whisper
+	global VALUE_Whisper_Tray, VALUE_Logs_Mode, VALUE_Clip_New_Items, VALUE_Trade_Toggle, VALUE_Trade_Sound_Path, VALUE_Whisper_Toggle, VALUE_Whisper_Sound_Path, VALUE_Whisper_Flash
+	global VALUE_Dock_Window, VALUE_Last_Whisper
+	global GuiTradesHandler, POEGameArray
 
-	if (mode = "close") {
+	if (mode = "CLOSE") {
 		fileObj.Close()
 		Return
 	}
 
 	IniRead, tX,% iniFilePath,PROGRAM,X_POS
 	IniRead, tY,% iniFilePath,PROGRAM,Y_POS
-	tX := (tX="ERROR"||tX=""||(!tX && tX != 0))?("unspecified"):(tX)
-	tY := (tY="ERROR"||tY=""||(!tY && tY != 0))?("unspecified"):(tY)
+	tX := (tX="ERROR"||tX=""||(!tX && tX != 0))?("UNSPECIFIED"):(tX)
+	tY := (tY="ERROR"||tY=""||(!tY && tY != 0))?("UNSPECIFIED"):(tY)
 	r := Get_All_Games_Instances()
-	if ( r = "exenotfound" ) {
-		messagesArray := Gui_Trades_Manage_Trades("Get_All")
-		Gui_Trades(messagesArray, "exenotfound",tX,tY)
+	if ( r = "EXE_NOT_FOUND" ) {
+		messagesArray := Gui_Trades_Manage_Trades("GET_ALL")
+		Gui_Trades(messagesArray, "EXE_NOT_FOUND",tX,tY)
 	}
 	else {
-		messagesArray := Gui_Trades_Manage_Trades("Get_All")
-		Gui_Trades(messagesArray, "Update",tX,tY)
+		messagesArray := Gui_Trades_Manage_Trades("GET_ALL")
+		Gui_Trades(messagesArray, "UPDATE",tX,tY)
 		logsFile := r
 	}
 	Logs_Append(A_ThisFunc,,logsFile)
@@ -267,40 +159,42 @@ Monitor_Game_Logs(mode="") {
 				{
 					gamePID := subPat1, whispName := subPat2, whispMsg := subPat3
 					VALUE_Last_Whisper := whispName
+
 					if ( VALUE_Whisper_Tray = 1 ) && !( WinActive("ahk_pid " gamePID) ) {
-						TrayTip, Whisper Received:,%whispName%: %whispMsg%
-						TrayTip, Whisper Received:,%whispName%: %whispMsg%
+						Loop 2
+							TrayTip, Whisper Received:,%whispName%: %whispMsg%
 						SetTimer, Remove_TrayTip, -10000
-						if ( VALUE_Whisper_Toggle = 1 ) && ( FileExist(VALUE_Whisper_Sound_Path) )
-							SoundPlay,%VALUE_Whisper_Sound_Path%
 					}
+					if ( VALUE_Whisper_Toggle = 1 ) && ( FileExist(VALUE_Whisper_Sound_Path) ) {
+						SoundPlay,%VALUE_Whisper_Sound_Path%
+					}
+
 					if ( VALUE_Whisper_Flash = 1 ) && !( WinActive("ahk_pid " gamePID) ) {
 						gameHwnd := WinExist("ahk_pid " gamePID)
 						DllCall("FlashWindow", UInt, gameHwnd, Int, 1) ; Flashes the game window
 					}
+
 					messages := whispName . ": " whispMsg "`n"
 					if ( RegExMatch( messages, ".*: (.*)Hi, I(?: would|'d) like to buy your (?:(.*) |(.*))(?:listed for (.*)|for my (.*)|)(?!:listed for|for my) in (?:(.*)\(.*""(.*)""(.*)\)|Hardcore (.*?)\W|(.*?)\W)(.*)", subPat ) ) ; Trade message found
 					{
 			
-						tradeItem := (subPat2)?(subPat2):(subPat3)?(subPat3):("ERROR retrieving ITEM")
-						tradePrice := (subPat4)?(subPat4):(subPat5)?(subPat5):("Unpriced Item")
-						tradeStash := (subPat6)?(subPat6 "- " subpat7 " " subPat8):(subPat9)?("Hardcore " subPat9):(subPat10)?(subPat10):("ERROR retrieving LOCATION")
+						tradeItem := (subPat2)?(subPat2):(subPat3)?(subPat3):("ERROR RETRIEVING ITEM")
+						tradePrice := (subPat4)?(subPat4):(subPat5)?(subPat5):("UNPRICED ITEM")
+						tradeStash := (subPat6)?(subPat6 "- " subpat7 " " subPat8):(subPat9)?("Hardcore " subPat9):(subPat10)?(subPat10):("ERROR RETRIEVING LOCATION")
 						tradeOther := (subPat10!=subPat6 && subPat10!=subPat9 && subPat10!=tradeStash)?(subPat1 subPat10):(subPat11 && subPat11!="`n")?(subPat11):("-")
 						tradeItem = %tradeItem%
 						tradePrice = %tradePrice%
 						tradeStash = %tradeStash%
 						tradeOther = %tradeOther%
-						if tradeItem contains % " 0`%"
-							StringReplace, tradeItem, tradeItem, 0`% ; Removes 0% from the string, allowing us to stash search it
-;						__TO_BE_ADDED__
-	;					A way to know when the item being sold is currency, so we only copy that currency's name and not the entire string (ex: "50 chaos")
-	;					if ( RegExMatch( messages, ".*Hi, I'd like to buy your .* for my .* in .*", subPat ) ) ; Trade message found
+						StringReplace, tradeItem, tradeItem,% "0%",% "", 1
+;						if tradeItem contains % " 0`%"
+;							StringReplace, tradeItem, tradeItem, 0`% ; Removes 0% from the string, allowing us to stash search it
 						newTradesInfos := Object()
 						newTradesInfos.Insert(0, whispName, tradeItem, tradePrice, tradeStash, gamePID, A_Hour ":" A_Min, tradeOther)
-						messagesArray := Gui_Trades_Manage_Trades("Add_New", newTradesInfos)
+						messagesArray := Gui_Trades_Manage_Trades("ADD_NEW", newTradesInfos)
 						if WinExist("ahk_id " GuiTradesHandler)
 							WinGetPos, xpos, ypos, , ,% "ahk_id " GuiTradesHandler
-						Gui_Trades(messagesArray, "Update",xpos, ypos)
+						Gui_Trades(messagesArray, "UPDATE",xpos, ypos)
 						if ( VALUE_Clip_New_Items = 1 )
 							Clipboard := tradeitem
 						if ( VALUE_Trade_Toggle = 1 ) && ( FileExist(VALUE_Trade_Sound_Path) )
@@ -318,6 +212,7 @@ Monitor_Game_Logs(mode="") {
 		. "`n- The file object used by the program was closed."
 		. "`n`nThe logs monitoring function will be restarting in 5 seconds."
 	}
+	SetTimer, Remove_TrayTip, -5000
 	sleep 5000
 	Restart_Monitor_Game_Logs()
 }
@@ -408,7 +303,6 @@ Hotkeys_User_Handler(thisLabel) {
 		key := (thisLabel="Hotkeys_User_1")?("HK1"):(thisLabel="Hotkeys_User_2")?("HK2"):(thisLabel="Hotkeys_User_3")?("HK3"):(thisLabel="Hotkeys_User_4")?("HK4"):(thisLabel="Hotkeys_User_5")?("HK5"):(thisLabel="Hotkeys_User_6")?("HK6"):("ERROR")
 		IniRead, textToSend,% iniFilePath,HOTKEYS,% key "_TEXT"
 	}
-	;Send_InGame_Message(textToSend, 0, 2) ; __TO_BE_ADDED__ Go back to the previous channel
 	Send_InGame_Message(textToSend, tradesInfosArray,1)
 }
 
@@ -418,7 +312,7 @@ Hotkeys_User_Handler(thisLabel) {
 ;
 ;==================================================================================================================
 	
-Gui_Trades(infosArray="", errorMsg="", xpos="unspecified", ypos="unspecified") {
+Gui_Trades(infosArray="", errorMsg="", xpos="UNSPECIFIED", ypos="UNSPECIFIED") {
 ;			Trades GUI. Each new item will be added in a new tab
 ;			Clicking on a button will do its corresponding action
 ;			Switching tab will clipboard the item's infos if the user enabled
@@ -427,14 +321,14 @@ Gui_Trades(infosArray="", errorMsg="", xpos="unspecified", ypos="unspecified") {
 	static tabWidth, tabHeight, tradesCount, index, element, varText, varName, tabName, trans, priceArray, btnID, Clipboard_Backup, itemArray, itemName, itemPrice, messageToSend
 	static nameArray, buyerName, guiX, guiY, guiHeight, guiWidth, defaultX, defaultY
 
-	if ( errorMsg = "Create" ) {
+	if ( errorMsg = "CREATE" ) {
 		defaultMaxTabs := 10
 
 		Gui, Trades:Destroy
 		Gui, Trades:New, +ToolWindow +AlwaysOnTop -Border +hwndGuiTradesHandler +LabelGui_Trades_ +LastFound -SysMenu -Caption
 		Gui, Trades:Default
 		tabHeight := Gui_Trades_Get_Tab_Height(), tabWidth := 390
-		guiWidth := 403, guiHeight := tabHeight + 38
+		guiWidth := 403, guiHeight := (VALUE_Trades_GUI_Minimized=1)?(25):(tabHeight+38)
 		Gui, Add, Text,% "x0 y0 w" guiWidth " h25 +0x4 gGui_Trades_Move hwndguiTradesMoveHandler",% ""
 		Gui, Add, Text,% "x5 y0 w" guiWidth " h25 cFFFFFF BackgroundTrans +0x200 hwndguiTradesTitleHandler",% programName " - Queued Trades: 0"
 		Gui, TradesMin:Destroy
@@ -453,7 +347,6 @@ Gui_Trades(infosArray="", errorMsg="", xpos="unspecified", ypos="unspecified") {
 		else
 			themeState := "-Theme +0x8000"
 
-		tabHeight := Gui_Trades_Get_Tab_Height(), tabWidth := 390
 		Gui, Add, Tab3,x10 y30 vTab gGui_Trades_OnTabSwitch w%tabWidth% h%tabHeight% %themeState% -Wrap
 		VALUE_Trades_GUI_Current_State := "Active"
 		IniRead, tabsMax,% iniFilePath, PROGRAM, Rendered_Tabs
@@ -475,7 +368,7 @@ Gui_Trades(infosArray="", errorMsg="", xpos="unspecified", ypos="unspecified") {
 			Gui, Add, Text, w325 h15 xp+50 yp vItemSlot%index%,
 			Gui, Add, Text, w45 h15 xp-50 yp+15 hwndPriceText%index%Handler,% "Price: "
 			Gui, Add, Text, w325 h15 xp+50 yp vPriceSlot%index%,
-			if ( infosArray.PRICES[index] = "Unpriced Item")
+			if ( infosArray.PRICES[index] = "UNPRICED ITEM")
 				GuiControl, Trades: +cRed, PriceSlot%index%
 			Gui, Add, Text, w45 h15 xp-50 yp+15 hwndLocationText%index%Handler,% "Location: "
 			Gui, Add, Text, w325 h15 xp+50 yp vLocationSlot%index%,
@@ -502,7 +395,7 @@ Gui_Trades(infosArray="", errorMsg="", xpos="unspecified", ypos="unspecified") {
 		Progress, Off
 	}
 
-	if ( errorMsg = "Update" || errorMsg = "Create" || errorMsg = "exenotfound" ) {
+	if ( errorMsg = "UPDATE" || errorMsg = "CREATE" || errorMsg = "EXE_NOT_FOUND" ) {
 		tabID := Gui_Trades_Get_Tab_ID()
 		tabsCount := infosArray.BUYERS.Length()
 		allTabs := ""
@@ -521,7 +414,7 @@ Gui_Trades(infosArray="", errorMsg="", xpos="unspecified", ypos="unspecified") {
 			allTabs := "|Monitoring"
 			showState := "Hide"
 			txtColor := "White"
-			if ( errorMsg = "exenotfound" )
+			if ( errorMsg = "EXE_NOT_FOUND" )
 				GuiControl, Trades:,% BuyerText1Handler,% "`n`nProcess not found, retrying in 10 seconds...`n`nRight click on the tray icon,`nthen [Settings] to set your preferences."
 			else
 				GuiControl, Trades:,% BuyerText1Handler,% "`n`nNo trade on queue!`n`nRight click on the tray icon,`nthen [Settings] to set your preferences."
@@ -568,28 +461,28 @@ Gui_Trades(infosArray="", errorMsg="", xpos="unspecified", ypos="unspecified") {
 		if (tabsCount >= tabsMax - 1 && tabsMax != 255) {
 			tabsMax := (tabsMax=defaultMaxTabs)?(25):(tabsMax=25)?(50):(tabsMax=50)?(100):(tabsMax=100)?(255):(50)
 			IniWrite,% tabsMax,% iniFilePath,PROGRAM,Rendered_Tabs
-			tradesArray := Gui_Trades_Manage_Trades("Get_All")
+			tradesArray := Gui_Trades_Manage_Trades("GET_ALL")
 			WinGetPos, guiX, guiY, , ,% "ahk_id " GuiTradesHandler
-			Gui_Trades(tradesArray,"Create",guiX,guiY)
+			Gui_Trades(tradesArray,"CREATE",guiX,guiY)
 			Return
 		}
 		if (tabsCount=0 && tabsMax>defaultMaxTabs) {
 			tabsMax := defaultMaxTabs
 			IniWrite,% tabsMax,% iniFilePath,PROGRAM,Rendered_Tabs
-			tradesArray := Gui_Trades_Manage_Trades("Get_All")
+			tradesArray := Gui_Trades_Manage_Trades("GET_ALL")
 			WinGetPos, guiX, guiY, , ,% "ahk_id " GuiTradesHandler
-			Gui_Trades(tradesArray,"Create")
-			Gui_Trades(,"Update",guiX,guiY)
+			Gui_Trades(tradesArray,"CREATE")
+			Gui_Trades(,"UPDATE",guiX,guiY)
 			Return
 		}
 	}
 
 	WinSet, Redraw, ,% "ahk_id " guiTradesHandler ; Make sure to update the GUI appearance (the custom "title bar" would sometimes disappear)
 	IniWrite,% tabsCount,% iniFilePath,PROGRAM,Tabs_Number
-	if ( errorMsg != "Create" ) {
+	if ( errorMsg != "CREATE" ) {
 		defaultX := A_ScreenWidth-(guiWidth+5), defaultY := 0
-		xpos := (xpos="unspecified" || xpos="" || (!xpos && xpos!=0))?(defaultX):(xpos)
-		ypos := (ypos="unspecified" || ypos="" || (!ypos && ypos!=0))?(defaultY):(ypos)
+		xpos := (xpos="UNSPECIFIED" || xpos="" || (!xpos && xpos!=0))?(defaultX):(xpos)
+		ypos := (ypos="UNSPECIFIED" || ypos="" || (!ypos && ypos!=0))?(defaultY):(ypos)
 		Gui, Trades:Show,% "NoActivate w" guiWidth+5 " h" guiHeight " x" xpos " y" ypos,% programName " - Queued Trades"
 		dpiFactor := Get_DPI_Factor()
 		Gui, TradesMin:Show,% "x" (guiWidth-49)*dpiFactor " y0"
@@ -608,7 +501,7 @@ Gui_Trades(infosArray="", errorMsg="", xpos="unspecified", ypos="unspecified") {
 			}
 		}
 	}
-	if ( errorMsg = "exenotfound" ) {
+	if ( errorMsg = "EXE_NOT_FOUND" ) {
 		countdown := 10
 		Loop 11 {
 			GuiControl, Trades:,% BuyerText1Handler,% "`n`nProcess not found, retrying in " countdown " seconds...`n`nRight click on the tray icon,`nthen [Settings] to set your preferences."
@@ -734,10 +627,10 @@ Gui_Trades(infosArray="", errorMsg="", xpos="unspecified", ypos="unspecified") {
 			Clipboard := tradesInfosArray[1]
 		}
 ;		Remove the current tab
-		messagesArray := Gui_Trades_Manage_Trades("Remove_Current")
+		messagesArray := Gui_Trades_Manage_Trades("REMOVE_CURRENT")
 		if WinExist("ahk_id " GuiTradesHandler)
 			WinGetPos, xpos, ypos, , ,% "ahk_id " GuiTradesHandler
-		Gui_Trades(messagesArray, "Update",xpos, ypos)
+		Gui_Trades(messagesArray, "UPDATE",xpos, ypos)
 	return
 
 	Gui_Trades_Size:
@@ -749,10 +642,10 @@ Gui_Trades(infosArray="", errorMsg="", xpos="unspecified", ypos="unspecified") {
 
 Gui_Trades_Get_Tab_Height() {
 	static
-	global VALUE_Button1_SIZE, VALUE_Button2_SIZE, VALUE_Button3_SIZE, VALUE_Button4_SIZE
-	global VALUE_Button5_SIZE, VALUE_Button6_SIZE, VALUE_Button7_SIZE, VALUE_Button8_SIZE, VALUE_Button9_SIZE
-	global VALUE_Button1_V, VALUE_Button2_V, VALUE_Button3_V, VALUE_Button4_V
-	global VALUE_Button5_V, VALUE_Button6_V, VALUE_Button7_V, VALUE_Button8_V, VALUE_Button9_V
+	global VALUE_Button1_SIZE, VALUE_Button2_SIZE, VALUE_Button3_SIZE, VALUE_Button4_SIZE, VALUE_Button5_SIZE
+	global VALUE_Button6_SIZE, VALUE_Button7_SIZE, VALUE_Button8_SIZE, VALUE_Button9_SIZE
+	global VALUE_Button1_V, VALUE_Button2_V, VALUE_Button3_V, VALUE_Button4_V, VALUE_Button5_V
+	global VALUE_Button6_V, VALUE_Button7_V, VALUE_Button8_V, VALUE_Button9_V
 
 	tabHeight := 145
 	Loop 9 {
@@ -785,7 +678,7 @@ Gui_Trades_Mode_Func(thisMenuItem) {
 		VALUE_Trades_GUI_Mode := "Window"
 	}
 	IniWrite,% VALUE_Trades_GUI_Mode,% iniFilePath,SETTINGS,Trades_GUI_Mode
-	messagesArray := Gui_Trades_Manage_Trades("Get_All")
+	messagesArray := Gui_Trades_Manage_Trades("GET_ALL")
 	Gui_Trades(messagesArray)
 }
 
@@ -841,7 +734,7 @@ Gui_Trades_Manage_Trades(mode="", newItemInfos=""){
 	returnArray.OTHER := Object()
 	btnID := Gui_Trades_Get_Tab_ID()
 
-	if ( mode = "Get_All" || mode = "Add_New") {
+	if ( mode = "GET_ALL" || mode = "ADD_NEW") {
 	;	___BUYERS___	
 		Loop {
 			bcount := A_Index
@@ -912,7 +805,7 @@ Gui_Trades_Manage_Trades(mode="", newItemInfos=""){
 		}
 	}
 
-	if ( mode = "Add_New") {
+	if ( mode = "ADD_NEW") {
 		name := newItemInfos[0], item := newItemInfos[1], price := newItemInfos[2], location := newItemInfos[3], gamePID := newItemInfos[4], time := newItemInfos[5], other := newItemInfos[6]
 		name := Gui_Trades_RemoveGuildPrefix(name)
 		returnArray.COUNT.Insert(0, bCount)
@@ -925,7 +818,7 @@ Gui_Trades_Manage_Trades(mode="", newItemInfos=""){
 		returnArray.OTHER.Insert(timeCount, other)
 	}
 
-	if ( mode = "Remove_Current") {
+	if ( mode = "REMOVE_CURRENT") {
 	;	___BUYERS___
 		Loop {
 			if ( A_Index < btnID )
@@ -1053,7 +946,7 @@ Gui_Trades_RemoveGuildPrefix(name) {
 	return name
 }
 
-Gui_Trades_Set_Position(xpos="unspecified", ypos="unspecified"){
+Gui_Trades_Set_Position(xpos="UNSPECIFIED", ypos="UNSPECIFIED"){
 ;			Refresh the Trades GUI position
 	static
 	global VALUE_Trades_GUI_Mode, tradesGuiWidth, tradesGuiHeight, GuiTradesHandler, VALUE_Trades_GUI_Last_State, VALUE_Trades_GUI_Current_State, VALUE_Dock_Window, VALUE_Trades_GUI_Mode
@@ -1061,7 +954,7 @@ Gui_Trades_Set_Position(xpos="unspecified", ypos="unspecified"){
 ;	Gui, Trades:Show,% "NoActivate w" guiWidth+5 " h" guiHeight " x" xpos " y" ypos,% programName " - Queued Trades"
 
 	dpiFactor := Get_DPI_Factor()
-	if ( VALUE_Trades_GUI_Mode = "Window" && xpos != "unspecified" && ypos != "unspecified" ) {
+	if ( VALUE_Trades_GUI_Mode = "Window" && xpos != "UNSPECIFIED" && ypos != "UNSPECIFIED" ) {
 		if ( VALUE_Trades_GUI_Last_State = "Inactive" && VALUE_Trades_GUI_Current_State = "Active" ) ; Inactive and Active GUI have different size, so we have to compensate when switching from one to another
 			xpos := xpos - (65*dpiFactor)
 		else if ( VALUE_Trades_GUI_Last_State = "Active" && VALUE_Trades_GUI_Current_State = "Inactive")
@@ -1655,7 +1548,7 @@ Gui_Trades_Clone() {
 		Gui, Add, Text, w325 h15 xp+50 yp vItemSlotClone%index%,
 		Gui, Add, Text, w45 h15 xp-50 yp+15 hwndPriceTextClone%index%Handler,% "Price: "
 		Gui, Add, Text, w325 h15 xp+50 yp vPriceSlotClone%index%,
-		if ( infosArray.PRICES[index] = "Unpriced Item")
+		if ( infosArray.PRICES[index] = "UNPRICED ITEM")
 			GuiControl, TradesClone: +cRed, PriceSlotClone%index%
 		Gui, Add, Text, w45 h15 xp-50 yp+15 hwndLocationTextClone%index%Handler,% "Location: "
 		Gui, Add, Text, w325 h15 xp+50 yp vLocationSlotClone%index%,
@@ -1749,6 +1642,7 @@ Gui_Settings_Custom_Label_Func(type, controlsArray, btnID, action, label) {
 
 	if ( type = "TradesAction" || type = "TradesBtn" ) && ( action != "Clipboard Item" && action != "" )
 		GuiControl,Settings:Show,% controlsArray.Msg[btnID]
+
 	if ( type = "TradesAction" || type = "TradesBtn" ) && ( action = "Clipboard Item" || action = "" )
 		GuiControl,Settings:Hide,% controlsArray.Msg[btnID]
 }
@@ -2106,7 +2000,7 @@ Gui_About() {
 	static
 	global programChangelogFilePath, programRedditURL
 	Gui, About:Destroy
-	Gui, About:New, +HwndaboutGuiHandler +AlwaysOnTop +SysMenu -MinimizeBox -MaximizeBox +OwnDialogs,% programName " by masato v" programVersion
+	Gui, About:New, +HwndaboutGuiHandler +AlwaysOnTop +SysMenu -MinimizeBox -MaximizeBox +OwnDialogs,% programName " by lemasato v" programVersion
 	Gui, About:Default
 	aeroStatus := Get_Aero_Status()
 	if ( aeroStatus = 1 )
@@ -2364,15 +2258,137 @@ Enable_Hotkeys() {
 
 ;==================================================================================================================
 ;
+;												OTHERS GUI
+;
+;==================================================================================================================
+
+GUI_Replace_PID(handlersArray, gamePIDArray) {
+;		GUI used when clicking one of the Trades GUI buttons and the PID is not associated with POE anymore
+;		Provided two array containing all the POE handlers and PID, it allows the user to choose which PID to use as a replacement
+	static
+
+	Gui, ReplacePID:Destroy
+	Gui, ReplacePID:New, +ToolWindow +AlwaysOnTop -SysMenu +hwndGUIInstancesHandler
+	Gui, ReplacePID:Add, Text, x10 y10,% "The previous PID is no longer associated to a POE instance."
+	Gui, ReplacePID:Add, Text, x10 y25,% "Please, select the new one you would like to use!"
+	ypos := 30
+	for key, element in handlersArray {
+		index := A_Index - 1
+		Gui, Add, Text, x10 yp+30,Executable:
+		WinGet, pName, ProcessName,ahk_id %element%
+		Gui, Add, Edit, xp+55 yp-3 ReadOnly w150,% pName
+		Gui, Add, Button,xp+155 yp-2 gGUI_Replace_PID_Continue vContinue%index%,Continue with this one
+		Gui, Add, Text, x10 yp+32,Path:
+		WinGet, pPath, ProcessPath,ahk_id %element%
+		Gui, Add, Edit, xp+55 yp-3 ReadOnly,% pPath
+		if ( index != handlersArray.MaxIndex() ) ; Put a 10px margin if it's not the last element
+			Gui, Add, Text, w0 h0 xp yp+10
+		Logs_Append(A_ThisFunc,,element,pPath)
+	}
+	Gui, ReplacePID:Show,NoActivate,% programName " - Replace PID"
+	WinWait, ahk_id %GUIInstancesHandler%
+	WinWaitClose, ahk_id %GUIInstancesHandler%
+	return r
+
+	GUI_Replace_PID_Continue:
+		btnID := RegExReplace(A_GuiControl, "\D")
+		r := gamePIDArray[btnID]
+		Gui, ReplacePID:Destroy
+		Logs_Append("GUI_Replace_PID",,r)
+	Return
+}
+
+GUI_Multiple_Instances(handlersArray) {
+;		GUI used when multiple instances of POE running in different folders have been found upon running the Monitor_Logs() function
+;		Provided an array containing all the POE handlers, it allows the user to choose which logs file to monitor
+	static
+
+	Gui, Instances:Destroy
+	Gui, Instances:New, +ToolWindow +AlwaysOnTop -SysMenu +hwndGUIInstancesHandler
+	Gui, Instances:Add, Text, x10 y10,% "Detected instances are using different logs file."
+	Gui, Instances:Add, Text, x10 y25,% "Please, select the one you would like to use!"
+	ypos := 30
+	for key, element in handlersArray {
+		index := A_Index - 1
+		Gui, Add, Text, x10 yp+30,Executable:
+		WinGet, pName, ProcessName,ahk_id %element%
+		Gui, Add, Edit, xp+55 yp-3 ReadOnly w150,% pName
+		Gui, Add, Button,xp+155 yp-2 gGUI_Multiple_Instances_Continue vContinue%index%,Continue with this one
+		Gui, Add, Text, x10 yp+32,Path:
+		WinGet, pPath, ProcessPath,ahk_id %element%
+		Gui, Add, Edit, xp+55 yp-3 ReadOnly,% pPath
+		if ( index != handlersArray.MaxIndex() ) ; Put a 10px margin if it's not the last element
+			Gui, Add, Text, w0 h0 xp yp+10
+		Logs_Append(A_ThisFunc,,element,pPath)
+	}
+	Gui, Instances:Show,NoActivate,% programName " - Multiple instances found"
+	WinWait, ahk_id %GUIInstancesHandler%
+	WinWaitClose, ahk_id %GUIInstancesHandler%
+	return r
+
+	GUI_Multiple_Instances_Continue:
+		btnID := RegExReplace(A_GuiControl, "\D")
+		r := handlersArray[btnID]
+		Gui, Instances:Destroy
+		Logs_Append("GUI_Multiple_Instances_Return",,r)
+	Return
+}
+
+;==================================================================================================================
+;
 ;												MISC STUFF
 ;
 ;==================================================================================================================
 
+Get_All_Games_Instances() {
+	static
+	global VALUE_Dock_Window
+	WinGet windows, List
+	matchHandlers := Get_Matching_Windows_Infos("ID")
+
+	if ( matchHandlers.MaxIndex() = "" ) { ; No matching process found
+		return "EXE_NOT_FOUND"
+	}
+	for key, element in matchHandlers {
+		index := A_Index
+		WinGet, tempExeLocation, ProcessPath,% "ahk_id " element
+		SplitPath, tempExeLocation, ,tempExeDir
+		tempLogsFile%index% := tempExeDir "\logs\Client.txt"
+	}
+	tempLogsFileBackup := tempLogsFile1
+	Loop %index% {
+		index := A_Index
+			if ( tempLogsFileBackup = tempLogsFile%index% ) {
+				logsFile := tempLogsFileBackup
+				VALUE_Dock_Window := matchHandlers[0]
+			}
+			Else
+				multipleInstances := 1
+		tempLogsFileBackup := tempLogsFile%index%
+	}
+	if ( multipleInstances = 1 ) {
+		winHandler := GUI_Multiple_Instances(matchHandlers)
+		WinGet, exeLocation, ProcessPath,% "ahk_id " winHandler
+		SplitPath, exeLocation, ,exeDir
+		logsFile := exeDir "\logs\Client.txt"
+		VALUE_Dock_Window := winHandler ; assign global var after choosing the right instance
+	}
+
+	r := logsFile
+	return r
+}
+
 ShellMessage(wParam,lParam) {
-	global VALUE_Show_Mode, guiTradesHandler, tradesGuiWidth, VALUE_Dock_Window, VALUE_Trades_GUI_Mode
+/*			Triggered upon activating a window
+ *			Is used to correctly position the Trades GUI while in Overlay mode
+*/
+	static
+	global VALUE_Show_Mode, VALUE_Dock_Window, VALUE_Trades_GUI_Mode
+	global guiTradesHandler, tradesGuiWidth
+
 	if ( wParam=4 or wParam=32772 ) { ; 4=HSHELL_WINDOWACTIVATED | 32772=HSHELL_RUDEAPPACTIVATED
 		if WinActive("ahk_id" guiTradesHandler) {
-;		Prevent keyboard presses from interacting with the tradesGUI and thus mis-clicking a button
+;		Prevent these keyboard presses from interacting with the Trades GUI
 			Hotkey, IfWinActive, ahk_id %guiTradesHandler%
 			Hotkey, NumpadEnter, DoNothing, On
 			Hotkey, Escape, DoNothing, On
@@ -2385,6 +2401,7 @@ ShellMessage(wParam,lParam) {
 			Hotkey, Down, DoNothing, On
 			Return ; returning prevents from triggering Gui_Trades_Set_Position while the GUI is active
 		}
+
 		if ( VALUE_Trades_GUI_Mode = "Window" )
 			Return
 
@@ -2393,35 +2410,24 @@ ShellMessage(wParam,lParam) {
 		if ( VALUE_Show_Mode = "Always" ) && ( tradesGuiWidth > 0 ) {
 			Gui_Trades_Set_Position()
 		}
-		else if ( ( VALUE_Show_Mode = "InGame" ) && ( tradesGuiWidth > 0 ) && ( VALUE_Dock_Window = winID ) )
+		else if ( ( VALUE_Show_Mode = "InGame" ) && ( tradesGuiWidth > 0 ) && ( VALUE_Dock_Window = winID ) )	; Game window is activated
 			Gui_Trades_Set_Position()
-		else if ( ( VALUE_Show_Mode = "InGame" ) && ( VALUE_Dock_Window != winID ) ) {
+		else if ( ( VALUE_Show_Mode = "InGame" ) && ( VALUE_Dock_Window != winID ) ) {	; Game window is not activated
 			Logs_Append(A_ThisFunc,,VALUE_Show_Mode,VALUE_Dock_Window,winID)
 			Gui, Trades:Show, NoActivate Hide
 		}
 	}
-	if WinActive("ahk_id" guiTradesHandler) {
-;		Prevent keyboard presses from interacting with the tradesGUI and thus mis-clicking a button
-		Hotkey, IfWinActive, ahk_id %guiTradesHandler%
-		Hotkey, NumpadEnter, DoNothing, On
-		Hotkey, Escape, DoNothing, On
-		Hotkey, Space, DoNothing, On
-		Hotkey, Tab, DoNothing, On
-		Hotkey, Enter, DoNothing, On
-		Hotkey, Left, DoNothing, On
-		Hotkey, Right, DoNothing, On
-		Hotkey, Up, DoNothing, On
-		Hotkey, Down, DoNothing, On
-	}
 }
 
 Do_Once() {
-;			Things that only need to be done ONCE
-;
-;	Open the changelog menu
+/*			
+ *			Things that only need to be done ONCE
+*/
+
 	static
 	global iniFilePath
 
+;	Open the changelog menu
 	IniRead, state,% iniFilePath,PROGRAM,Show_Changelogs
 	if ( state = 1 ) {
 		Gui_About()
@@ -2437,18 +2443,15 @@ Get_DPI_Factor() {
 	static
 
 	RegRead, dpiValue, HKEY_CURRENT_USER, Control Panel\Desktop\WindowMetrics, AppliedDPI 
-	if (errorlevel = 1) || (dpiValue = 96)
-		dpiFactor := 1
-	else
-		dpiFactor := dpiValue/96
+	dpiFactor := (ErrorLevel || dpiValue=96)?(1):(dpiValue/96)
 	return dpiFactor
 }
 
-Logs_Append(funcName, paramsArray="", params*){
+Logs_Append(funcName, paramsArray="", params*) {
 	static
 	global programLogsFilePath, programName, programVersion, iniFilePath
 
-	if ( funcName = "Start" ) {
+	if ( funcName = "START" ) {
 		dpiFactor := Get_DPI_Factor()
 		FileAppend,% "OS: " A_OSVersion "`n",% programLogsFilePath
 		FileAppend, "DPI: " dpiFactor "`n",% programLogsFilePath
@@ -2512,13 +2515,13 @@ Logs_Append(funcName, paramsArray="", params*){
 }
 
 Delete_Old_Logs_Files(filesToKeep) {
-;			Make sure to only keep 10 (+current) logs file
-;			Delete the older logs file
+/*
+ *			Delete logs files
+ *			Keeps only the ammount specified
+*/
 	static
 	global programLogsPath
 
-	filesToKeep++ ; Or it will delete also the latest
-	
 	loop, %programLogsPath%\*.txt
 	{
 		filesNum := A_Index
@@ -2528,7 +2531,7 @@ Delete_Old_Logs_Files(filesToKeep) {
 	}
 	Sort, allFiles, D|
 	split := StrSplit(allFiles, "|")
-	if ( filesNum > filesToKeep ) {
+	if ( filesNum >= filesToKeep ) {
 		Loop {
 			index := A_Index
 			fileLocation := programLogsPath "\" split[A_Index]
@@ -2541,19 +2544,14 @@ Delete_Old_Logs_Files(filesToKeep) {
 }
 
 Get_Aero_Status(){
-;			Retrieve the AERO status and returns it
-;			(When AERO is disabled, we have to put -Theme to the GUI that use tabs or text will be blacked out)
+/*
+ *			Retrieve the AERO status
+ *			Used in GUIs. If AERO is disabled, we have to enable -Theme to avoid blacked out text
+*/
 	static
 
 	hr := DllCall("Dwmapi\DwmIsCompositionEnabled", "Int*", isEnabled)
-	If (hr == 0) {
-		if (isEnabled)
-			state := 1
-		else
-			state := 0
-	}
-	else
-		state := "ERROR"
+	state := (hr=0 && isEnabled)?(1):(hr=0 && !isEnabled)?(0):("ERROR")
 	return state
 }
 
@@ -2561,9 +2559,13 @@ DoNothing:
 return
 
 Send_InGame_Message(messageToSend, infosArray="", isHotkey=0, isAdvanced=0) {
-;			Sends a message InGame and replace the "variables text" into their content
+/*
+ *			Sends a message in game
+ *			Replaces all the %variables% into their actual content
+*/
 	static
-	global VALUE_Logs_Mode, VALUE_Hotkeys_Mode, POEGame, programName, VALUE_Last_Whisper
+	global VALUE_Logs_Mode, VALUE_Hotkeys_Mode, VALUE_Last_Whisper
+	global programName
 
 	buyerName := infosArray[0], itemName := infosArray[1], itemPrice := infosArray[2], gamePID := infosArray[3]
 	messageToSendRaw := messageToSend
@@ -2605,6 +2607,7 @@ Send_InGame_Message(messageToSend, infosArray="", isHotkey=0, isAdvanced=0) {
 				StringReplace, messageToSend, messageToSend, ^, {^}, 1
 				StringReplace, messageToSend, messageToSend, +, {+}, 1
 				StringReplace, messageToSend, messageToSend, #, {#}, 1
+				sleep 10
 				SendInput,%messageToSend%
 			}
 			else {
@@ -2614,16 +2617,17 @@ Send_InGame_Message(messageToSend, infosArray="", isHotkey=0, isAdvanced=0) {
 				SendInput,{Enter}
 			}
 		}
-		if ( goBackUp > 0 ) {
-			SendInput,{Enter}{Up %goBackUp%}{Escape}	; Send back to the previous chat channel
-		}
+
 		Logs_Append(A_ThisFunc,, messageToSend, buyerName, gamePID)
 		BlockInput, Off
 	}
 }
 
 Extract_Sound_Files() {
-;			Extracts the included sfx into the .ini settings folder
+/*
+ *			Include the SFX into the compilled executable
+ *			Extracts the included SFX into the SFX Folder
+*/
 	static
 	global sfxFolderPath
 
@@ -2634,8 +2638,12 @@ Extract_Sound_Files() {
 }
 
 Close_Previous_Program_Instance() {
-;			Prevent from running multiple instancies of the program
-;			If an instancie already exist, close and replace it by this one
+/*
+ *			Prevents from running multiple instances of this program
+ *			Works by reading the last PID and process name from the .ini
+ *				, checking if there is an existing match
+ *				and closing if a match is found
+*/
 	static
 	global iniFilePath
 
@@ -2643,17 +2651,17 @@ Close_Previous_Program_Instance() {
 	IniRead, lastProcessName,% iniFilePath,PROGRAM,FileProcessName
 
 	if ( A_IsAdmin = 0 )
-	Return ; Not running as admin means script will be reloaded soon as admin
+		Return ; Not running as admin means script will be going through the Run_As_Admin function
 
 	Process, Exist, %lastPID%
 	existingPID := ErrorLevel
 	if ( existingPID = 0 )
-		Return ; pid doesn't exist
-	else { ; pid exist
-		DetectHiddenWindows, On ; required to find the process name
-		WinGet, existingProcessName, ProcessName, ahk_pid %existingPID% ; get process name from pid
+		Return ; No match found
+	else {
+		DetectHiddenWindows, On ; Required to access the process name
+		WinGet, existingProcessName, ProcessName, ahk_pid %existingPID% ; Get process name from PID
 		DetectHiddenWindows, Off
-		if ( existingProcessName = lastProcessName ) { ; pid exist and has same processname, close it
+		if ( existingProcessName = lastProcessName ) { ; Match found, close the previous instance
 			Process, Close, %existingPID%
 			Process, WaitClose, %existingPID%
 		}
@@ -2662,15 +2670,23 @@ Close_Previous_Program_Instance() {
 }
 
 GUI_Trades_Cycle:
-	global VALUE_Trades_GUI_Mode
-	if ( VALUE_Trades_GUI_Mode = "Overlay" ) {
-		Gui_Trades_Cycle_Func()
-	}
+	Gui_Trades_Cycle_Func()
 Return
 
 Gui_Trades_Cycle_Func() {
+/*
+ *			Retrieves the existing POE instances
+ *				then cycle the Trades GUI through each instance
+ *				for every time the user triggers the function
+ *			Once the last match was reached
+ *				we reset back to the first match
+*/
 	static
-	global VALUE_Dock_Window, VALUE_Current_DockID, guiTradesHandler, programName
+	global VALUE_Dock_Window, VALUE_Current_DockID, VALUE_Trades_GUI_Mode, 
+	global guiTradesHandler, programName
+
+	if ( VALUE_Trades_GUI_Mode != "Overlay" )
+		Return
 
 	if !(guiTradesHandler) {
 		Loop 2
@@ -2687,6 +2703,10 @@ Gui_Trades_Cycle_Func() {
 }
 
 Get_Matching_Windows_Infos(mode) {
+/*
+ *			Retrieves a list of all existing windows
+ *				then returns an array containing only those matching the game
+*/
 	static
 	global POEGameList
 
@@ -2725,6 +2745,9 @@ Get_Matching_Windows_Infos(mode) {
 }
 
 Create_Tray_Menu(globalDeclared=0) {
+/*
+ *			Creates the Tray Menu
+*/
 	static
 	global VALUE_Trades_GUI_Mode
 
@@ -2749,8 +2772,11 @@ Create_Tray_Menu(globalDeclared=0) {
 }
 
 WM_MOUSEMOVE() {
-;			Taken from Alpha Bravo. Shows tooltip upon hovering a gui control
-;			https://autohotkey.com/board/topic/81915-solved-gui-control-tooltip-on-hover/#entry598735
+/*			Shows tooltip upon hovering a GUI control.
+ *
+ *			Credtis to Alpha Bravos.
+ *			https://autohotkey.com/board/topic/81915-solved-gui-control-tooltip-on-hover/#entry598735
+*/			
 	static
 	curControl := A_GuiControl
 	If ( curControl <> prevControl ) {
@@ -2786,8 +2812,12 @@ Return
 
 
 Run_As_Admin() {
-;			Make sure the program is running as admin
-;			Works for compiled and uncompiled scripts
+/*			Make sure the program is running as Admin
+ *			Works for both .ahk and .exe
+ *
+ *			Credits to art
+ *			https://autohotkey.com/board/topic/46526-run-as-administrator-xpvista7-a-isadmin-params-lib/?p=600596
+*/
 	static
 	global 0
 	global iniFilePath, programName
