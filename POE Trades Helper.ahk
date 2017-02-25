@@ -151,7 +151,8 @@ Monitor_Game_Logs(mode="") {
 			lastMessage := fileObj.Read() ; Stores the last message into a var
 			Loop, parse, lastMessage, `n, `r ; This makes sure to not skip messages, when receiving multiple at once
 			{
-				if ( RegExMatch( A_LoopField, ".*\[.*\D+(.*)\].*@(?:From|De|От кого) (.*?): (.*)", subPat ) ) ; Whisper found --  (.*?) makes sure to stop at the first ":", fixing the "stash tab:" error
+				; New RegEx pattern matches the trading message, but only from whispers and local chat (for debugging), and specifically ignores global/trade/guild/party chats
+				if ( RegExMatch( A_LoopField, "^(?:[^ ]+ ){6}(\d+)\] [^#$&%].*@(?:From|De|От кого) (.*?): (.*)", subPat ) ) ; Whisper found --  (.*?) makes sure to stop at the first ":", fixing the "stash tab:" error
 				{
 					gamePID := subPat1, whispName := subPat2, whispMsg := subPat3
 					VALUE_Last_Whisper := whispName
