@@ -514,12 +514,6 @@ Gui_Trades(infosArray="", errorMsg="") {
 			GuiControl, Trades:%showState%,CustomBtn%A_Index%OrnamentLeft
 			GuiControl, Trades:%showState%,CustomBtn%A_Index%OrnamentRight
 		}
-		GuiControl, Trades:%showState%,buyerSlot1
-		GuiControl, Trades:%showState%,ItemSlot1
-		GuiControl, Trades:%showState%,PriceSlot1
-		GuiControl, Trades:%showState%,LocationSlot1
-		GuiControl, Trades:%showState%,TimeSlot1
-		GuiControl, Trades:%showState%,OtherSlot1
 
 		GuiControl, Trades:%showState%,% ItemText1Handler
 		GuiControl, Trades:%showState%,% PriceText1Handler
@@ -650,8 +644,9 @@ Gui_Trades(infosArray="", errorMsg="") {
 			currentActiveTab := tabID
 		}
 
-		if ( !currentActiveTab )
+		if ( !currentActiveTab ) {
 			currentActiveTab := 1
+		}
 
 		if ( tabsCount < lastActiveTab ) {
 			; Latest tab 
