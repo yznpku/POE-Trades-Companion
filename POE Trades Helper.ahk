@@ -78,10 +78,10 @@ OnMessage( MsgNum, "ShellMessage")
 Gui_Trades(,"CREATE")
 ;	Uncomment only for testing purposes -- Simulates trade tabs
 ;	Also comment the Monitor_Game_Logs() line, otherwise the GUI will be overwritten
-	newItemInfos := Object()
-	newItemInfos.Insert(0, "iSellStuff", "level 1 Faster Attacks Support", "5 alteration", "Breach (stash tab ""Gems""; position: left 6, top 8)", "",A_Hour ":" A_Min, "Offering 1alch?")
-	newItemArray := Gui_Trades_Manage_Trades("ADD_NEW", newItemInfos)
-	Gui_Trades(newItemArray, "UPDATE")
+	; newItemInfos := Object()
+	; newItemInfos.Insert(0, "iSellStuff", "level 1 Faster Attacks Support", "5 alteration", "Breach (stash tab ""Gems""; position: left 6, top 8)", "",A_Hour ":" A_Min, "Offering 1alch?")
+	; newItemArray := Gui_Trades_Manage_Trades("ADD_NEW", newItemInfos)
+	; Gui_Trades(newItemArray, "UPDATE")
 	; newItemInfos.Insert(0, "FIRST BUYER", "FIRST ITEM", "FIRST PRICE", "FIRST LOCATION", "",A_Hour ":" A_Min, "-")
 	; newItemArray := Gui_Trades_Manage_Trades("ADD_NEW", newItemInfos)
 	; Gui_Trades(newItemArray, "UPDATE")
@@ -95,7 +95,7 @@ Gui_Trades(,"CREATE")
 ;___Logs Monitoring AKA Trades GUI___;
 ;Gui_Settings()
 Logs_Append("START", settingsArray)
-; Monitor_Game_Logs()
+Monitor_Game_Logs()
 Return
 
 ;==================================================================================================================
@@ -797,6 +797,21 @@ Gui_Trades(infosArray="", errorMsg="") {
 			tradesInfosArray := Gui_Trades_Get_Trades_Infos(btnID) ; [0] buyerName - [1] itemName - [2] itemPrice
 			Clipboard := tradesInfosArray[1]
 		}
+;		Check for other trades with different buyer but same item/price/location
+		duplicatesID := Gui_Trades_Check_Duplicate(currentActiveTab)
+		if ( duplicatesID ) {
+			MsgBox, 4100,% programName,Multiple tabs share the same infos,`nwould you like to close them as well?
+			IfMsgBox, Yes
+			{
+				for key, element in duplicatesID {
+					messagesArray := Gui_Trades_Manage_Trades("REMOVE_CURRENT", ,element-key+1) ; Deleting a tab reduces the following duplicateIDs by one
+																								; +1 because the array starts at 1 and not 0
+					Gui_Trades(messagesArray, "UPDATE")
+					Gosub, Gui_Trades_Tabs_Handler
+				}
+					
+			}
+		}
 ;		Remove the current tab
 		messagesArray := Gui_Trades_Manage_Trades("REMOVE_CURRENT", ,currentActiveTab)
 		Gui_Trades(messagesArray, "UPDATE")
@@ -809,6 +824,26 @@ Gui_Trades(infosArray="", errorMsg="") {
 		tradesGuiHeight := A_GuiHeight
 	return
 }
+
+Gui_Trades_Check_Duplicate(currentActiveTab) {
+	duplicates := Object()
+	messagesArray := Gui_Trades_Manage_Trades("GET_ALL")
+	maxIndex := messagesArray.BUYERS.MaxIndex()
+	currentTabInfos := Gui_Trades_Get_Trades_Infos(currentActiveTab)
+	currentTabItem := currentTabInfos[1], currentTabPrice := currentTabInfos[2], currentTabLocation := currentTabInfos[4]
+	returnArray.Insert(0, buyerName, itemName, itemPrice, thisPID, itemLocation, otherMsg)
+	Loop %maxIndex% {
+		if (A_Index != currentActiveTab) {
+			otherTabInfos := Gui_Trades_Get_Trades_Infos(A_Index)
+			otherTabItem := otherTabInfos[1], otherTabPrice := otherTabInfos[2], otherTabLocation := otherTabInfos[4]
+			if (otherTabItem=currentTabItem && otherTabPrice=currentTabPrice && otherTabLocation=currentTabLocation)
+				duplicates.Insert(A_Index)
+		}
+	}
+	if ( duplicates )
+		return duplicates
+}
+
 
 Gui_Trades_Get_Tab_Height() {
 	static
@@ -865,9 +900,10 @@ Gui_Trades_Get_Trades_Infos(btnID){
 	GuiControlGet, buyerName, Trades:,buyerSlot%btnID%
 	GuiControlGet, itemName, Trades:,itemSlot%btnID%
 	GuiControlGet, itemPrice, Trades:,priceSlot%btnID%
-	GuiControlGet, thisPID, Trades:,PIDSlot%btnID%
+	GuiControlGet, thisPID, Trades:,PIDSlot1
+	GuiControlGet, itemLocation,Trades:,LocationSlot%btnID%
 	returnArray := Object()
-	returnArray.Insert(0, buyerName, itemName, itemPrice, thisPID)
+	returnArray.Insert(0, buyerName, itemName, itemPrice, thisPID, itemLocation)
 	return returnArray
 }
 
@@ -879,7 +915,7 @@ Gui_Trades_Set_Trades_Infos(newPID){
 		index := A_Index
 		infosArray := Gui_Trades_Get_Trades_Infos(index)
 		if ( infosArray[0] )
-			GuiControl,Trades:,PIDSlot%index%,% newPID
+			GuiControl,Trades:,PIDSlot1,% newPID
 		else
 			Break
 	}
@@ -3087,6 +3123,10 @@ Extract_Sound_Files() {
 	static
 	global programSFXFolderPath
 
+	FileInstall, C:\Users\Hatsune\Documents\GitHub\POE-Trades-Helper\Ressources\SFX\MM_Tatl_Gleam.wav,% programSFXFolderPath "\MM_Tatl_Gleam.wav", 0
+	FileInstall, C:\Users\Hatsune\Documents\GitHub\POE-Trades-Helper\Ressources\SFX\MM_Tatl_Hey.wav,% programSFXFolderPath "\MM_Tatl_Hey.wav", 0
+	FileInstall, C:\Users\Hatsune\Documents\GitHub\POE-Trades-Helper\Ressources\SFX\WW_MainMenu_CopyErase_Start.wav,% programSFXFolderPath "\WW_MainMenu_CopyErase_Start.wav", 0
+	FileInstall, C:\Users\Hatsune\Documents\GitHub\POE-Trades-Helper\Ressources\SFX\WW_MainMenu_Letter.wav,% programSFXFolderPath "\WW_MainMenu_Letter.wav", 0
 }
 
 Close_Previous_Program_Instance() {
