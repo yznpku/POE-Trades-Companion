@@ -95,7 +95,7 @@ Gui_Trades(,"CREATE")
 ;___Logs Monitoring AKA Trades GUI___;
 ;Gui_Settings()
 Logs_Append("START", settingsArray)
-Monitor_Game_Logs()
+; Monitor_Game_Logs()
 Return
 
 ;==================================================================================================================
@@ -160,6 +160,16 @@ Monitor_Game_Logs(mode="") {
 				{
 					gamePID := subPat1, whispName := subPat2, whispMsg := subPat3
 					VALUE_Last_Whisper := whispName
+					tradesInfos := Gui_Trades_Manage_Trades("GET_ALL")
+					for key, element in tradesInfos.BUYERS {
+						otherContent := tradesInfos.OTHER[key]
+						StringReplace, otherContent, otherContent,% "(Hover to see all messages)`n",% "",1
+						otherText := (otherContent = "-")?("(Hover to see all messages)`n" whispMsg)
+								    :("(Hover to see all messages)`n" otherContent "`n" whispMsg)
+						if (whispName = element) {
+							Gui_Trades_Set_Trades_Infos("", otherText, key)
+						}
+					}
 
 					if ( VALUE_Whisper_Tray = 1 ) && !( WinActive("ahk_pid " gamePID) ) {
 						Loop 2
@@ -902,22 +912,28 @@ Gui_Trades_Get_Trades_Infos(btnID){
 	GuiControlGet, itemPrice, Trades:,priceSlot%btnID%
 	GuiControlGet, thisPID, Trades:,PIDSlot1
 	GuiControlGet, itemLocation,Trades:,LocationSlot%btnID%
+	GuiControlGet, otherMsg,Trades:,OtherSlot%btnID%
 	returnArray := Object()
-	returnArray.Insert(0, buyerName, itemName, itemPrice, thisPID, itemLocation)
+	returnArray.Insert(0, buyerName, itemName, itemPrice, thisPID, itemLocation, otherMsg)
 	return returnArray
 }
 
-Gui_Trades_Set_Trades_Infos(newPID){
+Gui_Trades_Set_Trades_Infos(newPID, otherText="", ID=""){
 ;	Used by the Send_InGame_Message function
 ;	Allows to set the new PID to the trades
 	static
-	Loop {
-		index := A_Index
-		infosArray := Gui_Trades_Get_Trades_Infos(index)
-		if ( infosArray[0] )
-			GuiControl,Trades:,PIDSlot1,% newPID
-		else
-			Break
+	if ( newPID ) {
+		Loop {
+			index := A_Index
+			infosArray := Gui_Trades_Get_Trades_Infos(index)
+			if ( infosArray[0] )
+				GuiControl,Trades:,PIDSlot1,% newPID
+			else
+				Break
+		}
+	}
+	else if (otherText && ID) {
+		GuiControl,Trades:,OtherSlot%ID%,% otherText
 	}
 }
 
