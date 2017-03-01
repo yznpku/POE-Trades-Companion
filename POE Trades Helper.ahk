@@ -95,7 +95,7 @@ Gui_Trades(,"CREATE")
 ;___Logs Monitoring AKA Trades GUI___;
 ;Gui_Settings()
 Logs_Append("START", settingsArray)
-; Monitor_Game_Logs()
+Monitor_Game_Logs()
 Return
 
 ;==================================================================================================================
@@ -165,7 +165,7 @@ Monitor_Game_Logs(mode="") {
 						otherContent := tradesInfos.OTHER[key]
 						StringReplace, otherContent, otherContent,% "(Hover to see all messages)`n",% "",1
 						otherText := (otherContent = "-")?("(Hover to see all messages)`n" whispMsg)
-								    :("(Hover to see all messages)`n" otherContent "`n" whispMsg)
+								    :("(Hover to see all messages)`n" otherContent "`n[" A_Hour ":" A_Min "] " whispMsg)
 						if (whispName = element) {
 							Gui_Trades_Set_Trades_Infos("", otherText, key)
 						}
