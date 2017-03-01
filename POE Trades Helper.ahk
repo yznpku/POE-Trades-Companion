@@ -2637,6 +2637,7 @@ WM_MOUSEMOVE(wParam, lParam, msg, hwnd) {
 	; 	}
 	; }
 	if (A_GUI = "Trades") {
+
 		if (btnType = "CustomBtn" || btnType = "delBtn" || btnType = "GoRight" || btnType = "GoLeft") {
 			if ( A_GuiControl != lastButton ) {
 				; GuiControlGet, outVar, Hwnd,%A_GuiControl%
@@ -2662,7 +2663,7 @@ WM_MOUSEMOVE(wParam, lParam, msg, hwnd) {
 					; tooltip % btnType
 					; Gui, Trades:Font, c875516
 					; GuiControl, Trades:Font,CustomBtnTXT%lastBtnID%
-					GuiControl, Trades:,% lastButton,% programSkinFolderPath "\" VALUE_Trades_GUI_Skin "\" lastPngFilePrefix ".png"
+					; GuiControl, Trades:,% lastButton,% programSkinFolderPath "\" VALUE_Trades_GUI_Skin "\" lastPngFilePrefix ".png"
 				}
 			}
 			VALUE_TradesGUI_Last_Hover_Button := A_GuiControl
@@ -2670,9 +2671,13 @@ WM_MOUSEMOVE(wParam, lParam, msg, hwnd) {
 		}
 		else if (btnState = "Hover") {
 			GuiControl, Trades:,% lastButton,% programSkinFolderPath "\" VALUE_Trades_GUI_Skin "\" lastPngFilePrefix ".png"
-			btnState := "Default", VALUE_TradesGUI_Last_Hover_Button := ""
-			Gui, Trades:Font, c875516
-			if (btnType = "CustomBtn") {
+			btnState := "Default"
+			; Gui, Trades:Font, c875516
+			; tooltip % btnType " - " A_GuiControl " - " lastBtnID "- " VALUE_Trades_GUI_Hover_Control " - " VALUE_TradesGUI_Last_Hover_Button
+			RegExMatch(VALUE_TradesGUI_Last_Hover_Button, "\D+", lastbtnType)
+			VALUE_TradesGUI_Last_Hover_Button := ""
+			if (lastbtnType = "CustomBtn") {
+				Gui, Trades:Font, c875516
 				GuiControl, Trades:Font,CustomBtnTXT%lastbtnID%
 				GuiControl, Trades:+Redraw,CustomBtn%lastbtnID%
 				GuiControl, Trades:+Redraw,CustomBtn%lastbtnID%OrnamentLeft
@@ -2685,6 +2690,8 @@ WM_MOUSEMOVE(wParam, lParam, msg, hwnd) {
 			GuiControlGet, ctrlPOS,Trades:Pos,% A_GuiControl
 			WinGetPos, tradesXPOS, tradesYPOS
 			ToolTip, % content,% tradesXPOS+ctrlPOSX,% tradesYPOS+ctrlPOSY
+			MouseGetPos, mouseX, mouseY
+			SetTimer, ToolTipTimer, 100
 		}
 		else {
 			ToolTip, 
@@ -2718,6 +2725,16 @@ WM_MOUSEMOVE(wParam, lParam, msg, hwnd) {
 		Remove_ToolTip:
 			ToolTip
 		return
+
+		ToolTipTimer:
+;			Credits to POE-TradeMacro: https://github.com/PoE-TradeMacro/POE-TradeMacro
+			MouseGetPos, ,CurrY
+			MouseMoved := (CurrY - mouseY) ** 2 > 10 ** 2
+			if (MouseMoved)	{
+				SetTimer, ToolTipTimer, Off
+				ToolTip 
+			}
+		return
 	}
 
 	; MouseGetPos, , , underMouseHandler
@@ -2734,10 +2751,12 @@ WM_MOUSEMOVE(wParam, lParam, msg, hwnd) {
 	; 		; GuiControl, Trades:,CustomBtn%A_Index%,% programSkinFolderPath "\" VALUE_Trades_GUI_Skin "\" pngFilePrefix ".png"
 	; 	; }
 	; }
-
-	lastBtnID := btnID
-	VALUE_TradesGUI_Last_PNG := pngFilePrefix
-	VALUE_Trades_GUI_Hover_Control := A_GuiControl
+	if (btnID)
+		lastBtnID := btnID
+	if (pngFilePrefix)
+		VALUE_TradesGUI_Last_PNG := pngFilePrefix
+	if (A_GuiControl)
+		VALUE_Trades_GUI_Hover_Control := A_GuiControl
 }
 
 WM_LBUTTONDOWN(wParam, lParam, msg, hwnd) {
