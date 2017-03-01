@@ -160,13 +160,18 @@ Monitor_Game_Logs(mode="") {
 				{
 					gamePID := subPat1, whispName := subPat2, whispMsg := subPat3
 					VALUE_Last_Whisper := whispName
+					; Append the new whisper to the buyer's Other slots
 					tradesInfos := Gui_Trades_Manage_Trades("GET_ALL")
 					for key, element in tradesInfos.BUYERS {
-						otherContent := tradesInfos.OTHER[key]
-						StringReplace, otherContent, otherContent,% "(Hover to see all messages)`n",% "",1
-						otherText := (otherContent = "-")?("(Hover to see all messages)`n" whispMsg)
-								    :("(Hover to see all messages)`n" otherContent "`n[" A_Hour ":" A_Min "] " whispMsg)
 						if (whispName = element) {
+							otherContent := tradesInfos.OTHER[key]
+							if otherContent not contains (Hover to see all messages) ; No other message, we add the timestamp to the current message and remove blank lines
+							{
+								StringReplace, otherContent, otherContent,% "`n",% "",1
+								otherContent := "[" tradesInfos.TIME[key] "] " otherContent
+							}
+							StringReplace, otherContent, otherContent,% "(Hover to see all messages)`n",% "",1
+							otherText := "(Hover to see all messages)`n" otherContent "`n[" A_Hour ":" A_Min "] " whispMsg
 							Gui_Trades_Set_Trades_Infos("", otherText, key)
 						}
 					}
@@ -188,7 +193,6 @@ Monitor_Game_Logs(mode="") {
 					messages := whispName . ": " whispMsg "`n"
 					if ( RegExMatch( messages, ".*: (.*)Hi, I(?: would|'d) like to buy your (?:(.*) |(.*))(?:listed for (.*)|for my (.*)|)(?!:listed for|for my) in (?:(.*)\(.*""(.*)""(.*)\)|Hardcore (.*?)\W|(.*?)\W)(.*)", subPat ) ) ; Trade message found
 					{
-			
 						tradeItem := (subPat2)?(subPat2):(subPat3)?(subPat3):("ERROR RETRIEVING ITEM")
 						tradePrice := (subPat4)?(subPat4):(subPat5)?(subPat5):("UNPRICED ITEM")
 						tradeStash := (subPat6)?(subPat6 "- " subpat7 " " subPat8):(subPat9)?("Hardcore " subPat9):(subPat10)?(subPat10):("ERROR RETRIEVING LOCATION")
@@ -198,17 +202,28 @@ Monitor_Game_Logs(mode="") {
 						tradeStash = %tradeStash%
 						tradeOther = %tradeOther%
 						StringReplace, tradeItem, tradeItem,% "0%",% "", 1
-;						if tradeItem contains % " 0`%"
-;							StringReplace, tradeItem, tradeItem, 0`% ; Removes 0% from the string, allowing us to stash search it
-						newTradesInfos := Object()
-						newTradesInfos.Insert(0, whispName, tradeItem, tradePrice, tradeStash, gamePID, A_Hour ":" A_Min, tradeOther)
-						messagesArray := Gui_Trades_Manage_Trades("ADD_NEW", newTradesInfos)
-						Gui_Trades(messagesArray, "UPDATE")
-						if ( VALUE_Clip_New_Items = 1 ) {
-							Clipboard := tradeitem
+
+						; Do not add the trade if the same is already in queue
+						tradesExists := 0
+						tradesInfos := Gui_Trades_Manage_Trades("GET_ALL")
+						for key, element in tradesInfos.BUYERS {
+							buyerContent := tradesInfos.BUYERS[key], itemContent := tradesInfos.ITEMS[key], priceContent := tradesInfos.PRICES[key], locationContent := tradesInfos.LOCATIONS[key], otherContent = tradesInfos.OTHER[key]
+							if (buyerContent=whispName && itemContent=tradeItem && priceContent=tradePrice && locationContent=tradeStash) {
+								tradesExists := 1
+							}
 						}
-						if ( VALUE_Trade_Toggle = 1 ) && ( FileExist(VALUE_Trade_Sound_Path) ) {
-							SoundPlay,%VALUE_Trade_Sound_Path%
+
+						if (tradesExists = 0) {
+							newTradesInfos := Object()
+							newTradesInfos.Insert(0, whispName, tradeItem, tradePrice, tradeStash, gamePID, A_Hour ":" A_Min, tradeOther)
+							messagesArray := Gui_Trades_Manage_Trades("ADD_NEW", newTradesInfos)
+							Gui_Trades(messagesArray, "UPDATE")
+							if ( VALUE_Clip_New_Items = 1 ) {
+								Clipboard := tradeitem
+							}
+							if ( VALUE_Trade_Toggle = 1 ) && ( FileExist(VALUE_Trade_Sound_Path) ) {
+								SoundPlay,%VALUE_Trade_Sound_Path%
+							}
 						}
 					}
 				}
@@ -347,7 +362,7 @@ Gui_Trades(infosArray="", errorMsg="") {
 		tabHeight := Gui_Trades_Get_Tab_Height(), tabWidth := 390
 		guiWidth := 402, guiHeight := tabHeight+38, guiHeightMin := 30
 		Gui, Font, S10 cWhite,Fontin-SmallCaps
-		Gui, Add, Picture,% "x0 y0 w" guiWidth " h30",% programSkinFolderPath "\" VALUE_Trades_GUI_Skin "\Header.png"
+		Gui, Add, Picture,% "x0 y0 w" guiWidth " h30 ",% programSkinFolderPath "\" VALUE_Trades_GUI_Skin "\Header.png"
 		Gui, Add, Text,% "x35 y2 w" guiWidth-100 " h28 cC18F55 BackgroundTrans gGui_Trades_Move +0x200 hwndguiTradesTitleHandler",% programName " - Queued Trades: 0"
 		Gui, Add, Text,% "x" guiWidth-65 " w65 y2 h28 + +0x200 cC18F55 gGui_Trades_Minimize +BackgroundTrans",% "MINIMIZE"
 		Gui, Trades:Default
@@ -809,8 +824,8 @@ Gui_Trades(infosArray="", errorMsg="") {
 		}
 ;		Check for other trades with different buyer but same item/price/location
 		duplicatesID := Gui_Trades_Check_Duplicate(currentActiveTab)
-		if ( duplicatesID ) {
-			MsgBox, 4100,% programName,Multiple tabs share the same infos,`nwould you like to close them as well?
+		if ( duplicatesID.MaxIndex() > 0 ) {
+			MsgBox, 4100,% programName,%duplicatesID% - Multiple tabs share the same infos,`nwould you like to close them as well?
 			IfMsgBox, Yes
 			{
 				for key, element in duplicatesID {
@@ -841,7 +856,6 @@ Gui_Trades_Check_Duplicate(currentActiveTab) {
 	maxIndex := messagesArray.BUYERS.MaxIndex()
 	currentTabInfos := Gui_Trades_Get_Trades_Infos(currentActiveTab)
 	currentTabItem := currentTabInfos[1], currentTabPrice := currentTabInfos[2], currentTabLocation := currentTabInfos[4]
-	returnArray.Insert(0, buyerName, itemName, itemPrice, thisPID, itemLocation, otherMsg)
 	Loop %maxIndex% {
 		if (A_Index != currentActiveTab) {
 			otherTabInfos := Gui_Trades_Get_Trades_Infos(A_Index)
@@ -850,8 +864,7 @@ Gui_Trades_Check_Duplicate(currentActiveTab) {
 				duplicates.Insert(A_Index)
 		}
 	}
-	if ( duplicates )
-		return duplicates
+	return duplicates
 }
 
 
