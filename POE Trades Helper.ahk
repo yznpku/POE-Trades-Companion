@@ -20,12 +20,12 @@ ListLines Off
 SetWinDelay, 0
 
 ;___Some_Variables___;
-global userprofile, iniFilePath, programName, programVersion, programFolder, programPID, sfxFolderPath, programChangelogFilePath, POEGameArray, POEGameList
+global userprofile, iniFilePath, programName, programVersion, programFolder, programPID, programSFXFolderPath, programChangelogFilePath, POEGameArray, POEGameList
 EnvGet, userprofile, userprofile
 programVersion := "1.7.4", programRedditURL := "https://redd.it/57oo3h"
 programName := "POE Trades Helper", programFolder := userprofile "\Documents\AutoHotKey\" programName
 iniFilePath := programFolder "\Preferences.ini"
-sfxFolderPath := programFolder "\SFX"
+programSFXFolderPath := programFolder "\SFX"
 programLogsPath := programFolder "\Logs"
 programLogsFilePath := userprofile "\Documents\AutoHotKey\" programName "\Logs\" A_YYYY "-" A_MM "-" A_DD "_" A_Hour "-" A_Min "-" A_Sec ".txt"
 programChangelogFilePath := programFolder "\Logs\changelog.txt"
@@ -45,8 +45,8 @@ if !( InStr(FileExist(userprofile "\Documents\AutoHotkey"), "D") )
 	FileCreateDir, % userprofile "\Documents\AutoHotkey"
 if !( InStr(FileExist(userprofile "\Documents\AutoHotkey\" programName ), "D") )
 	FileCreateDir, % userprofile "\Documents\AutoHotkey\" programName
-if !( InStr(FileExist(sfxFolderPath), "D") )
-	FileCreateDir, % sfxFolderPath
+if !( InStr(FileExist(programSFXFolderPath), "D") )
+	FileCreateDir, % programSFXFolderPath
 if !( InStr(FileExist(programLogsPath), "D") )
 	FileCreateDir, % programLogsPath
 if !( InStr(FileExist(programSkinFolderPath), "D") )
@@ -1426,7 +1426,7 @@ return
 	return
 	
 	Gui_Settings_Notifications_Browse:
-		FileSelectFile, soundFile, ,% sfxFolderPath, Select an audio file (%programName%),Audio (*.wav; *.mp3)
+		FileSelectFile, soundFile, ,% programSFXFolderPath, Select an audio file (%programName%),Audio (*.wav; *.mp3)
 		if ( soundFile ) {
 			SplitPath, soundFile, soundFileName
 			if ( A_GuiControl = "NotifyTradeBrowse" ) {
@@ -1873,7 +1873,7 @@ Gui_Settings_Get_Settings_Arrays() {
 	returnArray.NOTIFICATIONS_KeysArray := Object()
 	returnArray.NOTIFICATIONS_KeysArray.Insert(0, "Trade_Toggle", "Trade_Sound", "Trade_Sound_Path", "Whisper_Toggle", "Whisper_Sound", "Whisper_Sound_Path", "Whisper_Tray", "Whisper_Flash")
 	returnArray.NOTIFICATIONS_DefaultValues := Object()
-	returnArray.NOTIFICATIONS_DefaultValues.Insert(0, "1", "WW_MainMenu_Letter.wav", sfxFolderPath "\WW_MainMenu_Letter.wav", "0", "None", "", "1", "0")
+	returnArray.NOTIFICATIONS_DefaultValues.Insert(0, "1", "WW_MainMenu_Letter.wav", programSFXFolderPath "\WW_MainMenu_Letter.wav", "0", "None", "", "1", "0")
 	
 	returnArray.MESSAGES_HandlersArray := Object()
 	returnArray.MESSAGES_HandlersArray.Insert(0, "MessageWaitToggle", "MessageWait", "MessageInviteToggle","MessageInvite", "MessageThanksToggle","MessageThanks", "MessageSoldToggle", "MessageSold", "MessageSupportToggle")
@@ -3085,12 +3085,8 @@ Extract_Sound_Files() {
  *			Extracts the included SFX into the SFX Folder
 */
 	static
-	global sfxFolderPath
+	global programSFXFolderPath
 
-	FileInstall, C:\Users\Hatsune\Documents\GitHub\POE-Trades-Helper\SFX\MM_Tatl_Gleam.wav,% sfxFolderPath "\MM_Tatl_Gleam.wav", 0
-	FileInstall, C:\Users\Hatsune\Documents\GitHub\POE-Trades-Helper\SFX\MM_Tatl_Hey.wav,% sfxFolderPath "\MM_Tatl_Hey.wav", 0
-	FileInstall, C:\Users\Hatsune\Documents\GitHub\POE-Trades-Helper\SFX\WW_MainMenu_CopyErase_Start.wav,% sfxFolderPath "\WW_MainMenu_CopyErase_Start.wav", 0
-	FileInstall, C:\Users\Hatsune\Documents\GitHub\POE-Trades-Helper\SFX\WW_MainMenu_Letter.wav,% sfxFolderPath "\WW_MainMenu_Letter.wav", 0
 }
 
 Close_Previous_Program_Instance() {
