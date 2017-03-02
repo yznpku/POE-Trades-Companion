@@ -352,7 +352,6 @@ Gui_Trades(infosArray="", errorMsg="") {
 
 	if ( errorMsg = "CREATE" ) {
 		defaultMaxTabs := 10
-		currentActiveTab := 1
 		maxTabsRow := 7
 		VALUE_Trades_GUI_Skin := "Path of Exile"
 
@@ -430,8 +429,8 @@ Gui_Trades(infosArray="", errorMsg="") {
 			GuiControl, Hide,OtherSlot%index%
 			GuiControl, Hide,TimeSlot%index%
 		}
-		Gui, Add, Picture,x360 y30 w20 h20 gGui_Trades_Arrow vGoLeft +BackgroundTrans,% programSkinFolderPath "\" VALUE_Trades_GUI_Skin "\ArrowLeft.png"
-		Gui, Add, Picture,x380 y30 w20 h20 gGui_Trades_Arrow vGoRight +BackgroundTrans,% programSkinFolderPath "\" VALUE_Trades_GUI_Skin "\ArrowRight.png"
+		Gui, Add, Picture,x360 y30 w20 h20 gGui_Trades_Arrow_Left vGoLeft +BackgroundTrans,% programSkinFolderPath "\" VALUE_Trades_GUI_Skin "\ArrowLeft.png"
+		Gui, Add, Picture,x380 y30 w20 h20 gGui_Trades_Arrow_Right vGoRight +BackgroundTrans,% programSkinFolderPath "\" VALUE_Trades_GUI_Skin "\ArrowRight.png"
 		Gui, Add, Picture,x370 y55 w25 h25 vdelBtn1 %themeState% gGui_Trades_RemoveItem hwndCloseBtn1Handler +BackgroundTrans,% programSkinFolderPath "\" VALUE_Trades_GUI_Skin "\Close.png"
 		Loop 9 {
 			; Gui, Tab, 1
@@ -526,7 +525,10 @@ Gui_Trades(infosArray="", errorMsg="") {
 			tabsMax := (tabsMax=defaultMaxTabs)?(25):(tabsMax=25)?(50):(tabsMax=50)?(100):(tabsMax=100)?(255):(50)
 			IniWrite,% tabsMax,% iniFilePath,PROGRAM,Rendered_Tabs
 			tradesArray := Gui_Trades_Manage_Trades("GET_ALL")
+			lastActiveTab := 0
 			Gui_Trades(tradesArray,"CREATE")
+			if currentActiveTab not between 1 and %maxTabsRow% ; Go back to the previously selected tab
+				GoSub Gui_Trades_Arrow_Right
 			Return
 		}
 		if (tabsCount=0 && tabsMax>defaultMaxTabs) {
@@ -559,8 +561,14 @@ Gui_Trades(infosArray="", errorMsg="") {
 		dpiFactor := Get_DPI_Factor(), showX := guiWidth-49
 	}
 	else {
-		if ( VALUE_Trades_Select_Last_Tab = 1 )
-			GuiControl, Trades:Choose,Tab,% tabsCount
+		if ( VALUE_Trades_Select_Last_Tab = 1 ) {
+			if ( currentActiveTab != tabsCount && tabsCount > 0) {
+				lastActiveTab := currentActiveTab, currentActiveTab := tabsCount
+				GoSub Gui_Trades_Tabs_Handler
+				GoSub Gui_Trades_Arrow_Right
+				GoSub Gui_Trades_Arrow_Right ; Make sure the tab bar is on far right
+			}
+		}
 
 		if ( VALUE_Trades_Auto_Minimize && tabsCount = 0 && tradesGuiHeight != guiHeightMin && errorMsg != "EXE_NOT_FOUND" ) {
 			VALUE_Trades_GUI_Minimized := 0
@@ -589,7 +597,7 @@ Gui_Trades(infosArray="", errorMsg="") {
 	sleep 10
 	return
 
-	Gui_Trades_Arrow:
+	Gui_Trades_Arrow_Left:
 		if ( VALUE_Trades_GUI_Button_Cancel ) {
 			VALUE_Trades_GUI_Button_Cancel := 0
 			Return
@@ -599,7 +607,7 @@ Gui_Trades(infosArray="", errorMsg="") {
 		GuiControlGet, firstTab, Trades:,% TabTXT1Handler
 		; tooltip % lastTab
 
-		if ( A_GuiControl = "GoLeft" || A_GuiControl = "delBtn1" ) {
+		; if ( A_GuiControl = "GoLeft" || A_GuiControl = "delBtn1" ) {
 			if ( firstTab > 1 ) {
 				index := maxTabsRow
 				Loop %maxTabsRow% {
@@ -614,9 +622,19 @@ Gui_Trades(infosArray="", errorMsg="") {
 				if (activeTabID > 0) ; Prevents from using a negative TabID due to the users selecting a tab, then moving with the arrows and selecting a new tab while the old one is out of range
 					GuiControl, Trades:,% TabIMG%activeTabID%Handler,% programSkinFolderPath "\" VALUE_Trades_GUI_Skin "\TabActive.png"
 			}
+		; }
+		Return
+
+	Gui_Trades_Arrow_Right:
+		if ( VALUE_Trades_GUI_Button_Cancel ) {
+			VALUE_Trades_GUI_Button_Cancel := 0
+			Return
 		}
 
-		else if ( A_GuiControl = "GoRight" || A_GuiControl = "delBtn1" ) {
+		GuiControlGet, lastTab, Trades:,% TabTXT%maxTabsRow%Handler
+		GuiControlGet, firstTab, Trades:,% TabTXT1Handler
+
+		; else if ( A_GuiControl = "GoRight" || A_GuiControl = "delBtn1" ) {
 			if ( tabsCount > lastTab ) {
 				index := maxTabsRow
 				Loop %maxTabsRow% {
@@ -631,14 +649,14 @@ Gui_Trades(infosArray="", errorMsg="") {
 				if (activeTabID > 0) ; Prevents from using a negative TabID due to the users selecting a tab, then moving with the arrows and selecting a new tab while the old one is out of range
 					GuiControl, Trades:,% TabIMG%activeTabID%Handler,% programSkinFolderPath "\" VALUE_Trades_GUI_Skin "\TabActive.png"
 			}
-		}
+		; }
 	Return
 
 	Gui_Trades_Tabs_Handler:
 		GuiControlGet, lastTab, Trades:,% TabTXT%maxTabsRow%Handler
 		GuiControlGet, firstTab, Trades:,% TabTXT1Handler
 
-		if ( A_GuiControl != "delBtn1" ) {
+		if ( A_GuiControl != "delBtn1" && A_GuiControl ) {
 			RegExMatch(A_GuiControl, "\d+", btnID)
 			GuiControlGet, tabID, Trades:,% TabTXT%btnID%Handler
 			currentActiveTab := tabID
@@ -678,8 +696,10 @@ Gui_Trades(infosArray="", errorMsg="") {
 		}
 
 		lastActiveTab := currentActiveTab
-		if ( (lastTab > tabsCount && tabsCount > maxTabsRow) || (lastTab = maxTabsRow+1 && firstTab = 2 && tabsCount = maxTabsRow) )
-			GoSub Gui_Trades_Arrow
+		if ( (lastTab > tabsCount && tabsCount > maxTabsRow) || (lastTab = maxTabsRow+1 && firstTab = 2 && tabsCount = maxTabsRow) ) {
+			GoSub Gui_Trades_Arrow_Right
+			GoSub Gui_Trades_Arrow_Left
+		}
 	Return
 
 	Gui_Trades_Minimize:
@@ -2634,12 +2654,12 @@ WM_MOUSEMOVE(wParam, lParam, msg, hwnd) {
 	if (A_GUI = "Trades") {
 
 		if (btnType = "CustomBtn" || btnType = "delBtn" || btnType = "GoRight" || btnType = "GoLeft") {
-			if ( A_GuiControl != lastButton ) {
+			if ( A_GuiControl != lastButton && A_GuiControl ) {
 				; GuiControlGet, outVar, Hwnd,%A_GuiControl%
 				pngFilePrefix := (btnType="CustomBtn")?("ButtonBackground"):(btnType="delBtn")?("Close"):(btnType="GoRight")?("ArrowRight"):(btnType="GoLeft")?("ArrowLeft"):("ERROR")
 				; tooltip % pngFilePrefix "`n" FileExist(programSkinFolderPath "\" pngFilePrefix "Hover.png")
 				if FileExist(programSkinFolderPath "\" VALUE_Trades_GUI_Skin "\" pngFilePrefix "Hover.png") && FileExist(programSkinFolderPath "\" VALUE_Trades_GUI_Skin "\" pngFilePrefix "Press.png") {
-					 GetKeyState, LButtonState, LButton
+					GetKeyState, LButtonState, LButton
 					if ( LButtonState = "D" && A_GuiControl = VALUE_Trades_GUI_Button_Held ) {
 					 	GuiControl, Trades:,% A_GuiControl,% programSkinFolderPath "\" VALUE_Trades_GUI_Skin "\" pngFilePrefix "Press.png"
 					 	if (btnType = "CustomBtn") {
@@ -2647,14 +2667,15 @@ WM_MOUSEMOVE(wParam, lParam, msg, hwnd) {
 							GuiControl, Trades:Font,CustomBtnTXT%btnID%
 						}
 					}
-					Else {
+					else {
 						GuiControl, Trades:,% A_GuiControl,% programSkinFolderPath "\" VALUE_Trades_GUI_Skin "\" pngFilePrefix "Hover.png"
 						if (btnType = "CustomBtn") {
 							Gui, Trades:Font, cC18F55
 							GuiControl, Trades:Font,CustomBtnTXT%btnID%
-
 						}
 					}
+					GuiControl, Trades:,% lastButton,% programSkinFolderPath "\" VALUE_Trades_GUI_Skin "\" lastPngFilePrefix ".png"
+					lastPngFilePrefix := pngFilePrefix
 					; tooltip % btnType
 					; Gui, Trades:Font, c875516
 					; GuiControl, Trades:Font,CustomBtnTXT%lastBtnID%
