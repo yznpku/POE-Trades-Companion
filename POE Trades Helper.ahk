@@ -352,7 +352,7 @@ Gui_Trades(infosArray="", errorMsg="") {
 	static nameArray, buyerName, guiX, guiY, guiHeight, guiWidth, defaultX, defaultY, showX, showY, activeTabID, aeroStatus, allTabs, btnName, btnSub, btnW, btnX, btnY
 	static countdown, currentActiveTab, defaultMaxTabs, dpiFactor, firstTab, guiHeightMin, inactiveTabID, key, lastActiveTab, lastTab
 	static maxTabsRow, messagesArray, showHeight, showState, showWidth, showXDefault, showYDefault, tabID, tabPos, tabsCount, tabsMax, tHeight, themeState
-	static tradesArray, tradesInfosArray, txtColor, txtContent, xpos, xposMult, ypos
+	static tradesArray, tradesInfosArray, txtColor, txtContent, xpos, xposMult, ypos, errorLvl, btnType
 
 	if ( errorMsg = "CREATE" ) {
 		defaultMaxTabs := 10
@@ -660,9 +660,21 @@ Gui_Trades(infosArray="", errorMsg="") {
 	Gui_Trades_Tabs_Handler:
 		GuiControlGet, lastTab, Trades:,% TabTXT%maxTabsRow%Handler
 		GuiControlGet, firstTab, Trades:,% TabTXT1Handler
+		RegExMatch(A_GuiControl, "\D+", btnType)
+		RegExMatch(A_GuiControl, "\d+", btnID)
+
+		if ( btnType = "TabIMG" || btnType = "delBtn" ) { ; User switched tab or closed a tab
+			traytip,,ok
+			settimer, Remove_TrayTip, -100
+			GuiControlGet, tabID, Trades:,% TabTXT%btnID%Handler
+			currentActiveTab := tabID
+			tradesInfosArray := Object()
+			tradesInfosArray := Gui_Trades_Get_Trades_Infos(currentActiveTab) ; [0] buyerName - [1] itemName - [2] itemPrice
+			if ( VALUE_Clip_On_Tab_Switch = 1 )
+				Clipboard := tradesInfosArray[1]
+		}
 
 		if ( A_GuiControl != "delBtn1" && A_GuiControl ) {
-			RegExMatch(A_GuiControl, "\d+", btnID)
 			GuiControlGet, tabID, Trades:,% TabTXT%btnID%Handler
 			currentActiveTab := tabID
 		}
@@ -747,16 +759,13 @@ Gui_Trades(infosArray="", errorMsg="") {
 	Return
 
 	Gui_Trades_Clipboard_Item:
-		btnID := Gui_Trades_Get_Tab_ID(A_GuiControl)
-		if ( btnID = "0" )
-			return
 		if ( VALUE_Trades_GUI_Button_Cancel ) {
 			VALUE_Trades_GUI_Button_Cancel := 0
 			Return
 		}
 
 		tradesInfosArray := Object()
-		tradesInfosArray := Gui_Trades_Get_Trades_Infos(btnID) ; [0] buyerName - [1] itemName - [2] itemPrice
+		tradesInfosArray := Gui_Trades_Get_Trades_Infos(currentActiveTab) ; [0] buyerName - [1] itemName - [2] itemPrice
 		Clipboard := tradesInfosArray[1]
 	Return
 
@@ -767,9 +776,8 @@ Gui_Trades(infosArray="", errorMsg="") {
 		}
 
 		RegExMatch(A_GuiControl, "\d+", btnID)
-		tabID := Gui_Trades_Get_Tab_ID()
 		tradesInfosArray := Object()
-		tradesInfosArray := Gui_Trades_Get_Trades_Infos(tabID)
+		tradesInfosArray := Gui_Trades_Get_Trades_Infos(currentActiveTab)
 		Send_InGame_Message(VALUE_Button%btnID%_Message, tradesInfosArray)
 	Return
 
@@ -780,13 +788,14 @@ Gui_Trades(infosArray="", errorMsg="") {
 		}
 
 		RegExMatch(A_GuiControl, "\d+", btnID)
-		tabID := Gui_Trades_Get_Tab_ID()
 		tradesInfosArray := Object()
-		tradesInfosArray := Gui_Trades_Get_Trades_Infos(tabID)
-		Send_InGame_Message(VALUE_Button%btnID%_Message, tradesInfosArray)
-		if ( VALUE_Support_Text_Toggle = 1 )
-			Send_InGame_Message("@%buyerName% - - - POE Trades Helper: Keep track of your trades! // Look it up! (not a bot!)", tradesInfosArray)
-		Gosub, Gui_Trades_RemoveItem
+		tradesInfosArray := Gui_Trades_Get_Trades_Infos(currentActiveTab)
+		errorLvl := Send_InGame_Message(VALUE_Button%btnID%_Message, tradesInfosArray)
+		if !(errorLvl) {
+			if ( VALUE_Support_Text_Toggle = 1 )
+				Send_InGame_Message("@%buyerName% - - - POE Trades Helper: Keep track of your trades! // Look it up! (not a bot!)", tradesInfosArray)
+			Gosub, Gui_Trades_RemoveItem
+		}
 	Return
 
 	Gui_Trades_Message_Advanced:
@@ -796,9 +805,8 @@ Gui_Trades(infosArray="", errorMsg="") {
 		}
 
 		RegExMatch(A_GuiControl, "\d+", btnID)
-		tabID := Gui_Trades_Get_Tab_ID()
 		tradesInfosArray := Object()
-		tradesInfosArray := Gui_Trades_Get_Trades_Infos(tabID)
+		tradesInfosArray := Gui_Trades_Get_Trades_Infos(currentActiveTab)
 		Send_InGame_Message(VALUE_Button%btnID%_Message, tradesInfosArray,0,1)
 	Return
 
@@ -809,25 +817,16 @@ Gui_Trades(infosArray="", errorMsg="") {
 		}
 
 		RegExMatch(A_GuiControl, "\d+", btnID)
-		tabID := Gui_Trades_Get_Tab_ID()
 		tradesInfosArray := Object()
-		tradesInfosArray := Gui_Trades_Get_Trades_Infos(tabID)
-		Send_InGame_Message(VALUE_Button%btnID%_Message, tradesInfosArray,0,1)
-		if ( VALUE_Support_Text_Toggle = 1 )
-			Send_InGame_Message("@%buyerName% - - - POE Trades Helper: Keep track of your trades! // Look it up! (not a bot!)", tradesInfosArray)
-		Gosub, Gui_Trades_RemoveItem
+		tradesInfosArray := Gui_Trades_Get_Trades_Infos(currentActiveTab)
+		errorLvl := Send_InGame_Message(VALUE_Button%btnID%_Message, tradesInfosArray,0,1)
+		if !(errorLvl) {
+			if ( VALUE_Support_Text_Toggle = 1 )
+				Send_InGame_Message("@%buyerName% - - - POE Trades Helper: Keep track of your trades! // Look it up! (not a bot!)", tradesInfosArray)
+			Gosub, Gui_Trades_RemoveItem
+		}
 	Return
 	
-	Gui_Trades_OnTabSwitch:
-;		Clipboard the item's infos on tab switch if the user enabled
-		Gui, Submit, NoHide
-		tabID := Gui_Trades_Get_Tab_ID()
-		tradesInfosArray := Object()
-		tradesInfosArray := Gui_Trades_Get_Trades_Infos(tabID) ; [0] buyerName - [1] itemName - [2] itemPrice
-		if ( VALUE_Clip_On_Tab_Switch = 1 )
-			Clipboard := tradesInfosArray[1]
-	return
-
 	Gui_Trades_RemoveItem:
 ;		Copy the first item or the second item if the first tab is being closed
 		if ( VALUE_Trades_GUI_Button_Cancel ) {
@@ -3093,7 +3092,7 @@ Send_InGame_Message(messageToSend, infosArray="", isHotkey=0, isAdvanced=0) {
  *			Sends a message in game
  *			Replaces all the %variables% into their actual content
 */
-	static
+	
 	global VALUE_Logs_Mode, VALUE_Hotkeys_Mode, VALUE_Last_Whisper
 	global programName
 
@@ -3120,7 +3119,8 @@ Send_InGame_Message(messageToSend, infosArray="", isHotkey=0, isAdvanced=0) {
 			handlersArray := Get_Matching_Windows_Infos("ID")
 			if ( handlersArray.MaxIndex() = "" ) {
 				Loop 2
-				TrayTip,% programName,% "The PID assigned to the tab does not belong to a POE instance, and no POE instance was found!`n`nPlease click the button again after restarting the game."
+					TrayTip,% programName,% "The PID assigned to the tab does not belong to a POE instance, and no POE instance was found!`n`nPlease click the button again after restarting the game."
+				return 1
 			}
 			else {
 				gamePID := GUI_Replace_PID(handlersArray, PIDArray)
