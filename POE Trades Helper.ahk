@@ -22,7 +22,7 @@ SetWinDelay, 0
 ;___Some_Variables___;
 global userprofile, iniFilePath, programName, programVersion, programFolder, programPID, programSFXFolderPath, programChangelogFilePath, POEGameArray, POEGameList
 EnvGet, userprofile, userprofile
-programVersion := "1.7.4", programRedditURL := "https://redd.it/57oo3h"
+programVersion := "1.8", programRedditURL := "https://redd.it/57oo3h"
 programName := "POE Trades Helper", programFolder := userprofile "\Documents\AutoHotKey\" programName
 iniFilePath := programFolder "\Preferences.ini"
 programSFXFolderPath := programFolder "\SFX"
@@ -833,29 +833,7 @@ Gui_Trades(infosArray="", errorMsg="") {
 			if ( VALUE_Support_Text_Toggle = 1 )
 				Send_InGame_Message("@%buyerName% - - - POE Trades Helper: Keep track of your trades! // Look it up! (not a bot!)", tradesInfosArray)
 			Gosub, Gui_Trades_RemoveItem
-
-			; Temporary Fix? __TO_BE_FIXED__ ; currentActiveTab-1 content overlap currentActiveTab content when button is used to close a tab other than the last one
-				; tmp := lastActiveTab+1
-				; msgbox % "tmp: " tmp "`ncur: " currentActiveTab
-				; showState := "Hide"
-				; GuiControl, Trades:%showState%,buyerSlot%tmp%
-				; GuiControl, Trades:%showState%,ItemSlot%tmp%
-				; GuiControl, Trades:%showState%,PriceSlot%tmp%
-				; GuiControl, Trades:%showState%,LocationSlot%tmp%
-				; GuiControl, Trades:%showState%,TimeSlot%tmp%
-				; GuiControl, Trades:%showState%,OtherSlot%tmp%
-
-				; showState := "Show"
-				; GuiControl, Trades:%showState%,buyerSlot%currentactiveTab%
-				; GuiControl, Trades:%showState%,ItemSlot%currentactiveTab%
-				; GuiControl, Trades:%showState%,PriceSlot%currentactiveTab%
-				; GuiControl, Trades:%showState%,LocationSlot%currentactiveTab%
-				; GuiControl, Trades:%showState%,TimeSlot%currentactiveTab%
-				; GuiControl, Trades:%showState%,OtherSlot%currentactiveTab%
-				; Gosub, Gui_Trades_Tabs_Handler
 		}
-
-
 	Return
 	
 	Gui_Trades_RemoveItem:
