@@ -30,6 +30,7 @@ programLogsPath := programFolder "\Logs"
 programLogsFilePath := userprofile "\Documents\AutoHotKey\" programName "\Logs\" A_YYYY "-" A_MM "-" A_DD "_" A_Hour "-" A_Min "-" A_Sec ".txt"
 programChangelogFilePath := programFolder "\Logs\changelog.txt"
 programSkinFolderPath := programFolder "\Skins"
+programFontFolderPath := programFolder "\Fonts"
 GroupAdd, POEGame, ahk_exe PathOfExile.exe
 GroupAdd, POEGame, ahk_exe PathOfExile_x64.exe
 GroupAdd, POEGame, ahk_exe PathOfExileSteam.exe
@@ -51,6 +52,8 @@ if !( InStr(FileExist(programLogsPath), "D") )
 	FileCreateDir, % programLogsPath
 if !( InStr(FileExist(programSkinFolderPath), "D") )
 	FileCreateDir, % programSkinFolderPath
+if !( InStr(FileExist(programFontFolderPath), "D") )
+	FileCreateDir, % programFontFolderPath
 
 ;___Function_Calls___;
 Create_Tray_Menu()
@@ -65,6 +68,7 @@ Delete_Old_Logs_Files(10)
 Do_Once()
 Extract_Sound_Files()
 Extract_Skin_Files()
+Extract_Font_Files()
 Check_Update()
 Enable_Hotkeys()
 
@@ -78,19 +82,19 @@ OnMessage( MsgNum, "ShellMessage")
 Gui_Trades(,"CREATE")
 ;	Uncomment only for testing purposes -- Simulates trade tabs
 ;	Also comment the Monitor_Game_Logs() line, otherwise the GUI will be overwritten
-	; newItemInfos := Object()
-	; newItemInfos.Insert(0, "iSellStuff", "level 1 Faster Attacks Support", "5 alteration", "Breach (stash tab ""Gems""; position: left 6, top 8)", "",A_Hour ":" A_Min, "Offering 1alch?")
-	; newItemArray := Gui_Trades_Manage_Trades("ADD_NEW", newItemInfos)
-	; Gui_Trades(newItemArray, "UPDATE")
-	; newItemInfos.Insert(0, "FIRST BUYER", "FIRST ITEM", "FIRST PRICE", "FIRST LOCATION", "",A_Hour ":" A_Min, "-")
-	; newItemArray := Gui_Trades_Manage_Trades("ADD_NEW", newItemInfos)
-	; Gui_Trades(newItemArray, "UPDATE")
-	; newItemInfos.Insert(0, "SECOND BUYER", "SECOND ITEM", "SECOND PRICE", "SECOND LOCATION", "",A_Hour ":" A_Min, "-")
-	; newItemArray := Gui_Trades_Manage_Trades("ADD_NEW", newItemInfos)
-	; Gui_Trades(newItemArray, "UPDATE")
-	; newItemInfos.Insert(0, "THIRD BUYER", "THIRD ITEM", "THIRD PRICE", "THIRD LOCATION", "",A_Hour ":" A_Min, "-")
-	; newItemArray := Gui_Trades_Manage_Trades("ADD_NEW", newItemInfos)
-	; Gui_Trades(newItemArray, "UPDATE")
+	newItemInfos := Object()
+	newItemInfos.Insert(0, "iSellStuff", "level 1 Faster Attacks Support", "5 alteration", "Breach (stash tab ""Gems""; position: left 6, top 8)", "",A_Hour ":" A_Min, "Offering 1alch?")
+	newItemArray := Gui_Trades_Manage_Trades("ADD_NEW", newItemInfos)
+	Gui_Trades(newItemArray, "UPDATE")
+	newItemInfos.Insert(0, "FIRST BUYER", "FIRST ITEM", "FIRST PRICE", "FIRST LOCATION", "",A_Hour ":" A_Min, "-")
+	newItemArray := Gui_Trades_Manage_Trades("ADD_NEW", newItemInfos)
+	Gui_Trades(newItemArray, "UPDATE")
+	newItemInfos.Insert(0, "SECOND BUYER", "SECOND ITEM", "SECOND PRICE", "SECOND LOCATION", "",A_Hour ":" A_Min, "-")
+	newItemArray := Gui_Trades_Manage_Trades("ADD_NEW", newItemInfos)
+	Gui_Trades(newItemArray, "UPDATE")
+	newItemInfos.Insert(0, "THIRD BUYER", "THIRD ITEM", "THIRD PRICE", "THIRD LOCATION", "",A_Hour ":" A_Min, "-")
+	newItemArray := Gui_Trades_Manage_Trades("ADD_NEW", newItemInfos)
+	Gui_Trades(newItemArray, "UPDATE")
 
 ;___Logs Monitoring AKA Trades GUI___;
 ;Gui_Settings()
@@ -354,21 +358,20 @@ Gui_Trades(infosArray="", errorMsg="") {
 		defaultMaxTabs := 10
 		maxTabsRow := 7
 		VALUE_Trades_GUI_Skin := "Path of Exile"
+		VALUE_Trades_GUI_Font := "Fontin SmallCaps"
 
 		Gui, Trades:Destroy
 		Gui, Trades:New, +ToolWindow +AlwaysOnTop +Border +hwndGuiTradesHandler +LabelGui_Trades_ +LastFound -SysMenu -Caption
 		Gui, Trades:Default
 		tabHeight := Gui_Trades_Get_Tab_Height(), tabWidth := 390
 		guiWidth := 402, guiHeight := tabHeight+38, guiHeightMin := 30
-		Gui, Font, S10 cWhite,Fontin-SmallCaps
+		Gui, Font, s10 cWhite,%VALUE_Trades_GUI_Font%
 		Gui, Add, Picture,% "x0 y0 w" guiWidth " h30 ",% programSkinFolderPath "\" VALUE_Trades_GUI_Skin "\Header.png"
 		Gui, Add, Text,% "x35 y2 w" guiWidth-100 " h28 cC18F55 BackgroundTrans gGui_Trades_Move +0x200 hwndguiTradesTitleHandler",% programName " - Queued Trades: 0"
 		Gui, Add, Text,% "x" guiWidth-65 " w65 y2 h28 + +0x200 cC18F55 gGui_Trades_Minimize +BackgroundTrans",% "MINIMIZE"
-		Gui, Trades:Default
 		Gui, Color, 181511
 		Gui, Add, Picture, x1 y30 w%guiWidth% h%guiHeight%,% programSkinFolderPath "\" VALUE_Trades_GUI_Skin "\Background.png"
 		Gui, Add, Picture, x1 y50 w%guiWidth% h2,% programSkinFolderPath "\" VALUE_Trades_GUI_Skin "\TabUnderline.png"
-		Gui, Font, S10 cWhite,Fontin-SmallCaps
 		Gui, Add, Text,% "x0 y0 w" guiWidth " h2 +0x4",% "" ; Top
 		Gui, Add, Text,% "x0 y0 w2 h" guiHeight " +0x4",% "" ; Left
 		Gui, Add, Text,% "x0 y" guiHeight-2 " w" guiWidth + 5 " h2 +0x4",% "" ; Bottom
@@ -395,7 +398,9 @@ Gui_Trades(infosArray="", errorMsg="") {
 			xpos := (tabPos * xposMult) - xposMult + 2, ypos := 30
 			
 			Gui, Add, Picture, x%xpos% y%ypos% w50 h20 hwndTabIMG%index%Handler vTabIMG%index% gGui_Trades_Tabs_Handler,% programSkinFolderPath "\" VALUE_Trades_GUI_Skin "\TabInactive.png"
+			Gui, Font, Bold
 			Gui, Add, Text, xp yp+3 +BackgroundTrans w50 h20 hwndTabTXT%index%Handler vTabTXT%index% gGui_Trades_Tabs_Handler 0x1,% index
+			Gui, Font, Norm
 			GuiControl, Trades:Hide,% TabIMG%index%Handler
 			GuiControl, Trades:Hide,% TabTXT%index%Handler
 		}
@@ -3146,6 +3151,20 @@ Send_InGame_Message(messageToSend, infosArray="", isHotkey=0, isAdvanced=0) {
 		Logs_Append(A_ThisFunc,, messageToSend, buyerName, gamePID)
 		BlockInput, Off
 	}
+}
+
+Extract_Font_Files() {
+	global programFontFolderPath
+
+	FileInstall, C:\Users\Hatsune\Documents\GitHub\POE-Trades-Helper\Ressources\Fonts\Fontin-SmallCaps.ttf,% programFontFolderPath "\Fontin-SmallCaps.ttf"
+	Loop, Files, %programFontFolderPath%\*.*
+	{
+		if A_LoopFileExt in otf,otc,ttf,ttc
+		{
+			DllCall("AddFontResource", Str, A_LoopFileFullPath )
+		}
+	}
+	SendMessage,  0x1D,,,, ahk_id 0xFFFF
 }
 
 Extract_Skin_Files() {
