@@ -82,19 +82,21 @@ OnMessage( MsgNum, "ShellMessage")
 Gui_Trades(,"CREATE")
 ;	Uncomment only for testing purposes -- Simulates trade tabs
 ;	Also comment the Monitor_Game_Logs() line, otherwise the GUI will be overwritten
-	newItemInfos := Object()
-	newItemInfos.Insert(0, "iSellStuff", "level 1 Faster Attacks Support", "5 alteration", "Breach (stash tab ""Gems""; position: left 6, top 8)", "",A_Hour ":" A_Min, "Offering 1alch?")
-	newItemArray := Gui_Trades_Manage_Trades("ADD_NEW", newItemInfos)
-	Gui_Trades(newItemArray, "UPDATE")
-	newItemInfos.Insert(0, "FIRST BUYER", "FIRST ITEM", "FIRST PRICE", "FIRST LOCATION", "",A_Hour ":" A_Min, "-")
-	newItemArray := Gui_Trades_Manage_Trades("ADD_NEW", newItemInfos)
-	Gui_Trades(newItemArray, "UPDATE")
-	newItemInfos.Insert(0, "SECOND BUYER", "SECOND ITEM", "SECOND PRICE", "SECOND LOCATION", "",A_Hour ":" A_Min, "-")
-	newItemArray := Gui_Trades_Manage_Trades("ADD_NEW", newItemInfos)
-	Gui_Trades(newItemArray, "UPDATE")
-	newItemInfos.Insert(0, "THIRD BUYER", "THIRD ITEM", "THIRD PRICE", "THIRD LOCATION", "",A_Hour ":" A_Min, "-")
-	newItemArray := Gui_Trades_Manage_Trades("ADD_NEW", newItemInfos)
-	Gui_Trades(newItemArray, "UPDATE")
+; Loop 3 {
+; 	newItemInfos := Object()
+; 	newItemInfos.Insert(0, "iSellStuff", "level 1 Faster Attacks Support", "5 alteration", "Breach (stash tab ""Gems""; position: left 6, top 8)", "",A_Hour ":" A_Min, "Offering 1alch?")
+; 	newItemArray := Gui_Trades_Manage_Trades("ADD_NEW", newItemInfos)
+; 	Gui_Trades(newItemArray, "UPDATE")
+; 	newItemInfos.Insert(0, "aktai0", "Kaom's Heart Glorious Plate", "10 exalted", "Hardcore Legacy", "",A_Hour ":" A_Min, "-")
+; 	newItemArray := Gui_Trades_Manage_Trades("ADD_NEW", newItemInfos)
+; 	Gui_Trades(newItemArray, "UPDATE")
+; 	newItemInfos.Insert(0, "MindDOTA2pl", "Voll's Devotion Agate Amulet ", "4 exalted", "Standard", "",A_Hour ":" A_Min, "-")
+; 	newItemArray := Gui_Trades_Manage_Trades("ADD_NEW", newItemInfos)
+; 	Gui_Trades(newItemArray, "UPDATE")
+; 	newItemInfos.Insert(0, "Krillson", "Rainbowstride Conjurer Boots", "3 mirror", "Hadcore", "",A_Hour ":" A_Min, "-")
+; 	newItemArray := Gui_Trades_Manage_Trades("ADD_NEW", newItemInfos)
+; 	Gui_Trades(newItemArray, "UPDATE")
+; }
 
 ;___Logs Monitoring AKA Trades GUI___;
 ;Gui_Settings()
@@ -205,7 +207,7 @@ Monitor_Game_Logs(mode="") {
 						tradePrice = %tradePrice%
 						tradeStash = %tradeStash%
 						tradeOther = %tradeOther%
-						StringReplace, tradeItem, tradeItem,% "0%",% "", 1
+						StringReplace, tradeItem, tradeItem,% " 0%",% "", 1
 
 						; Do not add the trade if the same is already in queue
 						tradesExists := 0
@@ -361,7 +363,7 @@ Gui_Trades(infosArray="", errorMsg="") {
 		VALUE_Trades_GUI_Font := "Fontin SmallCaps"
 
 		Gui, Trades:Destroy
-		Gui, Trades:New, +ToolWindow +AlwaysOnTop +Border +hwndGuiTradesHandler +LabelGui_Trades_ +LastFound -SysMenu -Caption
+		Gui, Trades:New, +ToolWindow +AlwaysOnTop -Border +hwndGuiTradesHandler +LabelGui_Trades_ +LastFound -SysMenu -Caption
 		Gui, Trades:Default
 		tabHeight := Gui_Trades_Get_Tab_Height(), tabWidth := 390
 		guiWidth := 402, guiHeight := tabHeight+38, guiHeightMin := 30
@@ -524,13 +526,14 @@ Gui_Trades(infosArray="", errorMsg="") {
 		GuiControl, Trades:%showState%,% LocationText1Handler
 		GuiControl, Trades:%showState%,% CloseBtn1Handler
 		GuiControl, Trades:%showState%,% OtherText1Handler
+
 		Gosub Gui_Trades_Tabs_Handler
 
 		if (tabsCount >= tabsMax - 1 && tabsMax != 255) {
 			tabsMax := (tabsMax=defaultMaxTabs)?(25):(tabsMax=25)?(50):(tabsMax=50)?(100):(tabsMax=100)?(255):(50)
 			IniWrite,% tabsMax,% iniFilePath,PROGRAM,Rendered_Tabs
 			tradesArray := Gui_Trades_Manage_Trades("GET_ALL")
-			lastActiveTab := 0
+			lastActiveTab := currentActiveTab+1
 			Gui_Trades(tradesArray,"CREATE")
 			if currentActiveTab not between 1 and %maxTabsRow% ; Go back to the previously selected tab
 				GoSub Gui_Trades_Arrow_Right
@@ -610,24 +613,21 @@ Gui_Trades(infosArray="", errorMsg="") {
 
 		GuiControlGet, lastTab, Trades:,% TabTXT%maxTabsRow%Handler
 		GuiControlGet, firstTab, Trades:,% TabTXT1Handler
-		; tooltip % lastTab
 
-		; if ( A_GuiControl = "GoLeft" || A_GuiControl = "delBtn1" ) {
-			if ( firstTab > 1 ) {
-				index := maxTabsRow
-				Loop %maxTabsRow% {
-					index := A_Index
-					txtContent := firstTab+index-2
-					GuiControl,Trades:,% TabTXT%index%Handler,% txtContent
-				}
-				inactiveTabID := lastActiveTab-firstTab+1
-				activeTabID := currentActiveTab-firstTab+2
-				if (inactiveTabID > 0) ; Prevents from using a negative TabID due to the users selecting a tab, then moving with the arrows and selecting a new tab while the old one is out of range
-					GuiControl, Trades:,% TabIMG%inactiveTabID%Handler,% programSkinFolderPath "\" VALUE_Trades_GUI_Skin "\TabInactive.png"
-				if (activeTabID > 0) ; Prevents from using a negative TabID due to the users selecting a tab, then moving with the arrows and selecting a new tab while the old one is out of range
-					GuiControl, Trades:,% TabIMG%activeTabID%Handler,% programSkinFolderPath "\" VALUE_Trades_GUI_Skin "\TabActive.png"
+		if ( firstTab > 1 ) {
+			index := maxTabsRow
+			Loop %maxTabsRow% {
+				index := A_Index
+				txtContent := firstTab+index-2
+				GuiControl,Trades:,% TabTXT%index%Handler,% txtContent
 			}
-		; }
+			inactiveTabID := lastActiveTab-firstTab+1
+			activeTabID := currentActiveTab-firstTab+2
+			if (inactiveTabID > 0) ; Prevents from using a negative TabID due to the users selecting a tab, then moving with the arrows and selecting a new tab while the old one is out of range
+				GuiControl, Trades:,% TabIMG%inactiveTabID%Handler,% programSkinFolderPath "\" VALUE_Trades_GUI_Skin "\TabInactive.png"
+			if (activeTabID > 0) ; Prevents from using a negative TabID due to the users selecting a tab, then moving with the arrows and selecting a new tab while the old one is out of range
+				GuiControl, Trades:,% TabIMG%activeTabID%Handler,% programSkinFolderPath "\" VALUE_Trades_GUI_Skin "\TabActive.png"
+		}
 		Return
 
 	Gui_Trades_Arrow_Right:
@@ -639,22 +639,20 @@ Gui_Trades(infosArray="", errorMsg="") {
 		GuiControlGet, lastTab, Trades:,% TabTXT%maxTabsRow%Handler
 		GuiControlGet, firstTab, Trades:,% TabTXT1Handler
 
-		; else if ( A_GuiControl = "GoRight" || A_GuiControl = "delBtn1" ) {
-			if ( tabsCount > lastTab ) {
-				index := maxTabsRow
-				Loop %maxTabsRow% {
-					index := A_Index
-					txtContent := firstTab+index
-					GuiControl,Trades:,% TabTXT%index%Handler,% txtContent
-				}
-				inactiveTabID := lastActiveTab-firstTab+1
-				activeTabID := currentActiveTab-firstTab
-				if (inactiveTabID > 0) ; Prevents from using a negative TabID due to the users selecting a tab, then moving with the arrows and selecting a new tab while the old one is out of range
-					GuiControl, Trades:,% TabIMG%inactiveTabID%Handler,% programSkinFolderPath "\" VALUE_Trades_GUI_Skin "\TabInactive.png"
-				if (activeTabID > 0) ; Prevents from using a negative TabID due to the users selecting a tab, then moving with the arrows and selecting a new tab while the old one is out of range
-					GuiControl, Trades:,% TabIMG%activeTabID%Handler,% programSkinFolderPath "\" VALUE_Trades_GUI_Skin "\TabActive.png"
+		if ( tabsCount > lastTab ) {
+			index := maxTabsRow
+			Loop %maxTabsRow% {
+				index := A_Index
+				txtContent := firstTab+index
+				GuiControl,Trades:,% TabTXT%index%Handler,% txtContent
 			}
-		; }
+			inactiveTabID := lastActiveTab-firstTab+1
+			activeTabID := currentActiveTab-firstTab
+			if (inactiveTabID > 0) ; Prevents from using a negative TabID due to the users selecting a tab, then moving with the arrows and selecting a new tab while the old one is out of range
+				GuiControl, Trades:,% TabIMG%inactiveTabID%Handler,% programSkinFolderPath "\" VALUE_Trades_GUI_Skin "\TabInactive.png"
+			if (activeTabID > 0) ; Prevents from using a negative TabID due to the users selecting a tab, then moving with the arrows and selecting a new tab while the old one is out of range
+				GuiControl, Trades:,% TabIMG%activeTabID%Handler,% programSkinFolderPath "\" VALUE_Trades_GUI_Skin "\TabActive.png"
+		}
 	Return
 
 	Gui_Trades_Tabs_Handler:
@@ -663,9 +661,12 @@ Gui_Trades(infosArray="", errorMsg="") {
 		RegExMatch(A_GuiControl, "\D+", btnType)
 		RegExMatch(A_GuiControl, "\d+", btnID)
 
-		if ( btnType = "TabIMG" || btnType = "delBtn" ) { ; User switched tab or closed a tab
-			traytip,,ok
-			settimer, Remove_TrayTip, -100
+		if ( btnType = "CustomBtn" ) {
+			; Temporary Fix? __TO_BE_FIXED__ ; Label was accessed due to the user clicking on a CustomBtn with the CloseTab attribute, act like the delBtn
+			btnType := "delBtn"
+		}
+
+		if ( btnType = "TabIMG" ) { ; User switched tab
 			GuiControlGet, tabID, Trades:,% TabTXT%btnID%Handler
 			currentActiveTab := tabID
 			tradesInfosArray := Object()
@@ -674,7 +675,7 @@ Gui_Trades(infosArray="", errorMsg="") {
 				Clipboard := tradesInfosArray[1]
 		}
 
-		if ( A_GuiControl != "delBtn1" && A_GuiControl ) {
+		if ( btnType != "delBtn" && A_GuiControl ) {
 			GuiControlGet, tabID, Trades:,% TabTXT%btnID%Handler
 			currentActiveTab := tabID
 		}
@@ -683,12 +684,15 @@ Gui_Trades(infosArray="", errorMsg="") {
 			currentActiveTab := 1
 		}
 
-		if ( tabsCount < lastActiveTab ) {
-			; Latest tab 
+		if ( tabsCount < currentActiveTab ) && ( tabsCount > 0 ) {
+			; Latest tab closed while active
 			currentActiveTab--
+			; Temporary Fix? __TO_BE_FIXED__ - Prevents from highlighting the wrong tab
+			lastActiveTab := currentActiveTab-1
+			wasReduced := 1
 		}
 
-	   	if ( lastActiveTab != currentActiveTab ) {
+	   	if ( lastActiveTab != currentActiveTab ) { ; btnType != "delBtn": Prevents from resetting to the first available tab when closing a tab
 			showState := "Hide"
 			GuiControl, Trades:%showState%,buyerSlot%lastActiveTab%
 			GuiControl, Trades:%showState%,ItemSlot%lastActiveTab%
@@ -705,14 +709,19 @@ Gui_Trades(infosArray="", errorMsg="") {
 			GuiControl, Trades:%showState%,TimeSlot%currentactiveTab%
 			GuiControl, Trades:%showState%,OtherSlot%currentactiveTab%
 
-			inactiveTabID := lastActiveTab-firstTab+1
-			activeTabID := currentActiveTab-firstTab+1
-			if (inactiveTabID > 0) ; Prevents from using a negative TabID due to the users selecting a tab, then moving with the arrows and selecting a new tab while the old one is out of range
+			activeTabID := (wasReduced=1 && currentActiveTab > maxTabsRow)?(currentActiveTab-firstTab+2):(currentActiveTab-firstTab+1)
+			inactiveTabID := (wasReduced=1)?(activeTabID+1):(lastActiveTab-firstTab+1)
+
+			if (inactiveTabID > 0) ; Prevents from using a negative TabID due to the users selecting a tab, then moving with the arrows and selecting a new tab while the old one is out of range 
 				GuiControl, Trades:,% TabIMG%inactiveTabID%Handler,% programSkinFolderPath "\" VALUE_Trades_GUI_Skin "\TabInactive.png"
 			GuiControl, Trades:,% TabIMG%activeTabID%Handler,% programSkinFolderPath "\" VALUE_Trades_GUI_Skin "\TabActive.png"
 		}
 
-		lastActiveTab := currentActiveTab
+		if ( btnType != "delBtn" || wasReduced = 1 ) {
+			lastActiveTab := currentActiveTab
+			wasReduced := 0
+		}
+
 		if ( (lastTab > tabsCount && tabsCount > maxTabsRow) || (lastTab = maxTabsRow+1 && firstTab = 2 && tabsCount = maxTabsRow) ) {
 			GoSub Gui_Trades_Arrow_Right
 			GoSub Gui_Trades_Arrow_Left
@@ -824,7 +833,29 @@ Gui_Trades(infosArray="", errorMsg="") {
 			if ( VALUE_Support_Text_Toggle = 1 )
 				Send_InGame_Message("@%buyerName% - - - POE Trades Helper: Keep track of your trades! // Look it up! (not a bot!)", tradesInfosArray)
 			Gosub, Gui_Trades_RemoveItem
+
+			; Temporary Fix? __TO_BE_FIXED__ ; currentActiveTab-1 content overlap currentActiveTab content when button is used to close a tab other than the last one
+				; tmp := lastActiveTab+1
+				; msgbox % "tmp: " tmp "`ncur: " currentActiveTab
+				; showState := "Hide"
+				; GuiControl, Trades:%showState%,buyerSlot%tmp%
+				; GuiControl, Trades:%showState%,ItemSlot%tmp%
+				; GuiControl, Trades:%showState%,PriceSlot%tmp%
+				; GuiControl, Trades:%showState%,LocationSlot%tmp%
+				; GuiControl, Trades:%showState%,TimeSlot%tmp%
+				; GuiControl, Trades:%showState%,OtherSlot%tmp%
+
+				; showState := "Show"
+				; GuiControl, Trades:%showState%,buyerSlot%currentactiveTab%
+				; GuiControl, Trades:%showState%,ItemSlot%currentactiveTab%
+				; GuiControl, Trades:%showState%,PriceSlot%currentactiveTab%
+				; GuiControl, Trades:%showState%,LocationSlot%currentactiveTab%
+				; GuiControl, Trades:%showState%,TimeSlot%currentactiveTab%
+				; GuiControl, Trades:%showState%,OtherSlot%currentactiveTab%
+				; Gosub, Gui_Trades_Tabs_Handler
 		}
+
+
 	Return
 	
 	Gui_Trades_RemoveItem:
@@ -841,10 +872,16 @@ Gui_Trades(infosArray="", errorMsg="") {
 			tradesInfosArray := Gui_Trades_Get_Trades_Infos(btnID) ; [0] buyerName - [1] itemName - [2] itemPrice
 			Clipboard := tradesInfosArray[1]
 		}
+
 ;		Check for other trades with different buyer but same item/price/location
 		duplicatesID := Gui_Trades_Check_Duplicate(currentActiveTab)
 		if ( duplicatesID.MaxIndex() > 0 ) {
-			MsgBox, 4100,% programName,%duplicatesID% - Multiple tabs share the same infos,`nwould you like to close them as well?
+			duplicatesInfos := Gui_Trades_Get_Trades_Infos(duplicatesID[1])
+			MsgBox, 4100,% programName,% "Multiple tabs share the same infos:"
+			. "`nItem: " duplicatesInfos[1]
+			. "`nPrice: " duplicatesInfos[2]
+			. "`nLocation: " duplicatesInfos[4]
+			. "`n`nWould you like to close them as well?"
 			IfMsgBox, Yes
 			{
 				for key, element in duplicatesID {
@@ -856,6 +893,7 @@ Gui_Trades(infosArray="", errorMsg="") {
 					
 			}
 		}
+
 ;		Remove the current tab
 		messagesArray := Gui_Trades_Manage_Trades("REMOVE_CURRENT", ,currentActiveTab)
 		Gui_Trades(messagesArray, "UPDATE")
@@ -879,8 +917,9 @@ Gui_Trades_Check_Duplicate(currentActiveTab) {
 		if (A_Index != currentActiveTab) {
 			otherTabInfos := Gui_Trades_Get_Trades_Infos(A_Index)
 			otherTabItem := otherTabInfos[1], otherTabPrice := otherTabInfos[2], otherTabLocation := otherTabInfos[4]
-			if (otherTabItem=currentTabItem && otherTabPrice=currentTabPrice && otherTabLocation=currentTabLocation)
+			if (otherTabItem=currentTabItem && otherTabPrice=currentTabPrice && otherTabLocation=currentTabLocation) {
 				duplicates.Insert(A_Index)
+			}
 		}
 	}
 	return duplicates
@@ -1087,7 +1126,7 @@ Gui_Trades_Manage_Trades(mode="", newItemInfos="", activeTabID=""){
 			else break
 		}
 		counter--
-		GuiControl,,buyerSlot%counter%,% "" ; Empties the slot content
+		GuiControl,Trades:,buyerSlot%counter%,% "" ; Empties the slot content
 
 	;	___ITEMS___
 		Loop {
@@ -1103,7 +1142,7 @@ Gui_Trades_Manage_Trades(mode="", newItemInfos="", activeTabID=""){
 			else break
 		}
 		counter--
-		GuiControl,,itemSlot%counter%,% ""
+		GuiControl,Trades:,itemSlot%counter%,% ""
 		
 	;	___PRICES___
 		Loop {
@@ -1119,7 +1158,7 @@ Gui_Trades_Manage_Trades(mode="", newItemInfos="", activeTabID=""){
 			else break
 		}
 		counter--
-		GuiControl,,priceSlot%counter%,% ""
+		GuiControl,Trades:,priceSlot%counter%,% ""
 		
 	;	___LOCATIONS___
 		Loop {
@@ -1135,7 +1174,7 @@ Gui_Trades_Manage_Trades(mode="", newItemInfos="", activeTabID=""){
 			else break
 		}
 		counter--
-		GuiControl,,locationSlot%counter%,% ""
+		GuiControl,Trades:,locationSlot%counter%,% ""
 
 ;	___GAMEPID___
 		Loop {
@@ -1151,7 +1190,7 @@ Gui_Trades_Manage_Trades(mode="", newItemInfos="", activeTabID=""){
 			else break
 		}
 		counter--
-		GuiControl,,PIDSlot%counter%,% ""
+		GuiControl,Trades:,PIDSlot%counter%,% ""
 
 ;	___TIME___
 		Loop {
@@ -1167,7 +1206,7 @@ Gui_Trades_Manage_Trades(mode="", newItemInfos="", activeTabID=""){
 			else break
 		}
 		counter--
-		GuiControl,,TimeSlot%counter%,% ""
+		GuiControl,Trades:,TimeSlot%counter%,% ""
 
 ;	___OTHER___
 		Loop {
@@ -1183,7 +1222,7 @@ Gui_Trades_Manage_Trades(mode="", newItemInfos="", activeTabID=""){
 			else break
 		}
 		counter--
-		GuiControl,,OtherSlot%counter%,% ""
+		GuiControl,Trades:,OtherSlot%counter%,% ""
 	}
 
 	return returnArray
@@ -1743,6 +1782,7 @@ Gui_Trades_Clone() {
 	global VALUE_Button1_V, VALUE_Button2_V, VALUE_Button3_V, VALUE_Button4_V, VALUE_Button5_V, VALUE_Button6_V, VALUE_Button7_V, VALUE_Button8_V, VALUE_Button9_V
 	global VALUE_Button1_SIZE, VALUE_Button2_SIZE, VALUE_Button3_SIZE, VALUE_Button4_SIZE, VALUE_Button5_SIZE, VALUE_Button6_SIZE, VALUE_Button7_SIZE, VALUE_Button8_SIZE, VALUE_Button9_SIZE
 	global VALUE_Button1_Label, VALUE_Button2_Label, VALUE_Button3_Label, VALUE_Button4_Label, VALUE_Button5_Label, VALUE_Button6_Label, VALUE_Button7_Label, VALUE_Button8_Label, VALUE_Button9_Label
+	global programSkinFolderPath
 
 	infosArray := Object()
 	infosArray.BUYERS := Object()
@@ -1758,82 +1798,109 @@ Gui_Trades_Clone() {
 	infosArray.TIME.Insert(1, A_Hour ":" A_Min)
 	infosArray.OTHER.Insert(1, "Offering 1alch?")
 
+	defaultMaxTabs := 1
+	maxTabsRow := 1
+	VALUE_Trades_GUI_Skin := "Path of Exile"
+	VALUE_Trades_GUI_Font := "Fontin SmallCaps"
+
 	Gui, TradesClone:Destroy
-	Gui, TradesClone:New, +AlwaysOnTop +LastFound +hwndGuiTradesCloneHandler
+	Gui, TradesClone:New, +AlwaysOnTop +hwndGuiTradesCloneHandler +LastFound
 	Gui, TradesClone:Default
 	tabHeight := Gui_Trades_Get_Tab_Height(), tabWidth := 390
-	guiWidth := 403, guiHeight := tabHeight + 38
-	Gui, Add, Text,% "x0 y0 w" guiWidth " h25 +0x4 hwndguiTradesCloneMoveHandler",% ""
-	Gui, Add, Text,% "x5 y0 w" guiWidth " h25 cFFFFFF BackgroundTrans +0x200 hwndguiTradesCloneTitleHandler",% programName " - Queued Trades: 1 (PREVIEW)"
-	Gui, TradesCloneMin:-Caption +Parent%guiTradesCloneMoveHandler%
-	Gui, TradesCloneMin:Color, 696969
-	Gui, TradesCloneMin:Margin, 0, 0
-	Gui, TradesCloneMin:Add, Text,% "x" 0 " y0 h25 cFFFFFF BackgroundTrans Section +0x200",% "MINIMIZE"
-	Gui, Add, Text,% "x0 y0 w5 h" guiHeight " +0x4",% "" ; Left
-	Gui, Add, Text,% "x0 y" guiHeight - 5 " w" guiWidth + 5 " h5 +0x4",% "" ; Bottom
-	Gui, Add, Text,% "x" guiWidth " y0 w5 h" guiHeight " +0x4",% "" ; Right
-		
+	guiWidth := 402, guiHeight := tabHeight+38, guiHeightMin := 30
+	Gui, Font, s10 cWhite,%VALUE_Trades_GUI_Font%
+	Gui, Add, Picture,% "x0 y0 w" guiWidth " h30 ",% programSkinFolderPath "\" VALUE_Trades_GUI_Skin "\Header.png"
+	Gui, Add, Text,% "x35 y2 w" guiWidth-100 " h28 cC18F55 BackgroundTrans +0x200",% programName " - Queued Trades: 0"
+	Gui, Add, Text,% "x" guiWidth-65 " w65 y2 h28 + +0x200 cC18F55 +BackgroundTrans",% "MINIMIZE"
+	Gui, Color, 181511
+	Gui, Add, Picture, x1 y30 w%guiWidth% h%guiHeight%,% programSkinFolderPath "\" VALUE_Trades_GUI_Skin "\Background.png"
+	Gui, Add, Picture, x1 y50 w%guiWidth% h2,% programSkinFolderPath "\" VALUE_Trades_GUI_Skin "\TabUnderline.png"
+	Gui, Add, Text,% "x0 y0 w" guiWidth " h2 +0x4",% "" ; Top
+	Gui, Add, Text,% "x0 y0 w2 h" guiHeight " +0x4",% "" ; Left
+	Gui, Add, Text,% "x0 y" guiHeight-2 " w" guiWidth + 5 " h2 +0x4",% "" ; Bottom
+	Gui, Add, Text,% "x" guiWidth-2 " y0 w2 h" guiHeight " +0x4",% "" ; Right
+
 	aeroStatus := Get_Aero_Status()
 	if ( aeroStatus = 1 )
 		themeState := "+Theme -0x8000"
 	else
 		themeState := "-Theme +0x8000"
 
-	tabHeight := Gui_Trades_Get_Tab_Height(), tabWidth := 390
-	Gui, Add, Tab3,x10 y30 vTab w%tabWidth% h%tabHeight% %themeState% -Wrap
-	Gui, TradesClone:Default
-	Loop 1 {
+	tabsMax := defaultMaxTabs
+	Loop %tabsMax% {
 		index := A_Index
-		percent := ( index / 255 ) * 100
-		GuiControl, ,Tab,% index
-		Gui, Tab,% index
-
-		Gui, Add, Text, x345 y53 w30 h15 vTimeSlotClone%index%,% ""
-		Gui, Add, Text, x20 y58 w45 h15 hwndBuyerTextClone%index%Handler,% "Buyer: "
-		Gui, Add, Text, xp+50 yp w270 h15 vBuyerSlotClone%index%,
-		Gui, Add, Text, w45 h15 xp-50 yp+15 hwndItemTextClone%index%Handler,% "Item: "
-		Gui, Add, Text, w325 h15 xp+50 yp vItemSlotClone%index%,
-		Gui, Add, Text, w45 h15 xp-50 yp+15 hwndPriceTextClone%index%Handler,% "Price: "
-		Gui, Add, Text, w325 h15 xp+50 yp vPriceSlotClone%index%,
-		if ( infosArray.PRICES[index] = "UNPRICED ITEM")
-			GuiControl, TradesClone: +cRed, PriceSlotClone%index%
-		Gui, Add, Text, w45 h15 xp-50 yp+15 hwndLocationTextClone%index%Handler,% "Location: "
-		Gui, Add, Text, w325 h15 xp+50 yp vLocationSlotClone%index%,
-		Gui, Add, Text, w45 h15 xp-50 yp+15 hwndOtherTextClone%index%Handler,% "Other: "
-		Gui, Add, Text, w325 h15 xp+50 yp vOtherSlotClone%index%,
-		Gui, Add, Text, w0 h0 xp yp vPIDSlotClone%index%,
-		Gui, Add, Button,w20 h20 x377 y51 vdelBtnClone%index% %themeState% hwndCloseBtnClone%index%Handler,% "X"
-
-		for key, element in infosArray.BUYERS {
-			GuiControl, TradesClone:,buyerSlotClone%key%,% infosArray.BUYERS[key]
-			GuiControl, TradesClone:,itemSlotClone%key%,% infosArray.ITEMS[key]
-			GuiControl, TradesClone:,priceSlotClone%key%,% infosArray.PRICES[key]
-			GuiControl, TradesClone:,locationSlotClone%key%,% infosArray.LOCATIONS[key]
-			GuiControl, TradesClone:,PIDSlotClone%key%,% infosArray.GAMEPID[key]
-			GuiControl, TradesClone:,TimeSlotClone%key%,% infosArray.TIME[key]
-			GuiControl, TradesClone:,OtherSlotClone%key%,% infosArray.OTHER[key]
+		tabPos := A_Index
+		xposMult := 50
+		xpos := (tabPos * xposMult) - xposMult + 2, ypos := 30
+		
+		Gui, Add, Picture, x%xpos% y%ypos% w50 h20 hwndTabIMGClone%index%Handler vTabIMGClone%index% ,% programSkinFolderPath "\" VALUE_Trades_GUI_Skin "\TabActive.png"
+		Gui, Font, Bold
+		Gui, Add, Text, xp yp+3 +BackgroundTrans w50 h20 hwndTabTXTClone%index%Handler vTabTXTClone%index% 0x1,% index
+		Gui, Font, Norm
+	}
+	Loop %tabsMax% {
+		index := A_Index
+		Gui, Font, cC18F55
+		if ( index = 1 ) {
+			Gui, Add, Text, x9 y60 w60 h15 hwndBuyerTextClone%index%Handler +BackgroundTrans,% "Buyer: "
+			Gui, Add, Text, w60 h15 xp yp+15 hwndItemTextClone%index%Handler +BackgroundTrans,% "Item: "
+			Gui, Add, Text, w60 h15 xp yp+15 hwndPriceTextClone%index%Handler +BackgroundTrans,% "Price: "
+			Gui, Add, Text, w60 h15 xp yp+15 hwndLocationTextClone%index%Handler +BackgroundTrans,% "Location: "
+			Gui, Add, Text, w60 h15 xp yp+15 hwndOtherTextClone%index%Handler +BackgroundTrans,% "Other: "
 		}
-
-		Loop 9 {
-			Gui, Tab,% index
-			btnW := (VALUE_Button%A_Index%_SIZE="Small")?(119):(VALUE_Button%A_Index%_SIZE="Medium")?(244):(VALUE_Button%A_Index%_SIZE="Large")?(369):("ERROR")
-			btnX := (VALUE_Button%A_Index%_H="Left")?(20):(VALUE_Button%A_Index%_H="Center")?(145):(VALUE_Button%A_Index%_H="Right")?(270):("ERROR")
-			btnY := (VALUE_Button%A_Index%_V="Top")?(135):(VALUE_Button%A_Index%_V="Middle")?(175):(VALUE_Button%A_Index%_V="Bottom")?(215):("ERROR")
-			btnName := VALUE_Button%A_Index%_Label
-			btnSub := RegExReplace(VALUE_Button%A_Index%_Action, "[ _+()]", "_")
-			btnSub := RegExReplace(btnSub, "___", "_")
-			btnSub := RegExReplace(btnSub, "__", "_")
-			btnSub := RegExReplace(btnSub, "_", "", ,1,-1)
-			if ( btnW != "ERROR" && btnX != "ERROR" && btnY != "ERROR" && btnSub != "" && btnSub != "ERROR" ) {
-				Gui, Add, Button,x%btnX% y%btnY% w%btnW% h35 vCustomBtnClone%A_Index%_%index%,% btnName
-			}
+		Gui, Font, cFFFFFF
+		Gui, Add, Text, x75 y60 w255 h15 vBuyerSlotClone%index% +BackgroundTrans +0x0100,% ""
+		Gui, Add, Text, xp yp+15 w310 h15 vItemSlotClone%index% +BackgroundTrans +0x0100,% ""
+		Gui, Add, Text, xp yp+15 w310 h15 vPriceSlotClone%index% +BackgroundTrans +0x0100,% ""
+		if ( infosArray.PRICES[index] = "UNPRICED ITEM")
+			GuiControl, Trades: +cRed, PriceSlotClone%index%
+		Gui, Add, Text, xp yp+15 w310 h15 vLocationSlotClone%index% +BackgroundTrans +0x0100,% ""
+		Gui, Add, Text, xp yp+15 w310 h15 vOtherSlotClone%index% +BackgroundTrans +0x100,% ""
+		Gui, Add, Text, x340 y55 w30 h15 vTimeSlotClone%index% +BackgroundTrans,% ""
+		Gui, Add, Text, w0 h0 x0 y0 vPIDSlotClone%index%,
+	}
+	Gui, Add, Picture,x360 y30 w20 h20 vGoLeftClone +BackgroundTrans,% programSkinFolderPath "\" VALUE_Trades_GUI_Skin "\ArrowLeft.png"
+	Gui, Add, Picture,x380 y30 w20 h20 vGoRightClone +BackgroundTrans,% programSkinFolderPath "\" VALUE_Trades_GUI_Skin "\ArrowRight.png"
+	Gui, Add, Picture,x370 y55 w25 h25 vdelBtnClone1 %themeState% hwndCloseBtn1Handler +BackgroundTrans,% programSkinFolderPath "\" VALUE_Trades_GUI_Skin "\Close.png"
+	Loop 9 {
+		btnW := (VALUE_Button%A_Index%_SIZE="Small")?(124):(VALUE_Button%A_Index%_SIZE="Medium")?(254):(VALUE_Button%A_Index%_SIZE="Large")?(374):("ERROR")
+		btnX := (VALUE_Button%A_Index%_H="Left")?(9):(VALUE_Button%A_Index%_H="Center")?(139):(VALUE_Button%A_Index%_H="Right")?(269):("ERROR")
+		btnY := (VALUE_Button%A_Index%_V="Top")?(140):(VALUE_Button%A_Index%_V="Middle")?(180):(VALUE_Button%A_Index%_V="Bottom")?(220):("ERROR")
+		btnName := VALUE_Button%A_Index%_Label
+		btnSub := RegExReplace(VALUE_Button%A_Index%_Action, "[ _+()]", "_")
+		btnSub := RegExReplace(btnSub, "___", "_")
+		btnSub := RegExReplace(btnSub, "__", "_")
+		btnSub := RegExReplace(btnSub, "_", "", ,1,-1)
+		if ( btnW != "ERROR" && btnX != "ERROR" && btnY != "ERROR" && btnSub != "" && btnSub != "ERROR" ) {
+			Gui, Add, Picture,x%btnX% y%btnY% w%btnW% h35 vCustomBtnClone%A_Index% hwndCustomBtnClone%A_Index%Handler,% programSkinFolderPath "\" VALUE_Trades_GUI_Skin "\ButtonBackground.png"
+			Gui, Add, Picture,% "x" btnX " y" btnY " w8 h35 +BackgroundTrans vCustomBtnClone" A_Index "OrnamentLeft",% programSkinFolderPath "\" VALUE_Trades_GUI_Skin "\ButtonOrnamentLeft.png"
+			Gui, Add, Picture,% "x" btnX+btnW-8 " y" btnY " w8 h35 +BackgroundTrans vCustomBtnClone" A_Index "OrnamentRight",% programSkinFolderPath "\" VALUE_Trades_GUI_Skin "\ButtonOrnamentRight.png"
+			Gui, Font, c875516
+			Gui, Add, Text,x%btnX% yp+10 w%btnW% Center vCustomBtnTXTClone%A_Index% +BackgroundTrans,% btnName
 		}
 	}
-	Gui, TradesClone:Font, cYellow
-	GuiControl, TradesClone:Font,% guiTradesCloneTitleHandler
-	xpos := 10, ypos := 10
-	Gui, TradesClone:Show,% "NoActivate w" guiWidth+5 " h" guiHeight " x" xpos " y" ypos,% programName " - Queued Trades"
-	Gui, TradesCloneMin:Show,% "x" guiWidth - 49 " y0"
+	for key, element in infosArray.BUYERS {
+		GuiControl, TradesClone:,buyerSlotClone%key%,% infosArray.BUYERS[key]
+		GuiControl, TradesClone:,itemSlotClone%key%,% infosArray.ITEMS[key]
+		GuiControl, TradesClone:,priceSlotClone%key%,% infosArray.PRICES[key]
+		GuiControl, TradesClone:,locationSlotClone%key%,% infosArray.LOCATIONS[key]
+		GuiControl, TradesClone:,PIDSlotClone%key%,% infosArray.GAMEPID[key]
+		GuiControl, TradesClone:,TimeSlotClone%key%,% infosArray.TIME[key]
+		GuiControl, TradesClone:,OtherSlotClone%key%,% infosArray.OTHER[key]
+	}
+
+	showWidth := guiWidth
+	showHeight := (VALUE_Trades_GUI_Minimized=1)?(guiHeightMin):(guiHeight)
+	IniRead, showX,% iniFilePath,PROGRAM,X_POS
+	IniRead, showY,% iniFilePath,PROGRAM,Y_POS
+	showXDefault := A_ScreenWidth-(showWidth), showYDefault := 0
+	showX := 10
+	showY := 10
+	Gui, TradesClone:Show,% "NoActivate w" showWidth " h" showHeight " x" showX " y" showY,% programName " - Queued Trades"
+
+	sleep 10
+	WinSet, Redraw, ,% "ahk_id " guiTradesCloneHandler 
+	return
 }
 
 Gui_Settings_Custom_Label_Func(type, controlsArray, btnID, action, label) {
