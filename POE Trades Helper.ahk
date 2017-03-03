@@ -354,7 +354,7 @@ Gui_Trades(infosArray="", errorMsg="") {
 	static nameArray, buyerName, guiX, guiY, guiHeight, guiWidth, defaultX, defaultY, showX, showY, activeTabID, aeroStatus, allTabs, btnName, btnSub, btnW, btnX, btnY
 	static countdown, currentActiveTab, defaultMaxTabs, dpiFactor, firstTab, guiHeightMin, inactiveTabID, key, lastActiveTab, lastTab
 	static maxTabsRow, messagesArray, showHeight, showState, showWidth, showXDefault, showYDefault, tabID, tabPos, tabsCount, tabsMax, tHeight, themeState
-	static tradesArray, tradesInfosArray, txtColor, txtContent, xpos, xposMult, ypos, errorLvl, btnType
+	static tradesArray, tradesInfosArray, txtColor, txtContent, xpos, xposMult, ypos, errorLvl, btnType, tabToDel
 
 	if ( errorMsg = "CREATE" ) {
 		defaultMaxTabs := 10
@@ -851,8 +851,9 @@ Gui_Trades(infosArray="", errorMsg="") {
 			Clipboard := tradesInfosArray[1]
 		}
 
+		tabToDel := currentActiveTab
 ;		Check for other trades with different buyer but same item/price/location
-		duplicatesID := Gui_Trades_Check_Duplicate(currentActiveTab)
+		duplicatesID := Gui_Trades_Check_Duplicate(tabToDel)
 		if ( duplicatesID.MaxIndex() > 0 ) {
 			duplicatesInfos := Gui_Trades_Get_Trades_Infos(duplicatesID[1])
 			MsgBox, 4100,% programName,% "Multiple tabs share the same infos:"
@@ -863,8 +864,9 @@ Gui_Trades(infosArray="", errorMsg="") {
 			IfMsgBox, Yes
 			{
 				for key, element in duplicatesID {
-					messagesArray := Gui_Trades_Manage_Trades("REMOVE_CURRENT", ,element-key+1) ; Deleting a tab reduces the following duplicateIDs by one
-																								; +1 because the array starts at 1 and not 0
+					messagesArray := Gui_Trades_Manage_Trades("REMOVE_CURRENT", ,element-key)
+					if ( tabToDel >= element-key ) ; our tabToDel moved to the left due to a lesser tab being deleted
+						tabToDel--
 					Gui_Trades(messagesArray, "UPDATE")
 					Gosub, Gui_Trades_Tabs_Handler
 				}
@@ -873,7 +875,7 @@ Gui_Trades(infosArray="", errorMsg="") {
 		}
 
 ;		Remove the current tab
-		messagesArray := Gui_Trades_Manage_Trades("REMOVE_CURRENT", ,currentActiveTab)
+		messagesArray := Gui_Trades_Manage_Trades("REMOVE_CURRENT", ,tabToDel)
 		Gui_Trades(messagesArray, "UPDATE")
 		Gosub, Gui_Trades_Tabs_Handler
 	return
@@ -891,12 +893,14 @@ Gui_Trades_Check_Duplicate(currentActiveTab) {
 	maxIndex := messagesArray.BUYERS.MaxIndex()
 	currentTabInfos := Gui_Trades_Get_Trades_Infos(currentActiveTab)
 	currentTabItem := currentTabInfos[1], currentTabPrice := currentTabInfos[2], currentTabLocation := currentTabInfos[4]
+	arrayKey := 0
 	Loop %maxIndex% {
 		if (A_Index != currentActiveTab) {
 			otherTabInfos := Gui_Trades_Get_Trades_Infos(A_Index)
 			otherTabItem := otherTabInfos[1], otherTabPrice := otherTabInfos[2], otherTabLocation := otherTabInfos[4]
 			if (otherTabItem=currentTabItem && otherTabPrice=currentTabPrice && otherTabLocation=currentTabLocation) {
-				duplicates.Insert(A_Index)
+				duplicates.Insert(arrayKey, A_Index)
+				arrayKey++
 			}
 		}
 	}
