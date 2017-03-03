@@ -18,11 +18,12 @@ FileEncoding, UTF-8 ; Required for cyrillic characters
 #KeyHistory 0
 ListLines Off
 SetWinDelay, 0
+; #Warn All
 
 ;___Some_Variables___;
 global userprofile, iniFilePath, programName, programVersion, programFolder, programPID, programSFXFolderPath, programChangelogFilePath, POEGameArray, POEGameList
 EnvGet, userprofile, userprofile
-programVersion := "1.8", programRedditURL := "https://redd.it/57oo3h"
+programVersion := "1.8.1", programRedditURL := "https://redd.it/57oo3h"
 programName := "POE Trades Helper", programFolder := userprofile "\Documents\AutoHotKey\" programName
 iniFilePath := programFolder "\Preferences.ini"
 programSFXFolderPath := programFolder "\SFX"
@@ -101,7 +102,7 @@ Gui_Trades(,"CREATE")
 ;___Logs Monitoring AKA Trades GUI___;
 ;Gui_Settings()
 Logs_Append("START", settingsArray)
-Monitor_Game_Logs()
+; Monitor_Game_Logs()
 Return
 
 ;==================================================================================================================
@@ -111,9 +112,8 @@ Return
 ;==================================================================================================================
 
 Restart_Monitor_Game_Logs() {
-;		
-	static
-	global GuiTradesHandler, iniFilePath
+;
+	global guiTradesHandler, iniFilePath
 
 	WinGetPos, xpos, ypos, , ,% "ahk_id " GuiTradesHandler
 	IniWrite,% xpos,% iniFilePath,PROGRAM,X_POS
@@ -128,10 +128,10 @@ Monitor_Game_Logs(mode="") {
 ;			Pass the trade message infos to Gui_Trades()
 ;			Clipboard the item's info if the user enabled
 ;			Play a sound or tray notification (if the user enabled) on whisper/trade
-	static
-	global VALUE_Whisper_Tray, VALUE_Logs_Mode, VALUE_Clip_New_Items, VALUE_Trade_Toggle, VALUE_Trade_Sound_Path, VALUE_Whisper_Toggle, VALUE_Whisper_Sound_Path, VALUE_Whisper_Flash
-	global VALUE_Dock_Window, VALUE_Last_Whisper
+	static fileObj
 	global GuiTradesHandler, POEGameArray
+	global VALUE_Whisper_Tray, VALUE_Logs_Mode, VALUE_Clip_New_Items, VALUE_Trade_Toggle, VALUE_Trade_Sound_Path, VALUE_Whisper_Toggle
+	global VALUE_Dock_Window, VALUE_Last_Whisper, VALUE_Whisper_Sound_Path, VALUE_Whisper_Flash
 
 	if (mode = "CLOSE") {
 		fileObj.Close()
@@ -321,9 +321,9 @@ Return
 
 Hotkeys_User_Handler(thisLabel) {
 	static
-	global VALUE_Hotkeys_Mode
+	global VALUE_Hotkeys_Mode, VALUE_Trades_GUI_Current_Active_Tab
 	tradesInfosArray := Object()
-	tabID := Gui_Trades_Get_Tab_ID()
+	tabID := VALUE_Trades_GUI_Current_Active_Tab
 	if ( tabID != 0 ) {
 		tradesInfosArray := Gui_Trades_Get_Trades_Infos(tabID) ; [0] buyerName - [1] itemName - [2] itemPrice
 	}
@@ -460,7 +460,6 @@ Gui_Trades(infosArray="", errorMsg="") {
 	}
 
 	if ( errorMsg = "UPDATE" || errorMsg = "CREATE" || errorMsg = "EXE_NOT_FOUND" ) {
-		tabID := Gui_Trades_Get_Tab_ID()
 		tabsCount := infosArray.BUYERS.Length()
 		allTabs := ""
 		for key, element in infosArray.BUYERS {
@@ -726,6 +725,8 @@ Gui_Trades(infosArray="", errorMsg="") {
 			GoSub Gui_Trades_Arrow_Right
 			GoSub Gui_Trades_Arrow_Left
 		}
+
+		VALUE_Trades_GUI_Current_Active_Tab := currentActiveTab
 	Return
 
 	Gui_Trades_Minimize:
