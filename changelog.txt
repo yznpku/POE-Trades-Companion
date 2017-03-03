@@ -1,10 +1,14 @@
 \\
+--v1.8.1--
+- Fix: Hotkeys were still using the old function to retrieve the tab ID.
+//
+\\
 --v1.8--
 What's new:  
 - Brand new PoE themed skin!  
 - TradesGUI: Receiving a whisper from someone who is on your trades queue will add that whisper to the Other section.  
 - TradesGUI: Receiving multiple times the same poe.trade whisper from someone (therefore making an unwanted duplicate) will no longer add that trade to the queue.  
-- TradesGUI: Upon closing a tab, if other tabs contain exactly the same infos (Item+Price+Location), you will be asked if you want to ask those tabs aswell.  
+- TradesGUI: Upon closing a tab, if other tabs contain exactly the same infos (Item+Price+Location), you can choose to automatically close those tabs aswell.  
 - TradesGUI: Hovering the content of a Buyer/Item/Price/Location/Other slot now shows a tooltip containing the full text. This is so the user can still see the full slot's content if the text is being cut.
 
 What's fixed:  
