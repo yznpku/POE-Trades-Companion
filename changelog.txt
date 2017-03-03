@@ -1,4 +1,8 @@
 \\
+--v1.8.2--
+- Fix: The whisper would not be caught due to the logs monitoring being disabled (my fault!)
+//
+\\
 --v1.8.1--
 - Fix: Hotkeys were still using the old function to retrieve the tab ID.
 //
