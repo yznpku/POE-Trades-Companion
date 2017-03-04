@@ -23,7 +23,7 @@ SetWinDelay, 0
 ;___Some_Variables___;
 global userprofile, iniFilePath, programName, programVersion, programFolder, programPID, programSFXFolderPath, programChangelogFilePath, POEGameArray, POEGameList
 EnvGet, userprofile, userprofile
-programVersion := "1.8.2", programRedditURL := "https://redd.it/57oo3h"
+programVersion := "1.8.3", programRedditURL := "https://redd.it/57oo3h"
 programName := "POE Trades Helper", programFolder := userprofile "\Documents\AutoHotKey\" programName
 iniFilePath := programFolder "\Preferences.ini"
 programSFXFolderPath := programFolder "\SFX"
@@ -1787,7 +1787,7 @@ Gui_Trades_Clone() {
 	VALUE_Trades_GUI_Font := "Fontin SmallCaps"
 
 	Gui, TradesClone:Destroy
-	Gui, TradesClone:New, +AlwaysOnTop +hwndGuiTradesCloneHandler +LastFound
+	Gui, TradesClone:New, +AlwaysOnTop +hwndGuiTradesCloneHandler +LastFound +LabelGui_Trades_Clone_
 	Gui, TradesClone:Default
 	tabHeight := Gui_Trades_Get_Tab_Height(), tabWidth := 390
 	guiWidth := 402, guiHeight := tabHeight+38, guiHeightMin := 30
@@ -1844,7 +1844,7 @@ Gui_Trades_Clone() {
 	}
 	Gui, Add, Picture,x360 y30 w20 h20 vGoLeftClone +BackgroundTrans,% programSkinFolderPath "\" VALUE_Trades_GUI_Skin "\ArrowLeft.png"
 	Gui, Add, Picture,x380 y30 w20 h20 vGoRightClone +BackgroundTrans,% programSkinFolderPath "\" VALUE_Trades_GUI_Skin "\ArrowRight.png"
-	Gui, Add, Picture,x370 y55 w25 h25 vdelBtnClone1 %themeState% hwndCloseBtn1Handler +BackgroundTrans,% programSkinFolderPath "\" VALUE_Trades_GUI_Skin "\Close.png"
+	Gui, Add, Picture,x370 y55 w25 h25 vdelBtnClone1 %themeState% hwndCloseBtnClone1Handler +BackgroundTrans,% programSkinFolderPath "\" VALUE_Trades_GUI_Skin "\Close.png"
 	Loop 9 {
 		btnW := (VALUE_Button%A_Index%_SIZE="Small")?(124):(VALUE_Button%A_Index%_SIZE="Medium")?(254):(VALUE_Button%A_Index%_SIZE="Large")?(374):("ERROR")
 		btnX := (VALUE_Button%A_Index%_H="Left")?(9):(VALUE_Button%A_Index%_H="Center")?(139):(VALUE_Button%A_Index%_H="Right")?(269):("ERROR")
@@ -1884,6 +1884,14 @@ Gui_Trades_Clone() {
 	sleep 10
 	WinSet, Redraw, ,% "ahk_id " guiTradesCloneHandler 
 	return
+
+	Gui_Trades_Clone_Close:
+		Gui, TradesClone:Destroy
+	Return
+
+	Gui_Trades_Clone_Escape:
+		Gosub, Gui_Trades_Clone_Close
+	Return
 }
 
 Gui_Settings_Custom_Label_Func(type, controlsArray, btnID, action, label) {
