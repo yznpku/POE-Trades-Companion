@@ -1,4 +1,8 @@
 \\
+--v1.8.3--
+- Fix: The close button would disappear after clicking on the Preview button from the TradesGUI tab of the [Settings] tray menu.
+//
+\\
 --v1.8.2--
 - Fix: The whisper would not be caught due to the logs monitoring being disabled (my fault!)
 //
