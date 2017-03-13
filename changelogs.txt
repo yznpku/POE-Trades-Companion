@@ -1,4 +1,9 @@
 \\
+--v1.8.7--
+- Fix: The "Cycle Overlay" tray option would not function correctly.
+- Fix: The Hotkeys would not function correclty.
+//
+\\
 --v1.8.6--
 - Fix: SettingsGUI: The button in the TradesGUI tab would not function.
 //
