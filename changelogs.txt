@@ -1,10 +1,44 @@
 \\
+--v1.8.7--
+- Fix: The "Cycle Overlay" tray option would not function correctly.
+- Fix: The Hotkeys would not function correclty.
+//
+\\
+--v1.8.6--
+- Fix: SettingsGUI: The button in the TradesGUI tab would not function.
+//
+\\
+--v1.8.5--
+- 1.8.4 re-release.
+//
+\\
+--v1.8.4--
+- Fix: TradesGUI: Tabs informations would overlap when closing the highest available tab then receiving a new trade request.
+- Fix: TradesGUI: Receiving a new trade request after having reached the default pre-rendered tabs limit, then closing them all would show a blank tab.
+- Fix: TradesGUI: Holding the left mouse button on a Custom Button, then moving fast out of the window and releasing the click would still trigger the button's action.
+- Fix: AboutGUI: The GUI would not function correctly with Aero disabled.
+- Fix: The script icon would randomly not show up if the script was running on Windows startup.
+- TradesGUI: The default text font color for Custom Buttons has been replaced with its brighter counterpart. The text font color does not change anymore upon hovering a button.
+//
+\\
+--v1.8.3--
+- Fix: The close button would disappear after clicking on the Preview button from the TradesGUI tab of the [Settings] tray menu.
+//
+\\
+--v1.8.2--
+- Fix: The whisper would not be caught due to the logs monitoring being disabled (my fault!)
+//
+\\
+--v1.8.1--
+- Fix: Hotkeys were still using the old function to retrieve the tab ID.
+//
+\\
 --v1.8--
 What's new:  
 - Brand new PoE themed skin!  
 - TradesGUI: Receiving a whisper from someone who is on your trades queue will add that whisper to the Other section.  
 - TradesGUI: Receiving multiple times the same poe.trade whisper from someone (therefore making an unwanted duplicate) will no longer add that trade to the queue.  
-- TradesGUI: Upon closing a tab, if other tabs contain exactly the same infos (Item+Price+Location), you will be asked if you want to ask those tabs aswell.  
+- TradesGUI: Upon closing a tab, if other tabs contain exactly the same infos (Item+Price+Location), you can choose to automatically close those tabs aswell.  
 - TradesGUI: Hovering the content of a Buyer/Item/Price/Location/Other slot now shows a tooltip containing the full text. This is so the user can still see the full slot's content if the text is being cut.
 
 What's fixed:  
