@@ -1,4 +1,8 @@
 \\
+--v1.8.5--
+- 1.8.4 re-release.
+//
+\\
 --v1.8.4--
 - Fix: TradesGUI: Tabs informations would overlap when closing the highest available tab then receiving a new trade request.
 - Fix: TradesGUI: Receiving a new trade request after having reached the default pre-rendered tabs limit, then closing them all would show a blank tab.
