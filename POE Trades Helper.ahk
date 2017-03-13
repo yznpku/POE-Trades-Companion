@@ -33,7 +33,7 @@ Start_Script() {
 
 	ProgramValues := Object()
 	ProgramValues.Insert("Name", "POE Trades Helper")
-	ProgramValues.Insert("Version", "1.8.6")
+	ProgramValues.Insert("Version", "1.8.7")
 
 	ProgramValues.Insert("PID", DllCall("GetCurrentProcessId"))
 
@@ -2614,7 +2614,7 @@ Enable_Hotkeys() {
 		Loop 6 {
 			index := A_Index
 			if ( GlobalValues["HK" index "_Toggle"] ) {
-				userHotkey%index% := GlobalValues["HK%index%_KEY"]
+				userHotkey%index% := GlobalValues["HK" index "_KEY"]
 				if ( GlobalValues["HK" index "_CTRL"] )
 					userHotkey%index% := "^" userHotkey%index%
 				if ( GlobalValues["HK" index "_ALT"] )
@@ -3414,6 +3414,8 @@ Gui_Trades_Cycle_Func() {
 	global guiTradesHandler
 
 	programName := ProgramValues["Name"]
+	nextID := GlobalValues["Current_DockID"]
+	nextID += 1
 
 	if ( GlobalValues["Trades_GUI_Mode"] != "Overlay" )
 		Return
@@ -3424,10 +3426,11 @@ Gui_Trades_Cycle_Func() {
 		Return
 	}
 	matchHandlers := Get_Matching_Windows_Infos("ID")
-	GlobalValues["Current_DockID"]++
-	if ( GlobalValues["Current_DockID"] > matchHandlers.MaxIndex() )
-		GlobalValues["Current_DockID"] := 0
-	GlobalValues["Dock_Window"] := matchHandlers[GlobalValues["Current_DockID"]]
+	GlobalValues.Insert("Current_DockID", nextID)
+	if ( GlobalValues["Current_DockID"] > matchHandlers.MaxIndex() ) {
+		GlobalValues.Insert("Current_DockID", 0)
+	}
+	GlobalValues.Insert("Dock_Window", matchHandlers[GlobalValues["Current_DockID"]])
 	Gui_Trades_Set_Position()
 	Logs_Append(A_ThisFunc,, GlobalValues["Dock_Window"], matchHandlers.MaxIndex())
 }
