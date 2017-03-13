@@ -1,4 +1,8 @@
 \\
+--v1.8.6--
+- Fix: SettingsGUI: The button in the TradesGUI tab would not function.
+//
+\\
 --v1.8.5--
 - 1.8.4 re-release.
 //
