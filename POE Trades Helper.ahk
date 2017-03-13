@@ -33,7 +33,7 @@ Start_Script() {
 
 	ProgramValues := Object()
 	ProgramValues.Insert("Name", "POE Trades Helper")
-	ProgramValues.Insert("Version", "1.8.4")
+	ProgramValues.Insert("Version", "1.8.6")
 
 	ProgramValues.Insert("PID", DllCall("GetCurrentProcessId"))
 
@@ -106,7 +106,7 @@ Start_Script() {
 	Gui_Trades(,"CREATE")
 
 
-/*;	Debug purposes. Simulates TradesGUI tabs. 
+/*	;	Debug purposes. Simulates TradesGUI tabs. 
 	Loop 5 {
 		newItemInfos := Object()
 		newItemInfos.Insert(0, "iSellStuff", "level 1 Faster Attacks Support", "5 alteration", "Breach (stash tab ""Gems""; position: left 6, top 8)", "",A_Hour ":" A_Min, "Offering 1alch?")
@@ -121,9 +121,9 @@ Start_Script() {
 		newItemInfos.Insert(0, "Krillson", "Rainbowstride Conjurer Boots", "3 mirror", "Hadcore", "",A_Hour ":" A_Min, "-")
 		newItemArray := Gui_Trades_Manage_Trades("ADD_NEW", newItemInfos)
 		Gui_Trades(newItemArray, "UPDATE")
-	}*/
+	}
+*/
 
-	
 	Logs_Append("START", settingsArray)
 	Monitor_Game_Logs()
 }
@@ -1352,7 +1352,7 @@ Gui_Settings() {
 	
 ;	TradesGUI tab
 	Gui, Tab, 2
-	local DynamicGUIHandlersArray := Object()
+	DynamicGUIHandlersArray := Object()
 	DynamicGUIHandlersArray.Btn := Object()
 	DynamicGUIHandlersArray.HPOS := Object()
 	DynamicGUIHandlersArray.HPOSText := Object()
