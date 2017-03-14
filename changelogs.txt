@@ -1,4 +1,14 @@
 \\
+--v1.8.8--
+- TradesGUI: "Only show while in game" now also works with the Window mode.
+- Fix: The prompt to replace a no-longer valid PID would sometimes contain duplicates.
+- Fix: When replacing a no-longer valid PID, any other tab sharing the same PID will be replaced with the new one.
+- Fix: The prompt to close multiple tabs at once (due to sharing the same infos) would not work when only 2 tabs were sharing the same infos.
+- Fix: When receiving a trade whisper with both Trade and Whisper sound notification enabled, both sound would play at the same time.
+- Fix: The clipboard button would not function.
+- Fix: Various coding changes that would prevent the script from working correctly.
+//
+\\
 --v1.8.7--
 - Fix: The "Cycle Overlay" tray option would not function correctly.
 - Fix: The Hotkeys would not function correclty.

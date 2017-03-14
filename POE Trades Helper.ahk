@@ -47,8 +47,8 @@ Start_Script() {
 
 	ProgramValues := Object() ; Specific to the program's informations
 	ProgramValues.Insert("Name", "POE Trades Helper")
-	ProgramValues.Insert("Version", "1.8.7")
-	ProgramValues.Insert("Debug", "1")
+	ProgramValues.Insert("Version", "1.8.8")
+	ProgramValues.Insert("Debug", "0")
 
 	GlobalValues.Insert("Trades_GUI_Skin", "Path of Exile")
 	GlobalValues.Insert("Trades_GUI_Font", "Fontin SmallCaps")
