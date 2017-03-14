@@ -210,7 +210,8 @@ Monitor_Game_Logs(mode="") {
 							}
 							StringReplace, otherContent, otherContent,% "(Hover to see all messages)`n",% "",1
 							otherText := "(Hover to see all messages)`n" otherContent "`n[" A_Hour ":" A_Min "] " whispMsg
-							Gui_Trades_Set_Trades_Infos("", otherText, key)
+							setInfos := Object(), setInfos.OTHER := otherText, setInfos.TabID := key
+							Gui_Trades_Set_Trades_Infos(setInfos)
 						}
 					}
 
@@ -1053,16 +1054,26 @@ Gui_Trades_Get_Trades_Infos(tabID){
 	return tabInfos
 }
 
-Gui_Trades_Set_Trades_Infos(newPID, otherText="", ID=""){
+Gui_Trades_Set_Trades_Infos(setInfos){
 /*			Overrides the specified tab content
 */
 	global TradesGUI_Controls
 
-	if ( newPID && ID ) {
-		GuiControl,Trades:,% TradesGUI_Controls["PID_Slot_" ID],% newPID
+	newPID := setInfos.NewPID, oldPID := setInfos.OldPID, other := setInfos.Other, tabID := setInfos.TabID
+
+	if ( newPID ) {
+		; Replace the PID for all trades matching the same PID
+		allTrades := Gui_Trades_Manage_Trades("GET_ALL")
+		tradeInfos := Gui_Trades_Get_Trades_Infos(tabID)
+		for key, element in allTrades.BUYERS {
+			if ( tradeInfos.PID = oldPID ) {
+				GuiControl,Trades:,% TradesGUI_Controls["PID_Slot_" key],% newPID
+			}
+		}
 	}
-	else if (otherText && ID) {
-		GuiControl,Trades:,% TradesGUI_Controls["Other_Slot_" ID],% otherText
+
+	else if ( other ) {
+		GuiControl,Trades:,% TradesGUI_Controls["Other_Slot_" tabID],% other
 	}
 }
 
@@ -3312,8 +3323,10 @@ Send_InGame_Message(messageToSend, tabInfos="", isHotkey=0, isAdvanced=0) {
 				return 1
 			}
 			else {
-				gamePID := GUI_Replace_PID(handlersArray, PIDArray)
-				Gui_Trades_Set_Trades_Infos(gamePID,,activeTab)
+				newPID := GUI_Replace_PID(handlersArray, PIDArray)
+				setInfos := Object(), setInfos.NewPID := newPID, setInfos.OldPID := gamePID, setInfos.TabID := tabInfos.TabID
+				Gui_Trades_Set_Trades_Infos(setInfos)
+				gamePID := newPID
 			}
 		}
 		titleMatchMode := A_TitleMatchMode
