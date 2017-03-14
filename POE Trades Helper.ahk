@@ -48,6 +48,7 @@ Start_Script() {
 	ProgramValues := Object() ; Specific to the program's informations
 	ProgramValues.Insert("Name", "POE Trades Helper")
 	ProgramValues.Insert("Version", "1.8.7")
+	ProgramValues.Insert("Debug", "1")
 
 	GlobalValues.Insert("Trades_GUI_Skin", "Path of Exile")
 	GlobalValues.Insert("Trades_GUI_Font", "Fontin SmallCaps")
@@ -117,20 +118,22 @@ Start_Script() {
 
 
 	;	Debug purposes. Simulates TradesGUI tabs. 
-	Loop 4 {
-		newItemInfos := Object()
-		newItemInfos.Insert(0, "iSellStuff", "level 1 Faster Attacks Support", "5 alteration", "Breach (stash tab ""Gems""; position: left 6, top 8)", "",A_Hour ":" A_Min, "Offering 1alch?")
-		newItemArray := Gui_Trades_Manage_Trades("ADD_NEW", newItemInfos)
-		Gui_Trades(newItemArray, "UPDATE")
-		newItemInfos.Insert(0, "aktai0", "Kaom's Heart Glorious Plate", "10 exalted", "Hardcore Legacy", "",A_Hour ":" A_Min, "-")
-		newItemArray := Gui_Trades_Manage_Trades("ADD_NEW", newItemInfos)
-		Gui_Trades(newItemArray, "UPDATE")
-		newItemInfos.Insert(0, "MindDOTA2pl", "Voll's Devotion Agate Amulet ", "4 exalted", "Standard", "",A_Hour ":" A_Min, "-")
-		newItemArray := Gui_Trades_Manage_Trades("ADD_NEW", newItemInfos)
-		Gui_Trades(newItemArray, "UPDATE")
-		newItemInfos.Insert(0, "Krillson", "Rainbowstride Conjurer Boots", "3 mirror", "Hadcore", "",A_Hour ":" A_Min, "-")
-		newItemArray := Gui_Trades_Manage_Trades("ADD_NEW", newItemInfos)
-		Gui_Trades(newItemArray, "UPDATE")
+	if ( ProgramValues["Debug"] ) {
+		Loop 4 {
+			newItemInfos := Object()
+			newItemInfos.Insert(0, "iSellStuff", "level 1 Faster Attacks Support", "5 alteration", "Breach (stash tab ""Gems""; position: left 6, top 8)", "",A_Hour ":" A_Min, "Offering 1alch?")
+			newItemArray := Gui_Trades_Manage_Trades("ADD_NEW", newItemInfos)
+			Gui_Trades(newItemArray, "UPDATE")
+			newItemInfos.Insert(0, "aktai0", "Kaom's Heart Glorious Plate", "10 exalted", "Hardcore Legacy", "",A_Hour ":" A_Min, "-")
+			newItemArray := Gui_Trades_Manage_Trades("ADD_NEW", newItemInfos)
+			Gui_Trades(newItemArray, "UPDATE")
+			newItemInfos.Insert(0, "MindDOTA2pl", "Voll's Devotion Agate Amulet ", "4 exalted", "Standard", "",A_Hour ":" A_Min, "-")
+			newItemArray := Gui_Trades_Manage_Trades("ADD_NEW", newItemInfos)
+			Gui_Trades(newItemArray, "UPDATE")
+			newItemInfos.Insert(0, "Krillson", "Rainbowstride Conjurer Boots", "3 mirror", "Hadcore", "",A_Hour ":" A_Min, "-")
+			newItemArray := Gui_Trades_Manage_Trades("ADD_NEW", newItemInfos)
+			Gui_Trades(newItemArray, "UPDATE")
+		}
 	}
 
 	Logs_Append("START", settingsArray)
@@ -222,10 +225,6 @@ Monitor_Game_Logs(mode="") {
 						SetTimer, Remove_TrayTip, -10000
 					}
 
-					if ( GlobalValues["Whisper_Toggle"] = 1 ) && FileExist(GlobalValues["Whisper_Sound_Path"]) { ; Play the sound set for whispers
-						SoundPlay,% GlobalValues["Whisper_Sound_Path"]
-					}
-
 					if ( GlobalValues["Whisper_Flash"] = 1 ) && !WinActive("ahk_pid " gamePID) { ; Flash the game window taskbar icon
 						gameHwnd := WinExist("ahk_pid " gamePID)
 						DllCall("FlashWindow", UInt, gameHwnd, Int, 1)
@@ -268,6 +267,11 @@ Monitor_Game_Logs(mode="") {
 							if ( GlobalValues["Trade_Toggle"] = 1 ) && FileExist(GlobalValues["Trade_Sound_Path"]) { ; Play the sound set for trades
 								SoundPlay,% GlobalValues["Trade_Sound_Path"]
 							}
+						}
+					}
+					else {
+						if ( GlobalValues["Whisper_Toggle"] = 1 ) && FileExist(GlobalValues["Whisper_Sound_Path"]) { ; Play the sound set for whispers
+							SoundPlay,% GlobalValues["Whisper_Sound_Path"]
 						}
 					}
 				}
