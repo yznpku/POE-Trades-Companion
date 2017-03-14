@@ -117,7 +117,7 @@ Start_Script() {
 
 
 	;	Debug purposes. Simulates TradesGUI tabs. 
-	Loop 2 {
+	Loop 4 {
 		newItemInfos := Object()
 		newItemInfos.Insert(0, "iSellStuff", "level 1 Faster Attacks Support", "5 alteration", "Breach (stash tab ""Gems""; position: left 6, top 8)", "",A_Hour ":" A_Min, "Offering 1alch?")
 		newItemArray := Gui_Trades_Manage_Trades("ADD_NEW", newItemInfos)
@@ -920,8 +920,8 @@ Gui_Trades(infosArray="", errorMsg="") {
 		tabToDel := currentActiveTab
 ;		Check for other trades with different buyer but same item/price/location
 		duplicatesID := Gui_Trades_Check_Duplicate(tabToDel)
-		if ( duplicatesID.MaxIndex() > 0 ) {
-			duplicatesInfos := Gui_Trades_Get_Trades_Infos(duplicatesID[1])
+		if ( duplicatesID.MaxIndex() = 0 || duplicatesID.MaxIndex() ) {
+			duplicatesInfos := Gui_Trades_Get_Trades_Infos(duplicatesID[0])
 			MsgBox, 4100,% programName,% "Multiple tabs share the same infos:"
 			. "`nItem: " duplicatesInfos.Item
 			. "`nPrice: " duplicatesInfos.Price
@@ -935,10 +935,10 @@ Gui_Trades(infosArray="", errorMsg="") {
 						tabToDel--
 					Gui_Trades(messagesArray, "UPDATE")
 					Gosub, Gui_Trades_Tabs_Handler
-				}
-					
+				}		
 			}
 		}
+
 
 ;		Remove the current tab
 		messagesArray := Gui_Trades_Manage_Trades("REMOVE_CURRENT", ,tabToDel)
