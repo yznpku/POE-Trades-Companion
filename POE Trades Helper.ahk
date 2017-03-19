@@ -48,7 +48,7 @@ Start_Script() {
 	ProgramValues := Object() ; Specific to the program's informations
 	ProgramValues.Insert("Name", "POE Trades Helper")
 	ProgramValues.Insert("Version", "1.8.8")
-	ProgramValues.Insert("Debug", "0")
+	ProgramValues.Insert("Debug", 1)
 
 	GlobalValues.Insert("Trades_GUI_Skin", "Path of Exile")
 	GlobalValues.Insert("Trades_GUI_Font", "Fontin SmallCaps")
@@ -182,7 +182,6 @@ Monitor_Game_Logs(mode="") {
 		Gui_Trades(messagesArray, "UPDATE")
 		logsFile := r
 	}
-	msgbox % r
 	Logs_Append(A_ThisFunc,,logsFile)
 
 	fileObj := FileOpen(logsFile, "r")
@@ -390,29 +389,6 @@ Hotkeys_User_Handler(thisLabel) {
 ;												TRADES GUI
 ;
 ;==================================================================================================================
-	
-AutoXYWH(DimSize, cList*){       ; http://ahkscript.org/boards/viewtopic.php?t=1079
-  static cInfo := {}
- 
-  If (DimSize = "reset")
-    Return cInfo := {}
- 
-  For i, ctrl in cList {
-    ctrlID := A_Gui ":" ctrl
-    If ( cInfo[ctrlID].x = "" ){
-        GuiControlGet, i, %A_Gui%:Pos, %ctrl%
-        MMD := InStr(DimSize, "*") ? "MoveDraw" : "Move"
-        fx := fy := fw := fh := 0
-        For i, dim in (a := StrSplit(RegExReplace(DimSize, "i)[^xywh]")))
-            If !RegExMatch(DimSize, "i)" dim "\s*\K[\d.-]+", f%dim%)
-              f%dim% := 1
-        cInfo[ctrlID] := { x:ix, fx:fx, y:iy, fy:fy, w:iw, fw:fw, h:ih, fh:fh, gw:A_GuiWidth, gh:A_GuiHeight, a:a , m:MMD}
-    }Else If ( cInfo[ctrlID].a.1) {
-        dgx := dgw := A_GuiWidth  - cInfo[ctrlID].gw  , dgy := dgh := A_GuiHeight - cInfo[ctrlID].gh
-        For i, dim in cInfo[ctrlID]["a"]
-            Options .= dim (dg%dim% * cInfo[ctrlID]["f" dim] + cInfo[ctrlID][dim]) A_Space
-        GuiControl, % A_Gui ":" cInfo[ctrlID].m , % ctrl, % Options
-} } }
 
 Gui_Trades(infosArray="", errorMsg="") {
 ;			Trades GUI. Each new item will be added in a new tab
@@ -429,6 +405,13 @@ Gui_Trades(infosArray="", errorMsg="") {
 	guiScale := GlobalValues["Trades_GUI_Scale"]
 	guiScale := 1
 
+	if ( errorMsg = "EXE_NOT_FOUND" ) {
+		errorTxt := "Process not found, retrying in 10 seconds...`n`nRight click on the tray icon,`nthen [Settings] to set your preferences."
+	}
+	else {
+		errorTxt := "No trade on queue!`n`nRight click on the tray icon,`nthen [Settings] to set your preferences."
+	}
+
 	if ( errorMsg = "CREATE" ) {
 		defaultMaxTabs := 10
 		maxTabsRow := 7
@@ -440,26 +423,27 @@ Gui_Trades(infosArray="", errorMsg="") {
 		Gui, Trades:Default
 		tabHeight := Gui_Trades_Get_Tab_Height(), tabWidth := 390*guiScale
 		guiWidth := 402*guiScale, guiHeight := Floor((tabHeight+38)*guiScale), guiHeightMin := 30*guiScale
+		guiXWorkArea := guiWidth-(guiWidth-2), guiYWorkArea := guiHeight-(guiHeight-2)
 
 		Gui, Font,s%fontSize% cWhite,% GlobalValues["Trades_GUI_Font"]
-		Gui, Add, Picture,% "x" 0 . " y" 0 . " w" guiWidth . " h" 30*guiScale,% programSkinFolderPath "\" GlobalValues["Trades_GUI_Skin"] "\Header.png"
-		Gui, Add, Text,% "x" 35*guiScale . " y" 2*guiScale . " w" guiWidth-(100*guiScale) . " h" 28*guiScale " hwndguiTradesTitleHandler gGui_Trades_Move cC18F55 BackgroundTrans +0x200 ",% programName " - Queued Trades: 0"
+		Gui, Add, Picture,% "x" guiXWorkArea . " y" guiYWorkArea . " w" guiWidth . " h" 30*guiScale,% programSkinFolderPath "\" GlobalValues["Trades_GUI_Skin"] "\Header.png"
+		Gui, Add, Text,% "x" guiXWorkArea+(35*guiScale) . " y" guiYWorkArea . " w" guiWidth-(100*guiScale) . " h" 28*guiScale " hwndguiTradesTitleHandler gGui_Trades_Move cC18F55 BackgroundTrans +0x200 ",% programName " - Queued Trades: 0"
 		Gui, Add, Text,% "x" guiWidth-(65*guiScale) . " y" 2*guiScale . " w" 65*guiScale . " h" 28*guiScale " gGui_Trades_Minimize cC18F55 +BackgroundTrans +0x200",% "MINIMIZE"
 		Gui, Color, 181511
-		Gui, Add, Picture,% "x" 1*guiScale . " y" 30*guiScale . " w" guiWidth . " h" guiHeight,% programSkinFolderPath "\" GlobalValues["Trades_GUI_Skin"] "\Background.png"
-		Gui, Add, Picture,% "x" 1*guiScale . " y" 50*guiScale . " w" guiWidth . " h" 2*guiScale,% programSkinFolderPath "\" GlobalValues["Trades_GUI_Skin"] "\TabUnderline.png"
+		Gui, Add, Picture,% "x" 0 . " y" 30*guiScale . " w" guiWidth . " h" guiHeight,% programSkinFolderPath "\" GlobalValues["Trades_GUI_Skin"] "\Background.png"
+		Gui, Add, Picture,% "x" 0 . " y" 50*guiScale . " w" guiWidth . " h" 2*guiScale,% programSkinFolderPath "\" GlobalValues["Trades_GUI_Skin"] "\TabUnderline.png"
 
 		; Gui, Add, Picture,% "x" 0 . " y" 0 " w" guiWidth . " h" 2, C:\WinBorder.png
 		; Gui, Add, Picture,% "x" 0 . " y" 0 . " w" 2 . " h" guiHeight . " +0x4", C:\WinBorder.png
 		; Gui, Add, Picture,% "x" guiWidth-1 . " y" 0 . " w" guiScale . " h" guiHeight . " +0x4", C:\WinBorder.png
 		; Gui, Add, Picture,% "x0 y" guiHeight-2 " w" guiWidth " h2 +0x4", C:\WinBorder.png
-		Gui, Add, Text,% "x" 0 . " y" 0 . " w" guiWidth . " h" 2*guiScale . " +0x4",% "" ; Top
-		Gui, Add, Text,% "x" 0 . " y" 0 . " w" 2*guiScale . " h" guiHeight . " +0x4",% "" ; Left
-		Gui, Add, Text,% "x" guiWidth-(2*guiScale) . " y" 0 . " w" 2*guiScale . " h" guiHeight . " +0x4",% "" ; Right
-		Gui, Add, Text,% "x" 0 . " y" guiHeight-(1+Round(guiScale)) . " w" guiWidth . " h" 2*guiScale . " +0x4",% "" ; Bottom
+		Gui, Add, Text,% "x" 0 . " y" 0 . " w" guiWidth . " h" guiYWorkArea*guiScale . " +0x4",% "" ; Top
+		Gui, Add, Text,% "x" 0 . " y" 0 . " w" guiXWorkArea*guiScale . " h" guiHeight . " +0x4",% "" ; Left
+		Gui, Add, Text,% "x" guiWidth-(guiXWorkArea*guiScale) . " y" 0 . " w" guiXWorkArea*guiScale . " h" guiHeight . " +0x4",% "" ; Right
+		Gui, Add, Text,% "x" 0 . " y" guiHeight-(guiYWorkArea*guiScale) . " w" guiWidth . " h" guiYWorkArea*guiScale . " +0x4",% "" ; Bottom
 
 		Gui, Font, cC18F55
-		Gui, Add, Text,% "x" 2*guiScale . " y" 70*guiScale . " w" guiWidth-(4*guiScale) . " hwndProcessNotFoundTextHandler" . " Center",% "Process not found, retrying in 10 seconds...`n`nRight click on the tray icon,`nthen [Settings] to set your preferences."
+		Gui, Add, Text,% "x" 2*guiScale . " y" 70*guiScale . " w" guiWidth-(4*guiScale) . " hwndErrorMsgTextHandler" . " Center",% errorTxt
 
 		aeroStatus := Get_Aero_Status()
 		themeState := (aeroStatus=1)?("+Theme -0x8000"):("-Theme +0x8000")
@@ -507,14 +491,14 @@ Gui_Trades(infosArray="", errorMsg="") {
 			}
 
 			Gui, Font, cFFFFFF
-			Gui, Add, Text,% "x" 75*guiScale . " y" 60*guiScale . " w" 255*guiScale . " h" 15*guiScale . " vBuyerSlot" index . " hwndBuyerSlot" index "Handler" . " +BackgroundTrans +0x0100",% ""
-			Gui, Add, Text,% "xp" . " yp+" 15*guiScale . " w" 310*guiScale . " h" 15*guiScale . " vItemSlot" index . " hwndItemSlot" index "Handler" . " +BackgroundTrans +0x0100",% ""
-			Gui, Add, Text,% "xp" . " yp+" 15*guiScale . " w" 310*guiScale . " h" 15*guiScale . " vPriceSlot" index . " hwndPriceSlot" index "Handler" . " +BackgroundTrans +0x0100",% ""
+			Gui, Add, Text,% "x" 75*guiScale . " y" 60*guiScale . " w" 255*guiScale . " h" 15*guiScale . " vBuyerSlot" index . " hwndBuyerSlot" index "Handler" . " +BackgroundTrans +0x0100 R1",% ""
+			Gui, Add, Text,% "xp" . " yp+" 15*guiScale . " w" 310*guiScale . " h" 15*guiScale . " vItemSlot" index . " hwndItemSlot" index "Handler" . " +BackgroundTrans +0x0100 R1",% ""
+			Gui, Add, Text,% "xp" . " yp+" 15*guiScale . " w" 310*guiScale . " h" 15*guiScale . " vPriceSlot" index . " hwndPriceSlot" index "Handler" . " +BackgroundTrans +0x0100 R1",% ""
 			if ( infosArray.PRICES[index] = "UNPRICED ITEM")
 				GuiControl, Trades: +cRed,% PriceSlot%index%Handler
-			Gui, Add, Text,% "xp" . " yp+" 15*guiScale . " w" 310*guiScale . " h" 15*guiScale . " vLocationSlot" index . " hwndLocationSlot" index "Handler" . " +BackgroundTrans +0x0100",% ""
-			Gui, Add, Text,% "xp" . " yp+" 15*guiScale . " w" 310*guiScale . " h" 15*guiScale . " vOtherSlot" index . " hwndOtherSlot" index "Handler" . " +BackgroundTrans +0x100",% ""
-			Gui, Add, Text,% "x" 340*guiScale . " y" 55*guiScale . " w" 30*guiScale . " h" 15*guiScale . " vTimeSlot" index . " hwndTimeSlot" index "Handler" . " +BackgroundTrans",% ""
+			Gui, Add, Text,% "xp" . " yp+" 15*guiScale . " w" 310*guiScale . " h" 15*guiScale . " vLocationSlot" index . " hwndLocationSlot" index "Handler" . " +BackgroundTrans +0x0100 R1",% ""
+			Gui, Add, Text,% "xp" . " yp+" 15*guiScale . " w" 310*guiScale . " h" 15*guiScale . " vOtherSlot" index . " hwndOtherSlot" index "Handler" . " +BackgroundTrans +0x100 R1",% ""
+			Gui, Add, Text,% "x" 340*guiScale . " y" 52*guiScale . " w" 30*guiScale . " h" 15*guiScale . " vTimeSlot" index . " hwndTimeSlot" index "Handler" . " +BackgroundTrans R1",% ""
 			Gui, Add, Text,% "xp" . " yp" . " w0" . " h0" . " vPIDSlot" index . " hwndPIDSlot" index "Handler",
 
 			GuiControl, Hide,BuyerSlot%index%
@@ -534,7 +518,7 @@ Gui_Trades(infosArray="", errorMsg="") {
 		}
 		Gui, Add, Picture,% "x" 360*guiScale . " y" 30*guiScale . " w" 20*guiScale . " h" 20*guiScale . " vGoLeft" . " hwndGoLeftHandler" . " gGui_Trades_Arrow_Left +BackgroundTrans",% programSkinFolderPath "\" GlobalValues["Trades_GUI_Skin"] "\ArrowLeft.png"
 		Gui, Add, Picture,% "x" 380*guiScale . " y" 30*guiScale . " w" 20*guiScale . " h" 20*guiScale . " vGoRight" . " hwndGoRightHandler" . " gGui_Trades_Arrow_Right +BackgroundTrans",% programSkinFolderPath "\" GlobalValues["Trades_GUI_Skin"] "\ArrowRight.png"
-		Gui, Add, Picture,% "x" 370*guiScale . " y" 55*guiScale . " w" 25*guiScale . " h" 25*guiScale . " vdelBtn1" . " hwndCloseBtn1Handler" . " gGui_Trades_RemoveItem " themeState " +BackgroundTrans",% programSkinFolderPath "\" GlobalValues["Trades_GUI_Skin"] "\Close.png"
+		Gui, Add, Picture,% "x" 374*guiScale . " y" 53*guiScale . " w" 25*guiScale . " h" 25*guiScale . " vdelBtn1" . " hwndCloseBtn1Handler" . " gGui_Trades_RemoveItem " themeState " +BackgroundTrans",% programSkinFolderPath "\" GlobalValues["Trades_GUI_Skin"] "\Close.png"
 
 		TradesGUI_Controls.Insert("Arrow_Left", GoLeftHandler)
 		TradesGUI_Controls.Insert("Arrow_Right", GoRightHandler)
@@ -587,17 +571,13 @@ Gui_Trades(infosArray="", errorMsg="") {
 		GuiControl, Trades:Hide,% TabTXT%tabsCount%Handler
 		tabsCount--
 
-		if ( tabsCount = 0 || tabsCount = "" ) {
+		if ( !tabsCount ) {
 			tabsCount := 0
 			allTabs := "|Monitoring"
 			showState := "Hide"
 			txtColor := "C18F55"
-			if ( errorMsg = "EXE_NOT_FOUND" ) {
-				GuiControl, Trades:Show,% ProcessNotFoundTextHandler
-			}
-			else {
-				GuiControl, Trades:Hide,% ProcessNotFoundTextHandler
-			}
+			GuiControl, Trades:,% ErrorMsgTextHandler,% errorTxt
+			GuiControl, Trades:Show,% ErrorMsgTextHandler
 			GlobalValues.Insert("Trades_GUI_Current_State", "Inactive")
 			if ( GlobalValues["Trades_Click_Through"] )
 				Gui, Trades: +E0x20
@@ -609,6 +589,7 @@ Gui_Trades(infosArray="", errorMsg="") {
 			GlobalValues.Insert("Trades_GUI_Current_State", "Active")
 			Gui, Trades: -E0x20
 			WinSet, Transparent,% GlobalValues["Transparency_Active"],% "ahk_id " guiTradesHandler
+			GuiControl, Trades:Hide,% ErrorMsgTextHandler
 		}
 		Gui, Trades:Font, c%txtColor%
 		GuiControl, Trades:Font,% guiTradesTitleHandler
@@ -627,6 +608,7 @@ Gui_Trades(infosArray="", errorMsg="") {
 		GuiControl, Trades:%showState%,% LocationText1Handler
 		GuiControl, Trades:%showState%,% CloseBtn1Handler
 		GuiControl, Trades:%showState%,% OtherText1Handler
+
 
 		Gosub Gui_Trades_Tabs_Handler
 
@@ -675,12 +657,11 @@ Gui_Trades(infosArray="", errorMsg="") {
 		OnMessage(0x201, "WM_LBUTTONDOWN")
 		OnMessage(0x203, "WM_LBUTTONDBLCLK")
 		OnMessage(0x2A3, "WM_MOUSELEAVE")
-		OnMessage(WM_SIZING := 0x0214, "GuiSizing")
-
+		OnMessage(0x204, "WM_RBUTTONDOWN")
 
 		dpiFactor := GlobalValues["Screen_DPI"], showX := guiWidth-49
 	}
-	else {
+	else if ( errorMsg = "UPDATE" ) {
 		if ( GlobalValues["Trades_Select_Last_Tab"] = 1 ) && ( tabsCount > previousTabsCount ) {
 			if ( currentActiveTab != tabsCount && tabsCount > 0) {
 				lastActiveTab := currentActiveTab, currentActiveTab := tabsCount
@@ -700,18 +681,29 @@ Gui_Trades(infosArray="", errorMsg="") {
 			GoSub, Gui_Trades_Minimize
 		}
 	}
-
-	if ( errorMsg = "EXE_NOT_FOUND" ) {
+	else if ( errorMsg = "EXE_NOT_FOUND" ) {
 		countdown := 10
 		Loop 11 {
-			GuiControl, Trades:,% ProcessNotFoundTextHandler,% "Process not found, retrying in " countdown " seconds...`n`nRight click on the tray icon,`nthen [Settings] to set your preferences."
+			GuiControl, Trades:,% ErrorMsgTextHandler,% "Process not found, retrying in " countdown " seconds...`n`nRight click on the tray icon,`nthen [Settings] to set your preferences."
 			countdown--
 			sleep 1000
 		}
 		Monitor_Game_Logs()
 	}
+
 	if ( GlobalValues["Trades_GUI_Mode"] = "Overlay") {
 		try	Gui_Trades_Set_Position()
+	}
+
+	if ( errorMsg = "REMOVE_DUPLICATES" ) {
+		tabToDel := infosArray[0]
+		for key, element in infosArray {
+			messagesArray := Gui_Trades_Manage_Trades("REMOVE_CURRENT", ,element-key)
+			if ( tabToDel >= element-key ) ; our tabToDel moved to the left due to a lesser tab being deleted
+				tabToDel--
+			Gui_Trades(messagesArray, "UPDATE")
+			Gosub, Gui_Trades_Tabs_Handler
+		}
 	}
 
 	previousTabsCount := tabsCount
@@ -958,31 +950,8 @@ Gui_Trades(infosArray="", errorMsg="") {
 			Clipboard := tabInfos.Item
 		}
 
-		tabToDel := currentActiveTab
-;		Check for other trades with different buyer but same item/price/location
-		duplicatesID := Gui_Trades_Check_Duplicate(tabToDel)
-		if ( duplicatesID.MaxIndex() = 0 || duplicatesID.MaxIndex() ) {
-			duplicatesInfos := Gui_Trades_Get_Trades_Infos(duplicatesID[0])
-			MsgBox, 4100,% programName,% "Multiple tabs share the same infos:"
-			. "`nItem: " duplicatesInfos.Item
-			. "`nPrice: " duplicatesInfos.Price
-			. "`nLocation: " duplicatesInfos.Location
-			. "`n`nWould you like to close them as well?"
-			IfMsgBox, Yes
-			{
-				for key, element in duplicatesID {
-					messagesArray := Gui_Trades_Manage_Trades("REMOVE_CURRENT", ,element-key)
-					if ( tabToDel >= element-key ) ; our tabToDel moved to the left due to a lesser tab being deleted
-						tabToDel--
-					Gui_Trades(messagesArray, "UPDATE")
-					Gosub, Gui_Trades_Tabs_Handler
-				}		
-			}
-		}
-
-
 ;		Remove the current tab
-		messagesArray := Gui_Trades_Manage_Trades("REMOVE_CURRENT", ,tabToDel)
+		messagesArray := Gui_Trades_Manage_Trades("REMOVE_CURRENT", ,currentActiveTab)
 		Gui_Trades(messagesArray, "UPDATE")
 		Gosub, Gui_Trades_Tabs_Handler
 	return
@@ -999,10 +968,11 @@ Gui_Trades_Check_Duplicate(currentActiveTab) {
 /*			Returns an array (Index:0) containing the tab IDs of all tabs containing the same infos (with different buyer)
 */
 	duplicates := Object()
+	duplicates.Insert(0, currentActiveTab)
 	messagesArray := Gui_Trades_Manage_Trades("GET_ALL")
 	maxIndex := messagesArray.BUYERS.MaxIndex()
 	currentTabInfos := Gui_Trades_Get_Trades_Infos(currentActiveTab)
-	arrayKey := 0
+	arrayKey := 1
 	Loop %maxIndex% {
 		if (A_Index != currentActiveTab) {
 			otherTabInfos := Gui_Trades_Get_Trades_Infos(A_Index)
@@ -2791,6 +2761,39 @@ GUI_Multiple_Instances(handlersArray) {
 ;												WM_MESSAGES
 ;
 ;==================================================================================================================
+
+WM_RBUTTONDOWN(wParam, lParam, msg, hwnd) {
+	global TradesGUI_Controls, GlobalValues
+
+	RegExMatch(A_GuiControl, "\D+", btnType)
+	RegExMatch(A_GuiControl, "\d+", btnID)
+
+	if ( A_Gui = "Trades" ) {
+		if (btnType = "delBtn") {
+			Menu, TradesCloseBtn, Add, Close similar trades, Gui_Trades_Close_Similar
+			Menu, TradesCloseBtn, Show
+		}
+	}
+	return
+
+	Gui_Trades_Close_Similar:
+;		Check for other trades with different buyer but same item/price/location
+ 		tabToDel := GlobalValues["Trades_GUI_Current_Active_Tab"]
+ 		duplicatesID := Gui_Trades_Check_Duplicate(tabToDel)
+ 		if ( duplicatesID.MaxIndex() ) {
+ 			duplicatesInfos := Gui_Trades_Get_Trades_Infos(duplicatesID[0])
+ 			MsgBox, 4100,% programName,% "Multiple tabs share the same infos:"
+ 			. "`nItem: " duplicatesInfos.Item
+ 			. "`nPrice: " duplicatesInfos.Price
+ 			. "`nLocation: " duplicatesInfos.Location
+ 			. "`n`nWould you like to close them as well?"
+ 			IfMsgBox, Yes
+ 			{
+ 				Gui_Trades(duplicatesID, "REMOVE_DUPLICATES")	
+			}
+		}
+	Return
+}
 
 Set_Mouse_Leave_Tracking(hwnd) {
 /*			Allows to use WM_MouseLeave (0x2A3) with GUI that do not have a border.
