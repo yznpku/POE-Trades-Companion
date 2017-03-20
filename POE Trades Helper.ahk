@@ -34,13 +34,16 @@ Return
 Start_Script() {
 /*
 */
-	global ProgramValues, GlobalValues, TradesGUI_Controls
+	global ProgramValues, GlobalValues, ProgramFonts
+	global TradesGUI_Controls, SettingsGUI_Controls
 	global POEGameArray, POEGameList
 
 ;	Values Assignation
 	EnvGet, userprofile, userprofile
 
 	TradesGUI_Controls := Object() ; TradesGUI controls handlers
+	ProgramFonts := Object() ; Contains program private fonts
+	SettingsGUI_Controls := Object() ; Contains the Tab control handler, neccessary to simulate tabs in TreeView
 
 	GlobalValues := Object() ; Preferences.ini keys + some other shared global variables
 	GlobalValues.Insert("Screen_DPI", Get_DPI_Factor())
@@ -48,7 +51,7 @@ Start_Script() {
 	ProgramValues := Object() ; Specific to the program's informations
 	ProgramValues.Insert("Name", "POE Trades Helper")
 	ProgramValues.Insert("Version", "1.8.8")
-	ProgramValues.Insert("Debug", 1)
+	ProgramValues.Insert("Debug", 0)
 
 	GlobalValues.Insert("Trades_GUI_Skin", "Path of Exile")
 	GlobalValues.Insert("Trades_GUI_Font", "Fontin SmallCaps")
@@ -137,7 +140,8 @@ Start_Script() {
 	}
 
 	Logs_Append("START", settingsArray)
-	Monitor_Game_Logs()
+	; Monitor_Game_Logs()
+	Gui_Settings()
 }
 
 ;==================================================================================================================
@@ -427,7 +431,7 @@ Gui_Trades(infosArray="", errorMsg="") {
 
 		Gui, Font,s%fontSize% cWhite,% GlobalValues["Trades_GUI_Font"]
 		Gui, Add, Picture,% "x" guiXWorkArea . " y" guiYWorkArea . " w" guiWidth . " h" 30*guiScale,% programSkinFolderPath "\" GlobalValues["Trades_GUI_Skin"] "\Header.png"
-		Gui, Add, Text,% "x" guiXWorkArea+(35*guiScale) . " y" guiYWorkArea . " w" guiWidth-(100*guiScale) . " h" 28*guiScale " hwndguiTradesTitleHandler gGui_Trades_Move cC18F55 BackgroundTrans +0x200 ",% programName " - Queued Trades: 0"
+		Gui, Add, Text,% "x" guiXWorkArea+(35*guiScale) . " y" guiYWorkArea+(2*guiScale) . " w" guiWidth-(100*guiScale) . " h" 28*guiScale " hwndguiTradesTitleHandler gGui_Trades_Move cC18F55 BackgroundTrans +0x200 ",% programName " - Queued Trades: 0"
 		Gui, Add, Text,% "x" guiWidth-(65*guiScale) . " y" 2*guiScale . " w" 65*guiScale . " h" 28*guiScale " gGui_Trades_Minimize cC18F55 +BackgroundTrans +0x200",% "MINIMIZE"
 		Gui, Color, 181511
 		Gui, Add, Picture,% "x" 0 . " y" 30*guiScale . " w" guiWidth . " h" guiHeight,% programSkinFolderPath "\" GlobalValues["Trades_GUI_Skin"] "\Background.png"
@@ -1357,8 +1361,9 @@ Gui_Trades_Set_Position(xpos="UNSPECIFIED", ypos="UNSPECIFIED"){
 ;==================================================================================================================
 
 Gui_Settings() {
+	; global
 	static
-	global GlobalValues, ProgramValues
+	global GlobalValues, ProgramValues, SettingsGUI_Controls, ProgramFonts
 	global Hotkey1_KEYHandler, Hotkey2_KEYHandler, Hotkey3_KEYHandler, Hotkey4_KEYHandler, Hotkey5_KEYHandler, Hotkey6_KEYHandler
 
 	programName := ProgramValues["Name"], iniFilePath := ProgramValues["Ini_File"], programSFXFolderPath := ProgramValues["SFX_Folder"]
@@ -1371,51 +1376,99 @@ Gui_Settings() {
 	Gui, Settings:New, +AlwaysOnTop +SysMenu -MinimizeBox -MaximizeBox +OwnDialogs +LabelGui_Settings_ hwndSettingsHandler,% programName " - Settings"
 	Gui, Settings:Default
 
-	Gui, Add, Tab3, vTab x10 y10 %themeState%,Settings|TradesGUI|Hotkeys
-	Gui, Tab, 1
+;		Apply Button
+	; Gui, Add, Button, x380 y280 w200 h30 vWikiBtn gGui_Settings_Btn_WIKI,Visit the WIKI
+
+	guiXWorkArea := 150, guiYWorkArea := 10
+	Gui, Add, TreeView, x10 y10 h300 w130 -0x4 -Buttons gGui_Settings_TreeView
+    P1 := TV_Add("Settings","", "Expand")
+    P2 := TV_Add("Customization","","Expand")
+    P2C1 := TV_Add("Appearance", P2, "Expand")
+    P2C2 := TV_Add("Buttons Actions", P2, "Expand")
+    P3 := TV_Add("Hotkeys","","Expand")
+
+    Gui, Add, Button,% "x" guiXWorkArea . " y" 280 . " w" 430 . " h" 30 . " gGui_Settings_Btn_Apply vApplyBtn",Apply Settings
+
+	Gui, Add, Tab2, x10 y10 w0 h0 vTab hwndTabHandler %themeState%,Settings|Customization|Appearance|Buttons Actions|Hotkeys
+	SettingsGUI_Controls.Insert("Tab", Tabhandler)
+	Gui, Tab, Settings
 ;	Settings Tab
 ;		Trades GUI
-		Gui, Add, GroupBox, x20 y40 w200 h260,Trades GUI
+		Gui, Add, GroupBox,% " x" guiXWorkArea . " y" guiYWorkArea . " w210 h260",Trades GUI
 		Gui, Add, Radio, xp+10 yp+20 vShowAlways hwndShowAlwaysHandler,Always show
 		Gui, Add, Radio, xp yp+15 vShowInGame hwndShowInGameHandler,Only show while in game
 ;			Transparency
-			Gui, Add, GroupBox, x25 yp+25 w190 h140,Transparency
+			Gui, Add, GroupBox,% " x" guiXWorkArea+5 . " yp+25 w200 h140",Transparency
 			Gui, Add, Checkbox, xp+10 yp+25 hwndClickThroughHandler vClickThrough,Click-through while inactive
 			Gui, Add, Text, xp yp+20,Inactive (no trade on queue)
 			Gui, Add, Slider, xp+10 yp+15 hwndShowTransparencyHandler gGui_Settings_Transparency vShowTransparency AltSubmit ToolTip Range0-100
 			Gui, Add, Text, xp-10 yp+30,Active (trades are on queue)
 			Gui, Add, Slider, xp+10 yp+15 hwndShowTransparencyActiveHandler gGui_Settings_Transparency vShowTransparencyActive AltSubmit ToolTip Range30-100
 ;			Bottom
-			Gui, Add, Checkbox, x25 yp+45 hwndSelectLastTabHandler vSelectLastTab,Focus newly created tabs
+			Gui, Add, Checkbox,% " x" guiXWorkArea+8 . " yp+45 hwndSelectLastTabHandler vSelectLastTab",Focus newly created tabs
 			Gui, Add, Checkbox, xp yp+15 hwndAutoMinimizeHandler vAutoMinimize,Minimize when inactive
 			Gui, Add, Checkbox, xp yp+15 hwndAutoUnMinimizeHandler vAutoUnMinimize,Un-Minimize when active
 ;		Notifications
 ;			Trade Sound Group
-			Gui, Add, GroupBox, x230 y40 w210 h120,Notifications
+			Gui, Add, GroupBox,% "x" guiXWorkArea+220 . " y" guiYWorkArea . " w210 h120",Notifications
 			Gui, Add, Checkbox, xp+10 yp+20 vNotifyTradeToggle hwndNotifyTradeToggleHandler,Trade
 			Gui, Add, Edit, xp+65 yp-2 w70 h17 vNotifyTradeSound hwndNotifyTradeSoundHandler ReadOnly
 			Gui, Add, Button, xp+80 yp-2 h20 vNotifyTradeBrowse gGui_Settings_Notifications_Browse,Browse
 ;			Whisper Sound Group
-			Gui, Add, Checkbox, x240 y85 vNotifyWhisperToggle hwndNotifyWhisperToggleHandler,Whisper
+			Gui, Add, Checkbox,% "x" guiXWorkArea+230 " y" guiYWorkArea+45 . " vNotifyWhisperToggle hwndNotifyWhisperToggleHandler",Whisper
 			Gui, Add, Edit, xp+65 yp-2 w70 h17 vNotifyWhisperSound hwndNotifyWhisperSoundHandler ReadOnly
 			Gui, Add, Button, xp+80 yp-2 h20 vNotifyWhisperBrowse gGui_Settings_Notifications_Browse,Browse
 ;			Whisper Tray Notification
-			Gui, Add, Checkbox, x240 yp+24 vNotifyWhisperTray hwndNotifyWhisperTrayHandler,Tray notifications for whispers`n when POE is not active
-			Gui, Add, Checkbox, x240 yp+29 vNotifyWhisperFlash hwndNotifyWhisperFlashHandler,Make the game's taskbar icon flash
+			Gui, Add, Checkbox,% "x" guiXWorkArea+230  " yp+24 vNotifyWhisperTray hwndNotifyWhisperTrayHandler",Tray notifications for whispers`n when POE is not active
+			Gui, Add, Checkbox,% "x" guiXWorkArea+230 " yp+29 vNotifyWhisperFlash hwndNotifyWhisperFlashHandler",Make the game's taskbar icon flash
 ;		Clipboard
-		Gui, Add, GroupBox, x230 y160 w210 h60,Clipboard
+		Gui, Add, GroupBox,% "x" guiXWorkArea+220 " y" guiYWorkArea+120 . " w210 h60",Clipboard
 		Gui, Add, Checkbox, xp+10 yp+20 hwndClipNewHandler vClipNew,Clipboard new items
 		Gui, Add, Checkbox, xp yp+15 hwndClipTabHandler vClipTab,Clipboard item on tab switch
 ;		Support
-		Gui, Add, GroupBox, x230 y220 w210 h80,Support
+		Gui, Add, GroupBox,% "x" guiXWorkArea+220 " y" guiYWorkArea+180 . " w210 h80",Support
 		Gui, Add, Checkbox, xp+80 yp+20 vMessageSupportToggle hwndMessageSupportToggleHandler gGui_Settings_Support_MsgBox
 		Gui, Add, Text, gGUI_Settings_Tick_Case vMessageSupportToggleText xp-55 yp+13,% "Support the software by allowing`n   an additional message when`nclicking the Thanks/Sold buttons"
-;		Apply Button
-		Gui, Add, Button, x20 y310 w300 h30 gGui_Settings_Btn_Apply vApplyBtn,Apply Settings
-		Gui, Add, Button, x320 y310 w120 h30 vWikiBtn gGui_Settings_Btn_WIKI,Visit the WIKI
-	
-;	TradesGUI tab
-	Gui, Tab, 2
+
+;	
+	Gui, Tab, Customization
+
+;	--------------------
+	Gui, Tab, Appearance
+
+	Gui, Add, GroupBox,% "x" guiXWorkArea . " y" guiYWorkArea . " w210 h260",Skin
+
+		skinsList := "Windows Default"
+		Loop, Files,% ProgramValues["Skins_Folder"] "\*", D
+		{
+			IniRead, skinName,% A_LoopFileFullPath "\SkinInfos.ini",GENERAL,Name
+			IniRead, skinVersion,% A_LoopFileFullPath "\SkinInfos.ini",GENERAL,Version
+			skinsList .= "|" skinName
+		}
+		Sort, skinsList,D|
+		Sleep 1
+		Gui, Add, ListBox,% "xp+10" . " yp+20" . " w190" . " vSelectedSkin hwndSelectedSkinHandler R4",% skinsList
+
+		scalingList := "50%|75%|100%|125%|150%|175%|200%"
+		Gui, Add, Text,% "xp" . " yp+70",Scaling: 
+		Gui, Add, DropDownList,% "xp+45" . " yp-3" . " w145" . " vSkinScaling hwndSkinScalingHandler",% scalingList
+
+	Gui, Add, GroupBox,% "x" guiXWorkArea+220 . " y" guiYWorkArea . " w210 h260",Font
+
+		fontsList := "Windows Default"
+		for key, element in ProgramFonts {
+			fontsList .= "|" element
+		}
+		Sort, fontsList,D|
+		Sleep 1
+		Gui, Add, ListBox,% "xp+10" . " yp+20" . " w190" . " vSelectedFont hwndSelectedFontHandler R4",% fontsList
+		Gui, Add, Text,% "xp" . " yp+70",Size:
+		Gui, Add, DropDownList,% "xp+30" . " yp-3" . " w100" . " vFontSize hwndFontSizeHandler",% "Auto-Scale|Custom"
+		Gui, Add, Edit,% "xp+110" . " yp" . " w50" . " vFontSizeCustom hwndFontSizeCustomHandler ReadOnly"
+		Gui, Add, UpDown
+
+;	-------------------------
+	Gui, Tab, Buttons Actions
 	DynamicGUIHandlersArray := Object()
 	DynamicGUIHandlersArray.Btn := Object()
 	DynamicGUIHandlersArray.HPOS := Object()
@@ -1431,20 +1484,20 @@ Gui_Settings() {
 	DynamicGUIHandlersArray.Msg := Object()
 	Loop 9 {
 		index := A_Index
-		xpos := (index=1||index=4||index=7)?(60):(index=2||index=5||index=8)?(175):(index=3||index=6||index=9)?(290):("ERROR")
-		ypos := (index=1||index=2||index=3)?(40):(index=4||index=5||index=6)?(75):(index=7||index=8||index=9)?(110):("ERROR")
+		xpos := (index=1||index=4||index=7)?(guiXWorkArea):(index=2||index=5||index=8)?(guiXWorkArea+115):(index=3||index=6||index=9)?(guiXWorkArea+230):("ERROR")
+		ypos := (index=1||index=2||index=3)?(guiYWorkArea):(index=4||index=5||index=6)?(guiYWorkArea+35):(index=7||index=8||index=9)?(guiYWorkArea+70):("ERROR")
 		Gui, Add, Button, x%xpos% y%ypos% %themeState% w115 h35 vTradesBtn%index% hwndTradesBtn%index%Handler gGui_Settings_Custom_Label,% "Custom " index
 
-		Gui, Add, Text, x60 y160 hwndTradesHPOS%index%TextHandler,H-POS:
+		Gui, Add, Text,% "x" guiXWorkArea . " y" guiYWorkArea + 120 . " hwndTradesHPOS" index "TextHandler",H-POS:
 		Gui, Add, DropDownList, w70 xp+50 yp-3 vTradesHPOS%index% hwndTradesHPOS%index%Handler,% "Left|Center|Right"
 		Gui, Add, Text, xp+75 yp+3 hwndTradesVPOS%index%TextHandler,V-POS:
 		Gui, Add, DropDownList, w70 xp+40 yp-3 vTradesVPOS%index% hwndTradesVPOS%index%Handler,% "Top|Middle|Bottom"
 		Gui, Add, Text, xp+75 yp+3 hwndTradesSIZE%index%TextHandler,SIZE:
 		Gui, Add, DropDownList, w70 xp+35 yp-3 vTradesSIZE%index% hwndTradesSIZE%index%Handler,% "Disabled|Small|Medium|Large"
 
-		Gui, Add, Text, x60 yp+33 hwndTradesLabel%index%TextHandler,Label:
+		Gui, Add, Text,% "x" guiXWorkArea . " yp+33" . " hwndTradesLabel" index "TextHandler",Label:
 		Gui, Add, Edit, xp+50 yp-3 w295 vTradesLabel%index% hwndTradesLabel%index%Handler gGui_Settings_Custom_Label,
-		Gui, Add, Text, x60 yp+33 hwndTradesAction%index%TextHandler,Action:
+		Gui, Add, Text,% "x" guiXWorkArea . " yp+33" . " hwndTradesAction" index "TextHandler",Action:
 		Gui, Add, DropDownList, xp+50 yp-3 w295 vTradesAction%index% hwndTradesAction%index%Handler gGui_Settings_Custom_Label,% "Clipboard Item|Message (Basic)|Message (Basic) + Close Tab|Message (Advanced)|Message (Advanced) + Close Tab"
 		Gui, Add, Edit, xp yp+25 w295 vTradesMsg%index% hwndTradesMsg%index%Handler,
 
@@ -1473,21 +1526,18 @@ Gui_Settings() {
 		DynamicGUIHandlersArray.ActionText.Insert(index,TradesAction%index%TextHandler)		
 		DynamicGUIHandlersArray.Msg.Insert(index,TradesMsg%index%Handler)		
 	}
-	Gui, Add, Button, x130 y280 w200 gGui_Settings_Trades_Preview,Preview
-	;		Apply Button
-	Gui, Add, Button, x20 y310 w300 h30 gGui_Settings_Btn_Apply vApplyBtn2,Apply Settings
-	Gui, Add, Button, x320 y310 w120 h30 vWikiBtn2 gGui_Settings_Btn_WIKI,Visit the WIKI
-
+	Gui, Add, Button,% "x" guiXWorkArea . " y" guiYWorkArea+230 . " w" 345 . " h" 30 . " gGui_Settings_Trades_Preview",Preview
+	
 ;	Hotkeys Tab
-	Gui, Tab, 3
-	Gui, Add, Button, x130 y35 gGui_Settings_Hotkeys_Switch w200 hwndHotkeys_SwitchToBasicHandler,Switch to Basic
-	xpos := 20, ypos := 70
+	Gui, Tab, Hotkeys
+	Gui, Add, Button,% "x" guiXWorkArea . " y" guiYWorkArea . " w415 h22 gGui_Settings_Hotkeys_Switch hwndHotkeys_SwitchToBasicHandler",Switch to Basic
+	xpos := guiXWorkArea, ypos := guiYWorkArea+30
 	Loop 16 {
 		btnID := A_Index
 		if ( btnID > 1 && btnID <= 8 ) || ( btnID > 9 )
 			ypos += 30
 		else if ( btnID = 9 )
-			xpos := 235, ypos := 70
+			xpos := guiXWorkArea+210, ypos := guiYWorkArea+30
 		Gui, Add, Checkbox, x%xpos% y%ypos% vHotkeyAdvanced%btnID%_Toggle hwndHotkeyAdvanced%btnID%_ToggleHandler
 		Gui, Add, Edit, xp+30 yp-3 w60 vHotkeyAdvanced%btnID%_KEY hwndHotkeyAdvanced%btnID%_KEYHandler
 		Gui, Add, Edit, xp+65 yp w110 gGui_Settings_Hotkeys_Tooltip vHotkeyAdvanced%btnID%_Text hwndHotkeyAdvanced%btnID%_TextHandler
@@ -1499,14 +1549,14 @@ Gui_Settings() {
 		}
 	}
 
-	Gui, Add, Button, x130 y35 gGui_Settings_Hotkeys_Switch w200 hwndHotkeys_SwitchToAdvancedHandler,Switch to Advanced
-	xpos := 20, ypos := 55
+	Gui, Add, Button,% "x" guiXWorkArea . " y" guiYWorkArea . " w415 h22 gGui_Settings_Hotkeys_Switch hwndHotkeys_SwitchToAdvancedHandler",Switch to Advanced
+	xpos := guiXWorkArea, ypos := guiYWorkArea+20
 	Loop 6 {
 		btnID := A_Index
 		if (btnID > 1 && btnID <= 3) || (btnID > 4)
 			ypos += 80
 		else if (btnID = 4)
-			xpos := 230, ypos := 55
+			xpos := guiXWorkArea+210, ypos := guiYWorkArea+20
 		Gui, Add, GroupBox, x%xpos% y%ypos% w209 h90 hwndHotkey%btnID%_GroupBox
 		Gui, Add, Checkbox, xp+10 yp+20 vHotkey%btnID%_Toggle hwndHotkey%btnID%_ToggleHandler
 		Gui, Add, Edit, xp+30 yp-4 w150 vHotkey%btnID%_Text hwndHotkey%btnID%_TextHandler,
@@ -1525,14 +1575,27 @@ Gui_Settings() {
 			GuiControl,Settings:Hide,% Hotkey%btnID%_SHIFTHandler
 		}
 	}
-	Gui, Add, Button, x20 y310 w300 h30 gGui_Settings_Btn_Apply vApplyBtn3,Apply Settings
-	Gui, Add, Button, x320 y310 w120 h30 vWikiBtn3 gGui_Settings_Btn_WIKI,Visit the WIKI
+
+
 	GuiControl, Choose, Tab, 1
 	GoSub, Gui_Settings_Set_Preferences
 	Gui, Trades: -E0x20
 	Gui, Show
 	guiCreated := 1
 return
+
+	Gui_Settings_TreeView:
+	  if (A_GuiEvent = "S") {
+	  	evntinf := A_EventInfo
+	  	tabName := (evntinf=P1)?("Settings")
+	  			:(evntinf=P2)?("Customization")
+	  			:(evntinf=P2C1)?("Appearance")
+	  			:(evntinf=P2C2)?("Buttons Actions")
+	  			:(evntinf=P3)?("hotkeys")
+	  			:("ERROR")
+	      GuiControl, Settings:Choose,% SettingsGUI_Controls["Tab"],% tabName
+	  }
+	Return
 
 	Gui_Settings_Trades_Preview:
 		Gosub, Gui_Settings_Btn_Apply
@@ -1575,7 +1638,7 @@ return
 		}
 		GoSub Gui_Settings_Btn_Apply
 		Gui_Settings()
-		GuiControl, Settings:Choose, Tab, 3
+		GuiControl, Settings:Choose,% SettingsGUI_Controls["Tab"], Hotkeys
 	Return
 
 	Gui_Settings_Support_MsgBox:
@@ -1773,6 +1836,14 @@ return
 			CONTENT := (index=1)?(TradesSIZE1):(index=2)?(TradesSIZE2):(index=3)?(TradesSIZE3):(index=4)?(TradesSIZE4):(index=5)?(TradesSIZE5):(index=6)?(TradesSIZE6):(index=7)?(TradesSIZE7):(index=8)?(TradesSIZE8):(index=9)?(TradesSIZE9):("ERROR")
 			IniWrite,% CONTENT,% iniFilePath,TRADES_GUI,% KEY
 		}
+;	Skin & Font
+		IniWrite,% SelectedSkin,% iniFilePath,TRADES_GUI,Skin
+		StringReplace, SkinScaling, SkinScaling,% "%",% "", 1
+		SkinScaling := SkinScaling/100
+		IniWrite,% SkinScaling,% iniFilePath,TRADES_GUI,Skin_Scale_Multiplier
+		IniWrite,% SelectedFont,% iniFilePath,TRADES_GUI,Font
+		IniWrite,% FontSize,% iniFilePath,TRADES_GUI,Font_Size
+		IniWrite,% FontSizeCustom,% iniFilePath,TRADES_GUI,Font_Size_Custom
 ;	Declare the new settings
 		Disable_Hotkeys()
 		settingsArray := Get_INI_Settings()
@@ -1781,8 +1852,6 @@ return
 	return
 
 	Gui_Settings_Size:
-		static GuiWidth, GuiHeight
-
 		GuiWidth := A_GuiWidth
 		GuiHeight := A_GuiHeight
 		sleep 10
@@ -1831,6 +1900,10 @@ return
 				else if ( sectionName = "TRADES_GUI" ) {
 					if keyName contains _H,_V,_SIZE,_ACTION
 						GuiControl, Settings:Choose,% %handler%Handler,% var
+					else if keyName in Skin,Font,Font_Size
+						GuiControl, Settings:Choose,% %handler%Handler,% var
+					else if (keyName = "Skin_Scale_Multiplier")
+						GuiControl, Settings:Choose,% %handler%Handler,% var*100 "%"
 					else {
 						handler := %sectionName%_HandlersArray[key]
 						GuiControl, Settings:,% %handler%Handler,% var
@@ -2151,6 +2224,10 @@ Gui_Settings_Get_Settings_Arrays() {
 		keyID += 6
 		keyID2 += 6
 	}
+	returnArray.TRADES_GUI_HandlersArray.Insert(keyID, "SelectedSkin", "SkinScaling", "SelectedFont", "FontSize", "FontSizeCustom")
+	returnArray.TRADES_GUI_HandlersKeysArray.Insert(keyID, "Skin", "Skin_Scale_Multiplier", "Font", "Font_Size", "Font_Size_Custom")
+	returnArray.TRADES_GUI_KeysArray.Insert(keyID, "Skin", "Skin_Scale_Multiplier", "Font", "Font_Size", "Font_Size_Custom")
+	returnArray.TRADES_GUI_DefaultValues.Insert(keyID, "Path of Exile", "1", "Fontin-SmallCaps.ttf", "Auto-Scale", "10")
 	
 	return returnArray
 }
@@ -3404,7 +3481,7 @@ Extract_Font_Files() {
 /*			Include the ressources into the compiled executable
  *			Extract the ressources into their specified folder
 */
-	global ProgramValues
+	global ProgramValues, ProgramFonts
 
 	programFontFolderPath := ProgramValues["Fonts_Folder"]
 
@@ -3414,6 +3491,7 @@ Extract_Font_Files() {
 		if A_LoopFileExt in otf,otc,ttf,ttc
 		{
 			DllCall( "GDI32.DLL\AddFontResourceEx", Str, A_LoopFileFullPath,UInt,(FR_PRIVATE:=0x10), Int,0)
+			ProgramFonts.Insert(A_LoopFileName, A_LoopFileName)
 		}
 	}
 }
