@@ -112,7 +112,7 @@ Start_Script() {
 	Check_Update()
 	Enable_Hotkeys()
 
-;	Pre-rendering Trades-GUI
+	; Pre-rendering Trades-GUI
 	Gui_Trades(,"CREATE")
 
 
@@ -120,7 +120,7 @@ Start_Script() {
 	if ( ProgramValues["Debug"] ) {
 		Loop 2 {
 			newItemInfos := Object()
-			newItemInfos.Insert(0, "iSellStuff", "level 1 Faster Attacks Support", "5 alteration", "Breach (stash tab ""Gems""; position: left 6, top 8)", "",A_Hour ":" A_Min, "Offering 1alch?")
+			newItemInfos.Insert(0, "iSellStuff", "level 1 Faster Attacks Support", "See Offer", "Breach (stash tab ""Gems""; position: left 6, top 8)", "",A_Hour ":" A_Min, "Offering 1alch?")
 			newItemArray := Gui_Trades_Manage_Trades("ADD_NEW", newItemInfos)
 			Gui_Trades(newItemArray, "UPDATE")
 			newItemInfos.Insert(0, "aktai0", "Kaom's Heart Glorious Plate", "10 exalted", "Hardcore Legacy", "",A_Hour ":" A_Min, "-")
@@ -136,8 +136,8 @@ Start_Script() {
 	}
 
 	Logs_Append("START", settingsArray)
-	Monitor_Game_Logs()
-	; Gui_Settings()
+	; Monitor_Game_Logs()
+	Gui_Settings()
 }
 
 ;==================================================================================================================
@@ -234,7 +234,7 @@ Monitor_Game_Logs(mode="") {
 					if RegExMatch(whisp, ".*: (.*)Hi, I(?: would|'d) like to buy your (?:(.*) |(.*))(?:listed for (.*)|for my (.*)|)(?!:listed for|for my) in (?:(.*)\(.*""(.*)""(.*)\)|Hardcore (.*?)\W|(.*?)\W)(.*)", subPat ) ; poe.trade whisper found
 					{
 						tradeItem := (subPat2)?(subPat2):(subPat3)?(subPat3):("ERROR RETRIEVING ITEM")
-						tradePrice := (subPat4)?(subPat4):(subPat5)?(subPat5):("UNPRICED ITEM")
+						tradePrice := (subPat4)?(subPat4):(subPat5)?(subPat5):("See Offer")
 						tradeStash := (subPat6)?(subPat6 "- " subpat7 " " subPat8):(subPat9)?("Hardcore " subPat9):(subPat10)?(subPat10):("ERROR RETRIEVING LOCATION")
 						tradeOther := (subPat10!=subPat6 && subPat10!=subPat9 && subPat10!=tradeStash)?(subPat1 subPat10):(subPat11 && subPat11!="`n")?(subPat11):("-")
 						tradeItem = %tradeItem% ; Remove blank spaces
@@ -403,11 +403,19 @@ Gui_Trades(infosArray="", errorMsg="") {
 	iniFilePath := ProgramValues["Ini_File"]
 	programName := ProgramValues["Name"]
 	programSkinFolderPath := ProgramValues["Skins_Folder"]
+
 	activeSkin := GlobalValues["Active_Skin"]
 	guiScale := GlobalValues["Scale_Multiplier"]
 	IniRead, skinFontSize,% ProgramValues["Ini_File"],CUSTOMIZATION_APPEARANCE,Font_Size_Custom
 	fontSize := (GlobalValues["Font_Size_Mode"]="Custom")?(GlobalValues["Font_Size_Custom"]):(activeSkin!="System")?(skinFontSize*guiScale):(8*guiScale)
 	fontName := (GlobalValues["Font"]="System")?(""):(GlobalValues["Font"])
+
+	colorTitleActive := GlobalValues["Font_Color_Title_Active"]
+	colorTitleInactive := GlobalValues["Font_Color_Title_Inactive"]
+	colorTradesInfos1 := GlobalValues["Font_Color_Trades_Infos_1"]
+	colorTradesInfos2 := GlobalValues["Font_Color_Trades_Infos_2"]
+	colorTabs := GlobalValues["Font_Color_Tabs"]
+	colorButtons := GlobalValues["Font_Color_Buttons"]
 
 	maxTabsRow := 7
 	maxTabsStage1 := 10
@@ -426,9 +434,6 @@ Gui_Trades(infosArray="", errorMsg="") {
 		tabHeight := Gui_Trades_Get_Tab_Height(), tabWidth := 390*guiScale
 		guiWidth := 402*guiScale, guiHeight := Floor((tabHeight+38)*guiScale), guiHeightMin := 30*guiScale
 		guiXWorkArea := guiWidth-(guiWidth-2), guiYWorkArea := guiHeight-(guiHeight-2)
-
-		mainColor := GlobalValues["Main_Text_Color"]
-		buttonsColor := GlobalValues["Buttons_Text_Color"]
 
 		aeroStatus := Get_Aero_Status()
 		themeState := (aeroStatus=1)?("+Theme -0x8000"):("-Theme +0x8000")
@@ -451,8 +456,8 @@ Gui_Trades(infosArray="", errorMsg="") {
 ;			Header
 			Gui, Font,s%fontSize%,% fontName
 			Gui, Add, Picture,% "x" guiXWorkArea . " y" guiYWorkArea . " w" guiWidth . " h" 30*guiScale . " +BackgroundTrans",% programSkinFolderPath "\" GlobalValues["Active_Skin"] "\Header.png"
-			Gui, Add, Text,% "x" guiXWorkArea+(35*guiScale) . " y" guiYWorkArea+(2*guiScale) . " w" guiWidth-(100*guiScale) . " h" 28*guiScale " hwndguiTradesTitleHandler gGui_Trades_Move c" mainColor . " +BackgroundTrans +0x200 ",% programName " - Queued Trades: 0"
-			Gui, Add, Text,% "x" guiWidth-(65*guiScale) . " y" 2*guiScale . " w" 65*guiScale . " h" 28*guiScale " gGui_Trades_Minimize c" mainColor . " +BackgroundTrans +0x200",% "MINIMIZE"
+			Gui, Add, Text,% "x" guiXWorkArea+(35*guiScale) . " y" guiYWorkArea+(2*guiScale) . " w" guiWidth-(100*guiScale) . " h" 28*guiScale " hwndguiTradesTitleHandler gGui_Trades_Move c" colorTitleInactive . " +BackgroundTrans +0x200 ",% programName " - Queued Trades: 0"
+			Gui, Add, Text,% "x" guiWidth-(65*guiScale) . " y" 2*guiScale . " w" 65*guiScale . " h" 28*guiScale " hwndguiTradesMinimizeHandler gGui_Trades_Minimize c" colorTitleInactive . " +BackgroundTrans +0x200",% "MINIMIZE"
 
 ;			Borders
 			Gui, Add, Text,% "x" 0 . " y" 0 . " w" guiWidth*guiScale . " h" guiYWorkArea*guiScale . " +0x4",% "" ; Top
@@ -460,7 +465,8 @@ Gui_Trades(infosArray="", errorMsg="") {
 			Gui, Add, Text,% "x" guiWidth-(guiXWorkArea*guiScale) . " y" 0 . " w" guiXWorkArea*guiScale . " h" guiHeight . " +0x4",% "" ; Right
 			Gui, Add, Text,% "x" 0 . " y" guiHeight-(guiYWorkArea*guiScale) . " w" guiWidth . " h" guiYWorkArea*(Round(guiScale)) . " +0x4",% "" ; Bottom
 
-			Gui, Add, Text,% "x" 2*guiScale . " y" 70*guiScale . " w" guiWidth-(4*guiScale) . " hwndErrorMsgTextHandler" . " Center +BackgroundTrans c" maincolor,% errorTxt
+			Gui, Add, Tab3,% "x" 2*guiScale . " y" 30*guiScale . " w" . guiWidth-(2*guiScale) " h" 195*guiScale . " -Wrap  vTab " . themeState . " gGui_Trades_OnTabSwitch +BackgroundTrans c" colorTabs,% ""
+			Gui, Add, Text,% "x" 2*guiScale . " y" 70*guiScale . " w" guiWidth-(4*guiScale) . " hwndErrorMsgTextHandler" . " Center +BackgroundTrans c" colorTradesInfos1,% errorTxt
 
 
 			Loop %maxTabsRendered% {
@@ -470,22 +476,20 @@ Gui_Trades(infosArray="", errorMsg="") {
 				Gui, Add, Button,% "x" 374*guiScale . " y" 38*guiScale . " w" 20*guiScale . " h" 20*guiScale . " vdelBtn" index . " hwndCloseBtn1Handler" . " gGui_Trades_RemoveItem " themeState " +BackgroundTrans",X
 
 ;				Buyer / Item / ... Static Text
-				Gui, Add, Text,% "x" 9*guiScale . " y" 40*guiScale . " w" 60*guiScale . " h" 15*guiScale . " hwndBuyerText" index "Handler" . " +BackgroundTrans",% "Buyer: "
-				Gui, Add, Text,% "x" 9*guiScale . " yp+" 15*guiScale . " w" 60*guiScale . " h" 15*guiScale " hwndItemText" index "Handler" . " +BackgroundTrans",% "Item: "
-				Gui, Add, Text,% "xp" . " yp+" 15*guiScale . " w" 60*guiScale . " h" 15*guiScale " hwndPriceText" index "Handler" . " +BackgroundTrans",% "Price: "
-				Gui, Add, Text,% "xp" . " yp+" 15*guiScale . " w" 60*guiScale . " h" 15*guiScale " hwndLocationText" index "Handler" . " +BackgroundTrans",% "Location: "
-				Gui, Add, Text,% "xp" . " yp+" 15*guiScale . " w" 60*guiScale . " h" 15*guiScale " hwndOtherText" index "Handler" . " +BackgroundTrans",% "Other: "
+				Gui, Add, Text,% "x" 9*guiScale . " y" 40*guiScale . " w" 60*guiScale . " h" 15*guiScale . " hwndBuyerText" index "Handler" . " +BackgroundTrans" . " c" colorTradesInfos1,% "Buyer: "
+				Gui, Add, Text,% "x" 9*guiScale . " yp+" 15*guiScale . " w" 60*guiScale . " h" 15*guiScale " hwndItemText" index "Handler" . " +BackgroundTrans" . " c" colorTradesInfos1,% "Item: "
+				Gui, Add, Text,% "xp" . " yp+" 15*guiScale . " w" 60*guiScale . " h" 15*guiScale " hwndPriceText" index "Handler" . " +BackgroundTrans" . " c" colorTradesInfos1,% "Price: "
+				Gui, Add, Text,% "xp" . " yp+" 15*guiScale . " w" 60*guiScale . " h" 15*guiScale " hwndLocationText" index "Handler" . " +BackgroundTrans" . " c" colorTradesInfos1,% "Location: "
+				Gui, Add, Text,% "xp" . " yp+" 15*guiScale . " w" 60*guiScale . " h" 15*guiScale " hwndOtherText" index "Handler" . " +BackgroundTrans" . " c" colorTradesInfos1,% "Other: "
 
 ;				Buyer / Item / ... Slots
-				Gui, Add, Text,% "x" 75*guiScale . " y" 40*guiScale . " w" 255*guiScale . " h" 15*guiScale . " vBuyerSlot" index . " hwndBuyerSlot" index "Handler" . " +BackgroundTrans +0x0100 R1",% ""
-				Gui, Add, Text,% "xp" . " yp+" 15*guiScale . " w" 310*guiScale . " h" 15*guiScale . " vItemSlot" index . " hwndItemSlot" index "Handler" . " +BackgroundTrans +0x0100 R1",% ""
-				Gui, Add, Text,% "xp" . " yp+" 15*guiScale . " w" 310*guiScale . " h" 15*guiScale . " vPriceSlot" index . " hwndPriceSlot" index "Handler" . " +BackgroundTrans +0x0100 R1",% ""
-				if ( infosArray.PRICES[index] = "UNPRICED ITEM")
-					GuiControl, Trades: +cRed,% PriceSlot%index%Handler
-				Gui, Add, Text,% "xp" . " yp+" 15*guiScale . " w" 310*guiScale . " h" 15*guiScale . " vLocationSlot" index . " hwndLocationSlot" index "Handler" . " +BackgroundTrans +0x0100 R1",% ""
-				Gui, Add, Text,% "xp" . " yp+" 15*guiScale . " w" 310*guiScale . " h" 15*guiScale . " vOtherSlot" index . " hwndOtherSlot" index "Handler" . " +BackgroundTrans +0x100 R1",% ""
-				Gui, Add, Text,% "x" 340*guiScale . " y" 40*guiScale . " w" 30*guiScale . " h" 15*guiScale . " vTimeSlot" index . " hwndTimeSlot" index "Handler" . " +BackgroundTrans R1",% ""
-				Gui, Add, Text,% "xp" . " yp" . " w0" . " h0" . " vPIDSlot" index . " hwndPIDSlot" index "Handler",
+				Gui, Add, Text,% "x" 75*guiScale . " y" 40*guiScale . " w" 255*guiScale . " h" 15*guiScale . " vBuyerSlot" index . " hwndBuyerSlot" index "Handler" . " +BackgroundTrans +0x0100 R1" . " c" colorTradesInfos2,% ""
+				Gui, Add, Text,% "xp" . " yp+" 15*guiScale . " w" 310*guiScale . " h" 15*guiScale . " vItemSlot" index . " hwndItemSlot" index "Handler" . " +BackgroundTrans +0x0100 R1" . " c" colorTradesInfos2,% ""
+				Gui, Add, Text,% "xp" . " yp+" 15*guiScale . " w" 310*guiScale . " h" 15*guiScale . " vPriceSlot" index . " hwndPriceSlot" index "Handler" . " +BackgroundTrans +0x0100 R1" . " c" colorTradesInfos2,% ""
+				Gui, Add, Text,% "xp" . " yp+" 15*guiScale . " w" 310*guiScale . " h" 15*guiScale . " vLocationSlot" index . " hwndLocationSlot" index "Handler" . " +BackgroundTrans +0x0100 R1" . " c" colorTradesInfos2,% ""
+				Gui, Add, Text,% "xp" . " yp+" 15*guiScale . " w" 310*guiScale . " h" 15*guiScale . " vOtherSlot" index . " hwndOtherSlot" index "Handler" . " +BackgroundTrans +0x100 R1" . " c" colorTradesInfos2,% ""
+				Gui, Add, Text,% "x" 340*guiScale . " y" 40*guiScale . " w" 30*guiScale . " h" 15*guiScale . " vTimeSlot" index . " hwndTimeSlot" index "Handler" . " +BackgroundTrans R1" . " c" colorTradesInfos2,% ""
+				Gui, Add, Text,% "xp" . " yp" . " w0" . " h0" . " vPIDSlot" index . " hwndPIDSlot" index "Handler +BackgroundTrans" . " c" colorTradesInfos2,% ""
 
 				TradesGUI_Controls.Insert("Buyer_Slot_" index,BuyerSlot%index%Handler)
 				TradesGUI_Controls.Insert("Item_Slot_" index,ItemSlot%index%Handler)
@@ -506,7 +510,7 @@ Gui_Trades(infosArray="", errorMsg="") {
 					btnSub := RegExReplace(btnSub, "__", "_")
 					btnSub := RegExReplace(btnSub, "_", "", ,1,-1)
 					if ( btnW != "ERROR" && btnX != "ERROR" && btnY != "ERROR" && btnSub != "" && btnSub != "ERROR" ) {
-						Gui, Add, Button,% "x" btnX*guiScale . " y" btnY*guiScale . " w" btnW*guiScale . " h" 35*guiScale . " vCustomBtn" A_Index "_" index  . " hwndCustomBtn" A_Index "_" index "Handler" . " gGui_Trades_" btnSub,% btnName
+						Gui, Add, Button,% "x" btnX*guiScale . " y" btnY*guiScale . " w" btnW*guiScale . " h" 35*guiScale . " vCustomBtn" A_Index "_" index  . " hwndCustomBtn" A_Index "_" index "Handler" . " gGui_Trades_" btnSub . " +BackgroundTrans c" colorButtons,% btnName
 						TradesGUI_Controls.Insert("Button_Custom_" A_Index, CustomBtn%A_Index%_%index%Handler)
 					}
 				}
@@ -521,9 +525,9 @@ Gui_Trades(infosArray="", errorMsg="") {
 ;			Header
 			Gui, Color, Black ; Prevents the flickering from being too noticeable
 			Gui, Font,s%fontSize%,% fontName
-			Gui, Add, Picture,% "x" guiXWorkArea . " y" guiYWorkArea . " w" guiWidth . " h" 30*guiScale . " +BackgroundTrans",% programSkinFolderPath "\" GlobalValues["Active_Skin"] "\Header.png"
-			Gui, Add, Text,% "x" guiXWorkArea+(35*guiScale) . " y" guiYWorkArea+(2*guiScale) . " w" guiWidth-(100*guiScale) . " h" 28*guiScale " hwndguiTradesTitleHandler gGui_Trades_Move c" mainColor . " +BackgroundTrans +0x200 ",% programName " - Queued Trades: 0"
-			Gui, Add, Text,% "x" guiWidth-(65*guiScale) . " y" 2*guiScale . " w" 65*guiScale . " h" 28*guiScale " gGui_Trades_Minimize c" mainColor . " +BackgroundTrans +0x200",% "MINIMIZE"
+			Gui, Add, Picture,% "x" guiXWorkArea . " y" guiYWorkArea . " w" guiWidth . " h" 30*guiScale . " +BackgroundTrans",% programSkinFolderPath "\" activeSkin "\Header.png"
+			Gui, Add, Text,% "x" guiXWorkArea+(35*guiScale) . " y" guiYWorkArea+(2*guiScale) . " w" guiWidth-(100*guiScale) . " h" 28*guiScale " hwndguiTradesTitleHandler gGui_Trades_Move c" colorTitleInactive . " +BackgroundTrans +0x200 ",% programName " - Queued Trades: 0"
+			Gui, Add, Text,% "x" guiWidth-(65*guiScale) . " y" 2*guiScale . " w" 65*guiScale . " h" 28*guiScale " gGui_Trades_Minimize c" mainColor . " +BackgroundTrans +0x200 c" colorTitleInactive,% "MINIMIZE"
 
 ;			Borders
 			Gui, Add, Text,% "x" 0 . " y" 0 . " w" guiWidth*guiScale . " h" guiYWorkArea*guiScale . " +0x4",% "" ; Top
@@ -532,17 +536,17 @@ Gui_Trades(infosArray="", errorMsg="") {
 			Gui, Add, Text,% "x" 0 . " y" guiHeight-(guiYWorkArea*guiScale) . " w" guiWidth . " h" guiYWorkArea*(Round(guiScale)) . " +0x4",% "" ; Bottom
 
 ;			Static pictures assets
-			Gui, Add, Picture,% "x" 0 . " y" 30*guiScale . " w" guiWidth . " h" guiHeight . " +BackgroundTrans",% programSkinFolderPath "\" GlobalValues["Active_Skin"] "\Background.png"
-			Gui, Add, Picture,% "x" 0 . " y" 50*guiScale . " w" guiWidth . " h" 2*guiScale " +BackgroundTrans",% programSkinFolderPath "\" GlobalValues["Active_Skin"] "\TabUnderline.png"
-			Gui, Add, Picture,% "x" 360*guiScale . " y" 30*guiScale . " w" 20*guiScale . " h" 20*guiScale . " vGoLeft" . " hwndGoLeftHandler" . " gGui_Trades_Arrow_Left +BackgroundTrans",% programSkinFolderPath "\" GlobalValues["Active_Skin"] "\ArrowLeft.png"
-			Gui, Add, Picture,% "x" 380*guiScale . " y" 30*guiScale . " w" 20*guiScale . " h" 20*guiScale . " vGoRight" . " hwndGoRightHandler" . " gGui_Trades_Arrow_Right +BackgroundTrans",% programSkinFolderPath "\" GlobalValues["Active_Skin"] "\ArrowRight.png"
-			Gui, Add, Picture,% "x" 374*guiScale . " y" 53*guiScale . " w" 25*guiScale . " h" 25*guiScale . " vdelBtn1" . " hwndCloseBtn1Handler" . " gGui_Trades_RemoveItem " themeState " +BackgroundTrans",% programSkinFolderPath "\" GlobalValues["Active_Skin"] "\Close.png"
+			Gui, Add, Picture,% "x" 0 . " y" 30*guiScale . " w" guiWidth . " h" guiHeight . " +BackgroundTrans",% programSkinFolderPath "\" activeSkin "\Background.png"
+			Gui, Add, Picture,% "x" 0 . " y" 50*guiScale . " w" guiWidth . " h" 2*guiScale " +BackgroundTrans",% programSkinFolderPath "\" activeSkin "\TabUnderline.png"
+			Gui, Add, Picture,% "x" 360*guiScale . " y" 30*guiScale . " w" 20*guiScale . " h" 20*guiScale . " vGoLeft" . " hwndGoLeftHandler" . " gGui_Trades_Arrow_Left +BackgroundTrans",% programSkinFolderPath "\" activeSkin "\ArrowLeft.png"
+			Gui, Add, Picture,% "x" 380*guiScale . " y" 30*guiScale . " w" 20*guiScale . " h" 20*guiScale . " vGoRight" . " hwndGoRightHandler" . " gGui_Trades_Arrow_Right +BackgroundTrans",% programSkinFolderPath "\" activeSkin "\ArrowRight.png"
+			Gui, Add, Picture,% "x" 374*guiScale . " y" 53*guiScale . " w" 25*guiScale . " h" 25*guiScale . " vdelBtn1" . " hwndCloseBtn1Handler" . " gGui_Trades_RemoveItem " themeState " +BackgroundTrans",% programSkinFolderPath "\" activeSkin "\Close.png"
 			TradesGUI_Controls.Insert("Arrow_Left", GoLeftHandler)
 			TradesGUI_Controls.Insert("Arrow_Right", GoRightHandler)
 			TradesGUI_Controls.Insert("Button_Close", CloseBtn1Handler)
 
 ;			Error message
-			Gui, Add, Text,% "x" 2*guiScale . " y" 70*guiScale . " w" guiWidth-(4*guiScale) . " hwndErrorMsgTextHandler" . " Center +BackgroundTrans c" maincolor,% errorTxt
+			Gui, Add, Text,% "x" 2*guiScale . " y" 70*guiScale . " w" guiWidth-(4*guiScale) . " hwndErrorMsgTextHandler" . " Center +BackgroundTrans c" colorTradesInfos1,% errorTxt
 			; GlobalValues.Insert("Trades_GUI_Current_State", "Active")
 
 			Loop %maxTabsRendered% {
@@ -550,29 +554,27 @@ Gui_Trades(infosArray="", errorMsg="") {
 				xpos := (tabPos * xposMult) - xposMult + 2, ypos := 30
 
 ;				Tab Pictures
-				Gui, Add, Picture,% "x" xpos*guiScale . " y" ypos*guiScale . " w" 48*guiScale . " h" 20*guiScale " hwndTabIMG" index "Handler" . " vTabIMG" index . " gGui_Trades_Tabs_Handler +BackgroundTrans",% programSkinFolderPath "\" GlobalValues["Active_Skin"] "\TabInactive.png"
-				Gui, Font,% "c" ButtonsTextColor . " Bold"
-				Gui, Add, Text,% "xp" . " yp+" 3*guiScale . " w" 50*guiScale . " h" 20*guiScale . " hwndTabTXT" index "Handler" . " vTabTXT" index . " gGui_Trades_Tabs_Handler +BackgroundTrans 0x01",% index
+				Gui, Add, Picture,% "x" xpos*guiScale . " y" ypos*guiScale . " w" 48*guiScale . " h" 20*guiScale " hwndTabIMG" index "Handler" . " vTabIMG" index . " gGui_Trades_Tabs_Handler +BackgroundTrans",% programSkinFolderPath "\" activeSkin "\TabInactive.png"
+				Gui, Font,% "Bold"
+				Gui, Add, Text,% "xp" . " yp+" 3*guiScale . " w" 50*guiScale . " h" 20*guiScale . " hwndTabTXT" index "Handler" . " vTabTXT" index . " gGui_Trades_Tabs_Handler +BackgroundTrans 0x01 c" colorTabs,% index
 				Gui, Font, Norm
 
 ;				Buyer / Item / ... Static Text
 				if ( index = 1 ) {
-					Gui, Add, Text,% "x" 9*guiScale . " y" 60*guiScale . " w" 60*guiScale . " h" 15*guiScale . " hwndBuyerText" index "Handler" . " +BackgroundTrans",% "Buyer: "
-					Gui, Add, Text,% "x" 9*guiScale . " yp+" 15*guiScale . " w" 60*guiScale . " h" 15*guiScale " hwndItemText" index "Handler" . " +BackgroundTrans",% "Item: "
-					Gui, Add, Text,% "xp" . " yp+" 15*guiScale . " w" 60*guiScale . " h" 15*guiScale " hwndPriceText" index "Handler" . " +BackgroundTrans",% "Price: "
-					Gui, Add, Text,% "xp" . " yp+" 15*guiScale . " w" 60*guiScale . " h" 15*guiScale " hwndLocationText" index "Handler" . " +BackgroundTrans",% "Location: "
-					Gui, Add, Text,% "xp" . " yp+" 15*guiScale . " w" 60*guiScale . " h" 15*guiScale " hwndOtherText" index "Handler" . " +BackgroundTrans",% "Other: "
+					Gui, Add, Text,% "x" 9*guiScale . " y" 60*guiScale . " w" 60*guiScale . " h" 15*guiScale . " hwndBuyerText" index "Handler" . " +BackgroundTrans" . " c" colorTradesInfos1,% "Buyer: "
+					Gui, Add, Text,% "x" 9*guiScale . " yp+" 15*guiScale . " w" 60*guiScale . " h" 15*guiScale " hwndItemText" index "Handler" . " +BackgroundTrans" . " c" colorTradesInfos1,% "Item: "
+					Gui, Add, Text,% "xp" . " yp+" 15*guiScale . " w" 60*guiScale . " h" 15*guiScale " hwndPriceText" index "Handler" . " +BackgroundTrans" . " c" colorTradesInfos1,% "Price: "
+					Gui, Add, Text,% "xp" . " yp+" 15*guiScale . " w" 60*guiScale . " h" 15*guiScale " hwndLocationText" index "Handler" . " +BackgroundTrans" . " c" colorTradesInfos1,% "Location: "
+					Gui, Add, Text,% "xp" . " yp+" 15*guiScale . " w" 60*guiScale . " h" 15*guiScale " hwndOtherText" index "Handler" . " +BackgroundTrans" . " c" colorTradesInfos1,% "Other: "
 				}
 
 ;				Buyer / Item / ... Slots
-				Gui, Add, Text,% "x" 75*guiScale . " y" 60*guiScale . " w" 255*guiScale . " h" 15*guiScale . " vBuyerSlot" index . " hwndBuyerSlot" index "Handler" . " +BackgroundTrans +0x0100 R1 c" ButtonsTextColor,% ""
-				Gui, Add, Text,% "xp" . " yp+" 15*guiScale . " w" 310*guiScale . " h" 15*guiScale . " vItemSlot" index . " hwndItemSlot" index "Handler" . " +BackgroundTrans +0x0100 R1 c" ButtonsTextColor,% ""
-				Gui, Add, Text,% "xp" . " yp+" 15*guiScale . " w" 310*guiScale . " h" 15*guiScale . " vPriceSlot" index . " hwndPriceSlot" index "Handler" . " +BackgroundTrans +0x0100 R1 c" ButtonsTextColor,% ""
-				if ( infosArray.PRICES[index] = "UNPRICED ITEM")
-					GuiControl, Trades: +cRed,% PriceSlot%index%Handler
-				Gui, Add, Text,% "xp" . " yp+" 15*guiScale . " w" 310*guiScale . " h" 15*guiScale . " vLocationSlot" index . " hwndLocationSlot" index "Handler" . " +BackgroundTrans +0x0100 R1 c" ButtonsTextColor,% ""
-				Gui, Add, Text,% "xp" . " yp+" 15*guiScale . " w" 310*guiScale . " h" 15*guiScale . " vOtherSlot" index . " hwndOtherSlot" index "Handler" . " +BackgroundTrans +0x100 R1 c" ButtonsTextColor,% ""
-				Gui, Add, Text,% "x" 340*guiScale . " y" 60*guiScale " w" 30*guiScale . " h" 15*guiScale . " vTimeSlot" index . " hwndTimeSlot" index "Handler" . " +BackgroundTrans R1 c" ButtonsTextColor,% ""
+				Gui, Add, Text,% "x" 75*guiScale . " y" 60*guiScale . " w" 255*guiScale . " h" 15*guiScale . " vBuyerSlot" index . " hwndBuyerSlot" index "Handler" . " +BackgroundTrans +0x0100 R1 c" colorTradesInfos2,% ""
+				Gui, Add, Text,% "xp" . " yp+" 15*guiScale . " w" 310*guiScale . " h" 15*guiScale . " vItemSlot" index . " hwndItemSlot" index "Handler" . " +BackgroundTrans +0x0100 R1 c" colorTradesInfos2,% ""
+				Gui, Add, Text,% "xp" . " yp+" 15*guiScale . " w" 310*guiScale . " h" 15*guiScale . " vPriceSlot" index . " hwndPriceSlot" index "Handler" . " +BackgroundTrans +0x0100 R1 c" colorTradesInfos2,% ""
+				Gui, Add, Text,% "xp" . " yp+" 15*guiScale . " w" 310*guiScale . " h" 15*guiScale . " vLocationSlot" index . " hwndLocationSlot" index "Handler" . " +BackgroundTrans +0x0100 R1 c" colorTradesInfos2,% ""
+				Gui, Add, Text,% "xp" . " yp+" 15*guiScale . " w" 310*guiScale . " h" 15*guiScale . " vOtherSlot" index . " hwndOtherSlot" index "Handler" . " +BackgroundTrans +0x100 R1 c" colorTradesInfos2,% ""
+				Gui, Add, Text,% "x" 340*guiScale . " y" 60*guiScale " w" 30*guiScale . " h" 15*guiScale . " vTimeSlot" index . " hwndTimeSlot" index "Handler" . " +BackgroundTrans R1 c" colorTradesInfos2,% ""
 				Gui, Add, Text,% "xp" . " yp" . " w0" . " h0" . " vPIDSlot" index . " hwndPIDSlot" index "Handler",
 
 
@@ -608,11 +610,10 @@ Gui_Trades(infosArray="", errorMsg="") {
 				btnSub := RegExReplace(btnSub, "__", "_")
 				btnSub := RegExReplace(btnSub, "_", "", ,1,-1)
 				if ( btnW != "ERROR" && btnX != "ERROR" && btnY != "ERROR" && btnSub != "" && btnSub != "ERROR" ) {
-					Gui, Add, Picture,% "x" btnX*guiScale . " y" btnY*guiScale . " w" btnW*guiScale . " h" 35*guiScale . " vCustomBtn" A_Index . " hwndCustomBtn" A_Index "Handler" . " gGui_Trades_" btnSub,% programSkinFolderPath "\" GlobalValues["Active_Skin"] "\ButtonBackground.png"
-					Gui, Add, Picture,% "x" btnX*guiScale . " y" btnY*guiScale . " w" 8*guiScale . " h" 35*guiScale . " vCustomBtn" A_Index "OrnamentLeft" . " hwndCustomBtn" A_Index "OrnamentLeftHandler" . " +BackgroundTrans",% programSkinFolderPath "\" GlobalValues["Active_Skin"] "\ButtonOrnamentLeft.png"
-					Gui, Add, Picture,% "x" (btnX*guiScale)+(btnW-8)*guiScale . " y" btnY*guiScale . " w" 8*guiScale . " h" 35*guiScale . " vCustomBtn" A_Index "OrnamentRight" . " hwndCustomBtn" A_Index "OrnamentRightHandler" . " +BackgroundTrans",% programSkinFolderPath "\" GlobalValues["Active_Skin"] "\ButtonOrnamentRight.png"
-					Gui, Font,% "c" GlobalValues["Main_Text_Color"]
-					Gui, Add, Text,% "x" btnX*guiScale . " yp+" 10*guiScale . " w" btnW*guiScale . " vCustomBtnTXT" A_Index . " hwndCustomBtnTXT" A_Index "Handler" . " Center +BackgroundTrans",% btnName
+					Gui, Add, Picture,% "x" btnX*guiScale . " y" btnY*guiScale . " w" btnW*guiScale . " h" 35*guiScale . " vCustomBtn" A_Index . " hwndCustomBtn" A_Index "Handler" . " +BackgroundTrans gGui_Trades_" btnSub,% programSkinFolderPath "\" activeSkin "\ButtonBackground.png"
+					Gui, Add, Picture,% "x" btnX*guiScale . " y" btnY*guiScale . " w" 8*guiScale . " h" 35*guiScale . " vCustomBtn" A_Index "OrnamentLeft" . " hwndCustomBtn" A_Index "OrnamentLeftHandler" . " +BackgroundTrans",% programSkinFolderPath "\" activeSkin "\ButtonOrnamentLeft.png"
+					Gui, Add, Picture,% "x" (btnX*guiScale)+(btnW-8)*guiScale . " y" btnY*guiScale . " w" 8*guiScale . " h" 35*guiScale . " vCustomBtn" A_Index "OrnamentRight" . " hwndCustomBtn" A_Index "OrnamentRightHandler" . " +BackgroundTrans",% programSkinFolderPath "\" activeSkin "\ButtonOrnamentRight.png"
+					Gui, Add, Text,% "x" btnX*guiScale . " yp+" 10*guiScale . " w" btnW*guiScale . " vCustomBtnTXT" A_Index . " hwndCustomBtnTXT" A_Index "Handler" . " Center +BackgroundTrans c" colorButtons,% btnName
 
 					TradesGUI_Controls.Insert("Button_Custom_" A_Index, CustomBtn%A_Index%Handler)
 					TradesGUI_Controls.Insert("Button_Custom_" A_Index "_OrnamentLeft", CustomBtn%A_Index%OrnamentLeftHandler)
@@ -648,10 +649,14 @@ Gui_Trades(infosArray="", errorMsg="") {
 			showState := "Hide"
 			GuiControl, Trades:,% ErrorMsgTextHandler,% errorTxt
 			GuiControl, Trades:Show,% ErrorMsgTextHandler
+			GuiControl, Trades: +c%colorTitleInactive%,% guiTradesTitleHandler
+			GuiControl, Trades: +c%colorTitleInactive%,% guiTradesMinimizeHandler
 		}
 		else {
 			showState := "Show"
 			GuiControl, Trades:Hide,% ErrorMsgTextHandler
+			GuiControl, Trades: +c%colorTitleActive%,% guiTradesTitleHandler
+			GuiControl, Trades: +c%colorTitleActive%,% guiTradesMinimizeHandler
 		}
 		clickThroughState := ( GlobalValues.Trades_Click_Through && !tabsCount )?("+"):("-")
 		transparency := (!tabsCount)?(GlobalValues.Transparency):(GlobalValues.Transparency_Active)
@@ -811,6 +816,7 @@ Gui_Trades(infosArray="", errorMsg="") {
 	sleep 10
 	return
 
+	Gui_Trades_OnTabSwitch:
 ;		Clipboard the item's infos on tab switch if the user enabled
 		Gui, Submit, NoHide
 		tabID := Gui_Trades_Get_Tab_ID()
@@ -1501,15 +1507,15 @@ Gui_Settings() {
 ;		Apply Button
 
 	guiXWorkArea := 150, guiYWorkArea := 10
-	Gui, Add, TreeView, x10 y10 h320 w130 -0x4 -Buttons gGui_Settings_TreeView
+	Gui, Add, TreeView, x10 y10 h380 w130 -0x4 -Buttons gGui_Settings_TreeView
     P1 := TV_Add("Settings","", "Expand")
     P2 := TV_Add("Customization","","Expand")
     P2C1 := TV_Add("Appearance", P2, "Expand")
     P2C2 := TV_Add("Buttons Actions", P2, "Expand")
     P3 := TV_Add("Hotkeys","","Expand")
 
-	Gui, Add, Link,% "x" guiXWorkarea . " y" 280 . " vWikiBtn gGui_Settings_Btn_WIKI",% "Keep the cursor above a control to know more about it. You may also <a href="""">Visit the Wiki</a>"
-    Gui, Add, Button,% "x" guiXWorkArea . " y" 300 . " w" 430 . " h" 30 . " gGui_Settings_Btn_Apply vApplyBtn",Apply Settings
+	Gui, Add, Link,% "x" guiXWorkarea . " y" 340 . " vWikiBtn gGui_Settings_Btn_WIKI",% "Keep the cursor above a control to know more about it. You may also <a href="""">Visit the Wiki</a>"
+    Gui, Add, Button,% "x" guiXWorkArea . " y" 360 . " w" 430 . " h" 30 . " gGui_Settings_Btn_Apply vApplyBtn",Apply Settings
 
 	Gui, Add, Tab2, x10 y10 w0 h0 vTab hwndTabHandler %themeState%,Settings|Customization|Appearance|Buttons Actions|Hotkeys
 	Gui, Tab, Settings
@@ -1565,23 +1571,24 @@ Gui_Settings() {
 		Sort, presetsList,D|
 		Gui, Add, DropDownList,% "x" guiXWorkarea+10 . " y" guiYWorkArea+20 . " w400" . " vActivePreset hwndActivePresetHandler gGui_Settings_Presets",% presetsList
 
-	Gui, Add, GroupBox,% "x" guiXWorkArea . " y" guiYWorkArea+60 . " w210 h205",Skin
+	Gui, Add, GroupBox,% "x" guiXWorkArea . " y" guiYWorkArea+60 . " w430 h85",Skin
 
-		skinsList := "System"
+		skinsList := ""
 		Loop, Files,% ProgramValues["Skins_Folder"] "\*", D
 		{
 			IniRead, skinName,% A_LoopFileFullPath "\Settings.ini",CUSTOMIZATION_APPEARANCE,Active_Skin
-			skinsList .= "|" skinName
+			if ( skinName && skinName != "ERROR" )
+				skinsList .= skinName "|"
 		}
 		Sort, skinsList,D|
 		Sleep 1
 		Gui, Add, ListBox,% "xp+10" . " yp+20" . " w190" . " vSelectedSkin hwndSelectedSkinHandler R4" . " gGui_Settings_Set_Custom_Preset",% skinsList
 
 		scalingList := "50%|75%|100%|125%|150%|175%|200%"
-		Gui, Add, Text,% "xp" . " yp+70",Scaling: 
-		Gui, Add, DropDownList,% "xp+45" . " yp-3" . " w145" . " vSkinScaling hwndSkinScalingHandler" . " gGui_Settings_Set_Custom_Preset",% scalingList
+		Gui, Add, Text,% "xp+200" . " yp+3",Scale: 
+		Gui, Add, DropDownList,% "xp+40" . " yp-3" . " w145" . " vSkinScaling hwndSkinScalingHandler" . " gGui_Settings_Set_Custom_Preset",% scalingList
 
-	Gui, Add, GroupBox,% "x" guiXWorkArea+220 . " y" guiYWorkArea+60 . " w210 h205",Font
+	Gui, Add, GroupBox,% "x" guiXWorkArea . " y" guiYWorkArea+150 . " w430 h85",Font
 
 		fontsList := "System"
 		for fontFile, fontTitle in ProgramFonts {
@@ -1590,17 +1597,29 @@ Gui_Settings() {
 		Sort, fontsList,D|
 		Sleep 1
 		Gui, Add, ListBox,% "xp+10" . " yp+20" . " w190" . " vSelectedFont hwndSelectedFontHandler R4" . " gGui_Settings_Set_Custom_Preset",% fontsList
-		Gui, Add, Text,% "xp" . " yp+70",Size:
-		Gui, Add, DropDownList,% "xp+30" . " yp-3" . " w100" . " vFontSize hwndFontSizeHandler" . " gGui_Settings_Set_Custom_Preset",% "Auto-Scale|Custom"
-		Gui, Add, Edit,% "xp+110" . " yp" . " w50" . " ReadOnly"
+		Gui, Add, Text,% "xp+200" . " yp+3",Size:
+		Gui, Add, DropDownList,% "xp+40" . " yp-3" . " w100" . " vFontSize hwndFontSizeHandler" . " gGui_Settings_Set_Custom_Preset",% "Automatic|Custom"
+		Gui, Add, Edit,% "xp+100" . " yp" . " w50" . " ReadOnly"
 		Gui, Add, UpDown, vFontSizeCustom hwndFontSizeCustomHandler gGui_Settings_Set_Custom_Preset
 
-		Gui, Add, Text,% "x" guiXWorkarea+230 " yp+38",Main text color:
-		Gui, Add, Edit,% "xp+90" . " yp-3" . " w100" . " vMainTextColor hwndMainTextColorHandler" . " gGui_Settings_Set_Custom_Preset Limit6",
-		Gui, Add, Text,% "xp-90" . " yp+28",Buttons text color:
-		Gui, Add, Edit,% "xp+90" . " yp-3" . " w100" . " vButtonsTextColor hwndButtonsTextColorHandler" . " gGui_Settings_Set_Custom_Preset Limit6",
+	Gui, Add, GroupBox,% "x" guiXWorkArea . " y" guiYWorkArea+240 . " w430 h85",Font Colors
 
-		Gui, Add, Link,% "xp-90" . " yp+33",% "<a href=""http://hslpicker.com/"">HSL Color Picker</a>"
+		Gui, Add, Text,% "xp+10" . " yp+23",Title (Active):
+		Gui, Add, Edit,% "xp+75" . " yp-3" . " w60" . " vTitleActiveColor" . " hwndTitleActiveColorHandler" . " Limit6",% ""
+		Gui, Add, Text,% "xp-75" . " yp+28",Title (Inactive):
+		Gui, Add, Edit,% "xp+75" . " yp-3" . " w60" . " vTitleInactiveColor" . " hwndTitleInactiveColorHandler" . " Limit6",% ""
+
+		Gui, Add, Text,% "xp+65" . " yp-22",Trade Infos (1):
+		Gui, Add, Edit,% "xp+75" . " yp-3" . " w60" . " vTradesInfos1Color" . " hwndTradesInfos1ColorHandler" . " Limit6",% ""
+		Gui, Add, Text,% "xp-75" . " yp+28",Trade Infos (2):
+		Gui, Add, Edit,% "xp+75" . " yp-3" . " w60" . " vTradesInfos2Color" . " hwndTradesInfos2ColorHandler" . " Limit6",% ""
+
+		Gui, Add, Text,% "xp+65" . " yp-22",Tabs:
+		Gui, Add, Edit,% "xp+75" . " yp-3" . " w60" . " vTabsColor" . " hwndTabsColorHandler" . " Limit6",% ""
+		Gui, Add, Text,% "xp-75" . " yp+28",Buttons:
+		Gui, Add, Edit,% "xp+75" . " yp-3" . " w60" . " vButtonsColor" . " hwndButtonsColorHandler" . " Limit6",% ""
+
+		Gui, Add, Link,% "x" guiXWorkArea + 80 . " y" guiYWorkArea+240,% "(Use <a href=""http://hslpicker.com/"">HSL Color Picker</a> to retrieve the 6 digits code starting with #) "
 
 ;	-------------------------
 	Gui, Tab, Buttons Actions
@@ -1720,52 +1739,58 @@ return
 
 	Gui_Settings_Set_Custom_Preset:
 		Gui, Settings:Submit, NoHide
-		GuiControl, Settings:Choose,% ActivePresetHandler,User Defined
-		if ( A_GuiControl = "FontSize" ) {
-			state := (FontSize="Custom")?("Enable"):("Disable")
-			GuiControl, Settings:%state%,% FontSizeCustomHandler
+		if ( A_GuiControl != "ActivePreset" ) {
+			GuiControl, Settings:Choose,% ActivePresetHandler,User Defined
 		}
+
+;		Enable or disable the control.
+		state := (FontSize="Custom")?("Enable"):("Disable")
+		GuiControl, Settings:%state%,% FontSizeCustomHandler
+		state := (SelectedSkin="System")?("Disable"):("Enable")
+		GuiControl, Settings:%state%,% ButtonsColorHandler
 	Return
 
 	Gui_Settings_Presets:
 		Gui, Settings:Submit, NoHide
-		ActivePresetSettings := Object()
-		ActivePresetSettings.Insert("Active_Skin", "")
-		ActivePresetSettings.Insert("Scale_Multiplier", "")
-		ActivePresetSettings.Insert("Font", "")
-		ActivePresetSettings.Insert("Font_Size_Mode", "")
-		ActivePresetSettings.Insert("Font_Size_Custom", "")
-		ActivePresetSettings.Insert("Main_Text_Color", "")
-		ActivePresetSettings.Insert("Buttons_Text_Color", "")
+		ActivePresetSettings := Gui_Settings_Get_Settings_Arrays()
+		INI_Keys := ActivePresetSettings.CUSTOMIZATION_APPEARANCE_KeysArray
+		ControlsHandlers := ActivePresetSettings.CUSTOMIZATION_APPEARANCE_HandlersArray
 
-		for key, element in ActivePresetSettings {
+		for key, element in INI_Keys {
 			skinSettingsFile := (ActivePreset="User Defined")?(ProgramValues[("Ini_File")]):(ProgramValues["Skins_Folder"] "\" ActivePreset "\Settings.ini")
-			iniSection := "CUSTOMIZATION_APPEARANCE"
-			IniRead, value,% skinSettingsFile,% iniSection,% key
-			ctrlName := (key="Active_Skin")?(SelectedSkinHandler)
-					   :(key="Scale_Multiplier")?(SkinScalingHandler)
-					   :(key="Font")?(SelectedFontHandler)
-					   :(key="Font_Size_Mode")?(FontSizeHandler)
-					   :(key="Font_Size_Custom")?(FontSizeCustomHandler)
-					   :(key="Main_Text_Color")?(MainTextColorHandler)
-					   :(key="Buttons_Text_Color")?(ButtonsTextColorHandler)
-					   :("ERROR")
-			GuiControl, Settings:-g,% ctrlName ; Prevent from triggeting the gLabel
-			if key in Font_Size_Custom,Main_Text_Color,Buttons_Text_Color
+			
+			IniRead, value,% skinSettingsFile,% "CUSTOMIZATION_APPEARANCE",% element
+			ctrlName := ControlsHandlers[key]
+			ctrlHandler := (ctrlName="ActivePreset")?(ActivePresetHandlerHandler)
+						  :(ctrlName="SelectedSkin")?(SelectedSkinHandler)
+						  :(ctrlName="SkinScaling")?(SkinScalingHandler)
+						  :(ctrlName="SelectedFont")?(SelectedFontHandler)
+						  :(ctrlName="FontSize")?(FontSizeHandler)
+						  :(ctrlName="FontSizeCustom")?(FontSizeCustomHandler)
+						  :(ctrlName="TitleActiveColor")?(TitleActiveColorHandler)
+						  :(ctrlName="TitleInactiveColor")?(TitleInactiveColorHandler)
+						  :(ctrlName="TradesInfos1Color")?(TradesInfos1ColorHandler)
+						  :(ctrlName="TradesInfos2Color")?(TradesInfos2ColorHandler)
+						  :(ctrlName="TabsColor")?(TabsColorHandler)
+						  :(ctrlName="ButtonsColor")?(ButtonsColorHandler)
+						  :("ERROR")
+
+			GuiControl, Settings:-g,% ctrlHandler ; Prevent from triggeting the gLabel
+			if element in Font_Size_Custom,Font_Color_Title_Active,Font_Color_Title_Inactive,Font_Color_Trades_Infos_1,Font_Color_Trades_Infos_2,Font_Color_Tabs,Font_Color_Buttons
 			{
-				isApplyingPreset := 1
-				GuiControl, Settings:,% ctrlName,% value
+				GuiControl, Settings:,% ctrlHandler,% value
 			}
-			else if ( key = "Scale_Multiplier" ) {
+			else if ( element = "Scale_Multiplier" ) {
 				value := value*100
 				value := Round(value, 0)
-				GuiControl, Settings:Choose,% ctrlName,% value "%"
+				GuiControl, Settings:Choose,% ctrlHandler,% value "%"
 			}
 			else
-				GuiControl, Settings:Choose,% ctrlName,% value
+				GuiControl, Settings:Choose,% ctrlHandler,% value
 
-			GuiControl, Settings:+gGui_Settings_Set_Custom_Preset,% ctrlName ; Re-enable gLabel
+			GuiControl, Settings:+gGui_Settings_Set_Custom_Preset,% ctrlHandler ; Re-enable gLabel
 		}
+		GoSub, Gui_Settings_Set_Custom_Preset
 	Return
 
 	Gui_Settings_TreeView:
@@ -2021,7 +2046,7 @@ return
 			CONTENT := (index=1)?(TradesSIZE1):(index=2)?(TradesSIZE2):(index=3)?(TradesSIZE3):(index=4)?(TradesSIZE4):(index=5)?(TradesSIZE5):(index=6)?(TradesSIZE6):(index=7)?(TradesSIZE7):(index=8)?(TradesSIZE8):(index=9)?(TradesSIZE9):("ERROR")
 			IniWrite,% CONTENT,% iniFilePath,TRADES_GUI,% KEY
 		}
-;	Skin & Font
+;	Appearance Tab
 		IniWrite,% ActivePreset,% iniFilePath,CUSTOMIZATION_APPEARANCE,Active_Preset
 		IniWrite,% SelectedSkin,% iniFilePath,CUSTOMIZATION_APPEARANCE,Active_Skin
 		StringReplace, SkinScaling, SkinScaling,% "%",% "", 1
@@ -2031,8 +2056,12 @@ return
 		IniWrite,% SelectedFont,% iniFilePath,CUSTOMIZATION_APPEARANCE,Font
 		IniWrite,% FontSize,% iniFilePath,CUSTOMIZATION_APPEARANCE,Font_Size_Mode
 		IniWrite,% FontSizeCustom,% iniFilePath,CUSTOMIZATION_APPEARANCE,Font_Size_Custom
-		IniWrite,% MainTextColor,% iniFilePath,CUSTOMIZATION_APPEARANCE,Main_Text_Color
-		IniWrite,% ButtonsTextColor,% iniFilePath,CUSTOMIZATION_APPEARANCE,Buttons_Text_Color
+		IniWrite,% TitleActiveColor,% iniFilePath,CUSTOMIZATION_APPEARANCE,Font_Color_Title_Active
+		IniWrite,% TitleInactiveColor,% iniFilePath,CUSTOMIZATION_APPEARANCE,Font_Color_Title_Inactive
+		IniWrite,% TradesInfos1Color,% iniFilePath,CUSTOMIZATION_APPEARANCE,Font_Color_Trades_Infos_1
+		IniWrite,% TradesInfos2Color,% iniFilePath,CUSTOMIZATION_APPEARANCE,Font_Color_Trades_Infos_2
+		IniWrite,% TabsColor,% iniFilePath,CUSTOMIZATION_APPEARANCE,Font_Color_Tabs
+		IniWrite,% ButtonsColor,% iniFilePath,CUSTOMIZATION_APPEARANCE,Font_Color_Buttons
 ;	Declare the new settings
 		Disable_Hotkeys()
 		settingsArray := Get_INI_Settings()
@@ -2098,15 +2127,19 @@ return
 					}
 				}
 				else if ( sectionName = "CUSTOMIZATION_APPEARANCE" ) {
-					if keyName in Active_Skin,Font,Font_Size_Mode,Font_Size_Custom,Active_Preset,Buttons_Text_Color,Main_Text_Color
+					if keyName in Active_Skin,Font,Font_Size_Mode,Font_Size_Custom,Active_Preset,Font_Color_Title_Active,Font_Color_Title_Inactive,Font_Color_Trades_Infos_1,Font_Color_Trades_Infos_2,Font_Color_Tabs,Font_Color_Buttons
 					{
-						if keyName in Font_Size_Custom,Buttons_Text_Color,Main_Text_Color
+						if keyName in Font_Size_Custom,Font_Color_Title_Active,Font_Color_Title_Inactive,Font_Color_Trades_Infos_1,Font_Color_Trades_Infos_2,Font_Color_Tabs,Font_Color_Buttons
 						{
 							GuiControl, Settings:-g,% %handler%Handler ; Prevent from triggeting the gLabel
 							GuiControl, Settings:,% %handler%Handler,% var
 							GuiControl, Settings:+gGui_Settings_Set_Custom_Preset,% %handler%Handler ; Re-enable gLabel
 						}
 						else {
+							if ( keyName = "Active_Skin" ) {
+								state := (var="System")?("Disable"):("Enable")
+								GuiControl, Settings:%state%,% ButtonsColorHandler
+							}
 							GuiControl, Settings:Choose,% %handler%Handler,% var
 							if ( keyName = "Font_Size_Mode" ) {
 								state := (var="Custom")?("Enable"):("Disable")
@@ -2213,8 +2246,6 @@ Gui_Trades_Clone() {
 		Gui, Add, Text, x75 y60 w255 h15 vBuyerSlotClone%index% +BackgroundTrans +0x0100,% ""
 		Gui, Add, Text, xp yp+15 w310 h15 vItemSlotClone%index% +BackgroundTrans +0x0100,% ""
 		Gui, Add, Text, xp yp+15 w310 h15 vPriceSlotClone%index% +BackgroundTrans +0x0100,% ""
-		if ( infosArray.PRICES[index] = "UNPRICED ITEM")
-			GuiControl, TradesClone: +cRed, PriceSlotClone%index%
 		Gui, Add, Text, xp yp+15 w310 h15 vLocationSlotClone%index% +BackgroundTrans +0x0100,% ""
 		Gui, Add, Text, xp yp+15 w310 h15 vOtherSlotClone%index% +BackgroundTrans +0x100,% ""
 		Gui, Add, Text, x340 y55 w30 h15 vTimeSlotClone%index% +BackgroundTrans,% ""
@@ -2444,12 +2475,11 @@ Gui_Settings_Get_Settings_Arrays() {
 	returnArray.CUSTOMIZATION_APPEARANCE_HandlersKeysArray := Object()
 	returnArray.CUSTOMIZATION_APPEARANCE_KeysArray := Object()
 	returnArray.CUSTOMIZATION_APPEARANCE_DefaultValues := Object()
-	returnArray.CUSTOMIZATION_APPEARANCE_HandlersArray.Insert(0, "ActivePreset", "SelectedSkin", "SkinScaling", "SelectedFont", "FontSize", "FontSizeCustom", "MainTextColor", "ButtonsTextColor")
-	returnArray.CUSTOMIZATION_APPEARANCE_HandlersKeysArray.Insert(0, "Active_Preset", "Active_Skin", "Scale_Multiplier", "Font", "Font_Size_Mode", "Font_Size_Custom", "Main_Text_Color", "Buttons_Text_Color")
-	returnArray.CUSTOMIZATION_APPEARANCE_KeysArray.Insert(0, "Active_Preset", "Active_Skin", "Scale_Multiplier", "Font", "Font_Size_Mode", "Font_Size_Custom", "Main_Text_Color", "Buttons_Text_Color")
-	returnArray.CUSTOMIZATION_APPEARANCE_DefaultValues.Insert(0, "Path of Exile" "Path of Exile", "1", "Fontin SmallCaps", "Auto-Scale", "10", "C18F55", "FFFFFF")
+	returnArray.CUSTOMIZATION_APPEARANCE_HandlersArray.Insert(0, "ActivePreset", "SelectedSkin", "SkinScaling", "SelectedFont", "FontSize", "FontSizeCustom", "TitleActiveColor", "TitleInactiveColor", "TradesInfos1Color", "TradesInfos2Color", "TabsColor", "ButtonsColor")
+	returnArray.CUSTOMIZATION_APPEARANCE_HandlersKeysArray.Insert(0, "Active_Preset", "Active_Skin", "Scale_Multiplier", "Font", "Font_Size_Mode", "Font_Size_Custom", "Font_Color_Title_Active", "Font_Color_Title_Inactive", "Font_Color_Trades_Infos_1", "Font_Color_Trades_Infos_2", "Font_Color_Tabs", "Font_Color_Buttons")
+	returnArray.CUSTOMIZATION_APPEARANCE_KeysArray.Insert(0, "Active_Preset", "Active_Skin", "Scale_Multiplier", "Font", "Font_Size_Mode", "Font_Size_Custom", "Font_Color_Title_Active", "Font_Color_Title_Inactive", "Font_Color_Trades_Infos_1", "Font_Color_Trades_Infos_2", "Font_Color_Tabs", "Font_Color_Buttons")
+	returnArray.CUSTOMIZATION_APPEARANCE_DefaultValues.Insert(0, "Path of Exile", "Path of Exile", "1", "Fontin SmallCaps", "Automatic", "10", "C18F55", "C18F55", "C18F55", "FFFFFF" , "FFFFFF", "C18F55")
 
-	
 	return returnArray
 }
 
