@@ -50,7 +50,7 @@ Start_Script() {
 	ProgramValues := Object() ; Specific to the program's informations
 	ProgramValues.Insert("Name", "POE Trades Helper")
 	ProgramValues.Insert("Version", "1.8.8")
-	ProgramValues.Insert("Debug", 1)
+	ProgramValues.Insert("Debug", 0)
 
 	ProgramValues.Insert("PID", DllCall("GetCurrentProcessId"))
 
@@ -136,8 +136,8 @@ Start_Script() {
 	}
 
 	Logs_Append("START", settingsArray)
-	; Monitor_Game_Logs()
-	Gui_Settings()
+	Monitor_Game_Logs()
+	; Gui_Settings()
 }
 
 ;==================================================================================================================
@@ -465,8 +465,8 @@ Gui_Trades(infosArray="", errorMsg="") {
 			Gui, Add, Text,% "x" guiWidth-(guiXWorkArea*guiScale) . " y" 0 . " w" guiXWorkArea*guiScale . " h" guiHeight . " +0x4",% "" ; Right
 			Gui, Add, Text,% "x" 0 . " y" guiHeight-(guiYWorkArea*guiScale) . " w" guiWidth . " h" guiYWorkArea*(Round(guiScale)) . " +0x4",% "" ; Bottom
 
-			Gui, Add, Tab3,% "x" 2*guiScale . " y" 30*guiScale . " w" . guiWidth-(2*guiScale) " h" 195*guiScale . " -Wrap  vTab " . themeState . " gGui_Trades_OnTabSwitch +BackgroundTrans c" colorTabs,% ""
 			Gui, Add, Text,% "x" 2*guiScale . " y" 70*guiScale . " w" guiWidth-(4*guiScale) . " hwndErrorMsgTextHandler" . " Center +BackgroundTrans c" colorTradesInfos1,% errorTxt
+			Gui, Add, Tab3,% "x" 2*guiScale . " y" 30*guiScale . " w" . guiWidth-(2*guiScale) " h" 195*guiScale . " -Wrap  vTab " . themeState . " gGui_Trades_OnTabSwitch +BackgroundTrans",% ""
 
 
 			Loop %maxTabsRendered% {
@@ -525,25 +525,25 @@ Gui_Trades(infosArray="", errorMsg="") {
 ;			Header
 			Gui, Color, Black ; Prevents the flickering from being too noticeable
 			Gui, Font,s%fontSize%,% fontName
-			Gui, Add, Picture,% "x" guiXWorkArea . " y" guiYWorkArea . " w" guiWidth . " h" 30*guiScale . " +BackgroundTrans",% programSkinFolderPath "\" activeSkin "\Header.png"
+			Gui, Add, Picture,% "x" guiXWorkArea . " y" guiYWorkArea . " w" guiWidth . " h" 30*guiScale . " +BackgroundTrans",% programSkinFolderPath "\" activeSkin "\Header.png"			
 			Gui, Add, Text,% "x" guiXWorkArea+(35*guiScale) . " y" guiYWorkArea+(2*guiScale) . " w" guiWidth-(100*guiScale) . " h" 28*guiScale " hwndguiTradesTitleHandler gGui_Trades_Move c" colorTitleInactive . " +BackgroundTrans +0x200 ",% programName " - Queued Trades: 0"
 			Gui, Add, Text,% "x" guiWidth-(65*guiScale) . " y" 2*guiScale . " w" 65*guiScale . " h" 28*guiScale " gGui_Trades_Minimize c" mainColor . " +BackgroundTrans +0x200 c" colorTitleInactive,% "MINIMIZE"
 
-;			Borders
-			Gui, Add, Text,% "x" 0 . " y" 0 . " w" guiWidth*guiScale . " h" guiYWorkArea*guiScale . " +0x4",% "" ; Top
-			Gui, Add, Text,% "x" 0 . " y" 0 . " w" guiXWorkArea*guiScale . " h" guiHeight . " +0x4",% "" ; Left
-			Gui, Add, Text,% "x" guiWidth-(guiXWorkArea*guiScale) . " y" 0 . " w" guiXWorkArea*guiScale . " h" guiHeight . " +0x4",% "" ; Right
-			Gui, Add, Text,% "x" 0 . " y" guiHeight-(guiYWorkArea*guiScale) . " w" guiWidth . " h" guiYWorkArea*(Round(guiScale)) . " +0x4",% "" ; Bottom
-
 ;			Static pictures assets
-			Gui, Add, Picture,% "x" 0 . " y" 30*guiScale . " w" guiWidth . " h" guiHeight . " +BackgroundTrans",% programSkinFolderPath "\" activeSkin "\Background.png"
-			Gui, Add, Picture,% "x" 0 . " y" 50*guiScale . " w" guiWidth . " h" 2*guiScale " +BackgroundTrans",% programSkinFolderPath "\" activeSkin "\TabUnderline.png"
+			Gui, Add, Picture,% "x" guiXWorkarea . " y" 30*guiScale . " w" guiWidth-(2*guiScale) . " h" guiHeight-(2*guiScale) . " +BackgroundTrans",% programSkinFolderPath "\" activeSkin "\Background.png"
+			Gui, Add, Picture,% "x" 0 . " y" 50*guiScale . " w" guiWidth . " h" 2*guiScale . " hwndTabUnderlineHandler" . " +BackgroundTrans",% programSkinFolderPath "\" activeSkin "\TabUnderline.png"
 			Gui, Add, Picture,% "x" 360*guiScale . " y" 30*guiScale . " w" 20*guiScale . " h" 20*guiScale . " vGoLeft" . " hwndGoLeftHandler" . " gGui_Trades_Arrow_Left +BackgroundTrans",% programSkinFolderPath "\" activeSkin "\ArrowLeft.png"
 			Gui, Add, Picture,% "x" 380*guiScale . " y" 30*guiScale . " w" 20*guiScale . " h" 20*guiScale . " vGoRight" . " hwndGoRightHandler" . " gGui_Trades_Arrow_Right +BackgroundTrans",% programSkinFolderPath "\" activeSkin "\ArrowRight.png"
 			Gui, Add, Picture,% "x" 374*guiScale . " y" 53*guiScale . " w" 25*guiScale . " h" 25*guiScale . " vdelBtn1" . " hwndCloseBtn1Handler" . " gGui_Trades_RemoveItem " themeState " +BackgroundTrans",% programSkinFolderPath "\" activeSkin "\Close.png"
 			TradesGUI_Controls.Insert("Arrow_Left", GoLeftHandler)
 			TradesGUI_Controls.Insert("Arrow_Right", GoRightHandler)
 			TradesGUI_Controls.Insert("Button_Close", CloseBtn1Handler)
+
+;			Borders
+			Gui, Add, Text,% "x" 0 . " y" 0 . " w" guiWidth*guiScale . " h" guiYWorkArea*guiScale . " +0x4",% "" ; Top
+			Gui, Add, Text,% "x" 0 . " y" 0 . " w" guiXWorkArea*guiScale . " h" guiHeight . " +0x4",% "" ; Left
+			Gui, Add, Text,% "x" guiWidth-(guiXWorkArea*guiScale) . " y" 0 . " w" guiXWorkArea*guiScale . " h" guiHeight . " +0x4",% "" ; Right
+			Gui, Add, Text,% "x" 0 . " y" guiHeight-(guiYWorkArea*guiScale) . " w" guiWidth . " h" guiYWorkArea*(Round(guiScale)) . " +0x4",% "" ; Bottom
 
 ;			Error message
 			Gui, Add, Text,% "x" 2*guiScale . " y" 70*guiScale . " w" guiWidth-(4*guiScale) . " hwndErrorMsgTextHandler" . " Center +BackgroundTrans c" colorTradesInfos1,% errorTxt
@@ -664,6 +664,10 @@ Gui_Trades(infosArray="", errorMsg="") {
 		Gui, Trades: %clickThroughState%E0x20
 		WinSet, Transparent,% GlobalValues["Transparency"],% "ahk_id " guiTradesHandler
 		GuiControl, Trades:Text,% guiTradesTitleHandler,% programName " - Queued Trades: " tabsCount ; Update the title
+		GuiControl, Trades:%showState%,Tab ; Only used when no skin is applied
+		GuiControl, Trades:%showState%,% GoLeftHandler
+		GuiControl, Trades:%showState%,% GoRightHandler
+		GuiControl, Trades:%showState%,% TabUnderlineHandler
 
 		if ( activeSkin != "System" ) {
 ;			Fix to remove the deleted tab image.
@@ -687,24 +691,25 @@ Gui_Trades(infosArray="", errorMsg="") {
 				GuiControl, Trades:%showState%,% OtherText1Handler
 			}
 
-;			Select the newly created tab.
-			if ( GlobalValues.Trades_Select_Last_Tab ) {
-				GuiControl, Trades:Choose,Tab,% tabsCount
-				GlobalValues.Trades_GUI_Current_Active_Tab := tabsCount
-			}
-
 ;			Make sure all tabs are correctly ordered.
 			Gosub Gui_Trades_Tabs_Handler
 		}
 		else {
+			currentActiveTab := Gui_Trades_Get_Tab_ID()
 ;			Apply the new list of tabs.
 			GuiControl, Trades:,Tab,% tabsList
-
-;			Select the correct tab after closing one.
-			tabID := Gui_Trades_Get_Tab_ID()
-			GuiControl, Trades:Choose,Tab,%tabID%
-			if ( ErrorLevel )
-				GuiControl, Trades:Choose,Tab,% tabID-1
+;			Select the correct tab after udpating
+			if ( GlobalValues.Trades_Select_Last_Tab ) && (!A_GuiEvent) { ; A_GuiEvent means we've just closed a tab. We do not want to activate the latest available tab.
+				GuiControl, Trades:Choose,Tab,% tabsCount
+				GlobalValues.Trades_GUI_Current_Active_Tab := tabsCount
+			}
+			else {
+				GuiControl, Trades:Choose,Tab,%currentActiveTab%
+				if ( ErrorLevel ) {
+					GuiControl, Trades:Choose,Tab,% currentActiveTab-1
+					currentActiveTab--
+				}
+			}
 		}
 
 ;		Require to render more tabs.
@@ -716,7 +721,7 @@ Gui_Trades(infosArray="", errorMsg="") {
 							  :(maxTabsStage2)
 			tradesArray := Gui_Trades_Manage_Trades("GET_ALL")
 			lastActiveTab := currentActiveTab+1 ; Only used when a skin is applied.
-			tabID := Gui_Trades_Get_Tab_ID()
+			currentActiveTab := Gui_Trades_Get_Tab_ID()
 			Gui_Trades(tradesArray,"CREATE")
 			if ( activeSkin != "System" ) {
 				Loop { ; Go back to the previously selected tab
@@ -767,8 +772,8 @@ Gui_Trades(infosArray="", errorMsg="") {
 
 		dpiFactor := GlobalValues["Screen_DPI"], showX := guiWidth-49
 	}
-	else if ( errorMsg = "UPDATE" && activeSkin != "System" ) {
-		if ( GlobalValues["Trades_Select_Last_Tab"] = 1 ) && ( tabsCount > previousTabsCount ) {
+	else if ( errorMsg = "UPDATE" ) {
+		if ( GlobalValues["Trades_Select_Last_Tab"] = 1 ) && ( tabsCount > previousTabsCount ) && (activeSkin != "System") {
 			if ( currentActiveTab != tabsCount && tabsCount > 0) {
 				lastActiveTab := currentActiveTab, currentActiveTab := tabsCount
 				GoSub Gui_Trades_Tabs_Handler
@@ -819,11 +824,10 @@ Gui_Trades(infosArray="", errorMsg="") {
 	Gui_Trades_OnTabSwitch:
 ;		Clipboard the item's infos on tab switch if the user enabled
 		Gui, Submit, NoHide
-		tabID := Gui_Trades_Get_Tab_ID()
-		tabInfos := Gui_Trades_Get_Trades_Infos(tabID)
+		currentActiveTab := Gui_Trades_Get_Tab_ID()
+		tabInfos := Gui_Trades_Get_Trades_Infos(currentActiveTab)
 		if (  GlobalValues["Clip_On_Tab_Switch"]  = 1 )
 			Clipboard := tabInfos.Item
-		currentActiveTab := tabID
 		GlobalValues.Insert("Trades_GUI_Current_Active_Tab", currentActiveTab)
 	return
 
@@ -1027,7 +1031,7 @@ Gui_Trades(infosArray="", errorMsg="") {
 		errorLvl := Send_InGame_Message(GlobalValues["Button" btnID "_Message"], tabInfos)
 		if !(errorLvl) {
 			if ( GlobalValues["Support_Text_Toggle"] = 1 )
-				Send_InGame_Message("@%buyerName% - - - POE Trades Helper: Keep track of your trades! // Look it up! (not a bot!)", tabInfos)
+				Send_InGame_Message("@%buyerName% POE Trades Helper: Easily keep track of your poe.trade whispers. You can find it on GitHub, Reddit and GGG's forums. Feel free to check it out!", tabInfos)
 			Gosub, Gui_Trades_RemoveItem
 		}
 	Return
@@ -1056,7 +1060,7 @@ Gui_Trades(infosArray="", errorMsg="") {
 		errorLvl := Send_InGame_Message(GlobalValues["Button" btnID "_Message"], tabInfos,0,1)
 		if !(errorLvl) {
 			if ( GlobalValues["Support_Text_Toggle"] = 1 )
-				Send_InGame_Message("@%buyerName% - - - POE Trades Helper: Keep track of your trades! // Look it up! (not a bot!)", tabInfos)
+				Send_InGame_Message("@%buyerName% POE Trades Helper: Easily keep track of your poe.trade whispers. You can find it on GitHub, Reddit and GGG's forums. Feel free to check it out!", tabInfos)
 			Gosub, Gui_Trades_RemoveItem
 		}
 	Return
@@ -1748,6 +1752,7 @@ return
 		GuiControl, Settings:%state%,% FontSizeCustomHandler
 		state := (SelectedSkin="System")?("Disable"):("Enable")
 		GuiControl, Settings:%state%,% ButtonsColorHandler
+		GuiControl, Settings:%state%,% TabsColorHandler
 	Return
 
 	Gui_Settings_Presets:
@@ -2139,6 +2144,7 @@ return
 							if ( keyName = "Active_Skin" ) {
 								state := (var="System")?("Disable"):("Enable")
 								GuiControl, Settings:%state%,% ButtonsColorHandler
+								GuiControl, Settings:%state%,% TabsColorHandler
 							}
 							GuiControl, Settings:Choose,% %handler%Handler,% var
 							if ( keyName = "Font_Size_Mode" ) {
