@@ -50,7 +50,7 @@ Start_Script() {
 	ProgramValues := Object() ; Specific to the program's informations
 	ProgramValues.Insert("Name", "POE Trades Helper")
 	ProgramValues.Insert("Version", "1.8.8")
-	ProgramValues.Insert("Debug", 0)
+	ProgramValues.Insert("Debug", 1)
 
 	ProgramValues.Insert("PID", DllCall("GetCurrentProcessId"))
 
@@ -431,9 +431,11 @@ Gui_Trades(infosArray="", errorMsg="") {
 		Gui, Trades:Destroy
 		Gui, Trades:New, +ToolWindow +AlwaysOnTop -Border +hwndGuiTradesHandler +LabelGui_Trades_ +LastFound -SysMenu -Caption
 		Gui, Trades:Default
+		Gui, Margin, 0, 0
 		tabHeight := Gui_Trades_Get_Tab_Height(), tabWidth := 390*guiScale
 		guiWidth := 402*guiScale, guiHeight := Floor((tabHeight+38)*guiScale), guiHeightMin := 30*guiScale
-		guiXWorkArea := guiWidth-(guiWidth-2), guiYWorkArea := guiHeight-(guiHeight-2)
+
+		borderSize := 2*Round(guiScale)
 
 		aeroStatus := Get_Aero_Status()
 		themeState := (aeroStatus=1)?("+Theme -0x8000"):("-Theme +0x8000")
@@ -455,18 +457,18 @@ Gui_Trades(infosArray="", errorMsg="") {
 		if ( activeSkin = "System" ) {
 ;			Header
 			Gui, Font,s%fontSize%,% fontName
-			Gui, Add, Picture,% "x" guiXWorkArea . " y" guiYWorkArea . " w" guiWidth . " h" 30*guiScale . " +BackgroundTrans",% programSkinFolderPath "\" GlobalValues["Active_Skin"] "\Header.png"
-			Gui, Add, Text,% "x" guiXWorkArea+(35*guiScale) . " y" guiYWorkArea+(2*guiScale) . " w" guiWidth-(100*guiScale) . " h" 28*guiScale " hwndguiTradesTitleHandler gGui_Trades_Move c" colorTitleInactive . " +BackgroundTrans +0x200 ",% programName " - Queued Trades: 0"
-			Gui, Add, Text,% "x" guiWidth-(65*guiScale) . " y" 2*guiScale . " w" 65*guiScale . " h" 28*guiScale " hwndguiTradesMinimizeHandler gGui_Trades_Minimize c" colorTitleInactive . " +BackgroundTrans +0x200",% "MINIMIZE"
+			Gui, Add, Picture,% "x" borderSize . " y" borderSize . " w" guiWidth-borderSize . " h" 30*guiScale . " +BackgroundTrans",% programSkinFolderPath "\" GlobalValues["Active_Skin"] "\Header.png"
+			Gui, Add, Text,% "x" borderSize+(35*guiScale) . " y" borderSize*guiScale . " w" guiWidth-(100*guiScale) . " h" 28*guiScale " hwndguiTradesTitleHandler gGui_Trades_Move c" colorTitleInactive . " +BackgroundTrans +0x200 ",% programName " - Queued Trades: 0"
+			Gui, Add, Text,% "x" guiWidth-(65*guiScale) . " y" borderSize*guiScale . " w" 65*guiScale . " h" 28*guiScale " hwndguiTradesMinimizeHandler gGui_Trades_Minimize c" colorTitleInactive . " +BackgroundTrans +0x200",% "MINIMIZE"
 
 ;			Borders
-			Gui, Add, Text,% "x" 0 . " y" 0 . " w" guiWidth*guiScale . " h" guiYWorkArea*guiScale . " +0x4",% "" ; Top
-			Gui, Add, Text,% "x" 0 . " y" 0 . " w" guiXWorkArea*guiScale . " h" guiHeight . " +0x4",% "" ; Left
-			Gui, Add, Text,% "x" guiWidth-(guiXWorkArea*guiScale) . " y" 0 . " w" guiXWorkArea*guiScale . " h" guiHeight . " +0x4",% "" ; Right
-			Gui, Add, Text,% "x" 0 . " y" guiHeight-(guiYWorkArea*guiScale) . " w" guiWidth . " h" guiYWorkArea*(Round(guiScale)) . " +0x4",% "" ; Bottom
+			Gui, Add, Text,% "x" 0 . " y" 0 . " w" guiWidth . " h" borderSize . " +0x4",% "" ; Top
+			Gui, Add, Text,% "x" 0 . " y" 0 . " w" borderSize . " h" guiHeight . " +0x4",% "" ; Left
+			Gui, Add, Text,% "x" guiWidth-borderSize . " y" 0 . " w" borderSize . " h" guiHeight . " +0x4",% "" ; Right
+			Gui, Add, Text,% "x" 0 . " y" guiHeight-borderSize . " w" guiWidth . " h" borderSize . " +0x4",% "" ; Bottom
 
-			Gui, Add, Text,% "x" 2*guiScale . " y" 70*guiScale . " w" guiWidth-(4*guiScale) . " hwndErrorMsgTextHandler" . " Center +BackgroundTrans c" colorTradesInfos1,% errorTxt
-			Gui, Add, Tab3,% "x" 2*guiScale . " y" 30*guiScale . " w" . guiWidth-(2*guiScale) " h" 195*guiScale . " -Wrap  vTab " . themeState . " gGui_Trades_OnTabSwitch +BackgroundTrans",% ""
+			Gui, Add, Text,% "x" borderSize . " y" 70*guiScale . " w" guiWidth-borderSize . " hwndErrorMsgTextHandler" . " Center +BackgroundTrans c" colorTradesInfos1,% errorTxt
+			Gui, Add, Tab3,% "x" borderSize . " y" 30*guiScale . " w" . guiWidth-borderSize " h" (tabHeight+7)*guiScale . " -Wrap  vTab " . themeState . " gGui_Trades_OnTabSwitch +BackgroundTrans",% ""
 
 
 			Loop %maxTabsRendered% {
@@ -501,7 +503,7 @@ Gui_Trades(infosArray="", errorMsg="") {
 
 				;			Customizable Buttons.
 				Loop 9 {
-					btnW := (GlobalValues["Button" A_Index "_SIZE"]="Small")?(124):(GlobalValues["Button" A_Index "_SIZE"]="Medium")?(254):(GlobalValues["Button" A_Index "_SIZE"]="Large")?(374):("ERROR")
+					btnW := (GlobalValues["Button" A_Index "_SIZE"]="Small")?(124):(GlobalValues["Button" A_Index "_SIZE"]="Medium")?(254):(GlobalValues["Button" A_Index "_SIZE"]="Large")?(384):("ERROR")
 					btnX := (GlobalValues["Button" A_Index "_H"]="Left")?(9):(GlobalValues["Button" A_Index "_H"]="Center")?(139):(GlobalValues["Button" A_Index "_H"]="Right")?(269):("ERROR")
 					btnY := (GlobalValues["Button" A_Index "_V"]="Top")?(120):(GlobalValues["Button" A_Index "_V"]="Middle")?(160):(GlobalValues["Button" A_Index "_V"]="Bottom")?(200):("ERROR")
 					btnName := GlobalValues["Button" A_Index "_Label"]
@@ -525,12 +527,12 @@ Gui_Trades(infosArray="", errorMsg="") {
 ;			Header
 			Gui, Color, Black ; Prevents the flickering from being too noticeable
 			Gui, Font,s%fontSize%,% fontName
-			Gui, Add, Picture,% "x" guiXWorkArea . " y" guiYWorkArea . " w" guiWidth . " h" 30*guiScale . " +BackgroundTrans",% programSkinFolderPath "\" activeSkin "\Header.png"			
-			Gui, Add, Text,% "x" guiXWorkArea+(35*guiScale) . " y" guiYWorkArea+(2*guiScale) . " w" guiWidth-(100*guiScale) . " h" 28*guiScale " hwndguiTradesTitleHandler gGui_Trades_Move c" colorTitleInactive . " +BackgroundTrans +0x200 ",% programName " - Queued Trades: 0"
-			Gui, Add, Text,% "x" guiWidth-(65*guiScale) . " y" 2*guiScale . " w" 65*guiScale . " h" 28*guiScale " gGui_Trades_Minimize c" mainColor . " +BackgroundTrans +0x200 c" colorTitleInactive,% "MINIMIZE"
+			Gui, Add, Picture,% "x" borderSize . " y" borderSize . " w" guiWidth-borderSize . " h" 30*guiScale . " +BackgroundTrans",% programSkinFolderPath "\" activeSkin "\Header.png"
+			Gui, Add, Text,% "x" borderSize+(35*guiScale) . " y" borderSize+(borderSize*guiScale) . " w" guiWidth-(100*guiScale) . " h" 28*guiScale " hwndguiTradesTitleHandler gGui_Trades_Move c" colorTitleInactive . " +BackgroundTrans +0x200 ",% programName " - Queued Trades: 0"
+			Gui, Add, Text,% "x" guiWidth-(65*guiScale) . " y" borderSize*guiScale . " w" 65*guiScale . " h" 28*guiScale " hwndguiTradesMinimizeHandler gGui_Trades_Minimize c" colorTitleInactive . " +BackgroundTrans +0x200",% "MINIMIZE"
 
 ;			Static pictures assets
-			Gui, Add, Picture,% "x" guiXWorkarea . " y" 30*guiScale . " w" guiWidth-(2*guiScale) . " h" guiHeight-(2*guiScale) . " +BackgroundTrans",% programSkinFolderPath "\" activeSkin "\Background.png"
+			Gui, Add, Picture,% "x" borderSize . " y" 30*guiScale . " w" guiWidth-borderSize . " h" guiHeight-borderSize . " +BackgroundTrans",% programSkinFolderPath "\" activeSkin "\Background.png"
 			Gui, Add, Picture,% "x" 0 . " y" 50*guiScale . " w" guiWidth . " h" 2*guiScale . " hwndTabUnderlineHandler" . " +BackgroundTrans",% programSkinFolderPath "\" activeSkin "\TabUnderline.png"
 			Gui, Add, Picture,% "x" 360*guiScale . " y" 30*guiScale . " w" 20*guiScale . " h" 20*guiScale . " vGoLeft" . " hwndGoLeftHandler" . " gGui_Trades_Arrow_Left +BackgroundTrans",% programSkinFolderPath "\" activeSkin "\ArrowLeft.png"
 			Gui, Add, Picture,% "x" 380*guiScale . " y" 30*guiScale . " w" 20*guiScale . " h" 20*guiScale . " vGoRight" . " hwndGoRightHandler" . " gGui_Trades_Arrow_Right +BackgroundTrans",% programSkinFolderPath "\" activeSkin "\ArrowRight.png"
@@ -540,18 +542,17 @@ Gui_Trades(infosArray="", errorMsg="") {
 			TradesGUI_Controls.Insert("Button_Close", CloseBtn1Handler)
 
 ;			Borders
-			Gui, Add, Text,% "x" 0 . " y" 0 . " w" guiWidth*guiScale . " h" guiYWorkArea*guiScale . " +0x4",% "" ; Top
-			Gui, Add, Text,% "x" 0 . " y" 0 . " w" guiXWorkArea*guiScale . " h" guiHeight . " +0x4",% "" ; Left
-			Gui, Add, Text,% "x" guiWidth-(guiXWorkArea*guiScale) . " y" 0 . " w" guiXWorkArea*guiScale . " h" guiHeight . " +0x4",% "" ; Right
-			Gui, Add, Text,% "x" 0 . " y" guiHeight-(guiYWorkArea*guiScale) . " w" guiWidth . " h" guiYWorkArea*(Round(guiScale)) . " +0x4",% "" ; Bottom
+			Gui, Add, Text,% "x" 0 . " y" 0 . " w" guiWidth . " h" borderSize . " +0x4",% "" ; Top
+			Gui, Add, Text,% "x" 0 . " y" 0 . " w" borderSize . " h" guiHeight . " +0x4",% "" ; Left
+			Gui, Add, Text,% "x" guiWidth-borderSize . " y" 0 . " w" borderSize . " h" guiHeight . " +0x4",% "" ; Right
+			Gui, Add, Text,% "x" 0 . " y" guiHeight-borderSize . " w" guiWidth . " h" borderSize . " +0x4",% "" ; Bottom
 
 ;			Error message
-			Gui, Add, Text,% "x" 2*guiScale . " y" 70*guiScale . " w" guiWidth-(4*guiScale) . " hwndErrorMsgTextHandler" . " Center +BackgroundTrans c" colorTradesInfos1,% errorTxt
-			; GlobalValues.Insert("Trades_GUI_Current_State", "Active")
+			Gui, Add, Text,% "x" borderSize . " y" 70*guiScale . " w" guiWidth-borderSize . " hwndErrorMsgTextHandler" . " Center +BackgroundTrans c" colorTradesInfos1,% errorTxt
 
 			Loop %maxTabsRendered% {
 				index := A_Index, tabPos := A_Index, xposMult := 50
-				xpos := (tabPos * xposMult) - xposMult + 2, ypos := 30
+				xpos := (tabPos * xposMult) - xposMult + borderSize, ypos := 30
 
 ;				Tab Pictures
 				Gui, Add, Picture,% "x" xpos*guiScale . " y" ypos*guiScale . " w" 48*guiScale . " h" 20*guiScale " hwndTabIMG" index "Handler" . " vTabIMG" index . " gGui_Trades_Tabs_Handler +BackgroundTrans",% programSkinFolderPath "\" activeSkin "\TabInactive.png"
@@ -601,7 +602,7 @@ Gui_Trades(infosArray="", errorMsg="") {
 
 ;			Customizable Buttons.
 			Loop 9 {
-				btnW := (GlobalValues["Button" A_Index "_SIZE"]="Small")?(124):(GlobalValues["Button" A_Index "_SIZE"]="Medium")?(254):(GlobalValues["Button" A_Index "_SIZE"]="Large")?(374):("ERROR")
+				btnW := (GlobalValues["Button" A_Index "_SIZE"]="Small")?(124):(GlobalValues["Button" A_Index "_SIZE"]="Medium")?(254):(GlobalValues["Button" A_Index "_SIZE"]="Large")?(384):("ERROR")
 				btnX := (GlobalValues["Button" A_Index "_H"]="Left")?(9):(GlobalValues["Button" A_Index "_H"]="Center")?(139):(GlobalValues["Button" A_Index "_H"]="Right")?(269):("ERROR")
 				btnY := (GlobalValues["Button" A_Index "_V"]="Top")?(140):(GlobalValues["Button" A_Index "_V"]="Middle")?(180):(GlobalValues["Button" A_Index "_V"]="Bottom")?(220):("ERROR")
 				btnName := GlobalValues["Button" A_Index "_Label"]
@@ -816,6 +817,7 @@ Gui_Trades(infosArray="", errorMsg="") {
 			Gosub, Gui_Trades_Tabs_Handler
 		}
 	}
+	WinSet, AlwaysOnTop, On,ahk_id %guiTradesHandler%
 
 	previousTabsCount := tabsCount
 	sleep 10
