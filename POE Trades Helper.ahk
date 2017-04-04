@@ -3789,9 +3789,16 @@ Extract_Skin_Files() {
 
 	programSkinFolderPath := ProgramValues["Skins_Folder"]
 
-;	Path of Exile skin
+;	System Skin
+	if !( InStr(FileExist(programSkinFolderPath "\System"), "D") )
+		FileCreateDir, % programSkinFolderPath "\System"
+	FileInstall, C:\Users\Hatsune\Documents\GitHub\POE-Trades-Helper\Ressources\Skins\System\Settings.ini,% programSkinFolderPath "\System\Settings.ini"
+	FileInstall, C:\Users\Hatsune\Documents\GitHub\POE-Trades-Helper\Ressources\Skins\System\Header.png,% programSkinFolderPath "\System\Header.png"
+
+;	Path of Exile Skin
 	if !( InStr(FileExist(programSkinFolderPath "\Path of Exile"), "D") )
 		FileCreateDir, % programSkinFolderPath "\Path of Exile"
+	FileInstall, C:\Users\Hatsune\Documents\GitHub\POE-Trades-Helper\Ressources\Skins\Path Of Exile\Settings.ini,% programSkinFolderPath "\Path Of Exile\Settings.ini"
 	FileInstall, C:\Users\Hatsune\Documents\GitHub\POE-Trades-Helper\Ressources\Skins\Path Of Exile\ArrowLeft.png,% programSkinFolderPath "\Path Of Exile\ArrowLeft.png"
 	FileInstall, C:\Users\Hatsune\Documents\GitHub\POE-Trades-Helper\Ressources\Skins\Path Of Exile\ArrowLeftHover.png,% programSkinFolderPath "\Path Of Exile\ArrowLeftHover.png"
 	FileInstall, C:\Users\Hatsune\Documents\GitHub\POE-Trades-Helper\Ressources\Skins\Path Of Exile\ArrowLeftPress.png,% programSkinFolderPath "\Path Of Exile\ArrowLeftPress.png"
