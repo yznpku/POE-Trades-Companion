@@ -68,6 +68,10 @@ Start_Script() {
 	ProgramValues.Insert("Logs_File", ProgramValues["Logs_Folder"] "\" A_YYYY "-" A_MM "-" A_DD "_" A_Hour "-" A_Min "-" A_Sec ".txt")
 	ProgramValues.Insert("Changelogs_File", ProgramValues["Logs_Folder"] "\changelogs.txt")
 
+	ProgramValues.Insert("Game_Ini_File", userprofile "\Documents\my games\Path of Exile\production_Config.ini")
+
+	GlobalValues.Insert("Support_Message", "@%buyerName% " ProgramValues.Name ": Easily keep track of your poe.trade whispers. You can find it on GitHub, Reddit and GGG's forums. Feel free to check it out!") 
+
 	GroupAdd, POEGame, ahk_exe PathOfExile.exe
 	GroupAdd, POEGame, ahk_exe PathOfExile_x64.exe
 	GroupAdd, POEGame, ahk_exe PathOfExileSteam.exe
@@ -137,7 +141,7 @@ Start_Script() {
 
 	Logs_Append("START", settingsArray)
 	; Monitor_Game_Logs()
-	Gui_Settings()
+	; Gui_Settings()
 }
 
 ;==================================================================================================================
@@ -1018,7 +1022,9 @@ Gui_Trades(infosArray="", errorMsg="", isClone=0) {
 
 		RegExMatch(A_GuiControl, "\d+", btnID)
 		tabInfos := Gui_Trades_Get_Trades_Infos(currentActiveTab)
-		Send_InGame_Message(GlobalValues["Button" btnID "_Message"], tabInfos)
+		messages := Object()
+		messages.Push(GlobalValues["Button" btnID "_Message_1"], GlobalValues["Button" btnID "_Message_2"], GlobalValues["Button" btnID "_Message_3"])
+		Send_InGame_Message(messages, tabInfos)
 	Return
 
 	Gui_Trades_Send_Message_Close_Tab:
@@ -1030,10 +1036,16 @@ Gui_Trades(infosArray="", errorMsg="", isClone=0) {
 
 		RegExMatch(A_GuiControl, "\d+", btnID)
 		tabInfos := Gui_Trades_Get_Trades_Infos(currentActiveTab)
-		errorLvl := Send_InGame_Message(GlobalValues["Button" btnID "_Message"], tabInfos)
+		messages := Object()
+		messages.Push(GlobalValues["Button" btnID "_Message_1"], GlobalValues["Button" btnID "_Message_2"], GlobalValues["Button" btnID "_Message_3"])
+		errorLvl := Send_InGame_Message(messages, tabInfos)
 		if !(errorLvl) {
-			if ( GlobalValues["Support_Text_Toggle"] = 1 )
-				Send_InGame_Message("@%buyerName% POE Trades Helper: Easily keep track of your poe.trade whispers. You can find it on GitHub, Reddit and GGG's forums. Feel free to check it out!", tabInfos)
+			if ( GlobalValues["Support_Text_Toggle"] = 1 ) {
+				tabInfos := Gui_Trades_Get_Trades_Infos(currentActiveTab) ; Prevent from asking to replace the PID twice
+				messages.Delete(0, 10)
+				messages.Push(GlobalValues["Support_Message"])
+				Send_InGame_Message(messages, tabInfos)
+			}
 			Gosub, Gui_Trades_RemoveItem
 		}
 	Return
@@ -1966,6 +1978,8 @@ return
 			IniWrite,% whispersSoundFile,% iniFilePath,NOTIFICATIONS,Whisper_Sound_Path
 		IniWrite,% NotifyWhisperTray,% iniFilePath,NOTIFICATIONS,Whisper_Tray
 		IniWrite,% NotifyWhisperFlash,% iniFilePath,NOTIFICATIONS,Whisper_Flash
+;	Support Message
+		IniWrite,% MessageSupportToggle,% iniFilePath,SETTINGS,Support_Text_Toggle
 ;	Hotkeys
 	;	1
 		IniWrite,% Hotkey1_Toggle,% iniFilePath,HOTKEYS,HK1_Toggle
@@ -2283,13 +2297,13 @@ Gui_Settings_Get_Settings_Arrays() {
 	returnArray.sectionArray.Insert(0, "SETTINGS", "AUTO_CLIP", "HOTKEYS", "NOTIFICATIONS", "HOTKEYS_ADVANCED", "CUSTOMIZATION_BUTTONS_ACTIONS", "CUSTOMIZATION_APPEARANCE")
 	
 	returnArray.SETTINGS_HandlersArray := Object() ; contains all the Gui_Settings HANDLERS from this SECTION
-	returnArray.SETTINGS_HandlersArray.Insert(0, "ShowAlways", "ShowInGame", "ShowTransparency", "ShowTransparencyActive", "AutoMinimize", "AutoUnMinimize", "ClickThrough", "SelectLastTab")
+	returnArray.SETTINGS_HandlersArray.Insert(0, "ShowAlways", "ShowInGame", "ShowTransparency", "ShowTransparencyActive", "AutoMinimize", "AutoUnMinimize", "ClickThrough", "SelectLastTab", "MessageSupportToggle")
 	returnArray.SETTINGS_HandlersKeysArray := Object() ; contains all the .ini KEYS for those HANDLERS
-	returnArray.SETTINGS_HandlersKeysArray.Insert(0, "Show_Mode", "Show_Mode", "Transparency", "Transparency_Active", "Trades_Auto_Minimize", "Trades_Auto_UnMinimize", "Trades_Click_Through", "Trades_Select_Last_Tab")
+	returnArray.SETTINGS_HandlersKeysArray.Insert(0, "Show_Mode", "Show_Mode", "Transparency", "Transparency_Active", "Trades_Auto_Minimize", "Trades_Auto_UnMinimize", "Trades_Click_Through", "Trades_Select_Last_Tab", "Support_Text_Toggle")
 	returnArray.SETTINGS_KeysArray := Object() ; contains all the individual .ini KEYS
-	returnArray.SETTINGS_KeysArray.Insert(0, "Show_Mode", "Transparency", "Trades_GUI_Mode", "Transparency_Active", "Hotkeys_Mode", "Trades_Auto_Minimize", "Trades_Auto_UnMinimize", "Trades_Click_Through", "Trades_Select_Last_Tab")
+	returnArray.SETTINGS_KeysArray.Insert(0, "Show_Mode", "Transparency", "Trades_GUI_Mode", "Transparency_Active", "Hotkeys_Mode", "Trades_Auto_Minimize", "Trades_Auto_UnMinimize", "Trades_Click_Through", "Trades_Select_Last_Tab", "Support_Text_Toggle")
 	returnArray.SETTINGS_DefaultValues := Object() ; contains all the DEFAULT VALUES for the .ini KEYS
-	returnArray.SETTINGS_DefaultValues.Insert(0, "Always", "255", "Window", "255", "Basic", "0", "0", "0", "0")
+	returnArray.SETTINGS_DefaultValues.Insert(0, "Always", "255", "Window", "255", "Basic", "0", "0", "0", "0", "0")
 	
 	returnArray.AUTO_CLIP_HandlersArray := Object()
 	returnArray.AUTO_CLIP_HandlersArray.Insert(0, "ClipNew", "ClipTab")
@@ -2405,17 +2419,17 @@ Gui_Settings_Get_Settings_Arrays() {
 				  :(index=7)?("Send Message"):("")
 
 		btnMsg1 := (index=1)?("")
-				:(index=2)?("Can you wait a moment? Currently busy. (%itemName listed for %itemPrice)")
+				:(index=2)?("@%buyerName% Can you wait a moment? Currently busy. (%itemName% listed for %itemPrice%)")
 				:(index=3)?("/invite %buyerName%")
 				:(index=4)?("/kick %buyerName%")
-				:(index=5)?("Sorry! My %itemName% listed for %itemPrice% is not available anymore!")
-				:(index=6)?("I'm back! Do you still wish to buy my %itemName% listed for %itemPrice%?")
+				:(index=5)?("@%buyerName% Sorry! My %itemName% listed for %itemPrice% is not available anymore!")
+				:(index=6)?("@%buyerName% I'm back! Do you still wish to buy my %itemName% listed for %itemPrice%?")
 				:(index=7)?("/tradewith %buyerName%")
 				:("")
 		btnMsg2 := (index=1)?("")
 				:(index=2)?("")
-				:(index=3)?("My %itemName% listed for %itemPrice% is ready to be picked up: Meet me in my hideout.")
-				:(index=4)?("Thank you! Good luck and have fun!")
+				:(index=3)?("@%buyerName% My %itemName% listed for %itemPrice% is ready to be picked up: Meet me in my hideout.")
+				:(index=4)?("@%buyerName% Thank you! Good luck and have fun!")
 				:(index=5)?("")
 				:(index=6)?("")
 				:(index=7)?("")
@@ -3693,7 +3707,7 @@ Get_Aero_Status(){
 DoNothing:
 return
 
-Send_InGame_Message(messageToSend, tabInfos="", isHotkey=0, isAdvanced=0) {
+Send_InGame_Message(allMessages, tabInfos="", isHotkey=0) {
 /*
  *			Sends a message in game
  *			Replaces all the %variables% into their actual content
@@ -3701,14 +3715,35 @@ Send_InGame_Message(messageToSend, tabInfos="", isHotkey=0, isAdvanced=0) {
 	global GlobalValues, ProgramValues
 
 	programName := ProgramValues["Name"]
+	gameIniFile := ProgramValues["Game_Ini_File"]
 
 	buyerName := tabInfos.Buyer, itemName := tabInfos.Item, itemPrice := tabInfos.Price, gamePID := tabInfos.PID, activeTab := tabInfos.TabID
-	messageToSendRaw := messageToSend
-	StringReplace, messageToSend, messageToSend, `%buyerName`%, %buyerName%, 1
-	StringReplace, messageToSend, messageToSend, `%itemName`%, %itemName%, 1
-	StringReplace, messageToSend, messageToSend, `%itemPrice`%, %itemPrice%, 1
-	StringReplace, messageToSend, messageToSend, `%lastWhisper`%,% GlobalValues["Last_Whisper"], 1
+	messageRaw1 := allMessages[1], messageRaw2 := allMessages[2], messageRaw3 := allMessages[3]
+	message1 := allMessages[1], message2 := allMessages[2], message3 := allMessages[3]
+
+	IniRead, chatKey,% gameIniFile,ACTION_KEYS,chat
+	if (!chatKey || chatKey="ERROR") { ; Chat key not found due to either .ini file not existing or [ACTION_KEYS] section being skipped due to the file being encoded in UTF-8 (requires UTF-16)
+		IniRead, otherExists,% gameIniFile
+		IniRead, sectionExists,% gameIniFile,ACTION_KEYS
+		if (!sectionExists && otherExists) { ; Confirms the UTF-8 encoding prevents us from correctly reading the file.
+											 ; Could set the file format to UTF-16, due that could potentially cause an issue if Path of Exile uses UTF-8.
+											 ; My workaround is to add a blank line on the top, leaving the UTF-8 format untouched.
+			FileRead, fileContent,% gameIniFile
+			FileDelete,% gameIniFile
+			FileAppend,% "`n" fileContent,% gameIniFile
+			IniRead, chatKey,% gameIniFile,ACTION_KEYS,chat
+		}
+	}
+
+	Loop 3 { ; Include the trade variable content into the variables.
+		StringReplace, message%A_Index%, message%A_Index%, `%buyerName`%, %buyerName%, 1
+		StringReplace, message%A_Index%, message%A_Index%, `%itemName`%, %itemName%, 1
+		StringReplace, message%A_Index%, message%A_Index%, `%itemPrice`%, %itemPrice%, 1
+		StringReplace, message%A_Index%, message%A_Index%, `%lastWhisper`%,% GlobalValues["Last_Whisper"], 1
+	}
+
 	if ( isHotkey = 1 ) {
+		messageToSend := messages[1]
 		if ( GlobalValues["Hotkeys_Mode"] = "Advanced" ) {
 			SendInput,%messageToSend%
 		}
@@ -3740,19 +3775,29 @@ Send_InGame_Message(messageToSend, tabInfos="", isHotkey=0, isAdvanced=0) {
 		WinActivate,[a-zA-Z0-9_] ahk_pid %gamePID%
 		WinWaitActive,[a-zA-Z0-9_] ahk_pid %gamePID%, ,5
 		if (!ErrorLevel) {
-			if ( isAdvanced = 1 ) {
-				StringReplace, messageToSend, messageToSend, !, {!}, 1
-				StringReplace, messageToSend, messageToSend, ^, {^}, 1
-				StringReplace, messageToSend, messageToSend, +, {+}, 1
-				StringReplace, messageToSend, messageToSend, #, {#}, 1
-				sleep 10
-				SendInput,%messageToSend%
-			}
-			else {
-				sleep 10
-				SendInput,{Enter}/{BackSpace}
-				SendInput,{Raw}%messageToSend%
-				SendInput,{Enter}
+			Loop 3 {
+				messageToSend := message%A_Index%
+				if ( !messagetoSend )
+					Break
+				else {
+					Sleep 10
+					keyVK := StringToHex(chr(chatKey+0))
+					if keyVK in 1,2,4,5,6,9C,9D,9E,9F ; Mouse buttons
+					{
+						keyDelay := A_KeyDelay, keyDuration := A_KeyDuration
+						SetKeyDelay, 10, 10
+						ControlSend, ,{VK%keyVK%}, [a-zA-Z0-9_] ahk_pid %gamePID% ; Mouse buttons tend to activate the window under the cursor.
+																				  ; Therefore, we need to send the key to the actual game window.
+  						SetKeyDelay,% keyDelay,% keyDuration
+						Sleep 10
+					}
+					else
+						SendInput,{VK%keyVK%}
+					SendInput,/{BackSpace}
+					SendInput,{Raw}%messageToSend%
+					SendInput,{Enter}
+					Sleep 10
+				}
 			}
 		}
 
@@ -3760,6 +3805,28 @@ Send_InGame_Message(messageToSend, tabInfos="", isHotkey=0, isAdvanced=0) {
 		BlockInput, Off
 	}
 }
+
+
+StringToHex(String) {
+;		Original script author ahklerner
+;		autohotkey.com/board/topic/15831-convert-string-to-hex/?p=102873
+	
+	Old_A_FormatInteger := A_FormatInteger 	;Save the current Integer format
+	SetFormat, INTEGER, H ; Set the format of integers to their Hex value
+	
+	;Parse the String
+	Loop, Parse, String 
+	{
+		CharHex := Asc(A_LoopField) ; Get the ASCII value of the Character (will be converted to the Hex value by the SetFormat Line above)
+		StringTrimLeft, CharHex, CharHex, 2 ; Comment out the following line to leave the '0x' intact
+		HexString .= CharHex . " " ; Build the return string
+	}
+	SetFormat, INTEGER, %Old_A_FormatInteger% ; Set the integer format to what is was prior to the call
+	
+	HexString = %HexString% ; Remove blankspaces	
+	Return HexString
+}
+
 
 Extract_Font_Files() {
 /*			Include the ressources into the compiled executable
