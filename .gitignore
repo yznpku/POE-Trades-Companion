@@ -2,6 +2,8 @@
 todo.txt
 _BETA
 *.ahk
+*.exe
+!POE Trades Helper.exe
 !POE Trades Helper.ahk
 
 # =========================
