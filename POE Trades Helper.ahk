@@ -425,6 +425,12 @@ Gui_Trades(infosArray="", errorMsg="", isClone=0) {
 	colorTradesInfos2 := GlobalValues["Font_Color_Trades_Infos_2"]
 	colorTabs := GlobalValues["Font_Color_Tabs"]
 	colorButtons := GlobalValues["Font_Color_Buttons"]
+	colorTitleActive := (colorTitleActive="SYSTEM")?(""):(colorTitleActive)
+	colorTitleInactive := (colorTitleInactive="SYSTEM")?(""):(colorTitleInactive)
+	colorTradesInfos1 := (colorTradesInfos1="SYSTEM")?(""):(colorTradesInfos1)
+	colorTradesInfos2 := (colorTradesInfos2="SYSTEM")?(""):(colorTradesInfos2)
+	colorTabs := (colorTabs="SYSTEM")?(""):(colorTabs)
+	colorButtons := (colorButtons="SYSTEM")?(""):(colorButtons)
 
 	maxTabsRow := 7
 	maxTabsStage1 := 10
@@ -477,14 +483,14 @@ Gui_Trades(infosArray="", errorMsg="", isClone=0) {
 			Gui, Add, Text,% "x" 0 . " y" guiHeight-borderSize . " w" guiWidth . " h" borderSize . " +0x4",% "" ; Bottom
 
 			Gui, Add, Text,% "x" borderSize . " y" 70*guiScale . " w" guiWidth-borderSize . " hwndErrorMsgTextHandler" . " Center +BackgroundTrans c" colorTradesInfos1,% errorTxt
-			Gui, Add, Tab3,% "x" borderSize . " y" 30*guiScale . " w" . guiWidth-borderSize " h" (tabHeight+7)*guiScale . " -Wrap  vTab " . themeState . " gGui_Trades_OnTabSwitch +BackgroundTrans",% ""
+			Gui, Add, Tab3,% "x" borderSize . " y" 30*guiScale . " w" . guiWidth-borderSize " h" (tabHeight+7)*guiScale . " -Wrap  vTab gGui_Trades_OnTabSwitch +BackgroundTrans",% ""
 
 
 			Loop %maxTabsRendered% {
 				index := A_Index
 				Gui, Tab,%index%
 
-				Gui, Add, Button,% "x" 374*guiScale . " y" 38*guiScale . " w" 20*guiScale . " h" 20*guiScale . " vdelBtn" index . " hwndCloseBtn1Handler" . " gGui_Trades_RemoveItem " themeState " +BackgroundTrans",X
+				Gui, Add, Button,% "x" 374*guiScale . " y" 38*guiScale . " w" 20*guiScale . " h" 20*guiScale . " vdelBtn" index . " hwndCloseBtn1Handler" . " gGui_Trades_RemoveItem +BackgroundTrans",X
 
 ;				Buyer / Item / ... Static Text
 				Gui, Add, Text,% "x" 9*guiScale . " y" 40*guiScale . " w" 60*guiScale . " h" 15*guiScale . " hwndBuyerText" index "Handler" . " +BackgroundTrans" . " c" colorTradesInfos1,% "Buyer: "
@@ -545,7 +551,7 @@ Gui_Trades(infosArray="", errorMsg="", isClone=0) {
 			Gui, Add, Picture,% "x" 0 . " y" 50*guiScale . " w" guiWidth . " h" 2*guiScale . " hwndTabUnderlineHandler" . " +BackgroundTrans",% programSkinFolderPath "\" activeSkin "\TabUnderline.png"
 			Gui, Add, Picture,% "x" 360*guiScale . " y" 30*guiScale . " w" 20*guiScale . " h" 20*guiScale . " vGoLeft" . " hwndGoLeftHandler" . " gGui_Trades_Arrow_Left +BackgroundTrans",% programSkinFolderPath "\" activeSkin "\ArrowLeft.png"
 			Gui, Add, Picture,% "x" 380*guiScale . " y" 30*guiScale . " w" 20*guiScale . " h" 20*guiScale . " vGoRight" . " hwndGoRightHandler" . " gGui_Trades_Arrow_Right +BackgroundTrans",% programSkinFolderPath "\" activeSkin "\ArrowRight.png"
-			Gui, Add, Picture,% "x" 374*guiScale . " y" 53*guiScale . " w" 25*guiScale . " h" 25*guiScale . " vdelBtn1" . " hwndCloseBtn1Handler" . " gGui_Trades_RemoveItem " themeState " +BackgroundTrans",% programSkinFolderPath "\" activeSkin "\Close.png"
+			Gui, Add, Picture,% "x" 374*guiScale . " y" 53*guiScale . " w" 25*guiScale . " h" 25*guiScale . " vdelBtn1" . " hwndCloseBtn1Handler" . " gGui_Trades_RemoveItem  +BackgroundTrans",% programSkinFolderPath "\" activeSkin "\Close.png"
 			TradesGUI_Controls.Insert("Arrow_Left", GoLeftHandler)
 			TradesGUI_Controls.Insert("Arrow_Right", GoRightHandler)
 			TradesGUI_Controls.Insert("Button_Close", CloseBtn1Handler)
@@ -1511,7 +1517,7 @@ Gui_Settings() {
 	Gui, Add, Link,% "x" guiXWorkarea . " y" 375 . " vWikiBtn gGui_Settings_Btn_WIKI",% "Keep the cursor above a control to know more about it. You may also <a href="""">Visit the Wiki</a>"
     ; Gui, Add, Button,% "x" guiXWorkArea . " y" 360 . " w" 430 . " h" 30 . " gGui_Settings_Btn_Apply vApplyBtn",Apply Settings
 
-	Gui, Add, Tab2, x10 y10 w0 h0 vTab hwndTabHandler %themeState%,Settings|Customization|Appearance|Buttons Actions|Hotkeys
+	Gui, Add, Tab2, x10 y10 w0 h0 vTab hwndTabHandler,Settings|Customization|Appearance|Buttons Actions|Hotkeys
 	Gui, Tab, Settings
 ;	Settings Tab
 ;		Trades GUI
@@ -1640,7 +1646,7 @@ Gui_Settings() {
 		index := A_Index
 		xpos := (index=1||index=4||index=7)?(guiXWorkArea+32):(index=2||index=5||index=8)?(guiXWorkArea+152):(index=3||index=6||index=9)?(guiXWorkArea+272):("ERROR")
 		ypos := (index=1||index=2||index=3)?(guiYWorkArea):(index=4||index=5||index=6)?(guiYWorkArea+35):(index=7||index=8||index=9)?(guiYWorkArea+70):("ERROR")
-		Gui, Add, Button, x%xpos% y%ypos% %themeState% w120 h35 vTradesBtn%index% hwndTradesBtn%index%Handler gGui_Settings_Custom_Label,% "Custom " index
+		Gui, Add, Button, x%xpos% y%ypos% w120 h35 vTradesBtn%index% hwndTradesBtn%index%Handler gGui_Settings_Custom_Label,% "Custom " index
 
 		Gui, Add, GroupBox,% "x" guiXWorkArea . " y" guiYWorkArea+120 . " w425 h70",Positioning
 			Gui, Add, Text,% "xp+10" . " yp+20" . " hwndTradesHPOS" index "TextHandler",Horizontal:
@@ -2831,10 +2837,6 @@ Set_INI_Settings(){
 	IniWrite,% fileProcessName,% iniFilePath,PROGRAM,FileProcessName
 	DetectHiddenWindows, %HiddenWindows%
 
-	IniRead, showLogs,% iniFilePath,PROGRAM,Show_Changelogs
-	if ( showLogs != 0 && showLogs != 1 )
-		IniWrite, 0,% iniFilePath,PROGRAM,Show_Changelogs
-	
 ;	Retrieve the settings arrays
 	settingsArray := Gui_Settings_Get_Settings_Arrays()
 	sectionArray := settingsArray.sectionArray
@@ -2861,7 +2863,7 @@ Set_INI_Settings(){
 			keyName := element
 			value := %sectionName%_DefaultValues[key]
 			IniRead, var,% iniFilePath,% sectionName,% keyName
-			if ( var = "ERROR" || var = "" ) {
+			if ( var = "ERROR" ) {
 				IniWrite,% value,% iniFilePath,% sectionName,% keyName
 			}
 		}
@@ -3853,13 +3855,13 @@ Extract_Skin_Files() {
 ;	System Skin
 	if !( InStr(FileExist(programSkinFolderPath "\System"), "D") )
 		FileCreateDir, % programSkinFolderPath "\System"
-	FileInstall, C:\Users\Hatsune\Documents\GitHub\POE-Trades-Helper\Ressources\Skins\System\Settings.ini,% programSkinFolderPath "\System\Settings.ini"
+	FileInstall, C:\Users\Hatsune\Documents\GitHub\POE-Trades-Helper\Ressources\Skins\System\Settings.ini,% programSkinFolderPath "\System\Settings.ini", 1
 	FileInstall, C:\Users\Hatsune\Documents\GitHub\POE-Trades-Helper\Ressources\Skins\System\Header.png,% programSkinFolderPath "\System\Header.png"
 
 ;	Path of Exile Skin
 	if !( InStr(FileExist(programSkinFolderPath "\Path of Exile"), "D") )
 		FileCreateDir, % programSkinFolderPath "\Path of Exile"
-	FileInstall, C:\Users\Hatsune\Documents\GitHub\POE-Trades-Helper\Ressources\Skins\Path Of Exile\Settings.ini,% programSkinFolderPath "\Path Of Exile\Settings.ini"
+	FileInstall, C:\Users\Hatsune\Documents\GitHub\POE-Trades-Helper\Ressources\Skins\Path Of Exile\Settings.ini,% programSkinFolderPath "\Path Of Exile\Settings.ini", 1
 	FileInstall, C:\Users\Hatsune\Documents\GitHub\POE-Trades-Helper\Ressources\Skins\Path Of Exile\ArrowLeft.png,% programSkinFolderPath "\Path Of Exile\ArrowLeft.png"
 	FileInstall, C:\Users\Hatsune\Documents\GitHub\POE-Trades-Helper\Ressources\Skins\Path Of Exile\ArrowLeftHover.png,% programSkinFolderPath "\Path Of Exile\ArrowLeftHover.png"
 	FileInstall, C:\Users\Hatsune\Documents\GitHub\POE-Trades-Helper\Ressources\Skins\Path Of Exile\ArrowLeftPress.png,% programSkinFolderPath "\Path Of Exile\ArrowLeftPress.png"
