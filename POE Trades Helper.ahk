@@ -57,12 +57,14 @@ Start_Script() {
 	ProgramValues.Insert("Reddit", "https://redd.it/57oo3h")
 	ProgramValues.Insert("GGG", "https://www.pathofexile.com/forum/view-thread/1755148/")
 	ProgramValues.Insert("GitHub", "https://github.com/lemasato/POE-Trades-Helper")
+	ProgramValues.Insert("Paypal", "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=BSWU76BLQBMCU")
 
 	ProgramValues.Insert("Local_Folder", userprofile "\Documents\AutoHotkey\" ProgramValues["Name"])
 	ProgramValues.Insert("SFX_Folder", ProgramValues["Local_Folder"] "\SFX")
 	ProgramValues.Insert("Logs_Folder", ProgramValues["Local_Folder"] "\Logs")
 	ProgramValues.Insert("Skins_Folder", ProgramValues["Local_Folder"] "\Skins")
 	ProgramValues.Insert("Fonts_Folder", ProgramValues["Local_Folder"] "\Fonts")
+	ProgramValues.Insert("Others_Folder", ProgramValues["Local_Folder"] "\Others")
 
 	ProgramValues.Insert("Ini_File", ProgramValues["Local_Folder"] "\Preferences.ini")
 	ProgramValues.Insert("Logs_File", ProgramValues["Logs_Folder"] "\" A_YYYY "-" A_MM "-" A_DD "_" A_Hour "-" A_Min "-" A_Sec ".txt")
@@ -87,6 +89,7 @@ Start_Script() {
 					:(A_Index=3)?(ProgramValues["Logs_Folder"])
 					:(A_Index=4)?(ProgramValues["Skins_Folder"])
 					:(A_Index=5)?(ProgramValues["Fonts_Folder"])
+					:(A_Index=6)?(ProgramValues["Others_Folder"])
 					:("ERROR")
 		if ( directory = "ERROR" )
 			Break
@@ -113,6 +116,7 @@ Start_Script() {
 	Extract_Sound_Files()
 	Extract_Skin_Files()
 	Extract_Font_Files()
+	Extract_Others_Files()
 	Check_Update()
 	Enable_Hotkeys()
 
@@ -140,8 +144,9 @@ Start_Script() {
 	}
 
 	Logs_Append("START", settingsArray)
-	; Monitor_Game_Logs()
 	; Gui_Settings()
+	Gui_About()
+	; Monitor_Game_Logs()
 }
 
 ;==================================================================================================================
@@ -1637,7 +1642,7 @@ Gui_Settings() {
 		ypos := (index=1||index=2||index=3)?(guiYWorkArea):(index=4||index=5||index=6)?(guiYWorkArea+35):(index=7||index=8||index=9)?(guiYWorkArea+70):("ERROR")
 		Gui, Add, Button, x%xpos% y%ypos% %themeState% w120 h35 vTradesBtn%index% hwndTradesBtn%index%Handler gGui_Settings_Custom_Label,% "Custom " index
 
-		Gui, Add, GroupBox,% "x" guiXWorkArea . " y" guiYWorkArea+120 . " w425 h70",Positioning (Warning: These changes are instantly being saved)
+		Gui, Add, GroupBox,% "x" guiXWorkArea . " y" guiYWorkArea+120 . " w425 h70",Positioning
 			Gui, Add, Text,% "xp+10" . " yp+20" . " hwndTradesHPOS" index "TextHandler",Horizontal:
 			Gui, Add, ListBox, w70 xp+55 yp vTradesHPOS%index% hwndTradesHPOS%index%Handler gGui_Settings_Trades_Preview,% "Left|Center|Right"
 			Gui, Add, Text, xp+75 yp hwndTradesVPOS%index%TextHandler,Vertical:
@@ -1746,7 +1751,7 @@ Gui_Settings() {
 	GoSub, Gui_Settings_Set_Preferences
 	Gui, Trades: -E0x20
 	Gui, Show
-	GuiControl, Settings:Choose,% TabHandler, 4
+	GuiControl, Settings:Choose,% TabHandler, 1
 	guiCreated := 1
 return
 
@@ -1830,9 +1835,8 @@ return
 	  			:(evntinf=P2)?("Customization")
 	  			:(evntinf=P2C1)?("Appearance")
 	  			:(evntinf=P2C2)?("Buttons Actions")
-	  			:(evntinf=P3)?("hotkeys")
+	  			:(evntinf=P3)?("Hotkeys")
 	  			:("ERROR")
-	  	tabName := (tabName="Customization")?("Appearance"):(tabName)
 	      GuiControl, Settings:Choose,% TabHandler,% tabName
 	  }
 	Return
@@ -2720,45 +2724,31 @@ Gui_About() {
 	Gui, About:New, +HwndaboutGuiHandler +AlwaysOnTop +SysMenu -MinimizeBox -MaximizeBox +OwnDialogs,% programName " by lemasato v" programVersion
 	Gui, About:Default
 
-	Gui, Add, Tab3,x10 y10 vTab hwndTabHandler h190 w425 %themeState%,About|Changelogs
-	Gui, Tab, 1
-		Gui, Add, Text, x20 y40 ,Hello, thank you for using %programName%!
-		Gui, Add, Text, xp yp+15 h50,It allows you to keep at sight your trade requests!
-		Gui, Add, Text, xp yp+20 h50,Upon receiving a typical whisper from poe.trade, a new tab will appear containing:
-		Gui, Add, Text, xp yp+15 ,The buyer's name, the item, the price listed, and the league/stash tab.
-		Gui, Add, Text, xp yp+15 ,Several buttons will let you invite/message the person.
-		Gui, Add, Text, xp yp+20,If you would like to change your preferences, head over the [Settings] tray menu.
-		Gui, Add, Text, xp yp+30,See on:
-		Gui, Add, Link, gGitHub_Link xp yp+15,% "<a href="""">GitHub</a> - "
-		Gui, Add, Link, gReddit_Link xp+45 yp,% "<a href="""">Reddit</a> - "
-		Gui, Add, Link, gGGG_Link xp+45 yp,% "<a href="""">GGG</a>"
-
-	Gui, Tab, 2
-		FileRead, changelogText,% programChangelogsFilePath
-		allChanges := Object()
-		allVersions := ""
-		Loop {
-			if RegExMatch(changelogText, "sm)\\\\.*?--(.*?)--(.*?)//(.*)", subPat) {
-				version%A_Index% := subPat1, changes%A_Index% := subPat2, changelogText := subPat3
-				StringReplace, changes%A_Index%, changes%A_Index%,`n,% "",0
-				
-				allVersions .= version%A_Index% "|"
-				allChanges.Insert(changes%A_Index%)
-			}
+	FileRead, changelogText,% programChangelogsFilePath
+	allChanges := Object()
+	allVersions := ""
+	Loop {
+		if RegExMatch(changelogText, "sm)\\\\.*?--(.*?)--(.*?)//(.*)", subPat) {
+			version%A_Index% := subPat1, changes%A_Index% := subPat2, changelogText := subPat3
+			StringReplace, changes%A_Index%, changes%A_Index%,`n,% "",0			
+			allVersions .= version%A_Index% "|"
+			allChanges.Insert(changes%A_Index%)
+		}
 		else
 			break
-		}
-		Gui, Add, DropDownList, gVersion_Change AltSubmit vVerNum hwndVerNumHandler,%allVersions%
-		Gui, Add, Edit, vChangesText hwndChangesTextHandler w395 R9 ReadOnly,An internet connection is required
-		GuiControl, Choose,%VerNumHandler%,1
-		GoSub, Version_Change
-	Gui, Show, AutoSize
-	
-	IniRead, state,% iniFilePath,PROGRAM,Show_Changelogs
-	if ( state = 1 ) {
-		GuiControl,About:Choose,%tabHandler%,2
-		IniWrite, 0,% iniFilePath,PROGRAM,Show_Changelogs
 	}
+	Gui, Add, DropDownList, w500 gVersion_Change AltSubmit vVerNum hwndVerNumHandler,%allVersions%
+	Gui, Add, Edit, Section vChangesText hwndChangesTextHandler wp R15 ReadOnly,An internet connection is required
+	GuiControl, Choose,%VerNumHandler%,1
+	GoSub, Version_Change
+
+	Gui, Add, Text, xs ,See on:
+	Gui, Add, Link, gGitHub_Link xp yp+15,% "<a href="""">GitHub</a> - "
+	Gui, Add, Link, gReddit_Link xp+45 yp,% "<a href="""">Reddit</a> - "
+	Gui, Add, Link, gGGG_Link xp+45 yp,% "<a href="""">GGG</a>"
+	Gui, Add, Picture,xp+335 yp-5 gPaypal_Link,% ProgramValues["Others_Folder"] "\DonatePaypal.png"
+
+	Gui, Show, AutoSize
 	return
 	
 	Version_Change:
@@ -2777,6 +2767,10 @@ Gui_About() {
 
 	GGG_Link:
 		Run,% ProgramValues["GGG"]
+	Return
+
+	Paypal_Link:
+		Run,% ProgramValues["Paypal"]
 	Return
 }
 
@@ -3811,8 +3805,8 @@ StringToHex(String) {
 ;		Original script author ahklerner
 ;		autohotkey.com/board/topic/15831-convert-string-to-hex/?p=102873
 	
-	Old_A_FormatInteger := A_FormatInteger 	;Save the current Integer format
-	SetFormat, INTEGER, H ; Set the format of integers to their Hex value
+	formatInteger := A_FormatInteger 	;Save the current Integer format
+	SetFormat, Integer, Hex ; Set the format of integers to their Hex value
 	
 	;Parse the String
 	Loop, Parse, String 
@@ -3821,7 +3815,7 @@ StringToHex(String) {
 		StringTrimLeft, CharHex, CharHex, 2 ; Comment out the following line to leave the '0x' intact
 		HexString .= CharHex . " " ; Build the return string
 	}
-	SetFormat, INTEGER, %Old_A_FormatInteger% ; Set the integer format to what is was prior to the call
+	SetFormat, Integer,% formatInteger ; Set the integer format to what is was prior to the call
 	
 	HexString = %HexString% ; Remove blankspaces	
 	Return HexString
@@ -3899,6 +3893,16 @@ Extract_Sound_Files() {
 	FileInstall, C:\Users\Hatsune\Documents\GitHub\POE-Trades-Helper\Ressources\SFX\MM_Tatl_Hey.wav,% programSFXFolderPath "\MM_Tatl_Hey.wav", 0
 	FileInstall, C:\Users\Hatsune\Documents\GitHub\POE-Trades-Helper\Ressources\SFX\WW_MainMenu_CopyErase_Start.wav,% programSFXFolderPath "\WW_MainMenu_CopyErase_Start.wav", 0
 	FileInstall, C:\Users\Hatsune\Documents\GitHub\POE-Trades-Helper\Ressources\SFX\WW_MainMenu_Letter.wav,% programSFXFolderPath "\WW_MainMenu_Letter.wav", 0
+}
+
+Extract_Others_Files() {
+/*			Include any other file that does not belong to the others
+			Extracts the included files into the specified folder
+*/
+	global ProgramValues
+
+	programOthersFolderPath := ProgramValues["Others_Folder"]
+	FileInstall, C:\Users\Hatsune\Documents\GitHub\POE-Trades-Helper\Ressources\Others\DonatePaypal.png,% programOthersFolderPath "\DonatePaypal.png", 0
 }
 
 Close_Previous_Program_Instance() {
