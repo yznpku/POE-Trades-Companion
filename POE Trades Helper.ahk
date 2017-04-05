@@ -48,7 +48,7 @@ Start_Script() {
 	GlobalValues.Insert("Screen_DPI", Get_DPI_Factor())
 
 	ProgramValues := Object() ; Specific to the program's informations
-	ProgramValues.Insert("Name", "POE Trades Helper")
+	ProgramValues.Insert("Name", "POE Trades Companion")
 	ProgramValues.Insert("Version", "1.8.8")
 	ProgramValues.Insert("Debug", 1)
 
@@ -473,14 +473,15 @@ Gui_Trades(infosArray="", errorMsg="", isClone=0) {
 ;			Header
 			Gui, Font,s%fontSize%,% fontName
 			Gui, Add, Picture,% "x" borderSize . " y" borderSize . " w" guiWidth-borderSize . " h" 30*guiScale . " +BackgroundTrans",% programSkinFolderPath "\" GlobalValues["Active_Skin"] "\Header.png"
-			Gui, Add, Text,% "x" borderSize+(35*guiScale) . " y" borderSize+(2*guiScale) . " w" guiWidth-(100*guiScale) . " h" 28*guiScale " hwndguiTradesTitleHandler gGui_Trades_Move c" colorTitleInactive . " +BackgroundTrans +0x200 ",% programName " - Queued Trades: 0"
-			Gui, Add, Text,% "x" guiWidth-(65*guiScale) . " y" borderSize+(2*guiScale) . " w" 65*guiScale . " h" 28*guiScale " hwndguiTradesMinimizeHandler gGui_Trades_Minimize c" colorTitleInactive . " +BackgroundTrans +0x200",% "MINIMIZE"
+			Gui, Add, Picture,% "x" borderSize+10*guiScale . " y" borderSize+5*guiScale . " w" 22*guiScale . " h" 22*guiScale . " +BackgroundTrans",% programSkinFolderPath "\" activeSkin "\icon.png"
+			Gui, Add, Text,% "x" borderSize+(35*guiScale) . " y" borderSize . " w" guiWidth-(100*guiScale) . " h" 28*guiScale " hwndguiTradesTitleHandler gGui_Trades_Move c" colorTitleInactive . " +BackgroundTrans +0x200 ",% programName " - Queued Trades: 0"
+			Gui, Add, Text,% "x" guiWidth-(65*guiScale) . " y" borderSize . " w" 65*guiScale . " h" 28*guiScale " hwndguiTradesMinimizeHandler gGui_Trades_Minimize c" colorTitleInactive . " +BackgroundTrans +0x200",% "MINIMIZE"
 
 ;			Borders
-			Gui, Add, Text,% "x" 0 . " y" 0 . " w" guiWidth . " h" borderSize . " +0x4",% "" ; Top
-			Gui, Add, Text,% "x" 0 . " y" 0 . " w" borderSize . " h" guiHeight . " +0x4",% "" ; Left
-			Gui, Add, Text,% "x" guiWidth-borderSize . " y" 0 . " w" borderSize . " h" guiHeight . " +0x4",% "" ; Right
-			Gui, Add, Text,% "x" 0 . " y" guiHeight-borderSize . " w" guiWidth . " h" borderSize . " +0x4",% "" ; Bottom
+			Gui, Add, Picture,% "x" 0 . " y" 0 . " w" guiWidth . " h" borderSize,% programSkinFolderPath "\" activeSkin "\Border.png" ; Top
+			Gui, Add, Picture,% "x" 0 . " y" 0 . " w" borderSize . " h" guiHeight,% programSkinFolderPath "\" activeSkin "\Border.png" ; Left
+			Gui, Add, Picture,% "x" guiWidth-borderSize . " y" 0 . " w" borderSize . " h" guiHeight,% programSkinFolderPath "\" activeSkin "\Border.png" ; Right
+			Gui, Add, Picture,% "x" 0 . " y" guiHeight-borderSize . " w" guiWidth . " h" borderSize,% programSkinFolderPath "\" activeSkin "\Border.png" ; Bottom
 
 			Gui, Add, Text,% "x" borderSize . " y" 70*guiScale . " w" guiWidth-borderSize . " hwndErrorMsgTextHandler" . " Center +BackgroundTrans c" colorTradesInfos1,% errorTxt
 			Gui, Add, Tab3,% "x" borderSize . " y" 30*guiScale . " w" . guiWidth-borderSize " h" (tabHeight+7)*guiScale . " -Wrap  vTab gGui_Trades_OnTabSwitch +BackgroundTrans",% ""
@@ -543,8 +544,9 @@ Gui_Trades(infosArray="", errorMsg="", isClone=0) {
 			Gui, Color, Black ; Prevents the flickering from being too noticeable
 			Gui, Font,s%fontSize%,% fontName
 			Gui, Add, Picture,% "x" borderSize . " y" borderSize . " w" guiWidth-borderSize . " h" 30*guiScale . " +BackgroundTrans",% programSkinFolderPath "\" activeSkin "\Header.png"
-			Gui, Add, Text,% "x" borderSize+(35*guiScale) . " y" borderSize+(2*guiScale) . " w" guiWidth-(100*guiScale) . " h" 28*guiScale " hwndguiTradesTitleHandler gGui_Trades_Move c" colorTitleInactive . " +BackgroundTrans +0x200 ",% programName " - Queued Trades: 0"
-			Gui, Add, Text,% "x" guiWidth-(65*guiScale) . " y" borderSize+(2*guiScale) . " w" 65*guiScale . " h" 28*guiScale " hwndguiTradesMinimizeHandler gGui_Trades_Minimize c" colorTitleInactive . " +BackgroundTrans +0x200",% "MINIMIZE"
+			Gui, Add, Picture,% "x" borderSize+10*guiScale . " y" borderSize+5*guiScale . " w" 22*guiScale . " h" 22*guiScale . " +BackgroundTrans",% programSkinFolderPath "\" activeSkin "\icon.png"
+			Gui, Add, Text,% "x" borderSize+(35*guiScale) . " y" borderSize . " w" guiWidth-(100*guiScale) . " h" 28*guiScale " hwndguiTradesTitleHandler gGui_Trades_Move c" colorTitleInactive . " +BackgroundTrans +0x200 ",% programName " - Queued Trades: 0"
+			Gui, Add, Text,% "x" guiWidth-(65*guiScale) . " y" borderSize . " w" 65*guiScale . " h" 28*guiScale " hwndguiTradesMinimizeHandler gGui_Trades_Minimize c" colorTitleInactive . " +BackgroundTrans +0x200",% "MINIMIZE"
 
 ;			Static pictures assets
 			Gui, Add, Picture,% "x" borderSize . " y" 30*guiScale . " w" guiWidth-borderSize . " h" guiHeight-borderSize . " +BackgroundTrans",% programSkinFolderPath "\" activeSkin "\Background.png"
@@ -557,10 +559,10 @@ Gui_Trades(infosArray="", errorMsg="", isClone=0) {
 			TradesGUI_Controls.Insert("Button_Close", CloseBtn1Handler)
 
 ;			Borders
-			Gui, Add, Text,% "x" 0 . " y" 0 . " w" guiWidth . " h" borderSize . " +0x4",% "" ; Top
-			Gui, Add, Text,% "x" 0 . " y" 0 . " w" borderSize . " h" guiHeight . " +0x4",% "" ; Left
-			Gui, Add, Text,% "x" guiWidth-borderSize . " y" 0 . " w" borderSize . " h" guiHeight . " +0x4",% "" ; Right
-			Gui, Add, Text,% "x" 0 . " y" guiHeight-borderSize . " w" guiWidth . " h" borderSize . " +0x4",% "" ; Bottom
+			Gui, Add, Picture,% "x" 0 . " y" 0 . " w" guiWidth . " h" borderSize,% programSkinFolderPath "\" activeSkin "\Border.png" ; Top
+			Gui, Add, Picture,% "x" 0 . " y" 0 . " w" borderSize . " h" guiHeight,% programSkinFolderPath "\" activeSkin "\Border.png" ; Left
+			Gui, Add, Picture,% "x" guiWidth-borderSize . " y" 0 . " w" borderSize . " h" guiHeight,% programSkinFolderPath "\" activeSkin "\Border.png" ; Right
+			Gui, Add, Picture,% "x" 0 . " y" guiHeight-borderSize . " w" guiWidth . " h" borderSize,% programSkinFolderPath "\" activeSkin "\Border.png" ; Bottom
 
 ;			Error message
 			Gui, Add, Text,% "x" borderSize . " y" 70*guiScale . " w" guiWidth-borderSize . " hwndErrorMsgTextHandler" . " Center +BackgroundTrans c" colorTradesInfos1,% errorTxt
@@ -3856,31 +3858,35 @@ Extract_Skin_Files() {
 	if !( InStr(FileExist(programSkinFolderPath "\System"), "D") )
 		FileCreateDir, % programSkinFolderPath "\System"
 	FileInstall, C:\Users\Hatsune\Documents\GitHub\POE-Trades-Helper\Ressources\Skins\System\Settings.ini,% programSkinFolderPath "\System\Settings.ini", 1
-	FileInstall, C:\Users\Hatsune\Documents\GitHub\POE-Trades-Helper\Ressources\Skins\System\Header.png,% programSkinFolderPath "\System\Header.png"
+	FileInstall, C:\Users\Hatsune\Documents\GitHub\POE-Trades-Helper\Ressources\Skins\System\Header.png,% programSkinFolderPath "\System\Header.png", 1
+	FileInstall, C:\Users\Hatsune\Documents\GitHub\POE-Trades-Helper\Ressources\Skins\System\Border.png,% programSkinFolderPath "\System\Border.png", 1
+	FileInstall, C:\Users\Hatsune\Documents\GitHub\POE-Trades-Helper\Ressources\Skins\System\Icon.png,% programSkinFolderPath "\System\Icon.png", 1
 
 ;	Path of Exile Skin
 	if !( InStr(FileExist(programSkinFolderPath "\Path of Exile"), "D") )
 		FileCreateDir, % programSkinFolderPath "\Path of Exile"
 	FileInstall, C:\Users\Hatsune\Documents\GitHub\POE-Trades-Helper\Ressources\Skins\Path Of Exile\Settings.ini,% programSkinFolderPath "\Path Of Exile\Settings.ini", 1
-	FileInstall, C:\Users\Hatsune\Documents\GitHub\POE-Trades-Helper\Ressources\Skins\Path Of Exile\ArrowLeft.png,% programSkinFolderPath "\Path Of Exile\ArrowLeft.png"
-	FileInstall, C:\Users\Hatsune\Documents\GitHub\POE-Trades-Helper\Ressources\Skins\Path Of Exile\ArrowLeftHover.png,% programSkinFolderPath "\Path Of Exile\ArrowLeftHover.png"
-	FileInstall, C:\Users\Hatsune\Documents\GitHub\POE-Trades-Helper\Ressources\Skins\Path Of Exile\ArrowLeftPress.png,% programSkinFolderPath "\Path Of Exile\ArrowLeftPress.png"
-	FileInstall, C:\Users\Hatsune\Documents\GitHub\POE-Trades-Helper\Ressources\Skins\Path Of Exile\ArrowRight.png,% programSkinFolderPath "\Path Of Exile\ArrowRight.png"
-	FileInstall, C:\Users\Hatsune\Documents\GitHub\POE-Trades-Helper\Ressources\Skins\Path Of Exile\ArrowRightHover.png,% programSkinFolderPath "\Path Of Exile\ArrowRightHover.png"
-	FileInstall, C:\Users\Hatsune\Documents\GitHub\POE-Trades-Helper\Ressources\Skins\Path Of Exile\ArrowRightPress.png,% programSkinFolderPath "\Path Of Exile\ArrowRightPress.png"
-	FileInstall, C:\Users\Hatsune\Documents\GitHub\POE-Trades-Helper\Ressources\Skins\Path Of Exile\Background.png,% programSkinFolderPath "\Path Of Exile\Background.png"
-	FileInstall, C:\Users\Hatsune\Documents\GitHub\POE-Trades-Helper\Ressources\Skins\Path Of Exile\ButtonBackground.png,% programSkinFolderPath "\Path Of Exile\ButtonBackground.png"
-	FileInstall, C:\Users\Hatsune\Documents\GitHub\POE-Trades-Helper\Ressources\Skins\Path Of Exile\ButtonBackgroundHover.png,% programSkinFolderPath "\Path Of Exile\ButtonBackgroundHover.png"
-	FileInstall, C:\Users\Hatsune\Documents\GitHub\POE-Trades-Helper\Ressources\Skins\Path Of Exile\ButtonBackgroundPress.png,% programSkinFolderPath "\Path Of Exile\ButtonBackgroundPress.png"
-	FileInstall, C:\Users\Hatsune\Documents\GitHub\POE-Trades-Helper\Ressources\Skins\Path Of Exile\ButtonOrnamentLeft.png,% programSkinFolderPath "\Path Of Exile\ButtonOrnamentLeft.png"
-	FileInstall, C:\Users\Hatsune\Documents\GitHub\POE-Trades-Helper\Ressources\Skins\Path Of Exile\ButtonOrnamentRight.png,% programSkinFolderPath "\Path Of Exile\ButtonOrnamentRight.png"
-	FileInstall, C:\Users\Hatsune\Documents\GitHub\POE-Trades-Helper\Ressources\Skins\Path Of Exile\Close.png,% programSkinFolderPath "\Path Of Exile\Close.png"
-	FileInstall, C:\Users\Hatsune\Documents\GitHub\POE-Trades-Helper\Ressources\Skins\Path Of Exile\CloseHover.png,% programSkinFolderPath "\Path Of Exile\CloseHover.png"
-	FileInstall, C:\Users\Hatsune\Documents\GitHub\POE-Trades-Helper\Ressources\Skins\Path Of Exile\ClosePress.png,% programSkinFolderPath "\Path Of Exile\ClosePress.png"
-	FileInstall, C:\Users\Hatsune\Documents\GitHub\POE-Trades-Helper\Ressources\Skins\Path Of Exile\TabActive.png,% programSkinFolderPath "\Path Of Exile\TabActive.png"
-	FileInstall, C:\Users\Hatsune\Documents\GitHub\POE-Trades-Helper\Ressources\Skins\Path Of Exile\TabInactive.png,% programSkinFolderPath "\Path Of Exile\TabInactive.png"
-	FileInstall, C:\Users\Hatsune\Documents\GitHub\POE-Trades-Helper\Ressources\Skins\Path Of Exile\TabUnderline.png,% programSkinFolderPath "\Path Of Exile\TabUnderline.png"
-	FileInstall, C:\Users\Hatsune\Documents\GitHub\POE-Trades-Helper\Ressources\Skins\Path Of Exile\Header.png,% programSkinFolderPath "\Path Of Exile\Header.png"
+	FileInstall, C:\Users\Hatsune\Documents\GitHub\POE-Trades-Helper\Ressources\Skins\Path Of Exile\ArrowLeft.png,% programSkinFolderPath "\Path Of Exile\ArrowLeft.png", 1
+	FileInstall, C:\Users\Hatsune\Documents\GitHub\POE-Trades-Helper\Ressources\Skins\Path Of Exile\ArrowLeftHover.png,% programSkinFolderPath "\Path Of Exile\ArrowLeftHover.png", 1
+	FileInstall, C:\Users\Hatsune\Documents\GitHub\POE-Trades-Helper\Ressources\Skins\Path Of Exile\ArrowLeftPress.png,% programSkinFolderPath "\Path Of Exile\ArrowLeftPress.png", 1
+	FileInstall, C:\Users\Hatsune\Documents\GitHub\POE-Trades-Helper\Ressources\Skins\Path Of Exile\ArrowRight.png,% programSkinFolderPath "\Path Of Exile\ArrowRight.png", 1
+	FileInstall, C:\Users\Hatsune\Documents\GitHub\POE-Trades-Helper\Ressources\Skins\Path Of Exile\ArrowRightHover.png,% programSkinFolderPath "\Path Of Exile\ArrowRightHover.png", 1
+	FileInstall, C:\Users\Hatsune\Documents\GitHub\POE-Trades-Helper\Ressources\Skins\Path Of Exile\ArrowRightPress.png,% programSkinFolderPath "\Path Of Exile\ArrowRightPress.png", 1
+	FileInstall, C:\Users\Hatsune\Documents\GitHub\POE-Trades-Helper\Ressources\Skins\Path Of Exile\Background.png,% programSkinFolderPath "\Path Of Exile\Background.png", 1
+	FileInstall, C:\Users\Hatsune\Documents\GitHub\POE-Trades-Helper\Ressources\Skins\Path Of Exile\ButtonBackground.png,% programSkinFolderPath "\Path Of Exile\ButtonBackground.png", 1
+	FileInstall, C:\Users\Hatsune\Documents\GitHub\POE-Trades-Helper\Ressources\Skins\Path Of Exile\ButtonBackgroundHover.png,% programSkinFolderPath "\Path Of Exile\ButtonBackgroundHover.png", 1
+	FileInstall, C:\Users\Hatsune\Documents\GitHub\POE-Trades-Helper\Ressources\Skins\Path Of Exile\ButtonBackgroundPress.png,% programSkinFolderPath "\Path Of Exile\ButtonBackgroundPress.png", 1
+	FileInstall, C:\Users\Hatsune\Documents\GitHub\POE-Trades-Helper\Ressources\Skins\Path Of Exile\ButtonOrnamentLeft.png,% programSkinFolderPath "\Path Of Exile\ButtonOrnamentLeft.png", 1
+	FileInstall, C:\Users\Hatsune\Documents\GitHub\POE-Trades-Helper\Ressources\Skins\Path Of Exile\ButtonOrnamentRight.png,% programSkinFolderPath "\Path Of Exile\ButtonOrnamentRight.png", 1
+	FileInstall, C:\Users\Hatsune\Documents\GitHub\POE-Trades-Helper\Ressources\Skins\Path Of Exile\Close.png,% programSkinFolderPath "\Path Of Exile\Close.png", 1
+	FileInstall, C:\Users\Hatsune\Documents\GitHub\POE-Trades-Helper\Ressources\Skins\Path Of Exile\CloseHover.png,% programSkinFolderPath "\Path Of Exile\CloseHover.png", 1
+	FileInstall, C:\Users\Hatsune\Documents\GitHub\POE-Trades-Helper\Ressources\Skins\Path Of Exile\ClosePress.png,% programSkinFolderPath "\Path Of Exile\ClosePress.png", 1
+	FileInstall, C:\Users\Hatsune\Documents\GitHub\POE-Trades-Helper\Ressources\Skins\Path Of Exile\TabActive.png,% programSkinFolderPath "\Path Of Exile\TabActive.png", 1
+	FileInstall, C:\Users\Hatsune\Documents\GitHub\POE-Trades-Helper\Ressources\Skins\Path Of Exile\TabInactive.png,% programSkinFolderPath "\Path Of Exile\TabInactive.png", 1
+	FileInstall, C:\Users\Hatsune\Documents\GitHub\POE-Trades-Helper\Ressources\Skins\Path Of Exile\TabUnderline.png,% programSkinFolderPath "\Path Of Exile\TabUnderline.png", 1
+	FileInstall, C:\Users\Hatsune\Documents\GitHub\POE-Trades-Helper\Ressources\Skins\Path Of Exile\Header.png,% programSkinFolderPath "\Path Of Exile\Header.png", 1
+	FileInstall, C:\Users\Hatsune\Documents\GitHub\POE-Trades-Helper\Ressources\Skins\Path Of Exile\Border.png,% programSkinFolderPath "\Path Of Exile\Border.png", 1
+	FileInstall, C:\Users\Hatsune\Documents\GitHub\POE-Trades-Helper\Ressources\Skins\Path of Exile\Icon.png,% programSkinFolderPath "\Path of Exile\Icon.png", 1
 }
 
 Extract_Sound_Files() {
