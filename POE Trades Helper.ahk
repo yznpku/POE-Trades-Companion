@@ -1,4 +1,4 @@
-﻿/*
+/*
 *	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
 *					POE Trades Helper																															*
 *					See all the information about the trade request upon receiving a poe.trade whisper															*
@@ -43,6 +43,7 @@ Start_Script() {
 
 	TradesGUI_Controls := Object() ; TradesGUI controls handlers
 	ProgramFonts := Object() ; Contains program private fonts
+	ParametersValues := Object() ; Run-time parameters
 
 	GlobalValues := Object() ; Preferences.ini keys + some other shared global variables
 	GlobalValues.Insert("Screen_DPI", Get_DPI_Factor())
@@ -173,7 +174,7 @@ Monitor_Game_Logs(mode="") {
 ;			Monitor the logs file, waiting for new whispers
 ;			Upon receiving a poe.trade whisper, pass the trades infos to Gui_Trades()
 	static
-	global GlobalValues
+	global GlobalValues, ParametersValues
 	global GuiTradesHandler, POEGameArray
 
 	if (mode = "CLOSE") {
@@ -181,15 +182,22 @@ Monitor_Game_Logs(mode="") {
 		Return
 	}
 
-	r := Get_All_Games_Instances()
-	if ( r = "EXE_NOT_FOUND" ) {
-		messagesArray := Gui_Trades_Manage_Trades("GET_ALL")
-		Gui_Trades(messagesArray, "EXE_NOT_FOUND")
+	if ( ParametersValues["GamePath"] ) {
+		WinGet, tempExeLocation, ProcessPath,% "ahk_id " element
+		SplitPath,% ParametersValues["GamePath"], ,directory
+		logsFile := directory "\logs\Client.txt"
 	}
 	else {
-		messagesArray := Gui_Trades_Manage_Trades("GET_ALL")
-		Gui_Trades(messagesArray, "UPDATE")
-		logsFile := r
+		r := Get_All_Games_Instances()
+		if ( r = "EXE_NOT_FOUND" ) {
+			messagesArray := Gui_Trades_Manage_Trades("GET_ALL")
+			Gui_Trades(messagesArray, "EXE_NOT_FOUND")
+		}
+		else {
+			messagesArray := Gui_Trades_Manage_Trades("GET_ALL")
+			Gui_Trades(messagesArray, "UPDATE")
+			logsFile := r
+		}
 	}
 	Logs_Append(A_ThisFunc,,logsFile)
 
@@ -3920,7 +3928,11 @@ Close_Previous_Program_Instance() {
  *				, checking if there is an existing match
  *				and closing if a match is found
 */
-	global ProgramValues
+	global ProgramValues, ParametersValues
+
+	if ( ParametersValues["NoReplace"] = 1 ) {
+		Return
+	}
 
 	iniFilePath := ProgramValues["Ini_File"]
 
@@ -4065,13 +4077,49 @@ Run_As_Admin() {
  *			https://autohotkey.com/board/topic/46526-run-as-administrator-xpvista7-a-isadmin-params-lib/?p=600596
 */
 	global 0
-	global ProgramValues, GlobalValues
+	global ProgramValues, GlobalValues, ParametersValues
 
 	iniFilePath := ProgramValues["Ini_File"], programName := ProgramValues["Name"]
 
 	IniWrite,% A_IsAdmin,% iniFilePath,PROGRAM,Is_Running_As_Admin
 
 	if ( A_IsAdmin = 1 ) {
+		Loop, %0% { ; Process cmdline parameters
+			param := %A_Index%
+			if ( param = "/NoReplace" ) {
+				ParametersValues.Insert("NoReplace", 1)
+			}
+			else if RegExMatch(param, "/GamePath=(.*)", found) {
+				if FileExist(found1) {
+					ParametersValues.Insert("GamePath", found1)
+					found1 := ""
+				}
+				else {
+					MsgBox, 4096,% programName,% "The /GamePath parameter was detected but the specified file does not exist:"
+					. "`n" found1
+					. "`n`nIf you need help about Command Line Parameters, please check the WIKI here: https://github.com/lemasato/POE-Trades-Helper/wiki"
+					. "`n`nThe program will now exit."
+					ExitApp
+				}
+			}
+			else if RegExMatch(param, "/PrefsFile=(.*)", found) {
+				ProgramValues.Insert("Ini_File", found1)
+				found1 := ""
+			}
+			else if RegExMatch(param, "/GameINI=(.*)", found) {
+				if FileExist(found1) {
+					ProgramValues.Insert("Game_Ini_File", found1)
+					found1 := ""
+				}
+				else {
+					MsgBox, 4096,% programName,% "The /GameINI parameter was detected but the specified file does not exist:"
+					. "`n" found1
+					. "`n`nIf you need help about Command Line Parameters, please check the WIKI here: https://github.com/lemasato/POE-Trades-Helper/wiki"
+					. "`n`nThe program will now exit."
+					ExitApp
+				}
+			}
+		}
 		IniWrite, 0,% iniFilePath,PROGRAM,Run_As_Admin_Attempts
 		Return
 	}
