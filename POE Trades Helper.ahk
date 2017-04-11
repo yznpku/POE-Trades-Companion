@@ -453,13 +453,10 @@ Gui_Trades(infosArray="", errorMsg="", isClone=0) {
 		Gui, Trades:New, +ToolWindow +AlwaysOnTop -Border +hwndGuiTradesHandler +LabelGui_Trades_ +LastFound -SysMenu -Caption
 		Gui, Trades:Default
 		Gui, Margin, 0, 0
+
 		tabHeight := Gui_Trades_Get_Tab_Height(), tabWidth := 390*guiScale
 		guiWidth := 402*guiScale, guiHeight := Floor((tabHeight+38)*guiScale), guiHeightMin := 30*guiScale
-
 		borderSize := 2*Round(guiScale)
-
-		aeroStatus := Get_Aero_Status()
-		themeState := (aeroStatus=1)?("+Theme -0x8000"):("-Theme +0x8000")
 
 		maxTabsRendered := (!maxTabsRendered)?(maxTabsStage1):(maxTabsRendered)
 
@@ -932,10 +929,6 @@ Gui_Trades(infosArray="", errorMsg="", isClone=0) {
 		if ( btnType != "delBtn" && A_GuiControl ) {
 			GuiControlGet, tabID, Trades:,% TradesGUI_Controls["Tab_TXT_" btnID]
 			currentActiveTab := tabID
-		}
-
-		if ( !currentActiveTab ) {
-			currentActiveTab := 1
 		}
 
 		if ( tabsCount < currentActiveTab ) && ( tabsCount > 0 ) {
@@ -1511,8 +1504,6 @@ Gui_Settings() {
 	programName := ProgramValues["Name"], iniFilePath := ProgramValues["Ini_File"], programSFXFolderPath := ProgramValues["SFX_Folder"]
 
 	guiCreated := 0
-	aeroStatus := Get_Aero_Status()
-	themeState := (aeroStatus=1)?("+Theme -0x8000"):("-Theme +0x8000")
 	
 	Gui, Settings:Destroy
 	Gui, Settings:New, +AlwaysOnTop +SysMenu -MinimizeBox -MaximizeBox +OwnDialogs +LabelGui_Settings_ hwndSettingsHandler,% programName " - Settings"
@@ -2742,9 +2733,6 @@ Gui_About() {
 	programChangelogsFilePath := ProgramValues["Changelogs_File"]
 	iniFilePath := ProgramValues["Ini_File"], programName := ProgramValues["Name"], programVersion := ProgramValues["Version"]
 
-	aeroStatus := Get_Aero_Status()
-	themeState := (aeroStatus=1)?("+Theme -0x8000"):("-Theme +0x8000")
-
 	Gui, About:Destroy
 	Gui, About:New, +HwndaboutGuiHandler +AlwaysOnTop +SysMenu -MinimizeBox -MaximizeBox +OwnDialogs,% programName " by lemasato v" programVersion
 	Gui, About:Default
@@ -3710,18 +3698,6 @@ Delete_Old_Logs_Files(filesToKeep) {
 	}
 }
 
-Get_Aero_Status(){
-/*			Retrieve the AERO status
- *			Used in GUIs. If AERO is disabled, we have to enable -Theme to avoid blacked out text
-*/
-	hr := DllCall("Dwmapi\DwmIsCompositionEnabled", "Int*", isEnabled)
-	state := (hr=0 && isEnabled)?(1):(hr=0 && !isEnabled)?(0):("ERROR")
-	return state
-}
-
-DoNothing:
-return
-
 Send_InGame_Message(allMessages, tabInfos="", isHotkey=0) {
 /*
  *			Sends a message in game
@@ -4263,3 +4239,6 @@ Exit_Func(ExitReason, ExitCode) {
 
 	ExitApp
 }
+
+DoNothing:
+return
