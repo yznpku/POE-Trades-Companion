@@ -422,7 +422,7 @@ Gui_Trades(infosArray="", errorMsg="", isClone=0) {
 	activeSkin := GlobalValues["Active_Skin"]
 	guiScale := GlobalValues["Scale_Multiplier"]
 	IniRead, skinFontSize,% ProgramValues["Ini_File"],CUSTOMIZATION_APPEARANCE,Font_Size_Custom
-	fontSize := (GlobalValues["Font_Size_Mode"]="Custom")?(GlobalValues["Font_Size_Custom"]):(activeSkin!="System")?(skinFontSize*guiScale):(8*guiScale)
+	fontSize := (GlobalValues["Font_Size_Mode"]="Custom")?(GlobalValues["Font_Size_Custom"]):(activeFont!="System")?(skinFontSize*guiScale):(8*guiScale)
 	fontName := (GlobalValues["Font"]="System")?(""):(GlobalValues["Font"])
 
 	colorTitleActive := GlobalValues["Font_Color_Title_Active"]
