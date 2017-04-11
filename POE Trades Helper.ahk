@@ -190,12 +190,10 @@ Monitor_Game_Logs(mode="") {
 	else {
 		r := Get_All_Games_Instances()
 		if ( r = "EXE_NOT_FOUND" ) {
-			messagesArray := Gui_Trades_Manage_Trades("GET_ALL")
-			Gui_Trades(messagesArray, "EXE_NOT_FOUND")
+			Gui_Trades_Redraw("EXE_NOT_FOUND")
 		}
 		else {
-			messagesArray := Gui_Trades_Manage_Trades("GET_ALL")
-			Gui_Trades(messagesArray, "UPDATE")
+			Gui_Trades_Redraw("CREATE")
 			logsFile := r
 		}
 	}
@@ -768,9 +766,7 @@ Gui_Trades(infosArray="", errorMsg="", isClone=0) {
 		}
 		if (tabsCount=0 && maxTabsRendered>maxTabsStage1) {
 			maxTabsRendered := maxTabsStage1
-			tradesArray := Gui_Trades_Manage_Trades("GET_ALL")
-			Gui_Trades(tradesArray,"CREATE")
-			Gui_Trades(,"UPDATE")
+			Gui_Trades_Redraw("CREATE")
 			if ( activeSkin != "System" ) {
 				currentActiveTab := 0, lastActiveTab := 0 ; __TO_BE_FIXED__ Temporary workaround to avoid new tabs from being blank
 			}
@@ -1106,7 +1102,17 @@ Gui_Trades(infosArray="", errorMsg="", isClone=0) {
 	Return
 }
 
-Gui_Trades_Get_Tab_ID(){
+Gui_Trades_Redraw(msg) {
+/*		Retrieve the current pending trades
+		Re-create the Trades GUI
+		Add the pending trades back to the GUI
+*/
+	allTrades := Gui_Trades_Manage_Trades("GET_ALL")
+	Gui_Trades(, msg)
+	Gui_Trades(allTrades, "UPDATE")
+}
+
+Gui_Trades_Get_Tab_ID() {
 /*		Only used when no skin is applied.
  *		Returns the currently active tab ID.
 */
@@ -1178,8 +1184,7 @@ Gui_Trades_Mode_Func(thisMenuItem) {
 		GlobalValues.Insert("Trades_GUI_Mode", "Window")
 	}
 	IniWrite,% GlobalValues["Trades_GUI_Mode"],% iniFilePath,SETTINGS,Trades_GUI_Mode
-	messagesArray := Gui_Trades_Manage_Trades("GET_ALL")
-	Gui_Trades(messagesArray)
+	Gui_Trades_Redraw("CREATE")
 }
 
 Gui_Trades_Get_Trades_Infos(tabID){
@@ -1629,7 +1634,7 @@ Gui_Settings() {
 		Gui, Add, Text,% "xp-75" . " yp+28",Buttons:
 		Gui, Add, Edit,% "xp+75" . " yp-3" . " w60" . " vButtonsColor" . " hwndButtonsColorHandler" . " Limit6",% ""
 
-		Gui, Add, Link,% "x" guiXWorkArea + 80 . " y" guiYWorkArea+240,% "(Use <a href=""http://hslpicker.com/"">HSL Color Picker</a> to retrieve the 6 digits code starting with #) "
+		Gui, Add, Link,% "x" guiXWorkArea + 80 . " y" guiYWorkArea+240,% "(Use <a href=""http://hslpicker.com/"">HSL Color Picker</a> to retrieve the 6 characters code starting with #) "
 
 ;	-------------------------
 	Gui, Tab, Buttons Actions
@@ -1799,6 +1804,9 @@ return
 		state := (SelectedSkin="System")?("Disable"):("Enable")
 		GuiControl, Settings:%state%,% ButtonsColorHandler
 		GuiControl, Settings:%state%,% TabsColorHandler
+
+		if ( A_GuiControl!="ActivePreset")
+			GoSub Gui_Settings_Trades_Preview
 	Return
 
 	Gui_Settings_Presets:
@@ -1842,6 +1850,7 @@ return
 			GuiControl, Settings:+gGui_Settings_Set_Custom_Preset,% ctrlHandler ; Re-enable gLabel
 		}
 		GoSub, Gui_Settings_Set_Custom_Preset
+		GoSub, Gui_Settings_Trades_Preview
 	Return
 
 	Gui_Settings_TreeView:
@@ -1859,9 +1868,7 @@ return
 
 	Gui_Settings_Trades_Preview:
 		Gosub, Gui_Settings_Btn_Apply
-		allTrades := Gui_Trades_Manage_Trades("GET_ALL")
-		Gui_Trades(,"CREATE")
-		Gui_Trades(allTrades, "UPDATE")
+		Gui_Trades_Redraw("CREATE")
 	Return
 
 	Gui_Settings_Custom_Label:
@@ -1943,6 +1950,8 @@ return
 		IniRead, isActive,% iniFilePath,PROGRAM,Tabs_Number
 		if ( isActive = 0 && GlobalValues["Trades_Click_Through"] = 1 )
 			Gui, Trades: +E0x20
+
+		Gui_Trades_Redraw("CREATE")
 	return
 	
 	Gui_Settings_Notifications_Browse:
@@ -4231,6 +4240,7 @@ Reload_Func() {
 Exit_Func(ExitReason, ExitCode) {
 	global ProgramValues, GlobalValues
 	global GuiTradesHandler
+	global tradesGuiWidth
 
 	iniFilePath := ProgramValues["Ini_File"]
 	programFontFolderPath := ProgramValues["Fonts_Folder"]
