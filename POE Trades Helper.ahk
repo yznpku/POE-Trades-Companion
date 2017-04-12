@@ -51,7 +51,7 @@ Start_Script() {
 	ProgramValues := Object() ; Specific to the program's informations
 	ProgramValues.Insert("Name", "POE Trades Companion")
 	ProgramValues.Insert("Version", "1.8.8")
-	ProgramValues.Insert("Debug", 0)
+	ProgramValues.Insert("Debug", 1)
 
 	ProgramValues.Insert("PID", DllCall("GetCurrentProcessId"))
 
@@ -127,7 +127,7 @@ Start_Script() {
 
 	;	Debug purposes. Simulates TradesGUI tabs. 
 	if ( ProgramValues["Debug"] ) {
-		Loop 2 {
+		Loop 3 {
 			newItemInfos := Object()
 			newItemInfos.Insert(0, "iSellStuff", "level 1 Faster Attacks Support", "5 alteration", "Breach (stash tab ""Gems""; position: left 6, top 8)", "",A_Hour ":" A_Min, "Offering 1alch?")
 			newItemArray := Gui_Trades_Manage_Trades("ADD_NEW", newItemInfos)
@@ -145,9 +145,9 @@ Start_Script() {
 	}
 
 	Logs_Append("START", settingsArray)
-	; Gui_Settings()
+	Gui_Settings()
 	;Gui_About()
-	 Monitor_Game_Logs()
+	 ; Monitor_Game_Logs()
 }
 
 ;==================================================================================================================
@@ -741,10 +741,13 @@ Gui_Trades(infosArray="", errorMsg="", isClone=0) {
 							  :(maxTabsRendered=maxTabsStage3)?(maxTabsStage4)
 							  :(maxTabsRendered=maxTabsStage4)?(maxTabsStage5)
 							  :(maxTabsStage2)
-			tradesArray := Gui_Trades_Manage_Trades("GET_ALL")
+			if ( activeSkin="System")
+				currentActiveTab := Gui_Trades_Get_Tab_ID()
+			else
+				currentActiveTab := GlobalValues.Trades_GUI_Current_Active_Tab
+			currentActiveTab := (!currentActiveTab)?(1):(currentActiveTab)
 			lastActiveTab := currentActiveTab+1 ; Only used when a skin is applied.
-			currentActiveTab := Gui_Trades_Get_Tab_ID()
-			Gui_Trades(tradesArray,"CREATE")
+			Gui_Trades(infosArray,"CREATE")
 			if ( activeSkin != "System" ) {
 				Loop { ; Go back to the previously selected tab
 					currentActiveTab := (GlobalValues["Trades_Select_Last_Tab"] = 1)?(tabsCount):(currentActiveTab) ; Set the active tab to the latest available tab if Select_Last_Tab is enabled
