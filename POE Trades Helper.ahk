@@ -1563,8 +1563,8 @@ Gui_Settings() {
 			Gui, Add, Edit, xp+65 yp-2 w70 h17 vNotifyWhisperSound hwndNotifyWhisperSoundHandler ReadOnly
 			Gui, Add, Button, xp+80 yp-2 h20 vNotifyWhisperBrowse gGui_Settings_Notifications_Browse,Browse
 ;			Whisper Tray Notification
-			Gui, Add, Checkbox,% "x" guiXWorkArea+230  " yp+24 vNotifyWhisperTray hwndNotifyWhisperTrayHandler",Tray notifications for whispers`n when POE is not active
-			Gui, Add, Checkbox,% "x" guiXWorkArea+230 " yp+29 vNotifyWhisperFlash hwndNotifyWhisperFlashHandler",Make the game's taskbar icon flash
+			Gui, Add, Checkbox,% "x" guiXWorkArea+230  " yp+39 vNotifyWhisperTray hwndNotifyWhisperTrayHandler",Show tray notifications
+			Gui, Add, Checkbox,% "x" guiXWorkArea+230 " yp+14 vNotifyWhisperFlash hwndNotifyWhisperFlashHandler",Flash the taskbar icon
 ;		Clipboard
 		Gui, Add, GroupBox,% "x" guiXWorkArea+220 " y" guiYWorkArea+120 . " w210 h60",Clipboard
 		Gui, Add, Checkbox, xp+10 yp+20 hwndClipNewHandler vClipNew,Clipboard new items
@@ -1576,7 +1576,7 @@ Gui_Settings() {
 
 ;	-----------------------
 	Gui, Tab, Customization
-
+	Gui, Add, Text,% "x" guiXWorkarea . " y" guiYWorkArea,% "This section is empty. Select one of the sub-sections to change your settings."
 ;	--------------------
 	Gui, Tab, Appearance
 	Gui, Add, GroupBox,% "x" guiXWorkarea . " y" guiYWorkArea . " w420 h55",Preset
@@ -1869,6 +1869,7 @@ return
 	Return
 
 	Gui_Settings_Trades_Preview:
+		GoSub, Gui_Settings_Btn_Apply
 		Gui_Trades_Redraw("CREATE")
 	Return
 
@@ -2499,49 +2500,35 @@ Get_Control_ToolTip(controlName) {
 ;			Return a variable conaining the tooltip content
 	global ProgramValues
 
+	btnType := RegExReplace(controlName, "\d")
+
 	programName := ProgramValues["Name"]
 
 	ShowInGame_TT := ShowAlways_TT := "Decide when should the GUI show."
-	. "`nAlways show:" A_Tab . A_Tab "The GUI will always appear."
-	. "`nOnly show while in game:" A_Tab "The GUI will only appear when the game's window is active."
+	. "`nAlways show:" A_Tab . A_Tab "The interface will always appear."
+	. "`nOnly show while in game:" A_Tab "The interface will only appear when the game's window is active."
 
-	ClickThrough_TT := "Clicks will go through the Trades GUI whil it is inactive,"
-	. "`nallowing you to click the windows beneath it."
-	ShowTransparency_TT := "Transparency of the GUI when no trade is on queue."
-	. "`nSetting the value to 0% will effectively make the GUI invisible."
+	ClickThrough_TT := "Clicks will go through the interface while it is inactive,"
+	. "`nallowing you to click any window behind it."
+	ShowTransparency_TT := "Transparency of the interface when no trades are on queue."
+	. "`nSetting the value to 0% will effectively make it invisible."
 	. "`nWhile moving the slider, you can see a preview of the result."
-	. "`nUpon releasing the slider, it will revert back to its default transparency based on if it's active or inactive."
+	. "`nUpon releasing the slider, it will revert back to its default transparency based on the current active/inactive state."
 	ShowTransparencyActive_TT := "Transparency of the GUI when trades are on queue."
 	. "`nThe minimal value is set to 30% to make sure you can still see the window."
 	. "`nWhile moving the slider, you can see a preview of the result."
-	. "`nUpon releasing the slider, it will revert back to its default transparency based on if it's active or inactive."
+	. "`nUpon releasing the slider, it will revert back to its default transparency based on the current active/inactive state."
 
 	SelectLastTab_TT := "Always focus the new tab upon receiving a new trade whisper."
-	. "`nIf disabled, it will stay on the current tab instead."
 
 	AutoMinimize_TT := "Automatically minimize the Trades GUI when no trades are on queue."
 	AutoUnMinimize_TT := "Automatically un-minimize the Trades GUI upon receiving a trade whisper."
 	
-	DockSteam_TT := DockGGG_TT := "Mostly used when running two instancies, one being your shop and the other your main account"
-	. "`nIf you run only one instancie of the game, make sure that both settings are set to the same PoE executable."
-	. "`nWhen the window is not found, it will default on the top right of your primary monitor"
-	. "`n"
-	. "`nDecide on which window should the GUI dock to."
-	. "`nGGG:" A_Tab "Dock the GUI to GGG'executable."
-	. "`nSteam:" A_Tab "Dock the GUI to Steam's executable."
-	
-	LogsSteam_TT := LogsGGG_TT := "Mostly used when running two instancies, one being your shop and the other your main account"
-	. "`nIf you run only one instancie of the game, make sure that both settings are set to the same PoE executable."
-	. "`n"
-	. "`nDecide which log file should be read."
-	. "`nGGG:" A_Tab "Dock the GUI to GGG'executable."
-	. "`nSteam:" A_Tab "Dock the GUI to Steam's executable."
-	
-	NotifyTradeBrowse_TT := NotifyTradeSound_TT := NotifyTradeToggle_TT := "Play a sound when you receive a trade message."
+	NotifyTradeBrowse_TT := NotifyTradeSound_TT := NotifyTradeToggle_TT := "Play a sound when you receive a trade whisper."
 	. "`nTick the case to enable."
 	. "`nClick on [Browse] to select a sound file."
 	
-	NotifyWhisperBrowse_TT := NotifyWhisperSound_TT := NotifyWhisperToggle_TT := "Play a sound when you receive a whisper message."
+	NotifyWhisperBrowse_TT := NotifyWhisperSound_TT := NotifyWhisperToggle_TT := "Play a sound when you receive a regular whisper"
 	. "`nTick the case to enable."
 	. "`nClick on [Browse] to select a sound file."
 	
@@ -2552,69 +2539,58 @@ Get_Control_ToolTip(controlName) {
 	. "`na whisper while the game window is not active."
 	
 	ClipTab_TT := ClipNew_TT := ClipNew_TT := "Automatically put an item's infos in clipboard"
-	. "`nso you can easily ctrl+f ctrl+v in your stash to search for the item."
+	. "`nso you can easily CTRL+F CTRL+V in your stash to search for the item."
 	. "`n"
-	. "`nClipboard new items:" A_Tab . A_Tab "New trade item will be placed in clipboard."
-	. "`nClipboard item on tab switch:" A_Tab "Active tab's item will be placed on clipboard."
+	. "`nClipboard new items:" A_Tab . A_Tab "Any new trade whisper's item will be placed in the clipboard."
+	. "`nClipboard item on tab switch:" A_Tab "The newly activated tab's item will be placed in the clipboard."
 
-	MessageSupportToggle_TT := ":)", MessageSupportToggleText_TT := "(:"
-	
-	HelpBtn2_TT := HelpBtn_TT := "Hover controls to get infos about their function."
-	ApplyBtn3_TT := ApplyBtn2_TT := ApplyBtn_TT := "Do not forget that the game needs to be in ""Windowed"" or ""Windowed Fullscreen"" for the Trades GUI to work!"
-		
-	MessageSoldToggle_TT := MessageSold_TT := MessageWaitToggle_TT := MessageInvite_TT := MessageInviteToggle_TT := MessageThanks_TT := MessageThanksToggle_TT := MessageWait_TT := "Message that will be sent upon clicking the corresponding button."
-	. "`nTick the case to enable."
-	. "`nIf you wish to reset the message to default, delete its content and reload " programName "."
+	MessageSupportToggle_TT := ":)`n`nOnly triggers for ""Send Message + Close Tab"" buttons.", MessageSupportToggleText_TT := "(:`n`nOnly triggers for ""Send Message + Close Tab"" buttons."
 
-		
-	Hotkey1_Toggle_TT := "Tick the case to enable this hotkey."
-	Hotkey1_Text_TT := "Message that will be sent upon pressing this hotkey."
-	Hotkey1_KEY_TT := "Hotkey to trigger this custom command/message."
-	Hotkey1_CTRL_TT := "Enable CTRL as a modifier for this hotkey."
-	Hotkey1_ALT_TT := "Enable ALT as a modifier for this hotkey."
-	Hotkey1_SHIFT_TT := "Enable SHIFT as a modifier for this hotkey."
-	Hotkey6_Toggle_TT := Hotkey5_Toggle_TT := Hotkey4_Toggle_TT := Hotkey3_Toggle_TT := Hotkey2_Toggle_TT := Hotkey1_Toggle_TT
-	Hotkey6_Text_TT := Hotkey5_Text_TT := Hotkey4_Text_TT := Hotkey3_Text_TT := Hotkey2_Text_TT := Hotkey1_Text_TT
-	Hotkey6_KEY_TT := Hotkey5_KEY_TT := Hotkey4_KEY_TT := Hotkey3_KEY_TT := Hotkey2_KEY_TT := Hotkey1_KEY_TT
-	Hotkey6_CTRL_TT := Hotkey5_CTRL_TT := Hotkey4_CTRL_TT := Hotkey3_CTRL_TT := Hotkey2_CTRL_TT := Hotkey1_CTRL_TT
-	Hotkey6_ALT_TT := Hotkey5_ALT_TT := Hotkey4_ALT_TT := Hotkey3_ALT_TT := Hotkey2_ALT_TT := Hotkey1_ALT_TT
-	Hotkey6_SHIFT_TT := Hotkey5_SHIFT_TT := Hotkey4_SHIFT_TT := Hotkey3_SHIFT_TT := Hotkey2_SHIFT_TT := Hotkey1_SHIFT_TT
+	Hotkey_Toggle_TT := "Tick the case to enable this hotkey."
+	Hotkey_Text_TT := "Message that will be sent upon pressing this hotkey."
+	Hotkey_KEY_TT := "Hotkey to trigger this custom command/message."
+	Hotkey_CTRL_TT := "Enable CTRL as a modifier for this hotkey."
+	Hotkey_ALT_TT := "Enable ALT as a modifier for this hotkey."
+	Hotkey_SHIFT_TT := "Enable SHIFT as a modifier for this hotkey."
 
-	TradesHPOS1_TT := "Horizontal position of the button."
+	HotkeyAdvanced_TT := Hotkey_Toggle_TT
+	HotkeyAdvanced_KEY_TT := Hotkey_KEY_TT
+	HotkeyAdvanced_Text_TT := Hotkey_Text_TT
+
+	TradesHPOS_TT := "Horizontal position of the button."
 	. "`nLeft:" A_Tab . A_Tab "The button will be positioned on the left side."
 	. "`nCenter:" A_Tab . A_Tab "The button will be positioned on the center."
 	. "`nRight:" A_Tab . A_Tab "The button will be positioned on the right side."
-	TradesVPOS1_TT := "Vertical position of the button."
+
+	TradesVPOS_TT := "Vertical position of the button."
 	. "`nTop:" A_Tab . A_Tab "The button will be positioned on the top row."
 	. "`nCenter:" A_Tab . A_Tab "The button will be positioned on the middle row."
 	. "`nBottom:" A_Tab . A_Tab "The button will be positioned on the bottom row."
-	TradesSIZE1_TT := "Size of the button."
+
+	TradesSIZE_TT := "Size of the button."
 	. "`nDisabled:" A_Tab "The button will not appear."
 	. "`nSmall:" A_Tab . A_Tab "The button will take one third of the row."
 	. "`nMedium:" A_Tab "The button will take two third of the row."
 	. "`nLarge:" A_Tab . A_Tab "The button will take the whole row."
-	TradesLabel1_TT := "Label of the button."
-	TradesAction1_TT := "Action that will be triggered upon clicking the button."
-	. "`nClipboard Item:" A_Tab . A_Tab "Will put the current tab's item into the clipboard."
-	. "`nMessage (Basic):" A_Tab . A_Tab "Will send a single message."
-	. "`nMessage (Advanced):" A_Tab "Can send multiple messages."
-	. "`nClose Tab:" A_Tab . A_Tab "Will close the tab upon clicking the button."
-	TradesHPOS9_TT := TradesHPOS8_TT := TradesHPOS7_TT := TradesHPOS6_TT := TradesHPOS5_TT := TradesHPOS4_TT := TradesHPOS3_TT := TradesHPOS2_TT := TradesHPOS1_TT
-	TradesVPOS9_TT := TradesVPOS8_TT := TradesVPOS7_TT := TradesVPOS6_TT := TradesVPOS5_TT := TradesVPOS4_TT := TradesVPOS3_TT := TradesVPOS2_TT := TradesVPOS1_TT
-	TradesSIZE9_TT := TradesSIZE8_TT := TradesSIZE7_TT := TradesSIZE6_TT := TradesSIZE5_TT := TradesSIZE4_TT := TradesSIZE3_TT := TradesSIZE2_TT := TradesSIZE1_TT
-	TradesLabel9_TT := TradesLabel8_TT := TradesLabel7_TT := TradesLabel6_TT := TradesLabel5_TT := TradesLabel4_TT := TradesLabel3_TT := TradesLabel2_TT := TradesLabel1_TT
-	TradesAction9_TT := TradesAction8_TT := TradesAction7_TT := TradesAction6_TT := TradesAction5_TT := TradesAction4_TT := TradesAction3_TT := TradesAction2_TT := TradesAction1_TT
 
-	Preview_TT := "Show a preview of the TradesGUI."
-	. "`nNote: The button's function are disabled in preview mode."
-	. "`nYou will need to reload the script to take the new buttons in count!"
+	TradesLabel_TT := "Name of the button as it will appear on the interface."
+
+	TradesAction_TT := "Action that will be triggered upon clicking the button."
+	. "`nClipboard Item:" A_Tab . A_Tab "Put the current tab's item into the clipboard."
+	. "`nSend Message:" A_Tab . A_Tab "Send all the messages you have set for this button."
+	. "`nClose Tab:" A_Tab . A_Tab "Close the currently active tab."
+
+	TradesMarkCompleted_TT := "Store the trade's infos in a local file."
+	. "`nThis will be later used for statistics purposes."
+
+	TradesMSG__TT := TradesMsgID_TT := "Cycle between the messages that will be sent upon pressing this button."
 	
 	try
-		controlTip := % %controlName%_TT
-;	if ( controlTip ) 
-;		return controlTip
-;	else 
-;		controlTip := controlName ; Used to get the control tooltip
+		controlTip := % %btnType%_TT
+	if ( controlTip ) 
+		return controlTip
+	else 
+		controlTip := btnType ; Used to get the control tooltip 
 	return controlTip
 }
 
@@ -3246,11 +3222,12 @@ WM_MOUSEMOVE(wParam, lParam, msg, hwnd) {
 	}
 
 	else if ( A_GUI = "Settings" ) {
+		timer := (ProgramValues.Debug)?(-100):(-1000)
 		curControl := A_GuiControl
 		If ( curControl <> prevControl ) {
 			controlTip := Get_Control_ToolTip(curControl)
 			if ( controlTip )
-				SetTimer, Display_ToolTip, -1000
+				SetTimer, Display_ToolTip,% timer
 			Else
 				Gosub, Remove_ToolTip
 			prevControl := curControl
