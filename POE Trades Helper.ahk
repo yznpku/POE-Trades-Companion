@@ -411,10 +411,9 @@ Gui_Trades(infosArray="", errorMsg="", isClone=0) {
 ;			Clicking on a button will do its corresponding action
 ;			Switching tab will clipboard the item's infos if the user enabled
 ;			Is transparent and click-through when there is no trade on queue
-	; static
-	; global ProgramValues, GlobalValues, TradesGUI_Controls
-	; global GuiTradesHandler, TradesGuiHeight, TradesGuiWidth
-	global
+	static
+	global ProgramValues, GlobalValues, TradesGUI_Controls
+	global GuiTradesHandler, TradesGuiHeight, TradesGuiWidth
 
 	iniFilePath := ProgramValues["Ini_File"]
 	programName := ProgramValues["Name"]
@@ -751,6 +750,7 @@ Gui_Trades(infosArray="", errorMsg="", isClone=0) {
 			if ( activeSkin != "System" ) {
 				Loop { ; Go back to the previously selected tab
 					currentActiveTab := (GlobalValues["Trades_Select_Last_Tab"] = 1)?(tabsCount):(currentActiveTab) ; Set the active tab to the latest available tab if Select_Last_Tab is enabled
+
 					GuiControlGet, lastTab, Trades:,% TradesGUI_Controls["Tab_TXT_" maxTabsRow]
 					GuiControlGet, firstTab, Trades:,% TradesGUI_Controls["Tab_TXT_1"]
 					if currentActiveTab between %firstTab% and %lastTab%
@@ -925,7 +925,6 @@ Gui_Trades(infosArray="", errorMsg="", isClone=0) {
 
 		RegExMatch(A_GuiControl, "\D+", btnType)
 		RegExMatch(A_GuiControl, "\d+", btnID)
-
 		btnType := (btnType = "CustomBtn")?("delBtn"):(btnType) ; Label is accessed from a Custom button, act like the DelBtn
 
 		if ( btnType = "TabIMG" ) { ; User switched tab
@@ -938,7 +937,7 @@ Gui_Trades(infosArray="", errorMsg="", isClone=0) {
 
 		if ( btnType != "delBtn" && A_GuiControl ) {
 			GuiControlGet, tabID, Trades:,% TradesGUI_Controls["Tab_TXT_" btnID]
-			currentActiveTab := tabID
+			currentActiveTab := (tabID)?(tabID):(currentActiveTab)
 		}
 
 		if ( tabsCount < currentActiveTab ) && ( tabsCount > 0 ) {
@@ -1109,9 +1108,12 @@ Gui_Trades_Redraw(msg) {
 		Re-create the Trades GUI
 		Add the pending trades back to the GUI
 */
+	global ProgramValues
+	SplashTextOn, 250, 40,% ProgramValues.Name,Please wait...`nCurrently re-creating the interface.
 	allTrades := Gui_Trades_Manage_Trades("GET_ALL")
 	Gui_Trades(, msg)
 	Gui_Trades(allTrades, "UPDATE")
+	SplashTextOff
 }
 
 Gui_Trades_Get_Tab_ID() {
@@ -1570,7 +1572,7 @@ Gui_Settings() {
 ;		Support
 		Gui, Add, GroupBox,% "x" guiXWorkArea+220 " y" guiYWorkArea+180 . " w210 h80",Support
 		Gui, Add, Checkbox, xp+80 yp+20 vMessageSupportToggle hwndMessageSupportToggleHandler gGui_Settings_Support_MsgBox
-		Gui, Add, Text, gGUI_Settings_Tick_Case vMessageSupportToggleText xp-55 yp+13,% "Support the software by allowing`n   an additional message when`nclicking the Thanks/Sold buttons"
+		Gui, Add, Text, gGUI_Settings_Tick_Case vMessageSupportToggleText xp-55 yp+13,% "Support the software by allowing`n   an additional message upon`ncompleting the trade."
 
 ;	-----------------------
 	Gui, Tab, Customization
@@ -1867,7 +1869,6 @@ return
 	Return
 
 	Gui_Settings_Trades_Preview:
-		Gosub, Gui_Settings_Btn_Apply
 		Gui_Trades_Redraw("CREATE")
 	Return
 
