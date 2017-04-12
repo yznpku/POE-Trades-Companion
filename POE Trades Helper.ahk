@@ -945,30 +945,28 @@ Gui_Trades(infosArray="", errorMsg="", isClone=0) {
 			wasReduced := 1
 		}
 
-	   	if ( lastActiveTab != currentActiveTab ) { ; btnType != "delBtn": Prevents from resetting to the first available tab when closing a tab
-			showState := "Hide"
-			GuiControl, Trades:%showState%,% TradesGUI_Controls["Buyer_Slot_" lastActiveTab]
-			GuiControl, Trades:%showState%,% TradesGUI_Controls["Item_Slot_" lastActiveTab]
-			GuiControl, Trades:%showState%,% TradesGUI_Controls["Price_Slot_" lastActiveTab]
-			GuiControl, Trades:%showState%,% TradesGUI_Controls["Location_Slot_" lastActiveTab]
-			GuiControl, Trades:%showState%,% TradesGUI_Controls["Time_Slot_" lastActiveTab]
-			GuiControl, Trades:%showState%,% TradesGUI_Controls["Other_Slot_" lastActiveTab]
+		showState := "Hide"
+		GuiControl, Trades:%showState%,% TradesGUI_Controls["Buyer_Slot_" lastActiveTab]
+		GuiControl, Trades:%showState%,% TradesGUI_Controls["Item_Slot_" lastActiveTab]
+		GuiControl, Trades:%showState%,% TradesGUI_Controls["Price_Slot_" lastActiveTab]
+		GuiControl, Trades:%showState%,% TradesGUI_Controls["Location_Slot_" lastActiveTab]
+		GuiControl, Trades:%showState%,% TradesGUI_Controls["Time_Slot_" lastActiveTab]
+		GuiControl, Trades:%showState%,% TradesGUI_Controls["Other_Slot_" lastActiveTab]
 
-			showState := "Show"
-			GuiControl, Trades:%showState%,% TradesGUI_Controls["Buyer_Slot_" currentActiveTab]
-			GuiControl, Trades:%showState%,% TradesGUI_Controls["Item_Slot_" currentActiveTab]
-			GuiControl, Trades:%showState%,% TradesGUI_Controls["Price_Slot_" currentActiveTab]
-			GuiControl, Trades:%showState%,% TradesGUI_Controls["Location_Slot_" currentActiveTab]
-			GuiControl, Trades:%showState%,% TradesGUI_Controls["Time_Slot_" currentActiveTab]
-			GuiControl, Trades:%showState%,% TradesGUI_Controls["Other_Slot_" currentActiveTab]
+		showState := "Show"
+		GuiControl, Trades:%showState%,% TradesGUI_Controls["Buyer_Slot_" currentActiveTab]
+		GuiControl, Trades:%showState%,% TradesGUI_Controls["Item_Slot_" currentActiveTab]
+		GuiControl, Trades:%showState%,% TradesGUI_Controls["Price_Slot_" currentActiveTab]
+		GuiControl, Trades:%showState%,% TradesGUI_Controls["Location_Slot_" currentActiveTab]
+		GuiControl, Trades:%showState%,% TradesGUI_Controls["Time_Slot_" currentActiveTab]
+		GuiControl, Trades:%showState%,% TradesGUI_Controls["Other_Slot_" currentActiveTab]
 
-			activeTabID := (wasReduced=1 && currentActiveTab > maxTabsRow)?(currentActiveTab-firstTab+2):(currentActiveTab-firstTab+1)
-			inactiveTabID := (wasReduced=1)?(activeTabID+1):(lastActiveTab-firstTab+1)
+		activeTabID := (wasReduced=1 && currentActiveTab > maxTabsRow)?(currentActiveTab-firstTab+2):(currentActiveTab-firstTab+1)
+		inactiveTabID := (wasReduced=1)?(activeTabID+1):(lastActiveTab-firstTab+1)
 
-			if (inactiveTabID > 0) ; Prevents from using a negative TabID due to the users selecting a tab, then moving with the arrows and selecting a new tab while the old one is out of range 
-				GuiControl, Trades:,% TradesGUI_Controls["Tab_IMG_" inactiveTabID],% programSkinFolderPath "\" GlobalValues["Active_Skin"] "\TabInactive.png"
-			GuiControl, Trades:,% TradesGUI_Controls["Tab_IMG_" activeTabID],% programSkinFolderPath "\" GlobalValues["Active_Skin"] "\TabActive.png"
-		}
+		if (inactiveTabID > 0) ; Prevents from using a negative TabID due to the users selecting a tab, then moving with the arrows and selecting a new tab while the old one is out of range 
+			GuiControl, Trades:,% TradesGUI_Controls["Tab_IMG_" inactiveTabID],% programSkinFolderPath "\" GlobalValues["Active_Skin"] "\TabInactive.png"
+		GuiControl, Trades:,% TradesGUI_Controls["Tab_IMG_" activeTabID],% programSkinFolderPath "\" GlobalValues["Active_Skin"] "\TabActive.png"
 
 		if ( btnType != "delBtn" || wasReduced = 1 ) {
 			lastActiveTab := currentActiveTab
