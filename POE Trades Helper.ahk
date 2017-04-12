@@ -396,7 +396,8 @@ Hotkeys_User_Handler(thisLabel) {
 		key := "HK" hotkeyID
 		IniRead, textToSend,% iniFilePath,HOTKEYS,% key "_TEXT"
 	}
-	Send_InGame_Message(textToSend, tabInfos,1)
+	messages := [textToSend]
+	Send_InGame_Message(messages, tabInfos,1)
 }
 
 ;==================================================================================================================
@@ -992,7 +993,7 @@ Gui_Trades(infosArray="", errorMsg="", isClone=0) {
 				tHeight := (guiHeightMin<tHeight)?(tHeight-30):(guiHeightMin)
 				tHeight := (tHeight-30<guiHeightMin)?(guiHeightMin):(tHeight)
 				Gui, Trades:Show, NoActivate h%tHeight%
-				sleep 1
+				sleep 1 ; Smoothen up the animation
 			}
 		}
 		else  {
@@ -3739,7 +3740,7 @@ Send_InGame_Message(allMessages, tabInfos="", isHotkey=0) {
 	}
 
 	if ( isHotkey = 1 ) {
-		messageToSend := messages[1]
+		messageToSend := message1
 		if ( GlobalValues["Hotkeys_Mode"] = "Advanced" ) {
 			SendInput,%messageToSend%
 		}
