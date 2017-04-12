@@ -665,6 +665,7 @@ Gui_Trades(infosArray="", errorMsg="", isClone=0) {
 			}
 		}
 
+;		Handle some GUI elements
 		if ( !tabsCount ) {
 			tabsCount := 0 ; In case the variable is empty
 			showState := "Hide"
@@ -717,8 +718,7 @@ Gui_Trades(infosArray="", errorMsg="", isClone=0) {
 		}
 		else {
 			currentActiveTab := Gui_Trades_Get_Tab_ID()
-;			Apply the new list of tabs.
-			GuiControl, Trades:,Tab,% tabsList
+			GuiControl, Trades:,Tab,% tabsList  ;	Apply the new list of tabs.
 ;			Select the correct tab after udpating
 			if ( GlobalValues.Trades_Select_Last_Tab ) && (!A_GuiEvent) { ; A_GuiEvent means we've just closed a tab. We do not want to activate the latest available tab.
 				GuiControl, Trades:Choose,Tab,% tabsCount
@@ -734,7 +734,7 @@ Gui_Trades(infosArray="", errorMsg="", isClone=0) {
 		}
 
 ;		Require to render more tabs.
-		if (tabsCount >= maxTabsRendered - 1 && maxTabsRendered != maxTabsStage5) {
+		if (tabsCount >= maxTabsRendered-1 && maxTabsRendered != maxTabsStage5) {
 			maxTabsRendered := (maxTabsRendered=maxTabsStage1)?(maxTabsStage2)
 							  :(maxTabsRendered=maxTabsStage2)?(maxTabsStage3)
 							  :(maxTabsRendered=maxTabsStage3)?(maxTabsStage4)
@@ -792,22 +792,28 @@ Gui_Trades(infosArray="", errorMsg="", isClone=0) {
 		dpiFactor := GlobalValues["Screen_DPI"], showX := guiWidth-49
 	}
 	else if ( errorMsg = "UPDATE" ) {
-		if ( GlobalValues["Trades_Select_Last_Tab"] = 1 ) && ( tabsCount > previousTabsCount ) && (activeSkin != "System") {
-			if ( currentActiveTab != tabsCount && tabsCount > 0) {
-				lastActiveTab := currentActiveTab, currentActiveTab := tabsCount
-				GoSub Gui_Trades_Tabs_Handler
-				GoSub Gui_Trades_Arrow_Right
-				GoSub Gui_Trades_Arrow_Right ; Make sure the tab bar is on far right
+
+		lastActiveTab := (GlobalValues.Trades_Select_Last_Tab && tabsCount > previousTabsCount)?(currentActiveTab)
+						:(lastActiveTab)
+		currentActiveTab := (!currentActiveTab)?(1)
+						   :(GlobalValues.Trades_Select_Last_Tab && tabsCount > previousTabsCount)?(tabsCount)
+						   :(currentActiveTab)
+
+		if ( !activeSkin != "System") {
+			if ( GlobalValues.Trades_Select_Last_Tab ) && ( tabsCount > previousTabsCount ) {
+					GoSub Gui_Trades_Tabs_Handler
+					GoSub Gui_Trades_Arrow_Right
+					GoSub Gui_Trades_Arrow_Right ; Make sure the tab bar is on far right
 			}
 		}
 
-		if ( GlobalValues["Trades_Auto_Minimize"] && tabsCount = 0 && tradesGuiHeight != guiHeightMin && errorMsg != "EXE_NOT_FOUND" ) {
-			GlobalValues.Insert("Trades_GUI_Minimized", 0)
+		if ( GlobalValues.Trades_Auto_Minimize && tabsCount = 0 && tradesGuiHeight != guiHeightMin && errorMsg != "EXE_NOT_FOUND" ) {
+			GlobalValues.Trades_GUI_Minimized := 0
 			GoSub, Gui_Trades_Minimize
 		}
 
-		if ( GlobalValues["Trades_Auto_UnMinimize"] && tabsCount > 0 && tradesGuiHeight != guiHeight) {
-			GlobalValues.Insert("Trades_GUI_Minimized", 1)
+		if ( GlobalValues.Trades_Auto_UnMinimize && tabsCount > 0 && tradesGuiHeight != guiHeight ) {
+			GlobalValues.Trades_GUI_Minimized := 1
 			GoSub, Gui_Trades_Minimize
 		}
 	}
@@ -1080,7 +1086,8 @@ Gui_Trades(infosArray="", errorMsg="", isClone=0) {
 ;		Remove the current tab
 		messagesArray := Gui_Trades_Manage_Trades("REMOVE_CURRENT", ,currentActiveTab)
 		Gui_Trades(messagesArray, "UPDATE")
-		Gosub, Gui_Trades_Tabs_Handler
+		if (activeSkin != "System")
+			Gosub, Gui_Trades_Tabs_Handler
 	return
 
 	Gui_Trades_Size:
