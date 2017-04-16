@@ -17,7 +17,6 @@ OnExit("Exit_Func")
 SetWorkingDir, %A_ScriptDir%
 FileEncoding, UTF-8 ; Required for cyrillic characters
 #KeyHistory 0
-ListLines Off
 SetWinDelay, 0
 DetectHiddenWindows, Off
 
@@ -51,7 +50,7 @@ Start_Script() {
 	ProgramValues := Object() ; Specific to the program's informations
 	ProgramValues.Insert("Name", "POE Trades Companion")
 	ProgramValues.Insert("Version", "1.8.8")
-	ProgramValues.Insert("Debug", 1)
+	ProgramValues.Insert("Debug", 0)
 
 	ProgramValues.Insert("PID", DllCall("GetCurrentProcessId"))
 
@@ -145,9 +144,9 @@ Start_Script() {
 	}
 
 	Logs_Append("START", settingsArray)
-	Gui_Settings()
+	; Gui_Settings()
 	;Gui_About()
-	 ; Monitor_Game_Logs()
+	 Monitor_Game_Logs()
 }
 
 ;==================================================================================================================
@@ -487,7 +486,8 @@ Gui_Trades(infosArray="", errorMsg="", isClone=0) {
 			Gui, Add, Picture,% "x" 0 . " y" guiHeight-borderSize . " w" guiWidth . " h" borderSize,% programSkinFolderPath "\" activeSkin "\Border.png" ; Bottom
 
 			Gui, Add, Text,% "x" borderSize . " y" 70*guiScale . " w" guiWidth-borderSize . " hwndErrorMsgTextHandler" . " Center +BackgroundTrans c" colorTradesInfos1,% errorTxt
-			Gui, Add, Tab3,% "x" borderSize . " y" 30*guiScale . " w" . guiWidth-borderSize " h" (tabHeight+7)*guiScale . " -Wrap  vTab gGui_Trades_OnTabSwitch +BackgroundTrans",% ""
+			Gui, Add, Tab3,% "x" borderSize . " y" 30*guiScale . " w" . guiWidth-borderSize " h" (tabHeight+7)*guiScale . " -Wrap  vTab hwndTabHandler gGui_Trades_OnTabSwitch +BackgroundTrans",% ""
+			TradesGUI_Controls.Insert("Tab", TabHandler)
 
 
 			Loop %maxTabsRendered% {
@@ -803,7 +803,7 @@ Gui_Trades(infosArray="", errorMsg="", isClone=0) {
 						   :(GlobalValues.Trades_Select_Last_Tab && tabsCount > previousTabsCount)?(tabsCount)
 						   :(currentActiveTab)
 
-		if ( !activeSkin != "System") {
+		if ( activeSkin != "System") {
 			if ( GlobalValues.Trades_Select_Last_Tab ) && ( tabsCount > previousTabsCount ) {
 					GoSub Gui_Trades_Tabs_Handler
 					GoSub Gui_Trades_Arrow_Right
@@ -820,6 +820,9 @@ Gui_Trades(infosArray="", errorMsg="", isClone=0) {
 			GlobalValues.Trades_GUI_Minimized := 1
 			GoSub, Gui_Trades_Minimize
 		}
+
+		if ( GlobalValues.Clip_On_Tab_Switch )
+			GoSub Gui_Trades_Clipboard_Item
 	}
 	else if ( errorMsg = "EXE_NOT_FOUND" ) {
 		countdown := 10
@@ -842,7 +845,8 @@ Gui_Trades(infosArray="", errorMsg="", isClone=0) {
 			if ( tabToDel >= element-key ) ; our tabToDel moved to the left due to a lesser tab being deleted
 				tabToDel--
 			Gui_Trades(messagesArray, "UPDATE")
-			Gosub, Gui_Trades_Tabs_Handler
+			if ( activeSkin != "System" )
+				Gosub, Gui_Trades_Tabs_Handler
 		}
 	}
 	WinSet, AlwaysOnTop, On,ahk_id %guiTradesHandler%
@@ -856,7 +860,7 @@ Gui_Trades(infosArray="", errorMsg="", isClone=0) {
 		Gui, Submit, NoHide
 		currentActiveTab := Gui_Trades_Get_Tab_ID()
 		tabInfos := Gui_Trades_Get_Trades_Infos(currentActiveTab)
-		if (  GlobalValues["Clip_On_Tab_Switch"]  = 1 )
+		if (  GlobalValues.Clip_On_Tab_Switch )
 			Clipboard := tabInfos.Item
 		GlobalValues.Insert("Trades_GUI_Current_Active_Tab", currentActiveTab)
 	return
@@ -1109,7 +1113,9 @@ Gui_Trades_Redraw(msg) {
 		Add the pending trades back to the GUI
 */
 	global ProgramValues
-	SplashTextOn, 250, 40,% ProgramValues.Name,Please wait...`nCurrently re-creating the interface.
+
+	if ( msg != "EXE_NOT_FOUND" )
+		SplashTextOn, 250, 40,% ProgramValues.Name,Please wait...`nCurrently re-creating the interface.
 	allTrades := Gui_Trades_Manage_Trades("GET_ALL")
 	Gui_Trades(, msg)
 	Gui_Trades(allTrades, "UPDATE")
@@ -1120,7 +1126,9 @@ Gui_Trades_Get_Tab_ID() {
 /*		Only used when no skin is applied.
  *		Returns the currently active tab ID.
 */
-	GuiControlGet, tabID, Trades:, Tab
+	Global TradesGUI_Controls
+
+	GuiControlGet, tabID, Trades:,% TradesGUI_Controls.Tab
 	return tabID
 }
 
@@ -1571,8 +1579,8 @@ Gui_Settings() {
 		Gui, Add, Checkbox, xp yp+15 hwndClipTabHandler vClipTab,Clipboard item on tab switch
 ;		Support
 		Gui, Add, GroupBox,% "x" guiXWorkArea+220 " y" guiYWorkArea+180 . " w210 h80",Support
-		Gui, Add, Checkbox, xp+80 yp+20 vMessageSupportToggle hwndMessageSupportToggleHandler gGui_Settings_Support_MsgBox
-		Gui, Add, Text, gGUI_Settings_Tick_Case vMessageSupportToggleText xp-55 yp+13,% "Support the software by allowing`n   an additional message upon`ncompleting the trade."
+		Gui, Add, Checkbox, xp+80 yp+20 vMessageSupportToggle hwndMessageSupportToggleHandler
+		Gui, Add, Text, gGUI_Settings_Tick_Case vMessageSupportToggleText xp-55 yp+13,% "Support the software by allowing`n   an additional message upon`n        completing the trade."
 
 ;	-----------------------
 	Gui, Tab, Customization
@@ -1912,16 +1920,10 @@ return
 		GuiControl, Settings:Choose,% TabHandler, Hotkeys
 	Return
 
-	Gui_Settings_Support_MsgBox:
-		Gui, Settings: Submit, NoHide
-	Return
-
-	
 	GUI_Settings_Tick_Case:
 		Gui, Settings: Submit, NoHide
 		if ( A_GuiControl = "MessageSupportToggleText" ) {
 			GuiControl, Settings:,% MessageSupportToggleHandler,% !MessageSupportToggle 
-			GoSub Gui_Settings_Support_MsgBox
 		}
 	Return
 
