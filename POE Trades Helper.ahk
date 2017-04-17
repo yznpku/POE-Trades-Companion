@@ -19,6 +19,7 @@ FileEncoding, UTF-8 ; Required for cyrillic characters
 #KeyHistory 0
 SetWinDelay, 0
 DetectHiddenWindows, Off
+Menu,Tray,NoStandard ; Prevent right clicking the icon while initializing
 
 ;	Creating Window Switch Detect
 Gui +LastFound 
@@ -33,7 +34,7 @@ Return
 Start_Script() {
 /*
 */
-	global ProgramValues, GlobalValues, ProgramFonts
+	global ProgramValues, GlobalValues, ProgramFonts, RunParameters
 	global TradesGUI_Controls
 	global POEGameArray, POEGameList
 
@@ -41,8 +42,8 @@ Start_Script() {
 	EnvGet, userprofile, userprofile
 
 	TradesGUI_Controls := Object() ; TradesGUI controls handlers
-	ProgramFonts := Object() ; Contains program private fonts
-	ParametersValues := Object() ; Run-time parameters
+	ProgramFonts := Object() ; Fonts private to the program
+	RunParameters := Object() ; Run-time parameters
 
 	GlobalValues := Object() ; Preferences.ini keys + some other shared global variables
 	GlobalValues.Insert("Screen_DPI", Get_DPI_Factor())
@@ -99,18 +100,14 @@ Start_Script() {
 		}
 	}
 
-	; global iniFilePath, programName, programVersion, programFolder, programPID, programSFXFolderPath, programChangelogsFilePath, POEGameArray, POEGameList
-	; global programFontFolderPath, programLogsFilePath, programLogsPath, programRedditURL, programSkinFolderPath
-
 ;	Function Calls
-	Create_Tray_Menu()
 	Run_As_Admin()
 	Close_Previous_Program_Instance()
 	Tray_Refresh()
 	Set_INI_Settings()
 	settingsArray := Get_INI_Settings()
 	Declare_INI_Settings(settingsArray)
-	Create_Tray_Menu(1)
+	Create_Tray_Menu()
 	Delete_Old_Logs_Files(10)
 	Do_Once()
 	Extract_Sound_Files()
@@ -174,7 +171,7 @@ Monitor_Game_Logs(mode="") {
 ;			Monitor the logs file, waiting for new whispers
 ;			Upon receiving a poe.trade whisper, pass the trades infos to Gui_Trades()
 	static
-	global GlobalValues, ParametersValues
+	global GlobalValues, RunParameters
 	global GuiTradesHandler, POEGameArray
 
 	if (mode = "CLOSE") {
@@ -182,9 +179,9 @@ Monitor_Game_Logs(mode="") {
 		Return
 	}
 
-	if ( ParametersValues["GamePath"] ) {
+	if ( RunParameters["GamePath"] ) {
 		WinGet, tempExeLocation, ProcessPath,% "ahk_id " element
-		SplitPath,% ParametersValues["GamePath"], ,directory
+		SplitPath,% RunParameters["GamePath"], ,directory
 		logsFile := directory "\logs\Client.txt"
 	}
 	else {
@@ -683,14 +680,13 @@ Gui_Trades(infosArray="", errorMsg="") {
 		}
 		clickThroughState := ( GlobalValues.Trades_Click_Through && !tabsCount )?("+"):("-")
 		transparency := (!tabsCount)?(GlobalValues.Transparency):(GlobalValues.Transparency_Active)
-		GlobalValues.Trades_GUI_Current_State := (!tabsCount)?("Inactive"):("Active")
 		Gui, Trades: %clickThroughState%E0x20
 		WinSet, Transparent,% GlobalValues["Transparency"],% "ahk_id " guiTradesHandler
 		GuiControl, Trades:Text,% guiTradesTitleHandler,% programName " - Queued Trades: " tabsCount ; Update the title
 		GuiControl, Trades:%showState%,Tab ; Only used when no skin is applied
-		GuiControl, Trades:%showState%,% GoLeftHandler
-		GuiControl, Trades:%showState%,% GoRightHandler
-		GuiControl, Trades:%showState%,% TabUnderlineHandler
+		GuiControl, Trades:%showState%,% GoLeftHandler ; Only used for skins
+		GuiControl, Trades:%showState%,% GoRightHandler ; Only used for skins
+		GuiControl, Trades:%showState%,% TabUnderlineHandler ; Only used for skins
 
 		if ( activeSkin != "System" ) {
 ;			Fix to remove the deleted tab image.
@@ -770,7 +766,7 @@ Gui_Trades(infosArray="", errorMsg="") {
 			maxTabsRendered := maxTabsStage1
 			Gui_Trades_Redraw("CREATE")
 			if ( activeSkin != "System" ) {
-				currentActiveTab := 0, lastActiveTab := 0 ; __TO_BE_FIXED__ Temporary workaround to avoid new tabs from being blank
+				currentActiveTab := 0, lastActiveTab := 0
 			}
 			Return
 		}
@@ -784,8 +780,8 @@ Gui_Trades(infosArray="", errorMsg="") {
 		showHeight := (GlobalValues.Trades_GUI_Minimized)?(guiHeightMin):(guiHeight)
 		IniRead, showX,% iniFilePath,PROGRAM,X_POS
 		IniRead, showY,% iniFilePath,PROGRAM,Y_POS
-		showXDefault := A_ScreenWidth-(showWidth), showYDefault := 0
-		showX := (showX="ERROR"||showX=""||(!showX && showX != 0))?(showXDefault):(showX)
+		showXDefault := A_ScreenWidth-(showWidth), showYDefault := 0 ; Top right
+		showX := (showX="ERROR"||showX=""||(!showX && showX != 0))?(showXDefault):(showX) ; Prevent unassigned or incorrect value
 		showY := (showY="ERROR"||showY=""||(!showY && showY != 0))?(showYDefault):(showY)
 		Gui, Trades:Show,% "NoActivate w" showWidth " h" showHeight " x" showX " y" showY,% programName " - Queued Trades"
 		OnMessage(0x200, "WM_MOUSEMOVE")
@@ -798,11 +794,11 @@ Gui_Trades(infosArray="", errorMsg="") {
 	}
 	else if ( errorMsg = "UPDATE" ) {
 
-		lastActiveTab := (GlobalValues.Trades_Select_Last_Tab && tabsCount > previousTabsCount)?(currentActiveTab)
-						:(lastActiveTab)
-		currentActiveTab := (!currentActiveTab)?(1)
-						   :(GlobalValues.Trades_Select_Last_Tab && tabsCount > previousTabsCount)?(tabsCount)
-						   :(currentActiveTab)
+		lastActiveTab := (GlobalValues.Trades_Select_Last_Tab && tabsCount > previousTabsCount)?(currentActiveTab) ; Select last tab enabled. Last tab is now the current tab (before current tab is assigned to most recent tab)
+						:(lastActiveTab) ; Leave it as it is
+		currentActiveTab := (!currentActiveTab)?(1) ; Value previously unassigned, make sure to focus tab 1.
+						   :(GlobalValues.Trades_Select_Last_Tab && tabsCount > previousTabsCount)?(tabsCount) ; Assign to most recent tab.
+						   :(currentActiveTab) ; Leave it as it is
 
 		if ( activeSkin != "System") {
 			if ( GlobalValues.Trades_Select_Last_Tab ) && ( tabsCount > previousTabsCount ) {
@@ -1481,7 +1477,6 @@ Gui_Trades_RemoveGuildPrefix(name) {
 
 Gui_Trades_Set_Position(xpos="UNSPECIFIED", ypos="UNSPECIFIED"){
 /*			Update the Trades GUI position
- *			__TO_BE_FIXED__ : VALUE_Trades_GUI_Current_State is not used anymore?
 */
 	static
 	global GlobalValues
@@ -1505,8 +1500,6 @@ Gui_Trades_Set_Position(xpos="UNSPECIFIED", ypos="UNSPECIFIED"){
 		xpos := ( ( (A_ScreenWidth/dpiFactor) - tradesGuiWidth ) * dpiFactor )
 		Gui, Trades:Show, % "x" xpos " y0" " NoActivate"
 	}
-
-	GlobalValues.Insert("Trades_GUI_Last_State", GlobalValues["Trades_GUI_Current_State"]) ; backup of the old state, so we know when we switch from one to another
 	Logs_Append(A_ThisFunc,, xpos, ypos)
 }
 
@@ -2693,8 +2686,7 @@ Gui_Update(newVersion, updaterPath, updaterDL) {
 		UrlDownloadToFile,% updaterDL,% updaterPath
 		sleep 1000
 		Run, % updaterPath
-		Process, close, %programPID%
-		OnExit("Exit_Func", 0)
+		Process, Close, %programPID%
 		ExitApp
 	return
 	
@@ -3895,9 +3887,9 @@ Close_Previous_Program_Instance() {
  *				, checking if there is an existing match
  *				and closing if a match is found
 */
-	global ProgramValues, ParametersValues
+	global ProgramValues, RunParameters
 
-	if ( ParametersValues["NoReplace"] = 1 ) {
+	if ( RunParameters["NoReplace"] = 1 ) {
 		Return
 	}
 
@@ -4007,7 +3999,7 @@ Get_Matching_Windows_Infos(mode) {
 	return matchsArray
 }
 
-Create_Tray_Menu(globalDeclared=0) {
+Create_Tray_Menu() {
 /*
  *			Creates the Tray Menu
 */
@@ -4015,24 +4007,20 @@ Create_Tray_Menu(globalDeclared=0) {
 
 	programName := ProgramValues["Name"], programVersion := ProgramValues["Version"]
 
-	if ( globalDeclared = 0 ) {
-		Menu, Tray, DeleteAll
-		Menu, Tray, Tip,% programName " v" programVersion
-		Menu, Tray, NoStandard
-		Menu, Tray, Add,Settings, Gui_Settings
-		Menu, Tray, Add,About?, Gui_About
-		Menu, Tray, Add, 
-		Menu, Tray, Add,Cycle Overlay,GUI_Trades_Cycle
-		Menu, Tray, Add, 
-		Menu, Tray, Add,Mode: Overlay,GUI_Trades_Mode
-		Menu, Tray, Add,Mode: Window,GUI_Trades_Mode
-		Menu, Tray, Add, 
-		Menu, Tray, Add,Reload, Reload_Func
-		Menu, Tray, Add,Close, Exit_Func
-	}
-	else if ( globalDeclared = 1 ) {
-		Menu, Tray, Check,% "Mode: " GlobalValues["Trades_GUI_Mode"]
-	}
+	Menu, Tray, NoStandard
+	Menu, Tray, DeleteAll
+	Menu, Tray, Tip,% programName " v" programVersion
+	Menu, Tray, Add,Settings, Gui_Settings
+	Menu, Tray, Add,About?, Gui_About
+	Menu, Tray, Add, 
+	Menu, Tray, Add,Cycle Overlay,GUI_Trades_Cycle
+	Menu, Tray, Add, 
+	Menu, Tray, Add,Mode: Overlay,GUI_Trades_Mode
+	Menu, Tray, Add,Mode: Window,GUI_Trades_Mode
+	Menu, Tray, Add, 
+	Menu, Tray, Add,Reload, Reload_Func
+	Menu, Tray, Add,Close, Exit_Func
+	Menu, Tray, Check,% "Mode: " GlobalValues["Trades_GUI_Mode"]
 	Menu, Tray, Icon
 }
 
@@ -4043,62 +4031,25 @@ Run_As_Admin() {
  *			Credits to art
  *			https://autohotkey.com/board/topic/46526-run-as-administrator-xpvista7-a-isadmin-params-lib/?p=600596
 */
-	global 0
-	global ProgramValues, GlobalValues, ParametersValues
+	global ProgramValues, GlobalValues
 
-	iniFilePath := ProgramValues["Ini_File"], programName := ProgramValues["Name"]
-
-	IniWrite,% A_IsAdmin,% iniFilePath,PROGRAM,Is_Running_As_Admin
+	programName := ProgramValues["Name"]
 
 	if ( A_IsAdmin = 1 ) {
-		Loop, %0% { ; Process cmdline parameters
-			param := %A_Index%
-			if ( param = "/NoReplace" ) {
-				ParametersValues.Insert("NoReplace", 1)
-			}
-			else if RegExMatch(param, "/GamePath=(.*)", found) {
-				if FileExist(found1) {
-					ParametersValues.Insert("GamePath", found1)
-					found1 := ""
-				}
-				else {
-					MsgBox, 4096,% programName,% "The /GamePath parameter was detected but the specified file does not exist:"
-					. "`n" found1
-					. "`n`nIf you need help about Command Line Parameters, please check the WIKI here: https://github.com/lemasato/POE-Trades-Helper/wiki"
-					. "`n`nThe program will now exit."
-					ExitApp
-				}
-			}
-			else if RegExMatch(param, "/PrefsFile=(.*)", found) {
-				ProgramValues.Insert("Ini_File", found1)
-				found1 := ""
-			}
-			else if RegExMatch(param, "/GameINI=(.*)", found) {
-				if FileExist(found1) {
-					ProgramValues.Insert("Game_Ini_File", found1)
-					found1 := ""
-				}
-				else {
-					MsgBox, 4096,% programName,% "The /GameINI parameter was detected but the specified file does not exist:"
-					. "`n" found1
-					. "`n`nIf you need help about Command Line Parameters, please check the WIKI here: https://github.com/lemasato/POE-Trades-Helper/wiki"
-					. "`n`nThe program will now exit."
-					ExitApp
-				}
-			}
-		}
-		IniWrite, 0,% iniFilePath,PROGRAM,Run_As_Admin_Attempts
+		Handle_CommandLine_Parameters()
+		IniWrite, 0,% ProgramValues.Ini_File,PROGRAM,Run_As_Admin_Attempts
 		Return
 	}
 
-	IniRead, attempts,% iniFilePath,PROGRAM,Run_As_Admin_Attempts
+	IniWrite,% A_IsAdmin,% ProgramValues.Ini_File,PROGRAM,Is_Running_As_Admin
+	IniRead, attempts,% ProgramValues.Ini_File,PROGRAM,Run_As_Admin_Attempts
 	if ( attempts = "ERROR" || attempts = "" )
 		attempts := 0
 	attempts++
-	IniWrite,% attempts,% iniFilePath,PROGRAM,Run_As_Admin_Attempts
+	IniWrite,% attempts,% ProgramValues.Ini_File,PROGRAM,Run_As_Admin_Attempts
 	if ( attempts > 2 ) {
 
-		IniWrite,0,% iniFilePath,PROGRAM,Run_As_Admin_Attempts
+		IniWrite,0,% ProgramValues.Ini_File,PROGRAM,Run_As_Admin_Attempts
 		MsgBox, 4100,% "Running as admin failed!",% "It seems " programName " was unable to run with admin rights previously."
 		. "`nTry right clicking the executable and choose ""Run as Administrator""."
 		. "`n`nPossible known causes could be:"
@@ -4116,12 +4067,10 @@ Run_As_Admin() {
 		}
 		IfMsgBox, Cancel
 		{
-			OnExit("Exit_Func", 0)
 			ExitApp
 		}
 		IfMsgBox, No
 		{
-			OnExit("Exit_Func", 0)
 			ExitApp
 		}
 	}
@@ -4129,12 +4078,52 @@ Run_As_Admin() {
 	SplashTextOn, 370*dpiFactor, 40*dpiFactor,% programName,% programName " needs to run with Admin .`nAttempt to restart with admin rights in 3 seconds..."
 	sleep 3000
 
-	Loop, %0%
-		params .= A_Space . %A_Index%
-	DllCall("shell32\ShellExecute" (A_IsUnicode ? "":"A"),uint,0,str,"RunAs",str,(A_IsCompiled ? A_ScriptFullPath
-	: A_AhkPath),str,(A_IsCompiled ? "": """" . A_ScriptFullPath . """" . A_Space) params,str,A_WorkingDir,int,1)
-	OnExit("Exit_Func", 0)
-	ExitApp
+	Reload_Func()
+}
+
+Handle_CommandLine_Parameters() {
+	global 0
+	global RunParameters, ProgramValues
+
+	programName := ProgramValues.Name
+
+	Loop, %0% { ; Process cmdline parameters
+		param := %A_Index%
+		if ( param = "/NoReplace" ) {
+			RunParameters.Insert("NoReplace", 1)
+		}
+		else if RegExMatch(param, "/GamePath=(.*)", found) {
+			if FileExist(found1) {
+				RunParameters.Insert("GamePath", found1)
+				found1 := ""
+			}
+			else {
+				MsgBox, 4096,% programName,% "The /GamePath parameter was detected but the specified file does not exist:"
+				. "`n" found1
+				. "`n`nIf you need help about Command Line Parameters, please check the WIKI here: https://github.com/lemasato/POE-Trades-Helper/wiki"
+				. "`n`nThe program will now exit."
+				ExitApp
+			}
+		}
+		else if RegExMatch(param, "/PrefsFile=(.*)", found) {
+			path := ProgramValues.Local_Folder "/" found1
+			ProgramValues.Insert("Ini_File", path)
+			found1 := "", path = ""
+		}
+		else if RegExMatch(param, "/GameINI=(.*)", found) {
+			if FileExist(found1) {
+				ProgramValues.Insert("Game_Ini_File", found1)
+				found1 := ""
+			}
+			else {
+				MsgBox, 4096,% programName,% "The /GameINI parameter was detected but the specified file does not exist:"
+				. "`n" found1
+				. "`n`nIf you need help about Command Line Parameters, please check the WIKI here: https://github.com/lemasato/POE-Trades-Helper/wiki"
+				. "`n`nThe program will now exit."
+				ExitApp
+			}
+		}
+	}
 }
 
 Tray_Refresh() {
@@ -4190,8 +4179,21 @@ Tray_Refresh() {
 }
 
 Reload_Func() {
-	sleep 10
-	Reload
+	global 0
+	global RunParameters
+
+	Sleep 10
+
+	Loop, %0%
+	{
+		param := RegExReplace(%A_Index%, "(.*)=(.*)", "$1=""$2""") ; Add quotation mark to the parameter. Missing quotation marks would incorectly parse the run parameters on next load.
+		params .= A_Space . param
+	}
+
+	Exit_Func("Reload","")
+	DllCall("shell32\ShellExecute" (A_IsUnicode ? "":"A"),uint,0,str,"RunAs",str,(A_IsCompiled ? A_ScriptFullPath
+	: A_AhkPath),str,(A_IsCompiled ? "": """" . A_ScriptFullPath . """" . A_Space) params,str,A_WorkingDir,int,1)
+
 	Sleep 10000
 }
 
@@ -4232,11 +4234,11 @@ Manage_Font_Ressources(mode) {
 }
 
 Exit_Func(ExitReason, ExitCode) {
-
 	Gui_Trades_Save_Position()
 	Manage_Font_Ressources("UNLOAD")
 
-	ExitApp
+	if ExitReason not in Reload
+		ExitApp
 }
 
 DoNothing:
