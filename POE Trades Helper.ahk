@@ -658,8 +658,8 @@ Gui_Trades(infosArray="", errorMsg="") {
 	else if ( errorMsg = "REMOVE_DUPLICATES" ) {
 		tabToDel := infosArray[0]
 		for key, element in infosArray {
-			messagesArray := Gui_Trades_Manage_Trades("REMOVE_CURRENT", ,element-key)
-			if ( tabToDel >= element-key ) ; our tabToDel moved to the left due to a lesser tab being deleted
+			messagesArray := Gui_Trades_Manage_Trades("REMOVE_CURRENT", ,element)
+			if ( tabToDel >= element ) ; our tabToDel moved to the left due to a lesser tab being deleted
 				tabToDel--
 			Gui_Trades(messagesArray, "UPDATE")
 			if ( activeSkin != "System" )
@@ -841,6 +841,7 @@ Gui_Trades(infosArray="", errorMsg="") {
 	WinSet, AlwaysOnTop, On,ahk_id %guiTradesHandler%
 	IniWrite,% tabsCount,% iniFilePath,PROGRAM,Tabs_Number
 
+	GlobalValues.Trades_GUI_Current_Active_Tab := currentActiveTab
 	previousTabsCount := tabsCount
 	sleep 10
 	return
@@ -1124,10 +1125,10 @@ Gui_Trades_Get_Tab_ID() {
 }
 
 Gui_Trades_Check_Duplicate(currentActiveTab) {
-/*			Returns an array (Index:0) containing the tab IDs of all tabs containing the same infos (with different buyer)
+/*			Create a list containing all the duplicates tab ID
+ *			Sort them in reverse, then include them in an array and returns it.
 */
-	duplicates := Object()
-	duplicates.Insert(0, currentActiveTab)
+	duplicates := currentActiveTab
 	messagesArray := Gui_Trades_Manage_Trades("GET_ALL")
 	maxIndex := messagesArray.BUYERS.MaxIndex()
 	currentTabInfos := Gui_Trades_Get_Trades_Infos(currentActiveTab)
@@ -1136,12 +1137,17 @@ Gui_Trades_Check_Duplicate(currentActiveTab) {
 		if (A_Index != currentActiveTab) {
 			otherTabInfos := Gui_Trades_Get_Trades_Infos(A_Index)
 			if (otherTabInfos.Item = currentTabInfos.Item && otherTabInfos.Price = currentTabInfos.Price && otherTabInfos.Location = currentTabInfos.Location) {
-				duplicates.Insert(arrayKey, A_Index)
+				duplicates .= "|" A_Index
 				arrayKey++
 			}
 		}
 	}
-	return duplicates
+	Sort, duplicates, D| N R
+	duplicatesID := Object()
+	Loop, Parse, duplicates, |
+		duplicatesID.Push(A_LoopField)
+	
+	return duplicatesID
 }
 
 
