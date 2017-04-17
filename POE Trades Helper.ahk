@@ -51,7 +51,7 @@ Start_Script() {
 	ProgramValues := Object() ; Specific to the program's informations
 	ProgramValues.Insert("Name", "POE Trades Companion")
 	ProgramValues.Insert("Version", "1.8.8")
-	ProgramValues.Insert("Debug", 0)
+	ProgramValues.Insert("Debug", 1)
 
 	ProgramValues.Insert("PID", DllCall("GetCurrentProcessId"))
 
@@ -141,10 +141,10 @@ Start_Script() {
 		}
 	}
 
-	Logs_Append("START", settingsArray)
 	; Gui_Settings()
-	;Gui_About()
-	 Monitor_Game_Logs()
+	; Gui_About()
+	Logs_Append("START", settingsArray)
+	Monitor_Game_Logs()
 }
 
 ;==================================================================================================================
@@ -187,11 +187,11 @@ Monitor_Game_Logs(mode="") {
 	else {
 		r := Get_All_Games_Instances()
 		if ( r = "EXE_NOT_FOUND" ) {
-			Gui_Trades_Redraw("EXE_NOT_FOUND")
+			Gui_Trades_Redraw("EXE_NOT_FOUND", 1)
 		}
 		else {
-			Gui_Trades_Redraw("CREATE")
 			logsFile := r
+			Gui_Trades_Set_Position()
 		}
 	}
 	Logs_Append(A_ThisFunc,,logsFile)
@@ -411,7 +411,6 @@ Gui_Trades(infosArray="", errorMsg="") {
 	static
 	global ProgramValues, GlobalValues, TradesGUI_Controls
 	global GuiTradesHandler, TradesGuiHeight, TradesGuiWidth
-
 	iniFilePath := ProgramValues["Ini_File"]
 	programName := ProgramValues["Name"]
 	programSkinFolderPath := ProgramValues["Skins_Folder"]
@@ -455,7 +454,7 @@ Gui_Trades(infosArray="", errorMsg="") {
 		guiWidth := 402*guiScale, guiHeight := Floor((tabHeight+38)*guiScale), guiHeightMin := 30*guiScale
 		borderSize := 2*Round(guiScale)
 
-		maxTabsRendered := (!maxTabsRendered)?(maxTabsStage1):(maxTabsRendered)
+		maxTabsRendered := (!maxTabsRendered)?(maxTabsStage2):(maxTabsRendered)
 
 		if ( maxTabsRendered > maxTabsStage2 ) { 
 			Loop 2 { ; Skip the tray-tip fade-in animation
@@ -643,9 +642,38 @@ Gui_Trades(infosArray="", errorMsg="") {
 		}
 	}
 
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+*/
 
-	if errorMsg in CREATE,UPDATE,EXE_NOT_FOUND
-	{
+	if ( errorMsg = "EXE_NOT_FOUND" ) {
+		countdown := 10
+		Loop 11 {
+			GuiControl, Trades:,% ErrorMsgTextHandler,% "Process not found, retrying in " countdown " seconds...`n`nRight click on the tray icon,`nthen [Settings] to set your preferences."
+			countdown--
+			sleep 1000
+		}
+		Monitor_Game_Logs()
+	}
+	else if ( errorMsg = "REMOVE_DUPLICATES" ) {
+		tabToDel := infosArray[0]
+		for key, element in infosArray {
+			messagesArray := Gui_Trades_Manage_Trades("REMOVE_CURRENT", ,element-key)
+			if ( tabToDel >= element-key ) ; our tabToDel moved to the left due to a lesser tab being deleted
+				tabToDel--
+			Gui_Trades(messagesArray, "UPDATE")
+			if ( activeSkin != "System" )
+				Gosub, Gui_Trades_Tabs_Handler
+		}
+	}
+	if ( errorMsg = "UPDATE" || errorMsg = "CREATE" ) {
+
+		lastActiveTab := (GlobalValues.Trades_Select_Last_Tab && tabsCount > previousTabsCount)?(currentActiveTab) ; Select last tab enabled. Last tab is now the current tab (before current tab is assigned to most recent tab)
+						:(lastActiveTab) ; Leave it as it is
+		currentActiveTab := (!currentActiveTab)?(1) ; Value previously unassigned, make sure to focus tab 1.
+						   :(GlobalValues.Trades_Select_Last_Tab && tabsCount > previousTabsCount)?(tabsCount) ; Assign to most recent tab.
+						   :(currentActiveTab) ; Leave it as it is
+
 ;		Update the fields with the trade infos
 		tabsCount := infosArray.BUYERS.Length(), tabsList := ""
 		for key, element in infosArray.BUYERS {
@@ -681,22 +709,20 @@ Gui_Trades(infosArray="", errorMsg="") {
 		clickThroughState := ( GlobalValues.Trades_Click_Through && !tabsCount )?("+"):("-")
 		transparency := (!tabsCount)?(GlobalValues.Transparency):(GlobalValues.Transparency_Active)
 		Gui, Trades: %clickThroughState%E0x20
-		WinSet, Transparent,% GlobalValues["Transparency"],% "ahk_id " guiTradesHandler
+		WinSet, Transparent,% transparency,% "ahk_id " guiTradesHandler
 		GuiControl, Trades:Text,% guiTradesTitleHandler,% programName " - Queued Trades: " tabsCount ; Update the title
 		GuiControl, Trades:%showState%,Tab ; Only used when no skin is applied
 		GuiControl, Trades:%showState%,% GoLeftHandler ; Only used for skins
 		GuiControl, Trades:%showState%,% GoRightHandler ; Only used for skins
 		GuiControl, Trades:%showState%,% TabUnderlineHandler ; Only used for skins
 
-		if ( activeSkin != "System" ) {
-;			Fix to remove the deleted tab image.
+		if ( activeSkin != "System" ) { ; Remove the deleted tab image.
 			tabsCount++
 			GuiControl, Trades:Hide,% TabIMG%tabsCount%Handler
 			GuiControl, Trades:Hide,% TabTXT%tabsCount%Handler
 			tabsCount--
 
-;			Hide or show the controls.
-			Loop 9 {
+			Loop 9 { ; Hide or show the controls.
 				GuiControl, Trades:%showState%,% CustomBtn%A_Index%Handler
 				GuiControl, Trades:%showState%,% CustomBtnTXT%A_Index%Handler
 				GuiControl, Trades:%showState%,% CustomBtn%A_Index%OrnamentLeftHandler
@@ -710,8 +736,7 @@ Gui_Trades(infosArray="", errorMsg="") {
 				GuiControl, Trades:%showState%,% OtherText1Handler
 			}
 
-;			Make sure all tabs are correctly ordered.
-			Gosub Gui_Trades_Tabs_Handler
+			Gosub Gui_Trades_Tabs_Handler ;	Make sure all tabs are correctly ordered.
 		}
 		else {
 			currentActiveTab := Gui_Trades_Get_Tab_ID()
@@ -730,8 +755,7 @@ Gui_Trades(infosArray="", errorMsg="") {
 			}
 		}
 
-;		Require to render more tabs.
-		if (tabsCount >= maxTabsRendered-1 && maxTabsRendered != maxTabsStage5) {
+		if (tabsCount >= maxTabsRendered-1 && maxTabsRendered != maxTabsStage5) { ;	Tabs limit almost reached.
 			maxTabsRendered := (maxTabsRendered=maxTabsStage1)?(maxTabsStage2)
 							  :(maxTabsRendered=maxTabsStage2)?(maxTabsStage3)
 							  :(maxTabsRendered=maxTabsStage3)?(maxTabsStage4)
@@ -743,7 +767,8 @@ Gui_Trades(infosArray="", errorMsg="") {
 				currentActiveTab := GlobalValues.Trades_GUI_Current_Active_Tab
 			currentActiveTab := (!currentActiveTab)?(1):(currentActiveTab)
 			lastActiveTab := currentActiveTab+1 ; Only used when a skin is applied.
-			Gui_Trades(infosArray,"CREATE")
+			Gui_Trades_Redraw("CREATE", 1)
+
 			if ( activeSkin != "System" ) {
 				Loop { ; Go back to the previously selected tab
 					currentActiveTab := (GlobalValues["Trades_Select_Last_Tab"] = 1)?(tabsCount):(currentActiveTab) ; Set the active tab to the latest available tab if Select_Last_Tab is enabled
@@ -760,21 +785,35 @@ Gui_Trades(infosArray="", errorMsg="") {
 			else {
 				GuiControl, Trades:Choose,Tab,% lastActiveTab-1
 			}
-			Return
+			; Return
 		}
-		if (tabsCount=0 && maxTabsRendered>maxTabsStage1) {
+		if (tabsCount=0 && maxTabsRendered>maxTabsStage1) && (errorMsg!="CREATE") { ; Tabs limit higher than default, and no tab on queue. We can reset to default limit.
 			maxTabsRendered := maxTabsStage1
-			Gui_Trades_Redraw("CREATE")
-			if ( activeSkin != "System" ) {
-				currentActiveTab := 0, lastActiveTab := 0
-			}
+			Gui_Trades_Redraw("CREATE", 1)
+			currentActiveTab := 0, lastActiveTab := 0
 			Return
 		}
+
+		if ( activeSkin != "System") {
+			if ( GlobalValues.Trades_Select_Last_Tab ) && ( tabsCount > previousTabsCount ) {
+					GoSub Gui_Trades_Tabs_Handler
+					GoSub Gui_Trades_Arrow_Right
+					GoSub Gui_Trades_Arrow_Right ; Make sure the tab bar is on far right
+			}
+		}
+
+		if ( GlobalValues.Trades_Auto_Minimize && tabsCount = 0 && tradesGuiHeight != guiHeightMin && errorMsg != "EXE_NOT_FOUND" ) {
+			GlobalValues.Trades_GUI_Minimized := 0
+			GoSub, Gui_Trades_Minimize
+		}
+		if ( GlobalValues.Trades_Auto_UnMinimize && tabsCount > 0 && tradesGuiHeight != guiHeight ) {
+			GlobalValues.Trades_GUI_Minimized := 1
+			GoSub, Gui_Trades_Minimize
+		}
+
+		if ( GlobalValues.Clip_On_Tab_Switch )
+			GoSub Gui_Trades_Clipboard_Item
 	}
-
-	WinSet, Redraw, ,% "ahk_id " guiTradesHandler
-	IniWrite,% tabsCount,% iniFilePath,PROGRAM,Tabs_Number
-
 	if ( errorMsg = "CREATE" ) {
 		showWidth := guiWidth
 		showHeight := (GlobalValues.Trades_GUI_Minimized)?(guiHeightMin):(guiHeight)
@@ -792,61 +831,15 @@ Gui_Trades(infosArray="", errorMsg="") {
 
 		dpiFactor := GlobalValues["Screen_DPI"], showX := guiWidth-49
 	}
-	else if ( errorMsg = "UPDATE" ) {
 
-		lastActiveTab := (GlobalValues.Trades_Select_Last_Tab && tabsCount > previousTabsCount)?(currentActiveTab) ; Select last tab enabled. Last tab is now the current tab (before current tab is assigned to most recent tab)
-						:(lastActiveTab) ; Leave it as it is
-		currentActiveTab := (!currentActiveTab)?(1) ; Value previously unassigned, make sure to focus tab 1.
-						   :(GlobalValues.Trades_Select_Last_Tab && tabsCount > previousTabsCount)?(tabsCount) ; Assign to most recent tab.
-						   :(currentActiveTab) ; Leave it as it is
-
-		if ( activeSkin != "System") {
-			if ( GlobalValues.Trades_Select_Last_Tab ) && ( tabsCount > previousTabsCount ) {
-					GoSub Gui_Trades_Tabs_Handler
-					GoSub Gui_Trades_Arrow_Right
-					GoSub Gui_Trades_Arrow_Right ; Make sure the tab bar is on far right
-			}
-		}
-
-		if ( GlobalValues.Trades_Auto_Minimize && tabsCount = 0 && tradesGuiHeight != guiHeightMin && errorMsg != "EXE_NOT_FOUND" ) {
-			GlobalValues.Trades_GUI_Minimized := 0
-			GoSub, Gui_Trades_Minimize
-		}
-
-		if ( GlobalValues.Trades_Auto_UnMinimize && tabsCount > 0 && tradesGuiHeight != guiHeight ) {
-			GlobalValues.Trades_GUI_Minimized := 1
-			GoSub, Gui_Trades_Minimize
-		}
-
-		if ( GlobalValues.Clip_On_Tab_Switch )
-			GoSub Gui_Trades_Clipboard_Item
-	}
-	else if ( errorMsg = "EXE_NOT_FOUND" ) {
-		countdown := 10
-		Loop 11 {
-			GuiControl, Trades:,% ErrorMsgTextHandler,% "Process not found, retrying in " countdown " seconds...`n`nRight click on the tray icon,`nthen [Settings] to set your preferences."
-			countdown--
-			sleep 1000
-		}
-		Monitor_Game_Logs()
-	}
 
 	if ( GlobalValues["Trades_GUI_Mode"] = "Overlay") {
 		try	Gui_Trades_Set_Position()
 	}
 
-	if ( errorMsg = "REMOVE_DUPLICATES" ) {
-		tabToDel := infosArray[0]
-		for key, element in infosArray {
-			messagesArray := Gui_Trades_Manage_Trades("REMOVE_CURRENT", ,element-key)
-			if ( tabToDel >= element-key ) ; our tabToDel moved to the left due to a lesser tab being deleted
-				tabToDel--
-			Gui_Trades(messagesArray, "UPDATE")
-			if ( activeSkin != "System" )
-				Gosub, Gui_Trades_Tabs_Handler
-		}
-	}
+	WinSet, Redraw, ,% "ahk_id " guiTradesHandler
 	WinSet, AlwaysOnTop, On,ahk_id %guiTradesHandler%
+	IniWrite,% tabsCount,% iniFilePath,PROGRAM,Tabs_Number
 
 	previousTabsCount := tabsCount
 	sleep 10
@@ -884,7 +877,7 @@ Gui_Trades(infosArray="", errorMsg="") {
 			activeTabID := currentActiveTab-firstTab+2
 			if (inactiveTabID > 0) ; Prevents from using a negative TabID due to the users selecting a tab, then moving with the arrows and selecting a new tab while the old one is out of range
 				GuiControl, Trades:,% TradesGUI_Controls["Tab_IMG_" inactiveTabID],% programSkinFolderPath "\" GlobalValues["Active_Skin"] "\TabInactive.png"
-			if (activeTabID > 0) ; Prevents from using a negative TabID due to the users selecting a tab, then moving with the arrows and selecting a new tab while the old one is out of range
+			if (activeTabID > 0)
 				GuiControl, Trades:,% TradesGUI_Controls["Tab_IMG_" activeTabID],% programSkinFolderPath "\" GlobalValues["Active_Skin"] "\TabActive.png"
 		}
 	Return
@@ -911,7 +904,7 @@ Gui_Trades(infosArray="", errorMsg="") {
 			activeTabID := currentActiveTab-firstTab
 			if (inactiveTabID > 0) ; Prevents from using a negative TabID due to the users selecting a tab, then moving with the arrows and selecting a new tab while the old one is out of range
 				GuiControl, Trades:,% TradesGUI_Controls["Tab_IMG_" inactiveTabID],% programSkinFolderPath "\" GlobalValues["Active_Skin"] "\TabInactive.png"
-			if (activeTabID > 0) ; Prevents from using a negative TabID due to the users selecting a tab, then moving with the arrows and selecting a new tab while the old one is out of range
+			if (activeTabID > 0)
 				GuiControl, Trades:,% TradesGUI_Controls["Tab_IMG_" activeTabID],% programSkinFolderPath "\" GlobalValues["Active_Skin"] "\TabActive.png"
 		}
 
@@ -1104,7 +1097,7 @@ Gui_Trades(infosArray="", errorMsg="") {
 	Return
 }
 
-Gui_Trades_Redraw(msg) {
+Gui_Trades_Redraw(msg, noSplash=false) {
 /*		Retrieve the current pending trades
 		Re-create the Trades GUI
 		Add the pending trades back to the GUI
@@ -1112,7 +1105,7 @@ Gui_Trades_Redraw(msg) {
 	global ProgramValues
 
 	Gui_Trades_Save_Position()
-	if ( msg != "EXE_NOT_FOUND" )
+	if ( !noSplash )
 		SplashTextOn, 250, 40,% ProgramValues.Name,Please wait...`nCurrently re-creating the interface.
 	allTrades := Gui_Trades_Manage_Trades("GET_ALL")
 	Gui_Trades(, msg)
@@ -1194,7 +1187,7 @@ Gui_Trades_Mode_Func(thisMenuItem) {
 		GlobalValues.Insert("Trades_GUI_Mode", "Window")
 	}
 	IniWrite,% GlobalValues["Trades_GUI_Mode"],% iniFilePath,SETTINGS,Trades_GUI_Mode
-	Gui_Trades_Redraw("CREATE")
+	Gui_Trades_Redraw("CREATE", 1)
 }
 
 Gui_Trades_Get_Trades_Infos(tabID){
@@ -1481,6 +1474,9 @@ Gui_Trades_Set_Position(xpos="UNSPECIFIED", ypos="UNSPECIFIED"){
 	static
 	global GlobalValues
 	global tradesGuiWidth, tradesGuiHeight
+
+	if ( GlobalValues.Dock_Mode != "Overlay" )
+		Return
 
 	dpiFactor := GlobalValues["Screen_DPI"]
 
@@ -3543,7 +3539,6 @@ Get_All_Games_Instances() {
 		logsFile := exeDir "\logs\Client.txt"
 		GlobalValues.Insert("Dock_Window", winHandler) ; assign global var after choosing the right instance
 	}
-
 	r := logsFile
 	return r
 }
