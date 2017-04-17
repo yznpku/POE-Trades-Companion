@@ -117,6 +117,7 @@ Start_Script() {
 	Extract_Skin_Files()
 	Extract_Font_Files()
 	Extract_Others_Files()
+	Manage_Font_Ressources("LOAD")
 	Check_Update()
 	Enable_Hotkeys()
 
@@ -405,7 +406,7 @@ Hotkeys_User_Handler(thisLabel) {
 ;
 ;==================================================================================================================
 
-Gui_Trades(infosArray="", errorMsg="", isClone=0) {
+Gui_Trades(infosArray="", errorMsg="") {
 ;			Trades GUI. Each new item will be added in a new tab
 ;			Clicking on a button will do its corresponding action
 ;			Switching tab will clipboard the item's infos if the user enabled
@@ -1114,6 +1115,7 @@ Gui_Trades_Redraw(msg) {
 */
 	global ProgramValues
 
+	Gui_Trades_Save_Position()
 	if ( msg != "EXE_NOT_FOUND" )
 		SplashTextOn, 250, 40,% ProgramValues.Name,Please wait...`nCurrently re-creating the interface.
 	allTrades := Gui_Trades_Manage_Trades("GET_ALL")
@@ -3817,15 +3819,6 @@ Extract_Font_Files() {
 	programFontFolderPath := ProgramValues["Fonts_Folder"]
 
 	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Helper\Ressources\Fonts\Fontin-SmallCaps.ttf,% programFontFolderPath "\Fontin-SmallCaps.ttf"
-	Loop, Files, %programFontFolderPath%\*.*
-	{
-		if A_LoopFileExt in otf,otc,ttf,ttc
-		{
-			DllCall( "GDI32.DLL\AddFontResourceEx", Str, A_LoopFileFullPath,UInt,(FR_PRIVATE:=0x10), Int,0)
-			fontTitle := FGP_Value(A_LoopFileFullPath, 21)	; 21 = Title
-			ProgramFonts.Insert(A_LoopFileName, fontTitle)
-		}
-	}
 }
 
 Extract_Skin_Files() {
@@ -4202,29 +4195,46 @@ Reload_Func() {
 	Sleep 10000
 }
 
-Exit_Func(ExitReason, ExitCode) {
-	global ProgramValues, GlobalValues
-	global GuiTradesHandler
-	global tradesGuiWidth
+Gui_Trades_Save_Position() {
+;		Save the current X and Y positions of the Trades GUI.
+;		Only if the GUI is in Winodw Mode.
+	global GlobalValues, ProgramValues
+	global GuiTradesHandler, tradesGuiWidth
 
-	iniFilePath := ProgramValues["Ini_File"]
-	programFontFolderPath := ProgramValues["Fonts_Folder"]
+	iniFilePath := ProgramValues.Ini_File
 
-;	Save the current position of the TradesGUI
-	if ( GlobalValues["Trades_GUI_Mode"] = "Window" ) && tradesGuiWidth {
+	if ( GlobalValues.Trades_GUI_Mode = "Window" ) {
 		WinGetPos, xpos, ypos, , ,% "ahk_id " GuiTradesHandler
 		IniWrite,% xpos,% iniFilePath,PROGRAM,X_POS
 		IniWrite,% ypos,% iniFilePath,PROGRAM,Y_POS
 	}
+}
 
-;	Unload the Fonts ressources
-	Loop, Files, %programFontFolderPath%\*.*
+Manage_Font_Ressources(mode) {
+	global ProgramValues, ProgramFonts
+
+	fontsFolder := ProgramValues["Fonts_Folder"]
+
+	Loop, Files, %fontsFolder%\*.*
 	{
 		if A_LoopFileExt in otf,otc,ttf,ttc
 		{
-			DllCall( "GDI32.DLL\RemoveFontResourceEx",Str, A_LoopFileFullPath,UInt,(FR_PRIVATE:=0x10),Int,0)
+			if ( mode="LOAD") {
+				DllCall( "GDI32.DLL\AddFontResourceEx", Str, A_LoopFileFullPath,UInt,(FR_PRIVATE:=0x10), Int,0)
+				fontTitle := FGP_Value(A_LoopFileFullPath, 21)	; 21 = Title
+				ProgramFonts.Insert(A_LoopFileName, fontTitle)
+			}
+			else if ( mode="UNLOAD") {
+				DllCall( "GDI32.DLL\RemoveFontResourceEx",Str, A_LoopFileFullPath,UInt,(FR_PRIVATE:=0x10),Int,0)
+			}
 		}
 	}
+}
+
+Exit_Func(ExitReason, ExitCode) {
+
+	Gui_Trades_Save_Position()
+	Manage_Font_Ressources("UNLOAD")
 
 	ExitApp
 }
