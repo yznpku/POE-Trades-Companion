@@ -2333,16 +2333,16 @@ Gui_Settings_Get_Settings_Arrays() {
 	returnArray.SETTINGS_KeysArray := Object() ; contains all the individual .ini KEYS
 	returnArray.SETTINGS_KeysArray.Insert(0, "Show_Mode", "Transparency", "Trades_GUI_Mode", "Transparency_Active", "Hotkeys_Mode", "Trades_Auto_Minimize", "Trades_Auto_UnMinimize", "Trades_Click_Through", "Trades_Select_Last_Tab", "Support_Text_Toggle")
 	returnArray.SETTINGS_DefaultValues := Object() ; contains all the DEFAULT VALUES for the .ini KEYS
-	returnArray.SETTINGS_DefaultValues.Insert(0, "Always", "255", "Window", "255", "Basic", "0", "0", "0", "0", "0")
+	returnArray.SETTINGS_DefaultValues.Insert(0, "Always", "255", "Window", "255", "Basic", "1", "0", "0", "0", "0")
 	
 	returnArray.AUTO_CLIP_HandlersArray := Object()
-	returnArray.AUTO_CLIP_HandlersArray.Insert(0, "ClipNew", "ClipTab")
+	returnArray.AUTO_CLIP_HandlersArray.Insert(0, "ClipTab")
 	returnArray.AUTO_CLIP_HandlersKeysArray := Object()
-	returnArray.AUTO_CLIP_HandlersKeysArray.Insert(0, "Clip_New_Items", "Clip_On_Tab_Switch")
+	returnArray.AUTO_CLIP_HandlersKeysArray.Insert(0, "Clip_On_Tab_Switch")
 	returnArray.AUTO_CLIP_KeysArray := Object()
-	returnArray.AUTO_CLIP_KeysArray.Insert(0, "Clip_New_Items", "Clip_On_Tab_Switch")
+	returnArray.AUTO_CLIP_KeysArray.Insert(0, "Clip_On_Tab_Switch")
 	returnArray.AUTO_CLIP_DefaultValues := Object()
-	returnArray.AUTO_CLIP_DefaultValues.Insert(0, "1", "1")
+	returnArray.AUTO_CLIP_DefaultValues.Insert(0, "1")
 	
 	returnArray.HOTKEYS_HandlersArray := Object()
 	returnArray.HOTKEYS_HandlersKeysArray := Object()
@@ -2453,12 +2453,12 @@ Gui_Settings_Get_Settings_Arrays() {
 				:(index=3)?("/invite %buyerName%")
 				:(index=4)?("/kick %buyerName%")
 				:(index=5)?("@%buyerName% Sorry! My %itemName% listed for %itemPrice% is not available anymore!")
-				:(index=6)?("@%buyerName% I'm back! Do you still wish to buy my %itemName% listed for %itemPrice%?")
+				:(index=6)?("@%buyerName% I'm back! Do you still want to buy my %itemName% listed for %itemPrice%?")
 				:(index=7)?("/tradewith %buyerName%")
 				:("")
 		btnMsg2 := (index=1)?("")
 				:(index=2)?("")
-				:(index=3)?("@%buyerName% My %itemName% listed for %itemPrice% is ready to be picked up: Meet me in my hideout.")
+				:(index=3)?("@%buyerName% My %itemName% listed for %itemPrice% is ready to be picked up!")
 				:(index=4)?("@%buyerName% Thank you! Good luck and have fun!")
 				:(index=5)?("")
 				:(index=6)?("")
@@ -2489,7 +2489,7 @@ Gui_Settings_Get_Settings_Arrays() {
 	returnArray.CUSTOMIZATION_APPEARANCE_HandlersArray.Insert(0, "ActivePreset", "SelectedSkin", "SkinScaling", "SelectedFont", "FontSize", "FontSizeCustom", "TitleActiveColor", "TitleInactiveColor", "TradesInfos1Color", "TradesInfos2Color", "TabsColor", "ButtonsColor")
 	returnArray.CUSTOMIZATION_APPEARANCE_HandlersKeysArray.Insert(0, "Active_Preset", "Active_Skin", "Scale_Multiplier", "Font", "Font_Size_Mode", "Font_Size_Custom", "Font_Color_Title_Active", "Font_Color_Title_Inactive", "Font_Color_Trades_Infos_1", "Font_Color_Trades_Infos_2", "Font_Color_Tabs", "Font_Color_Buttons")
 	returnArray.CUSTOMIZATION_APPEARANCE_KeysArray.Insert(0, "Active_Preset", "Active_Skin", "Scale_Multiplier", "Font", "Font_Size_Mode", "Font_Size_Custom", "Font_Color_Title_Active", "Font_Color_Title_Inactive", "Font_Color_Trades_Infos_1", "Font_Color_Trades_Infos_2", "Font_Color_Tabs", "Font_Color_Buttons")
-	returnArray.CUSTOMIZATION_APPEARANCE_DefaultValues.Insert(0, "Path of Exile", "Path of Exile", "1", "Fontin SmallCaps", "Automatic", "10", "C18F55", "C18F55", "C18F55", "FFFFFF" , "FFFFFF", "C18F55")
+	returnArray.CUSTOMIZATION_APPEARANCE_DefaultValues.Insert(0, "System", "System", "1", "System", "Automatic", "8", "FFFF00", "FFFFFF", "SYSTEM", "SYSTEM" , "SYSTEM", "SYSTEM")
 
 	return returnArray
 }
@@ -2734,7 +2734,7 @@ Gui_About() {
 		else
 			break
 	}
-	Gui, Add, DropDownList, w500 gVersion_Change AltSubmit vVerNum hwndVerNumHandler,%allVersions%
+	Gui, Add, DropDownList, w500 gVersion_Change AltSubmit vVerNum hwndVerNumHandler R10,%allVersions%
 	Gui, Add, Edit, Section vChangesText hwndChangesTextHandler wp R15 ReadOnly,An internet connection is required
 	GuiControl, Choose,%VerNumHandler%,1
 	GoSub, Version_Change
@@ -3424,6 +3424,8 @@ ShellMessage(wParam,lParam) {
 
 		if ( GlobalValues["Gui_Trades_Mode"] = "Overlay")
 			Gui_Trades_Set_Position() ; Re-position the GUI
+
+		WinSet, AlwaysOnTop, On, ahk_id %guiTradesHandler%
 	}
 }
 
