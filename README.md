@@ -1,8 +1,20 @@
-POE Trades Helper,  
-*Keep track of your trades.*  
+![Banner](https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/Resources/Others/ForumBanner.png)
+**Enhance your trading experience by managing your poe.trade whispers in a convenient interface.**  
+**Up to nine custom buttons can be used to communicate with your buyer in a single click.**  
 
-**Screenshots:**  [Trades GUI](https://raw.githubusercontent.com/lemasato/POE-Trades-Helper/master/Screenshots/GUI%20Trades%20-%20Active.png) - [Settings GUI](https://raw.githubusercontent.com/lemasato/POE-Trades-Helper/master/Screenshots/GUI%20Settings.png)  
+- You receive a trade request while casually mapping?  
+- Or right in the middle of an uber lab run?  
+- Or even while you were AFK, a few minutes ago?  
 
-**Original Posts:** [Reddit v1.0](https://www.reddit.com/r/pathofexile/comments/57oo3h) - [Reddit Latest](https://www.reddit.com/r/pathofexile/comments/5a2rbb) - [GGG Forums](https://www.pathofexile.com/forum/view-thread/1755148)   
+**It all takes just a single click to give your buyer some attention.**
 
-**Download Link:** [Direct](https://raw.githubusercontent.com/lemasato/POE-Trades-Helper/master/POE%20Trades%20Helper.exe) - [Github Releases](https://github.com/lemasato/POE-Trades-Helper/releases)
+Two skins are available. The regular system interface, or a POE-themed interface:  
+![Skin-System](https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/Screenshots/GUI%20Trades%20System.png)  
+![Skin-PathOfExile](https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/Screenshots/GUI%20Trades%20PathOfExile.png)
+
+If you wish to support the tool by donating, you can click on this button right here: [![Paypal](https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/Resources/Others/DonatePaypal.png)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=BSWU76BLQBMCU)
+
+
+You can find this tool on **[Reddit](https://www.reddit.com/r/pathofexile/comments/57oo3h)** and **[GGG Forums](https://www.pathofexile.com/forum/view-thread/1755148)**  
+Download:
+**Download Link:** [Direct](https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/POE%20Trades%20Companion.exe) - [Releases](https://github.com/lemasato/POE-Trades-Companion/releases/latest)
