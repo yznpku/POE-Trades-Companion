@@ -2,7 +2,9 @@
 todo.txt
 _BETA
 *.ahk
-!POE Trades Helper.ahk
+*.exe
+!POE Trades *.*
+_Testings
 
 # =========================
 # Default .gitignore
