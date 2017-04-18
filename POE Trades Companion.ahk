@@ -245,6 +245,8 @@ Monitor_Game_Logs(mode="") {
 					whisp := whispName ": " whispMsg "`n"
 					if RegExMatch(whisp, ".*: (.*)Hi, I(?: would|'d) like to buy your (?:(.*) |(.*))(?:listed for (.*)|for my (.*)|)(?!:listed for|for my) in (?:(.*)\(.*""(.*)""(.*)\)|Hardcore (.*?)\W|(.*?)\W)(.*)", subPat ) ; poe.trade whisper found
 					{
+						timeSinceLastTrade := 0
+
 						tradeItem := (subPat2)?(subPat2):(subPat3)?(subPat3):("ERROR RETRIEVING ITEM")
 						tradePrice := (subPat4)?(subPat4):(subPat5)?(subPat5):("See Offer")
 						tradeStash := (subPat6)?(subPat6 "- " subpat7 " " subPat8):(subPat9)?("Hardcore " subPat9):(subPat10)?(subPat10):("ERROR RETRIEVING LOCATION")
@@ -289,7 +291,9 @@ Monitor_Game_Logs(mode="") {
 				}
 			}
 		}
-		sleep 100
+		sleepTime := (timeSinceLastTrade>300)?(500):(100)
+		timeSinceLastTrade += 1*(sleepTime/1000)
+		Sleep %sleepTime%
 	}
 	Loop 2 {
 		TrayTip,% "Issue with the logs file!",% "It could be one of the following reasons: "
