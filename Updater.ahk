@@ -1,20 +1,11 @@
-/*
-	Changelog:
-		v1.0: Initial release
-		v1.0.1: Attempts at fixing the tool
-		v1.1: Greatly enhanced the tool, updates should go smooth now
-		v1.2: Added beta download
-		v1.2.1: Added the setting for Show_Changelogs (POE Trades Helper)
-*/
-
-
 #SingleInstance Force
 SetWorkingDir, A_ScriptDir
 EnvGet, userprofile, userprofile
-global programName := "POE Trades Helper" 
+
+global programName := "POE Trades Companion" 
 global iniFilePath := userprofile "\Documents\AutoHotKey\" programName "\Preferences.ini"
-global newVersionPath := "poe_trades_helper_newversion.exe"
-global programDL := "https://raw.githubusercontent.com/lemasato/POE-Trades-Helper/master/POE Trades Helper.exe"
+global newVersionPath := "POE-TC-Updater.exe"
+global programDL := "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/" programName ".exe"
 
 ;		Retrieving the current date and time, then separating into their own vars
 FormatTime, currentDateTime,,dd/MM/yy-HH:mm:ss
@@ -35,6 +26,9 @@ IniWrite,% currentDateTime,% iniFilePath,PROGRAM,LastUpdate
 IniRead,autoUpdate,% iniFilePath,PROGRAM,AutoUpdate
 if ( autoUpdate = 1 )
 	Compare_Both_DateTime(autoUpdate, currentDay, currentMonth, currentYear, currentHour, currentMin, currentSec, previousDay, previousMonth, previousYear, previousHour, previousMin, previousSec)
+
+;		Remove older files from an earlier release
+FileRemoveDir,% userprofile "\Documents\AutoHotKey\POE Trades Helper\", 1
 
 ;		Random comment line to make things look pretty
 Close_Program_Instancies()
@@ -70,7 +64,7 @@ Compare_Both_DateTime(auto, cDay, cMonth, cYear, cHour, cMin, cSec, pDay, pMonth
 ;		If so, make sure to disable the auto update as it was probably stuck in an update loop
 	if ( auto = 1 ) && ( cYear = pYear ) && ( cMonth = pMonth ) && ( cDay = pDay ) && ( cHour = pHour ) && ( cMin = pMin ) {
 		IniWrite,0,% iniFilePath,SETTINGS,AutoUpdate
-		issue := "The program was stuck updating in a loop."
+		issue := "The updater has ran too many times in a short amount of time."
 		solution := "Auto-update has been disabled. Please update manually."
 		Create_Warning_Gui(issue, solution, "Loop")
 		ExitApp
@@ -83,19 +77,15 @@ Close_Program_Instancies() {
 ;			Also delete all possible file name
 	IniRead, programPID,% iniFilePath,PROGRAM,PID
 	IniRead, fileName,% iniFilePath,PROGRAM,FileName
-	Loop {
-		if ( programPID != "ERROR" ) && ( programPID != "" )
-			Process, Close, %programPID%
-		Process, Close, %fileName%
-		Process, Close, POE Trades Helper.exe
-		Process, Close, POE-Trades-Helper.exe
-		sleep 100
-		FileDelete,% fileName
-		FileDelete,% "POE-Trades-Helper.exe"
-		FileDelete,% "POE Trades Helper.exe"
-		sleep 100
-		if !( FileExist(fileName) ) && !( FileExist("POE Trades Helper.exe") ) && !( FileExist("POE-Trades-Helper.exe") )
-			break
+
+	executables := programPID "|" fileName "|POE Trades Helper.exe|POE-Trades-Helper.exe"
+	Loop, Parse, executables, D|
+	{
+		Process, Close,% A_LoopField
+		Process, WaitClose,% A_LoopField
+		Sleep 10
+		FileDelete,% A_LoopField
+		Sleep 10
 	}
 }
 
@@ -103,17 +93,19 @@ Download_New_Version() {
 ;			Download the new version, rename and runs it
 ;			Warns the user if it couldn't be retrieved
 	UrlDownloadToFile,% programDL,% newVersionPath
-		if ( ErrorLevel = 1 ) {
-			problem := "The program timed out while trying to retrieve the new version."
-			solution := "Auto-update was disabled. Please make sure your network is working correctly.`nOr try downloading the new version manually."
-			Create_Warning_Gui(issue, solution, "TimedOut")
-			ExitApp
-		}
+	if ( ErrorLevel = 1 ) {
+		issue := "The program timed out while trying to retrieve the new version."
+		solution := "Auto-update was disabled. Please make sure your network is working correctly.`nOr try downloading the new version manually."
+		Create_Warning_Gui(issue, solution, "TimedOut")
+		ExitApp
+	}
+	FileSetAttrib, +H,% newVersionPath
 	sleep 1000
-	FileMove,% newVersionPath,% "POE Trades Helper.exe",1
+	FileMove,% newVersionPath,% programName ".exe", 1
+	FileSetAttrib, -H,% programName ".exe"
 	IniWrite, 1,% iniFilePath,PROGRAM,Show_Changelogs
 	sleep 1000
-	Run, % "POE Trades Helper.exe"
+	Run, % programName ".exe"
 }
 
 Create_Warning_Gui(issue, solution, code) {
@@ -147,8 +139,8 @@ Download_Link:
 	Run, % programDL
 return
 Thread_Link:
-	Run, "https://github.com/lemasato/POE-Trades-Helper/releases"
+	Run, "https://github.com/lemasato/POE-Trades-Companion/releases"
 return
 Repo_Link:
-	Run, "https://github.com/lemasato/POE-Trades-Helper/"
+	Run, "https://github.com/lemasato/POE-Trades-Companion/"
 return
