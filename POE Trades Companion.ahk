@@ -141,7 +141,7 @@ Start_Script() {
 		}
 	}
 
-	Gui_Settings()
+	; Gui_Settings()
 	; Gui_About()
 	Logs_Append("START", settingsArray)
 	Monitor_Game_Logs()
@@ -668,6 +668,10 @@ Gui_Trades(infosArray="", errorMsg="") {
 	}
 	if ( errorMsg = "UPDATE" || errorMsg = "CREATE" ) {
 
+		tabsCount := infosArray.BUYERS.Length(), tabsList := ""
+		if (activeSkin="System")
+			currentActiveTab := Gui_Trades_Get_Tab_ID()
+
 		lastActiveTab := (GlobalValues.Trades_Select_Last_Tab && tabsCount > previousTabsCount)?(currentActiveTab) ; Select last tab enabled. Last tab is now the current tab (before current tab is assigned to most recent tab)
 						:(lastActiveTab) ; Leave it as it is
 		currentActiveTab := (!currentActiveTab)?(1) ; Value previously unassigned, make sure to focus tab 1.
@@ -675,7 +679,6 @@ Gui_Trades(infosArray="", errorMsg="") {
 						   :(currentActiveTab) ; Leave it as it is
 
 ;		Update the fields with the trade infos
-		tabsCount := infosArray.BUYERS.Length(), tabsList := ""
 		for key, element in infosArray.BUYERS {
 			tabsList .= "|" key
 			GuiControl, Trades:,% buyerSlot%key%Handler,% infosArray.BUYERS[key]
@@ -739,7 +742,6 @@ Gui_Trades(infosArray="", errorMsg="") {
 			Gosub Gui_Trades_Tabs_Handler ;	Make sure all tabs are correctly ordered.
 		}
 		else {
-			currentActiveTab := Gui_Trades_Get_Tab_ID()
 			GuiControl, Trades:,Tab,% tabsList  ;	Apply the new list of tabs.
 ;			Select the correct tab after udpating
 			if ( GlobalValues.Trades_Select_Last_Tab ) && (!A_GuiEvent) { ; A_GuiEvent means we've just closed a tab. We do not want to activate the latest available tab.
@@ -1098,7 +1100,7 @@ Gui_Trades(infosArray="", errorMsg="") {
 	Return
 }
 
-Gui_Trades_Redraw(msg, noSplash=false) {
+Gui_Trades_Redraw(msg, noSplash=false, preview=0) {
 /*		Retrieve the current pending trades
 		Re-create the Trades GUI
 		Add the pending trades back to the GUI
@@ -1109,6 +1111,17 @@ Gui_Trades_Redraw(msg, noSplash=false) {
 	if ( !noSplash )
 		SplashTextOn, 250, 40,% ProgramValues.Name,Please wait...`nCurrently re-creating the interface.
 	allTrades := Gui_Trades_Manage_Trades("GET_ALL")
+	if ( preview ) {
+		if !(allTrades.BUYERS.MaxIndex()) {
+			allTrades.BUYERS.Push("iSellStuff")
+			allTrades.ITEMS.Push("level 1 Faster Attacks Support")
+			allTrades.PRICES.Push("5 alteration")
+			allTrades.LOCATIONS.Push("Breach (stash tab ""Gems""; position: left 6, top 8)")
+			allTrades.OTHER.Push("Offering 1 alch?")
+			allTrades.TIME.Push(A_Hour ":" A_Min)
+			allTrades.PID.Push(0)
+		}
+	}
 	Gui_Trades(, msg)
 	Gui_Trades(allTrades, "UPDATE")
 	SplashTextOff
@@ -1119,8 +1132,8 @@ Gui_Trades_Get_Tab_ID() {
  *		Returns the currently active tab ID.
 */
 	Global TradesGUI_Controls
-
 	GuiControlGet, tabID, Trades:,% TradesGUI_Controls.Tab
+
 	return tabID
 }
 
@@ -1874,7 +1887,14 @@ return
 
 	Gui_Settings_Trades_Preview:
 		GoSub, Gui_Settings_Btn_Apply
-		Gui_Trades_Redraw("CREATE")
+
+		backup := GlobalValues.Trades_GUI_Minimized, backup2 := GlobalValues.Trades_Auto_Minimize
+		GlobalValues.Trades_GUI_Minimized := 0, GlobalValues.Trades_Auto_Minimize := 0
+
+		Gui_Trades_Redraw("CREATE", ,1)
+
+		GlobalValues.Trades_GUI_Minimized := backup, GlobalValues.Trades_Auto_Minimize := backup2
+		backup := "", backup2 := ""
 	Return
 
 	Gui_Settings_Custom_Label:
