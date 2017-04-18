@@ -191,6 +191,7 @@ Monitor_Game_Logs(mode="") {
 		}
 		else {
 			logsFile := r
+			Gui_Trades(,"UPDATE")
 			Gui_Trades_Set_Position()
 		}
 	}
@@ -651,12 +652,18 @@ Gui_Trades(infosArray="", errorMsg="") {
 */
 
 	if ( errorMsg = "EXE_NOT_FOUND" ) {
-		countdown := 10
-		Loop 11 {
-			GuiControl, Trades:,% ErrorMsgTextHandler,% "Process not found, retrying in " countdown " seconds...`n`nRight click on the tray icon,`nthen [Settings] to set your preferences."
-			countdown--
-			sleep 1000
+		Loop {
+			countdown := 10
+			Loop 11 {
+				GuiControl, Trades:,% ErrorMsgTextHandler,% "Process not found, retrying in " countdown " seconds...`n`nRight click on the tray icon,`nthen [Settings] to set your preferences."
+				countDown--
+				; Sleep 
+			}
+			gameInstances := Get_All_Games_Instances()
+			if ( gameInstances != "EXE_NOT_FOUND" )
+				Break
 		}
+		gameInstances := ""
 		Monitor_Game_Logs()
 	}
 	else if ( errorMsg = "REMOVE_DUPLICATES" ) {
