@@ -51,7 +51,7 @@ Start_Script() {
 	ProgramValues := Object() ; Specific to the program's informations
 	ProgramValues.Insert("Name", "POE Trades Companion")
 	ProgramValues.Insert("Version", "1.8.8")
-	ProgramValues.Insert("Debug", 1)
+	ProgramValues.Insert("Debug", 0)
 
 	ProgramValues.Insert("PID", DllCall("GetCurrentProcessId"))
 
@@ -73,7 +73,7 @@ Start_Script() {
 
 	ProgramValues.Insert("Game_Ini_File", userprofile "\Documents\my games\Path of Exile\production_Config.ini")
 
-	GlobalValues.Insert("Support_Message", "@%buyerName% " ProgramValues.Name ": Easily keep track of your poe.trade whispers. You can find it on GitHub, Reddit and GGG's forums. Feel free to check it out!") 
+	GlobalValues.Insert("Support_Message", "@%buyerName% " ProgramValues.Name ": view-thread/1755148") 
 
 	GroupAdd, POEGame, ahk_exe PathOfExile.exe
 	GroupAdd, POEGame, ahk_exe PathOfExile_x64.exe
@@ -107,7 +107,6 @@ Start_Script() {
 	Set_INI_Settings()
 	settingsArray := Get_INI_Settings()
 	Declare_INI_Settings(settingsArray)
-	Create_Tray_Menu()
 	Delete_Old_Logs_Files(10)
 	Do_Once()
 	Extract_Sound_Files()
@@ -120,6 +119,7 @@ Start_Script() {
 
 	; Pre-rendering Trades-GUI
 	Gui_Trades(,"CREATE")
+	Create_Tray_Menu()
 
 
 	;	Debug purposes. Simulates TradesGUI tabs. 
@@ -141,7 +141,7 @@ Start_Script() {
 		}
 	}
 
-	; Gui_Settings()
+	Gui_Settings()
 	; Gui_About()
 	Logs_Append("START", settingsArray)
 	Monitor_Game_Logs()
@@ -1543,45 +1543,44 @@ Gui_Settings() {
 	Gui, Tab, Settings
 ;	Settings Tab
 ;		Trades GUI
-		Gui, Add, GroupBox,% " x" guiXWorkArea . " y" guiYWorkArea . " w210 h260",Trades GUI
+		Gui, Add, GroupBox,% " x" guiXWorkArea . " y" guiYWorkArea . " w430 h340",Main interface
 		Gui, Add, Radio, xp+10 yp+20 vShowAlways hwndShowAlwaysHandler,Always show
 		Gui, Add, Radio, xp yp+15 vShowInGame hwndShowInGameHandler,Only show while in game
+
+		Gui, Add, Checkbox, xp yp+30 hwndClipTabHandler vClipTab,Clipboard item on tab switch
+		Gui, Add, Checkbox,% " xp" . " yp+15 hwndSelectLastTabHandler vSelectLastTab",Focus newly created tabs
+
+		Gui, Add, Checkbox, xp yp+30 hwndAutoMinimizeHandler vAutoMinimize,Minimize when inactive
+		Gui, Add, Checkbox, xp yp+15 hwndAutoUnMinimizeHandler vAutoUnMinimize,Un-Minimize when active
 ;			Transparency
-			Gui, Add, GroupBox,% " x" guiXWorkArea+5 . " yp+25 w200 h140",Transparency
-			Gui, Add, Checkbox, xp+10 yp+25 hwndClickThroughHandler vClickThrough,Click-through while inactive
+			Gui, Add, GroupBox,% " x" guiXWorkArea+215 . " y" guiYWorkArea+125 " w205 h140",Transparency
+			Gui, Add, Checkbox, xp+30 yp+25 hwndClickThroughHandler vClickThrough,Click-through while inactive
 			Gui, Add, Text, xp yp+20,Inactive (no trade on queue)
 			Gui, Add, Slider, xp+10 yp+15 hwndShowTransparencyHandler gGui_Settings_Transparency vShowTransparency AltSubmit ToolTip Range0-100
 			Gui, Add, Text, xp-10 yp+30,Active (trades are on queue)
 			Gui, Add, Slider, xp+10 yp+15 hwndShowTransparencyActiveHandler gGui_Settings_Transparency vShowTransparencyActive AltSubmit ToolTip Range30-100
-;			Bottom
-			Gui, Add, Checkbox,% " x" guiXWorkArea+8 . " yp+45 hwndSelectLastTabHandler vSelectLastTab",Focus newly created tabs
-			Gui, Add, Checkbox, xp yp+15 hwndAutoMinimizeHandler vAutoMinimize,Minimize when inactive
-			Gui, Add, Checkbox, xp yp+15 hwndAutoUnMinimizeHandler vAutoUnMinimize,Un-Minimize when active
-;		Notifications
-;			Trade Sound Group
-			Gui, Add, GroupBox,% "x" guiXWorkArea+220 . " y" guiYWorkArea . " w210 h120",Notifications
+
+; ;		Notifications
+;			 Trade Sound Group
+			Gui, Add, GroupBox,% "x" guiXWorkarea+215 . " y" guiYWorkArea+10 . " w205 h110",Notifications
 			Gui, Add, Checkbox, xp+10 yp+20 vNotifyTradeToggle hwndNotifyTradeToggleHandler,Trade
 			Gui, Add, Edit, xp+65 yp-2 w70 h17 vNotifyTradeSound hwndNotifyTradeSoundHandler ReadOnly
 			Gui, Add, Button, xp+80 yp-2 h20 vNotifyTradeBrowse gGui_Settings_Notifications_Browse,Browse
 ;			Whisper Sound Group
-			Gui, Add, Checkbox,% "x" guiXWorkArea+230 " y" guiYWorkArea+45 . " vNotifyWhisperToggle hwndNotifyWhisperToggleHandler",Whisper
+			Gui, Add, Checkbox,% "xp-145 yp+25" . " vNotifyWhisperToggle hwndNotifyWhisperToggleHandler",Whisper
 			Gui, Add, Edit, xp+65 yp-2 w70 h17 vNotifyWhisperSound hwndNotifyWhisperSoundHandler ReadOnly
 			Gui, Add, Button, xp+80 yp-2 h20 vNotifyWhisperBrowse gGui_Settings_Notifications_Browse,Browse
 ;			Whisper Tray Notification
-			Gui, Add, Checkbox,% "x" guiXWorkArea+230  " yp+39 vNotifyWhisperTray hwndNotifyWhisperTrayHandler",Show tray notifications
-			Gui, Add, Checkbox,% "x" guiXWorkArea+230 " yp+14 vNotifyWhisperFlash hwndNotifyWhisperFlashHandler",Flash the taskbar icon
-;		Clipboard
-		Gui, Add, GroupBox,% "x" guiXWorkArea+220 " y" guiYWorkArea+120 . " w210 h60",Clipboard
-		Gui, Add, Checkbox, xp+10 yp+20 hwndClipNewHandler vClipNew,Clipboard new items
-		Gui, Add, Checkbox, xp yp+15 hwndClipTabHandler vClipTab,Clipboard item on tab switch
-;		Support
-		Gui, Add, GroupBox,% "x" guiXWorkArea+220 " y" guiYWorkArea+180 . " w210 h80",Support
-		Gui, Add, Checkbox, xp+80 yp+20 vMessageSupportToggle hwndMessageSupportToggleHandler
-		Gui, Add, Text, gGUI_Settings_Tick_Case vMessageSupportToggleText xp-55 yp+13,% "Support the software by allowing`n   an additional message upon`n        completing the trade."
+			Gui, Add, Checkbox,% "xp-145"   " yp+29 vNotifyWhisperTray hwndNotifyWhisperTrayHandler",Show tray notifications
+			Gui, Add, Checkbox,% "xp"  " yp+14 vNotifyWhisperFlash hwndNotifyWhisperFlashHandler",Flash the taskbar icon
+; ;		Support
+		Gui, Add, GroupBox,% "x" guiXWorkArea+10 " y" guiYWorkArea+180 . " w200 h85",Support
+		Gui, Add, Checkbox, xp+90 yp+20 vMessageSupportToggle hwndMessageSupportToggleHandler
+		Gui, Add, Text, gGUI_Settings_Tick_Case vMessageSupportToggleText xp-55 yp+18,% "Send an additional message`n   containing the thread-id`n     upon closing a trade"
 
 ;	-----------------------
 	Gui, Tab, Customization
-	Gui, Add, Text,% "x" guiXWorkarea . " y" guiYWorkArea,% "This section is empty. Select one of the sub-sections to change your settings."
+	Gui, Add, Text,% "x" guiXWorkarea+80 . " y" guiYWorkArea+100 " Center",% "This section is empty.`nSelect one of the sub-sections to change your settings."
 ;	--------------------
 	Gui, Tab, Appearance
 	Gui, Add, GroupBox,% "x" guiXWorkarea . " y" guiYWorkArea . " w420 h55",Preset
@@ -1670,15 +1669,15 @@ Gui_Settings() {
 		ypos := (index=1||index=2||index=3)?(guiYWorkArea):(index=4||index=5||index=6)?(guiYWorkArea+35):(index=7||index=8||index=9)?(guiYWorkArea+70):("ERROR")
 		Gui, Add, Button, x%xpos% y%ypos% w120 h35 vTradesBtn%index% hwndTradesBtn%index%Handler gGui_Settings_Custom_Label,% "Custom " index
 
-		Gui, Add, GroupBox,% "x" guiXWorkArea . " y" guiYWorkArea+120 . " w425 h70",Positioning
+		Gui, Add, GroupBox,% "x" guiXWorkArea . " y" guiYWorkArea+120 . " w425 h85",Positioning
 			Gui, Add, Text,% "xp+10" . " yp+20" . " hwndTradesHPOS" index "TextHandler",Horizontal:
-			Gui, Add, ListBox, w70 xp+55 yp vTradesHPOS%index% hwndTradesHPOS%index%Handler gGui_Settings_Trades_Preview,% "Left|Center|Right"
+			Gui, Add, ListBox, w70 xp+55 yp vTradesHPOS%index% hwndTradesHPOS%index%Handler gGui_Settings_Trades_Preview R3,% "Left|Center|Right"
 			Gui, Add, Text, xp+75 yp hwndTradesVPOS%index%TextHandler,Vertical:
-			Gui, Add, ListBox, w70 xp+45 yp vTradesVPOS%index% hwndTradesVPOS%index%Handler gGui_Settings_Trades_Preview,% "Top|Middle|Bottom"
+			Gui, Add, ListBox, w70 xp+45 yp vTradesVPOS%index% hwndTradesVPOS%index%Handler gGui_Settings_Trades_Preview R3,% "Top|Middle|Bottom"
 			Gui, Add, Text, xp+75 yp hwndTradesSIZE%index%TextHandler,Size:
-			Gui, Add, ListBox, w70 xp+30 yp vTradesSIZE%index% hwndTradesSIZE%index%Handler gGui_Settings_Trades_Preview,% "Disabled|Small|Medium|Large"
+			Gui, Add, ListBox, w70 xp+30 yp vTradesSIZE%index% hwndTradesSIZE%index%Handler gGui_Settings_Trades_Preview R4,% "Disabled|Small|Medium|Large"
 
-		Gui, Add, GroupBox,% "x" guiXWorkarea . " y" guiYWorkArea+200 . " w425 h110",Behaviour
+		Gui, Add, GroupBox,% "x" guiXWorkarea . " y" guiYWorkArea+215 . " w425 h110",Behaviour
 			Gui, Add, Text,% "xp+10" . " yp+20" . " hwndTradesLabel" index "TextHandler",Label:
 			Gui, Add, Edit, xp+50 yp-3 w160 vTradesLabel%index% hwndTradesLabel%index%Handler gGui_Settings_Custom_Label,
 
@@ -1995,7 +1994,6 @@ return
 			Gui, Trades: -E0x20
 		IniWrite,% SelectLastTab,% iniFilePath,SETTINGS,Trades_Select_Last_Tab
 ;	Clipboard
-		IniWrite,% ClipNew,% iniFilePath,AUTO_CLIP,Clip_New_Items
 		IniWrite,% ClipTab,% iniFilePath,AUTO_CLIP,Clip_On_Tab_Switch
 ;	Notifications
 		IniWrite,% NotifyTradeToggle,% iniFilePath,NOTIFICATIONS,Trade_Toggle
@@ -2537,11 +2535,8 @@ Get_Control_ToolTip(controlName) {
 	NotifyWhisperFlash_TT := "Make the game's window flash when you receive"
 	. "`na whisper while the game window is not active."
 	
-	ClipTab_TT := ClipNew_TT := ClipNew_TT := "Automatically put an item's infos in clipboard"
+	ClipTab_TT := "Automatically put the tab's item in clipboard"
 	. "`nso you can easily CTRL+F CTRL+V in your stash to search for the item."
-	. "`n"
-	. "`nClipboard new items:" A_Tab . A_Tab "Any new trade whisper's item will be placed in the clipboard."
-	. "`nClipboard item on tab switch:" A_Tab "The newly activated tab's item will be placed in the clipboard."
 
 	MessageSupportToggle_TT := ":)`n`nOnly triggers for ""Send Message + Close Tab"" buttons.", MessageSupportToggleText_TT := "(:`n`nOnly triggers for ""Send Message + Close Tab"" buttons."
 
