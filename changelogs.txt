@@ -1,4 +1,46 @@
 \\
+--v1.9--
+What's new:  
+
+- POE Trades Helper becomes POE Trades Companion, and comes with a brand new icon.  
+- Due to lots of changes in the settings file, your settings prior to 1.9 will be wiped.  
+- A new customization tab has been added in the Settings: Appearance.  
+- Command-line parameters. More about it can be found on the Wiki.  
+
+Appearance tab:  
+- Skin. The classic "System theme" has been re-introduced and improved.  
+- Scaling. Make the main interface bigger or smaller (from 50% to 200%). Useful for 4K monitors.  
+- Font. Use your own font, or one of the pre-included ones.  
+- Colors. Change the text colors of the main interface.  
+
+Buttons Actions tab:  
+- Statistics: Mark a trade as completed. It currently has no effect, but will be enabled in a future update.  
+
+
+What's changed:  
+
+Main interface:  
+- Right clicking the "X" button will allow you to close similar trades.  
+
+Settings:  
+- Your changes are now automatically saved and applied upon closing the window. The "Apply Settings" button has been removed.  
+- The tab previously known as "TradesGUI" has been renamed to "Buttons Actions". It has also been reworked to be more intuitive.  
+- The "Clipboard new items" setting has been removed. Having "Clipboard on tab switch" and "Focus newly created tabs" enabled serve the same purpose.
+
+- Button Actions tab:   
+- Any change made to the Trades GUI in this tab are instantly applied to the main interface. The "Preview" button has been removed.  
+- The way messages are handled has been reworked. You can set up to three messages for a specific button. Also, the key used to open the chat no longer defaults to ENTER: It is now automatically the same key you have set in-game. For this reason, Basic and Advanced messages have been removed.  
+
+About:  
+- Only the changelogs are being shown, and the window has been made bigger.  
+- The donating button has been re-introduced (ifeelbadaboutthis).  
+
+
+What's fixed:  
+- Several things about the main interface.  
+- Clicking on "Switch to Basic/Advanced" in the hotkeys tab would not re-select the hotkeys tab after re-creating the Settings GUI.
+//
+\\
 --v1.8.8--
 - TradesGUI: "Only show while in game" now also works with the Window mode.
 - Fix: The prompt to replace a no-longer valid PID would sometimes contain duplicates.
