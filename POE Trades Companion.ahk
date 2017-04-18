@@ -995,6 +995,9 @@ Gui_Trades(infosArray="", errorMsg="") {
 
 	Gui_Trades_Minimize:
 ;		Switch between minimized and full-sized.
+		if !WinExist("ahk_id " guiTradesHandler)
+			Return
+
 		GlobalValues.Insert("Trades_GUI_Minimized", !GlobalValues["Trades_GUI_Minimized"])
 		if ( GlobalValues["Trades_GUI_Minimized"] ) {
 			tHeight := guiHeight
