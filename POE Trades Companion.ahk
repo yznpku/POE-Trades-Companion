@@ -34,7 +34,7 @@ Return
 Start_Script() {
 /*
 */
-	global ProgramValues, GlobalValues, ProgramFonts, RunParameters
+	global ProgramValues, GlobalValues, ProgramFonts, RunParameters, GameValues
 	global TradesGUI_Controls
 	global POEGameArray, POEGameList
 
@@ -44,6 +44,7 @@ Start_Script() {
 	TradesGUI_Controls := Object() ; TradesGUI controls handlers
 	ProgramFonts := Object() ; Fonts private to the program
 	RunParameters := Object() ; Run-time parameters
+	GameValues := Object() ; Settings from the game .ini
 
 	GlobalValues := Object() ; Preferences.ini keys + some other shared global variables
 	GlobalValues.Insert("Screen_DPI", Get_DPI_Factor())
@@ -51,7 +52,7 @@ Start_Script() {
 	ProgramValues := Object() ; Specific to the program's informations
 	ProgramValues.Insert("Name", "POE Trades Companion")
 	ProgramValues.Insert("Version", "1.9")
-	ProgramValues.Insert("Debug", 0)
+	ProgramValues.Insert("Debug", 1)
 
 	ProgramValues.Insert("PID", DllCall("GetCurrentProcessId"))
 
@@ -72,6 +73,7 @@ Start_Script() {
 	ProgramValues.Insert("Changelogs_File", ProgramValues["Logs_Folder"] "\changelogs.txt")
 
 	ProgramValues.Insert("Game_Ini_File", userprofile "\Documents\my games\Path of Exile\production_Config.ini")
+	ProgramValues.Insert("Game_Ini_File_Copy", ProgramValues["Local_Folder"] "\production_Config.ini")
 
 	GlobalValues.Insert("Support_Message", "@%buyerName% " ProgramValues.Name ": view-thread/1755148") 
 
@@ -104,9 +106,14 @@ Start_Script() {
 	Run_As_Admin()
 	Close_Previous_Program_Instance()
 	Tray_Refresh()
-	Set_INI_Settings()
-	settingsArray := Get_INI_Settings()
-	Declare_INI_Settings(settingsArray)
+
+	Set_Local_Settings()
+	localSettings := Get_Local_Settings()
+	Declare_Local_Settings(localSettings)
+
+	gameSettings := Get_Game_Settings()
+	Declare_Game_Settings(gameSettings)
+
 	Delete_Old_Logs_Files(10)
 	Do_Once()
 	Extract_Sound_Files()
@@ -2163,8 +2170,10 @@ return
 		IniWrite,% ButtonsColor,% iniFilePath,CUSTOMIZATION_APPEARANCE,Font_Color_Buttons
 ;	Declare the new settings
 		Disable_Hotkeys()
-		settingsArray := Get_INI_Settings()
-		Declare_INI_Settings(settingsArray)
+		settingsArray := Get_Local_Settings()
+		Declare_Local_Settings(settingsArray)
+		gameSettings := Get_Game_Settings()
+		Declare_Game_Settings(gameSettings)
 		Enable_Hotkeys()
 	return
 
@@ -2812,7 +2821,34 @@ Gui_About() {
 ;
 ;==================================================================================================================
 
-Get_INI_Settings() {
+Get_Game_Settings() {
+	global ProgramValues
+
+	gameFile := ProgramValues.Game_Ini_File
+	gameFileCopy := ProgramValues.Game_Ini_File_Copy
+
+	FileRead, fileContent,% gameFile
+	File := FileOpen(gameFileCopy, "w", "UTF-16")
+	File.Write(fileContent)
+	File.Close()
+
+	IniRead, chat,% gameFileCopy,ACTION_KEYS,chat
+	IniRead, fullscreen,% gameFileCopy,DISPLAY,fullscreen
+
+	returnObj := {"Chat":chat, "Fullscreen":fullscreen}
+
+	return returnObj
+}
+
+Declare_Game_Settings(settings) {
+	global GameValues
+
+	for key, value in settings {
+		GameValues.Insert(key, value)
+	}
+}
+
+Get_Local_Settings() {
 ;			Retrieve the INI settings
 ;			Return a big array containing arrays for each section containing the keys and their values
 	global ProgramValues
@@ -2847,7 +2883,7 @@ Get_INI_Settings() {
 	return returnArray
 } 
 
-Set_INI_Settings(){
+Set_Local_Settings(){
 ;			Set the default INI settings if they do not exist
 	global ProgramValues
 
@@ -2896,7 +2932,7 @@ Set_INI_Settings(){
 	}
 }
 
-Declare_INI_Settings(iniArray) {
+Declare_Local_Settings(iniArray) {
 ;			Declare the settings to global variables
 	global GlobalValues
 
@@ -3724,7 +3760,7 @@ Send_InGame_Message(allMessages, tabInfos="", isHotkey=0) {
  *			Sends a message in game
  *			Replaces all the %variables% into their actual content
 */
-	global GlobalValues, ProgramValues
+	global GlobalValues, ProgramValues, GameValues
 
 	programName := ProgramValues["Name"]
 	gameIniFile := ProgramValues["Game_Ini_File"]
@@ -3733,19 +3769,8 @@ Send_InGame_Message(allMessages, tabInfos="", isHotkey=0) {
 	messageRaw1 := allMessages[1], messageRaw2 := allMessages[2], messageRaw3 := allMessages[3]
 	message1 := allMessages[1], message2 := allMessages[2], message3 := allMessages[3]
 
-	IniRead, chatKey,% gameIniFile,ACTION_KEYS,chat
-	if (!chatKey || chatKey="ERROR") { ; Chat key not found due to either .ini file not existing or [ACTION_KEYS] section being skipped due to the file being encoded in UTF-8 (requires UTF-16)
-		IniRead, otherExists,% gameIniFile
-		IniRead, sectionExists,% gameIniFile,ACTION_KEYS
-		if (!sectionExists && otherExists) { ; Confirms the UTF-8 encoding prevents us from correctly reading the file.
-											 ; Could set the file format to UTF-16, due that could potentially cause an issue if Path of Exile uses UTF-8.
-											 ; My workaround is to add a blank line on the top, leaving the UTF-8 format untouched.
-			FileRead, fileContent,% gameIniFile
-			FileDelete,% gameIniFile
-			FileAppend,% "`n" fileContent,% gameIniFile
-			IniRead, chatKey,% gameIniFile,ACTION_KEYS,chat
-		}
-	}
+	chatKey := GameValues.Chat
+	keyVK := StringToHex(chr(chatKey+0))
 
 	Loop 3 { ; Include the trade variable content into the variables.
 		StringReplace, message%A_Index%, message%A_Index%, `%buyerName`%, %buyerName%, 1
@@ -3760,7 +3785,13 @@ Send_InGame_Message(allMessages, tabInfos="", isHotkey=0) {
 			SendInput,%messageToSend%
 		}
 		else {
-			SendInput,{Enter}/{BackSpace}
+			firstChar := SubStr(messageToSend, 1, 1) ; Returns abc
+
+			SendInput,{VK%keyVK%}
+			Sleep 10
+
+			if firstChar not in /,`%,&,#,@
+				SendInput, /{BackSpace} ; Send in local chat
 			SendInput,{Raw}%messageToSend%
 			SendInput,{Enter}
 		}
@@ -3793,8 +3824,7 @@ Send_InGame_Message(allMessages, tabInfos="", isHotkey=0) {
 					Break
 				else {
 					Sleep 10
-					keyVK := StringToHex(chr(chatKey+0))
-					if keyVK in 1,2,4,5,6,9C,9D,9E,9F ; Mouse buttons
+					if keyVK in 0x1,0x2,0x4,0x5,0x6,0x9C,0x9D,0x9E,0x9F ; Mouse buttons
 					{
 						keyDelay := A_KeyDelay, keyDuration := A_KeyDuration
 						SetKeyDelay, 10, 10
@@ -3805,7 +3835,10 @@ Send_InGame_Message(allMessages, tabInfos="", isHotkey=0) {
 					}
 					else
 						SendInput,{VK%keyVK%}
-					SendInput,/{BackSpace}
+
+					firstChar := SubStr(messageToSend, 1, 1) ; Returns abc
+					if firstChar not in /,`%,&,#,@
+						SendInput,/{BackSpace}
 					SendInput,{Raw}%messageToSend%
 					SendInput,{Enter}
 					Sleep 10
@@ -3830,7 +3863,7 @@ StringToHex(String) {
 	Loop, Parse, String 
 	{
 		CharHex := Asc(A_LoopField) ; Get the ASCII value of the Character (will be converted to the Hex value by the SetFormat Line above)
-		StringTrimLeft, CharHex, CharHex, 2 ; Comment out the following line to leave the '0x' intact
+		; StringTrimLeft, CharHex, CharHex, 2 ; Comment out the following line to leave the '0x' intact
 		HexString .= CharHex . " " ; Build the return string
 	}
 	SetFormat, Integer,% formatInteger ; Set the integer format to what is was prior to the call
