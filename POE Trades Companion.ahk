@@ -202,13 +202,13 @@ Monitor_Game_Logs(mode="") {
 			Gui_Trades_Set_Position()
 		}
 	}
-	Logs_Append(A_ThisFunc,,logsFile)
+	Logs_Append(A_ThisFunc,,{File:logsFile})
 
 	fileObj := FileOpen(logsFile, "r")
 	fileObj.pos := fileObj.length
 	Loop {
 		if !FileExist(logsFile) || ( fileObj.pos > fileObj.length ) || ( fileObj.pos = -1 ) {
-			Logs_Append("Monitor_Game_Logs_Break",,fileObj.pos,fileObj.length)
+			Logs_Append("Monitor_Game_Logs_Break",{objPos:fileObj.pos, objLength:fileObj.length})
 			Break
 		}
 		if ( fileObj.pos < fileObj.length ) {
@@ -1541,7 +1541,7 @@ Gui_Trades_Set_Position(xpos="UNSPECIFIED", ypos="UNSPECIFIED"){
 		xpos := ( ( (A_ScreenWidth/dpiFactor) - tradesGuiWidth ) * dpiFactor )
 		Gui, Trades:Show, % "x" xpos " y0" " NoActivate"
 	}
-	Logs_Append(A_ThisFunc,, xpos, ypos)
+	Logs_Append(A_ThisFunc,, {xpos:xpos, ypos:ypos})
 }
 
 
@@ -3068,7 +3068,6 @@ GUI_Replace_PID(handlersArray, gamePIDArray) {
 		Gui, Add, Edit, xp+55 yp-3 ReadOnly,% pPath
 		if ( index != handlersArray.MaxIndex() ) ; Put a 10px margin if it's not the last element
 			Gui, Add, Text, w0 h0 xp yp+10
-		Logs_Append(A_ThisFunc,,element,pPath)
 	}
 	Gui, ReplacePID:Show,NoActivate,% programName " - Replace PID"
 	WinWait, ahk_id %GUIInstancesHandler%
@@ -3079,7 +3078,7 @@ GUI_Replace_PID(handlersArray, gamePIDArray) {
 		btnID := RegExReplace(A_GuiControl, "\D")
 		r := gamePIDArray[btnID]
 		Gui, ReplacePID:Destroy
-		Logs_Append("GUI_Replace_PID_Return",,r)
+		Logs_Append("GUI_Replace_PID_Return",,{PID:r})
 	Return
 }
 
@@ -3107,7 +3106,7 @@ GUI_Multiple_Instances(handlersArray) {
 		Gui, Add, Edit, xp+55 yp-3 ReadOnly,% pPath
 		if ( index != handlersArray.MaxIndex() ) ; Put a 10px margin if it's not the last element
 			Gui, Add, Text, w0 h0 xp yp+10
-		Logs_Append(A_ThisFunc,,element,pPath)
+		Logs_Append(A_ThisFunc,,{Handler:element, Path:pPath})
 	}
 	Gui, Instances:Show,NoActivate,% programName " - Multiple instances found"
 	WinWait, ahk_id %GUIInstancesHandler%
@@ -3118,7 +3117,7 @@ GUI_Multiple_Instances(handlersArray) {
 		btnID := RegExReplace(A_GuiControl, "\D")
 		r := handlersArray[btnID]
 		Gui, Instances:Destroy
-		Logs_Append("GUI_Multiple_Instances_Return",,r)
+		Logs_Append("GUI_Multiple_Instances_Return",,{Handler:r})
 	Return
 }
 
@@ -3648,7 +3647,7 @@ Get_DPI_Factor() {
 	return dpiFactor
 }
 
-Logs_Append(funcName, paramsArray="", params*) {
+Logs_Append(funcName, paramsArray="", params="") {
 	global ProgramValues, GlobalValues
 
 	programName := ProgramValues["Name"]
@@ -3678,35 +3677,36 @@ Logs_Append(funcName, paramsArray="", params*) {
 
 	if ( funcName = "GUI_Multiple_Instances" ) {
 		FileAppend,% "[" A_YYYY "-" A_MM "-" A_DD "_" A_Hour ":" A_Min ":" A_Sec "] ",% programLogsFilePath
-		FileAppend,% "Found multiple instances. Handler: " params[1] " - Path: " params[2],% programLogsFilePath
+		FileAppend,% "Found multiple instances. Handler: " params.Handler " - Path: " params.Path,% programLogsFilePath
 	}
 	if ( funcName = "GUI_Multiple_Instances_Return" ) {
 		FileAppend,% "[" A_YYYY "-" A_MM "-" A_DD "_" A_Hour ":" A_Min ":" A_Sec "] ",% programLogsFilePath
-		FileAppend,% "Found multiple instances (Return). Handler: " params[1],% programLogsFilePath
+		FileAppend,% "Found multiple instances (Return). Handler: " params.Handler,% programLogsFilePath
 	}
 
 	if ( funcName = "Monitor_Game_Logs" ) {
 		FileAppend,% "[" A_YYYY "-" A_MM "-" A_DD "_" A_Hour ":" A_Min ":" A_Sec "] ",% programLogsFilePath
-		FileAppend,% "Monitoring logs: " params[1],% programLogsFilePath
+		FileAppend,% "Monitoring logs: " params.File,% programLogsFilePath
 	}
 	if ( funcName = "Monitor_Game_Logs_Break" ) {
 		FileAppend,% "[" A_YYYY "-" A_MM "-" A_DD "_" A_Hour ":" A_Min ":" A_Sec "] ",% programLogsFilePath
-		FileAppend,% "Monitoring logs (Break). Obj.pos: " params[1] " - Obj.length: " params[2],% programLogsFilePath
+		FileAppend,% "Monitoring logs (Break). Obj.pos: " params.objPos " - Obj.length: " params.objLength,% programLogsFilePath
 	}
 
 	if ( funcName = "Gui_Trades_Set_Position" ) {
 		FileAppend,% "[" A_YYYY "-" A_MM "-" A_DD "_" A_Hour ":" A_Min ":" A_Sec "] ",% programLogsFilePath
-		FileAppend,% "Trades GUI Position: x" params[1] " y" params[2] ".",% programLogsFilePath
+		FileAppend,% "Trades GUI Position: x" params.xpos " y" params.ypos ".",% programLogsFilePath
 	}
 
 	if (funcName = "ShellMessage" ) {
 		FileAppend,% "[" A_YYYY "-" A_MM "-" A_DD "_" A_Hour ":" A_Min ":" A_Sec "] ",% programLogsFilePath
-		FileAppend,% "Trades GUI Hidden: Show_Mode: " params[1] " - Dock_Window ID: " params[2] " - Current Win ID: " winID "."
+		FileAppend,% "Trades GUI Hidden: Show_Mode: " params.Show_Mode " - Dock_Window ID: " params.Dock_Window " - Current Win ID: " params.Current_Win_ID "."
 	}
 
 	if ( funcName = "Send_InGame_Message" ) {
+		keyName := GetKeyName("VK" params.Chat_Key_VK)
 		FileAppend,% "[" A_YYYY "-" A_MM "-" A_DD "_" A_Hour ":" A_Min ":" A_Sec "] ",% programLogsFilePath
-		FileAppend,% "Sending IG Message to PID """ params[3] """ with content: """ params[1] """ | %buyerName%:""" params[2] """",% programLogsFilePath
+		FileAppend,% "Sending IG Message to PID """ params.PID """ using chat key: """ keyName " (KC:" params.Chat_Key " VK:" params.Chat_Key_VK ")"" with content: """ params.Message,% programLogsFilePath
 		matchsArray := Get_Matching_Windows_Infos("PID")
 		for key, element in matchsArray
 			FileAppend,% " | Instance" key " PID: " element,% programLogsFilePath
@@ -3714,12 +3714,12 @@ Logs_Append(funcName, paramsArray="", params*) {
 
 	if ( funcName = "Gui_Trades_Cycle_Func" ) {
 		FileAppend,% "[" A_YYYY "-" A_MM "-" A_DD "_" A_Hour ":" A_Min ":" A_Sec "] ",% programLogsFilePath
-		FileAppend,% "Docking the GUI to ID: " params[1] " - Total matchs found: " params[2] + 1,% programLogsFilePath
+		FileAppend,% "Docking the GUI to ID: " params.Dock_Window " - Total matchs found: " params.Total_Matchs + 1,% programLogsFilePath
 	}
 
 	if ( funcName = "GUI_Replace_PID_Return") {
 		FileAppend,% "[" A_YYYY "-" A_MM "-" A_DD "_" A_Hour ":" A_Min ":" A_Sec "] ",% programLogsFilePath
-		FileAppend,% "Replacing linked PID (Return). PID: " params[1],% programLogsFilePath
+		FileAppend,% "Replacing linked PID (Return). PID: " params.PID,% programLogsFilePath
 	}
 
 	FileAppend,% "`n",% programLogsFilePath
@@ -3846,7 +3846,7 @@ Send_InGame_Message(allMessages, tabInfos="", isHotkey=0) {
 			}
 		}
 
-		Logs_Append(A_ThisFunc,, messageToSend, buyerName, gamePID)
+		Logs_Append(A_ThisFunc,, {PID:gamePID, Message:messageToSend, Chat_Key:chatKey, Chat_Key_VK:keyVK})
 		BlockInput, Off
 	}
 }
@@ -4024,7 +4024,7 @@ Gui_Trades_Cycle_Func() {
 	}
 	GlobalValues.Insert("Dock_Window", matchHandlers[GlobalValues["Current_DockID"]])
 	Gui_Trades_Set_Position()
-	Logs_Append(A_ThisFunc,, GlobalValues["Dock_Window"], matchHandlers.MaxIndex())
+	Logs_Append(A_ThisFunc,, {Dock_Window:GlobalValues.Dock_Window, Total_Matchs:matchHandlers.MaxIndex()})
 }
 
 Get_Matching_Windows_Infos(mode) {
