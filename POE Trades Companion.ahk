@@ -72,8 +72,9 @@ Start_Script() {
 	ProgramValues.Insert("Logs_File", ProgramValues["Logs_Folder"] "\" A_YYYY "-" A_MM "-" A_DD "_" A_Hour "-" A_Min "-" A_Sec ".txt")
 	ProgramValues.Insert("Changelogs_File", ProgramValues["Logs_Folder"] "\changelogs.txt")
 
-	ProgramValues.Insert("Game_Ini_File", userprofile "\Documents\my games\Path of Exile\production_Config.ini")
-	ProgramValues.Insert("Game_Ini_File_Copy", ProgramValues["Local_Folder"] "\production_Config.ini")
+	ProgramValues.Insert("Game_Folder", userprofile "\Documents\my games\Path of Exile")
+	ProgramValues.Insert("Game_Ini_File", ProgramValues.Game_Folder "\production_Config.ini")
+	ProgramValues.Insert("Game_Ini_File_Copy", ProgramValues.Local_Folder "\production_Config.ini")
 
 	GlobalValues.Insert("Support_Message", "@%buyerName% " ProgramValues.Name ": view-thread/1755148") 
 
@@ -150,7 +151,7 @@ Start_Script() {
 
 	; Gui_Settings()
 	; Gui_About()
-	Logs_Append("START", settingsArray)
+	Logs_Append("DUMP", localSettings)
 	Monitor_Game_Logs()
 }
 
@@ -202,13 +203,13 @@ Monitor_Game_Logs(mode="") {
 			Gui_Trades_Set_Position()
 		}
 	}
-	Logs_Append(A_ThisFunc,,{File:logsFile})
+	Logs_Append(A_ThisFunc, {File:logsFile})
 
 	fileObj := FileOpen(logsFile, "r")
 	fileObj.pos := fileObj.length
 	Loop {
 		if !FileExist(logsFile) || ( fileObj.pos > fileObj.length ) || ( fileObj.pos = -1 ) {
-			Logs_Append("Monitor_Game_Logs_Break",{objPos:fileObj.pos, objLength:fileObj.length})
+			Logs_Append("Monitor_Game_Logs_Break", {objPos:fileObj.pos, objLength:fileObj.length})
 			Break
 		}
 		if ( fileObj.pos < fileObj.length ) {
@@ -1541,7 +1542,7 @@ Gui_Trades_Set_Position(xpos="UNSPECIFIED", ypos="UNSPECIFIED"){
 		xpos := ( ( (A_ScreenWidth/dpiFactor) - tradesGuiWidth ) * dpiFactor )
 		Gui, Trades:Show, % "x" xpos " y0" " NoActivate"
 	}
-	Logs_Append(A_ThisFunc,, {xpos:xpos, ypos:ypos})
+	Logs_Append(A_ThisFunc, {xpos:xpos, ypos:ypos})
 }
 
 
@@ -2827,15 +2828,46 @@ Get_Game_Settings() {
 	gameFile := ProgramValues.Game_Ini_File
 	gameFileCopy := ProgramValues.Game_Ini_File_Copy
 
+	if !FileExist(gameFile) {
+		String := "File Not Found: """ gameFile """"
+		Logs_Append("DEBUG", {String:String})
+	}
+
 	FileRead, fileContent,% gameFile
+	if !(fileContent || ErrorLevel) {
+		String := "Unable to retrieve content: """ gameFile """"
+		Logs_Append("DEBUG", {String:String})
+	}
+
 	File := FileOpen(gameFileCopy, "w", "UTF-16")
 	File.Write(fileContent)
+	if (ErrorLevel) {
+		String := "Could not Write in File: " gameFileCopy
+		Logs_Append("DEBUG", {String:String})
+		doAlternative := 1
+	}
 	File.Close()
 
-	IniRead, chat,% gameFileCopy,ACTION_KEYS,chat
+	if (doAlternative && fileContent) {
+		fileEncode := A_FileEncoding
+		FileEncoding,UTF-16
+
+		FileDelete,% gameFileCopy
+		FileAppend,% fileContent,% gameFileCopy
+
+		FileEncoding,% fileEncode
+	}
+
+	IniRead, chatKeySC,% gameFileCopy,ACTION_KEYS,chat
 	IniRead, fullscreen,% gameFileCopy,DISPLAY,fullscreen
 
-	returnObj := {"Chat":chat, "Fullscreen":fullscreen}
+	chatKeyVK := StringToHex(chr(chatKeySC+0))
+	chatKeyName := GetKeyName("VK" chatKeyVK)
+
+	returnObj := { "Chat_SC" : chatKeySC
+				  ,"Chat_VK" : chatKeyVK
+				  ,"Chat_Name" : chatKeyName
+				  ,"Fullscreen" : fullscreen }
 
 	return returnObj
 }
@@ -3078,7 +3110,7 @@ GUI_Replace_PID(handlersArray, gamePIDArray) {
 		btnID := RegExReplace(A_GuiControl, "\D")
 		r := gamePIDArray[btnID]
 		Gui, ReplacePID:Destroy
-		Logs_Append("GUI_Replace_PID_Return",,{PID:r})
+		Logs_Append("GUI_Replace_PID_Return", {PID:r})
 	Return
 }
 
@@ -3106,7 +3138,7 @@ GUI_Multiple_Instances(handlersArray) {
 		Gui, Add, Edit, xp+55 yp-3 ReadOnly,% pPath
 		if ( index != handlersArray.MaxIndex() ) ; Put a 10px margin if it's not the last element
 			Gui, Add, Text, w0 h0 xp yp+10
-		Logs_Append(A_ThisFunc,,{Handler:element, Path:pPath})
+		Logs_Append(A_ThisFunc, {Handler:element, Path:pPath})
 	}
 	Gui, Instances:Show,NoActivate,% programName " - Multiple instances found"
 	WinWait, ahk_id %GUIInstancesHandler%
@@ -3117,7 +3149,7 @@ GUI_Multiple_Instances(handlersArray) {
 		btnID := RegExReplace(A_GuiControl, "\D")
 		r := handlersArray[btnID]
 		Gui, Instances:Destroy
-		Logs_Append("GUI_Multiple_Instances_Return",,{Handler:r})
+		Logs_Append("GUI_Multiple_Instances_Return", {Handler:r})
 	Return
 }
 
@@ -3647,32 +3679,48 @@ Get_DPI_Factor() {
 	return dpiFactor
 }
 
-Logs_Append(funcName, paramsArray="", params="") {
-	global ProgramValues, GlobalValues
+Logs_Append(funcName, params) {
+	global ProgramValues, GlobalValues, GameValues
 
 	programName := ProgramValues["Name"]
 	programVersion := ProgramValues["Version"]
 	iniFilePath := ProgramValues["Ini_File"]
 	programLogsFilePath := ProgramValues["Logs_File"]
 
-	if ( funcName = "START" ) {
+	if ( funcName = "DUMP" ) {
 		dpiFactor := GlobalValues["Screen_DPI"]
 		OSbits := (A_Is64bitOS)?("64bits"):("32bits")
 		FileAppend,% "OS: Type:" A_OSType " - Version:" A_OSVersion " - " OSbits "`n",% programLogsFilePath
 		FileAppend,% "DPI: " dpiFactor "`n",% programLogsFilePath
 		FileAppend,% ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>`n",% programLogsFilePath
-		FileAppend,% ">>> PROGRAM SECTION DUMP START`n",% programLogsFilePath
+		FileAppend,% ">>> PROGRAM SECTION `n",% programLogsFilePath
+		FileAppend,% ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>`n",% programLogsFilePath
 		IniRead, content,% iniFilePath,PROGRAM
 		FileAppend,% content "`n",% programLogsFilePath
-		FileAppend,% "PROGRAM SECTION DUMP END <<<`n",% programLogsFilePath
-		FileAppend,% "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<`n`n",% programLogsFilePath
+		FileAppend,% "`n",% programLogsFilePath
+
 		FileAppend,% ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>`n",% programLogsFilePath
-		FileAppend,% ">>> GLOBAL VALUE_ DUMP START`n",% programLogsFilePath
-		for key, element in paramsArray.KEYS {
-			FileAppend,% paramsArray.KEYS[A_Index] ": """ paramsArray.VALUES[A_Index] """`n",% programLogsFilePath
+		FileAppend,% ">>> GAME SETTINGS `n",% programLogsFilePath
+		FileAppend,% ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>`n",% programLogsFilePath
+		for key, element in GameValues {
+			FileAppend,% key ": """ element """`n",% programLogsFilePath
 		}
-		FileAppend,% "GLOBAL VALUE_ DUMP END <<<`n",% programLogsFilePath
+		FileAppend,% "`n",% programLogsFilePath
+
+		FileAppend,% ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>`n",% programLogsFilePath
+		FileAppend,% ">>> LOCAL SETTINGS `n",% programLogsFilePath
+		FileAppend,% ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>`n",% programLogsFilePath
+		for key, element in params.KEYS {
+			FileAppend,% params.KEYS[A_Index] ": """ params.VALUES[A_Index] """`n",% programLogsFilePath
+		}
 		FileAppend,% "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<`n",% programLogsFilePath
+		FileAppend,% "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<`n",% programLogsFilePath
+		FileAppend,% "`n",% programLogsFilePath
+	}
+
+	if ( funcName = "DEBUG" ) {
+		FileAppend,% "[" A_YYYY "-" A_MM "-" A_DD "_" A_Hour ":" A_Min ":" A_Sec "] ",% programLogsFilePath
+		FileAppend,% params.String,% programLogsFilePath
 	}
 
 	if ( funcName = "GUI_Multiple_Instances" ) {
@@ -3704,9 +3752,8 @@ Logs_Append(funcName, paramsArray="", params="") {
 	}
 
 	if ( funcName = "Send_InGame_Message" ) {
-		keyName := GetKeyName("VK" params.Chat_Key_VK)
 		FileAppend,% "[" A_YYYY "-" A_MM "-" A_DD "_" A_Hour ":" A_Min ":" A_Sec "] ",% programLogsFilePath
-		FileAppend,% "Sending IG Message to PID """ params.PID """ using chat key: """ keyName " (KC:" params.Chat_Key " VK:" params.Chat_Key_VK ")"" with content: """ params.Message,% programLogsFilePath
+		FileAppend,% "Sending IG Message to PID """ params.PID """ with content: """ params.Message,% programLogsFilePath
 		matchsArray := Get_Matching_Windows_Infos("PID")
 		for key, element in matchsArray
 			FileAppend,% " | Instance" key " PID: " element,% programLogsFilePath
@@ -3769,8 +3816,7 @@ Send_InGame_Message(allMessages, tabInfos="", isHotkey=0) {
 	messageRaw1 := allMessages[1], messageRaw2 := allMessages[2], messageRaw3 := allMessages[3]
 	message1 := allMessages[1], message2 := allMessages[2], message3 := allMessages[3]
 
-	chatKey := GameValues.Chat
-	keyVK := StringToHex(chr(chatKey+0))
+	chatVK := GameValues.Chat_VK
 
 	Loop 3 { ; Include the trade variable content into the variables.
 		StringReplace, message%A_Index%, message%A_Index%, `%buyerName`%, %buyerName%, 1
@@ -3787,7 +3833,7 @@ Send_InGame_Message(allMessages, tabInfos="", isHotkey=0) {
 		else {
 			firstChar := SubStr(messageToSend, 1, 1) ; Returns abc
 
-			SendInput,{VK%keyVK%}
+			SendInput,{VK%chatVK%}
 			Sleep 10
 
 			if firstChar not in /,`%,&,#,@
@@ -3824,7 +3870,7 @@ Send_InGame_Message(allMessages, tabInfos="", isHotkey=0) {
 					Break
 				else {
 					Sleep 10
-					if keyVK in 0x1,0x2,0x4,0x5,0x6,0x9C,0x9D,0x9E,0x9F ; Mouse buttons
+					if chatVK in 0x1,0x2,0x4,0x5,0x6,0x9C,0x9D,0x9E,0x9F ; Mouse buttons
 					{
 						keyDelay := A_KeyDelay, keyDuration := A_KeyDuration
 						SetKeyDelay, 10, 10
@@ -3834,7 +3880,7 @@ Send_InGame_Message(allMessages, tabInfos="", isHotkey=0) {
 						Sleep 10
 					}
 					else
-						SendInput,{VK%keyVK%}
+						SendInput,{VK%chatVK%}
 
 					firstChar := SubStr(messageToSend, 1, 1) ; Returns abc
 					if firstChar not in /,`%,&,#,@
@@ -3846,7 +3892,7 @@ Send_InGame_Message(allMessages, tabInfos="", isHotkey=0) {
 			}
 		}
 
-		Logs_Append(A_ThisFunc,, {PID:gamePID, Message:messageToSend, Chat_Key:chatKey, Chat_Key_VK:keyVK})
+		Logs_Append(A_ThisFunc, {PID:gamePID, Message:messageToSend})
 		BlockInput, Off
 	}
 }
@@ -4024,7 +4070,7 @@ Gui_Trades_Cycle_Func() {
 	}
 	GlobalValues.Insert("Dock_Window", matchHandlers[GlobalValues["Current_DockID"]])
 	Gui_Trades_Set_Position()
-	Logs_Append(A_ThisFunc,, {Dock_Window:GlobalValues.Dock_Window, Total_Matchs:matchHandlers.MaxIndex()})
+	Logs_Append(A_ThisFunc, {Dock_Window:GlobalValues.Dock_Window, Total_Matchs:matchHandlers.MaxIndex()})
 }
 
 Get_Matching_Windows_Infos(mode) {
@@ -4081,6 +4127,11 @@ Create_Tray_Menu() {
 	Menu, Tray, NoStandard
 	Menu, Tray, DeleteAll
 	Menu, Tray, Tip,% programName " v" programVersion
+	if ( ProgramValues.Debug ) {
+		Menu, Debug, Add,Open game folder,Open_Game_Folder
+		Menu, Debug, Add,Open local folder,Open_Local_Folder
+		Menu, Tray, Add, Debug,:Debug
+	}
 	Menu, Tray, Add,Settings, Gui_Settings
 	Menu, Tray, Add,About?, Gui_About
 	Menu, Tray, Add, 
@@ -4093,33 +4144,52 @@ Create_Tray_Menu() {
 	Menu, Tray, Add,Close, Exit_Func
 	Menu, Tray, Check,% "Mode: " GlobalValues["Trades_GUI_Mode"]
 	Menu, Tray, Icon
+	Return
+
+	Open_Game_Folder:
+		Run,% ProgramValues.Game_Folder,,UseErrorLevel
+		if (A_LastError) {
+			ErrorMsg := Get_System_Error_Codes(A_LastError)
+		}
+	Return
+
+	Open_Local_Folder:
+		Run,% ProgramValues.Local_Folder,,UseErrorLevel
+		if (A_LastError) {
+			ErrorMsg := Get_System_Error_Codes(A_LastError)
+		}
+	Return
 }
 
+Get_System_Error_Codes(Err) {
+	Msg := (Err=2)?("Code: " Err " (ERROR_FILE_NOT_FOUND) `nThe system cannot find the file specified.")
+		  :(Err=3)?("Code: " Err " (ERROR_PATH_NOT_FOUND) `nThe system cannot find the path specified.")
+		  :(Err=5)?("Code: " Err " (ERROR_ACCESS_DENIED) `nAccess is denied.")
+		  :("Code: " Err " `nReport to Microsoft System Error Codes to get description of the error.")
+
+	MsgBox, 4096,% ProgramValues.Name,% Msg
+}
+
+
 Run_As_Admin() {
-/*			Make sure the program is running as Admin
- *			Works for both .ahk and .exe
- *
- *			Credits to art
- *			https://autohotkey.com/board/topic/46526-run-as-administrator-xpvista7-a-isadmin-params-lib/?p=600596
+/*			If not running with as admin, reload with admin rights. 
 */
 	global ProgramValues, GlobalValues
 
 	programName := ProgramValues["Name"]
 
-	if ( A_IsAdmin = 1 ) {
+	IniWrite,% A_IsAdmin,% ProgramValues.Ini_File,PROGRAM,Is_Running_As_Admin
+
+	if ( A_IsAdmin ) {
 		Handle_CommandLine_Parameters()
 		IniWrite, 0,% ProgramValues.Ini_File,PROGRAM,Run_As_Admin_Attempts
 		Return
 	}
 
-	IniWrite,% A_IsAdmin,% ProgramValues.Ini_File,PROGRAM,Is_Running_As_Admin
 	IniRead, attempts,% ProgramValues.Ini_File,PROGRAM,Run_As_Admin_Attempts
-	if ( attempts = "ERROR" || attempts = "" )
-		attempts := 0
-	attempts++
+	attempts := (attempts=""||attempts="ERROR")?(0):(attempts), attempts++
 	IniWrite,% attempts,% ProgramValues.Ini_File,PROGRAM,Run_As_Admin_Attempts
 	if ( attempts > 2 ) {
-
 		IniWrite,0,% ProgramValues.Ini_File,PROGRAM,Run_As_Admin_Attempts
 		MsgBox, 4100,% "Running as admin failed!",% "It seems " programName " was unable to run with admin rights previously."
 		. "`nTry right clicking the executable and choose ""Run as Administrator""."
@@ -4131,7 +4201,7 @@ Run_As_Admin() {
 		. "`n    and the administrator disabled UAC."
 		. "`n`nWoud you like to continue without admin rights?"
 		. "`nYou will still be able to see the incoming trade requests."
-		. "`nThough, some of the GUI buttons and the hotkeys will not work."
+		. "`nThough, clicking the buttons and using hotkeys will not work."
 		IfMsgBox, Yes
 		{
 			return
@@ -4250,6 +4320,12 @@ Tray_Refresh() {
 }
 
 Reload_Func() {
+/*
+ *		Reload the application, including the command-line parameters.
+ * 
+ *		Credits to art for the DllCall to reload in admin mode.
+ *		https://autohotkey.com/board/topic/46526-run-as-administrator-xpvista7-a-isadmin-params-lib/?p=600596
+*/
 	global 0
 	global RunParameters
 
@@ -4264,6 +4340,8 @@ Reload_Func() {
 	Exit_Func("Reload","")
 	DllCall("shell32\ShellExecute" (A_IsUnicode ? "":"A"),uint,0,str,"RunAs",str,(A_IsCompiled ? A_ScriptFullPath
 	: A_AhkPath),str,(A_IsCompiled ? "": """" . A_ScriptFullPath . """" . A_Space) params,str,A_WorkingDir,int,1)
+	OnExit("Exit_Func", 0)
+	ExitApp
 
 	Sleep 10000
 }
