@@ -37,7 +37,6 @@ if ( InStr(FileExist(previousLocalFolder), "D") && localFolder != previousLocalF
 	FileRemoveDir,% localFolder, 1
 	FileMoveDir,% previousLocalFolder,% localFolder, 2
 }
-ExitApp
 
 ;		Random comment line to make things look pretty
 Close_Program_Instancies()
