@@ -3,7 +3,11 @@ SetWorkingDir, A_ScriptDir
 EnvGet, userprofile, userprofile
 
 global programName := "POE Trades Companion" 
-global iniFilePath := userprofile "\Documents\AutoHotKey\" programName "\Preferences.ini"
+
+global previousLocalFolder := userprofile "\Documents\AutoHotKey\" programName
+global localFolder := A_MyDocuments "\AutoHotKey\" programName
+
+global iniFilePath := localFolder "\Preferences.ini"
 global newVersionPath := "POE-TC-Updater.exe"
 global programDL := "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/" programName ".exe"
 
@@ -27,8 +31,13 @@ IniRead,autoUpdate,% iniFilePath,PROGRAM,AutoUpdate
 if ( autoUpdate = 1 )
 	Compare_Both_DateTime(autoUpdate, currentDay, currentMonth, currentYear, currentHour, currentMin, currentSec, previousDay, previousMonth, previousYear, previousHour, previousMin, previousSec)
 
-;		Remove older files from an earlier release
-FileRemoveDir,% userprofile "\Documents\AutoHotKey\POE Trades Helper\", 1
+;		Manage cross-releases files
+FileRemoveDir,% userprofile "\Documents\AutoHotKey\POE Trades Helper\", 1 ; Pre-1.9 local folder
+if ( InStr(FileExist(previousLocalFolder), "D") && localFolder != previousLocalFolder ) { ; Import pre-1.9.1 settings (Moved from \userprofile\Documents to A_MyDocuments)
+	FileRemoveDir,% localFolder, 1
+	FileMoveDir,% previousLocalFolder,% localFolder, 2
+}
+ExitApp
 
 ;		Random comment line to make things look pretty
 Close_Program_Instancies()

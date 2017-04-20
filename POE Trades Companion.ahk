@@ -49,7 +49,7 @@ Start_Script() {
 
 	ProgramValues := Object() ; Specific to the program's informations
 	ProgramValues.Insert("Name", "POE Trades Companion")
-	ProgramValues.Insert("Version", "1.9")
+	ProgramValues.Insert("Version", "1.9.1")
 	ProgramValues.Insert("Debug", 0)
 
 	ProgramValues.Insert("PID", DllCall("GetCurrentProcessId"))
