@@ -8,7 +8,7 @@ global previousLocalFolder := userprofile "\Documents\AutoHotKey\" programName
 global localFolder := A_MyDocuments "\AutoHotKey\" programName
 
 global iniFilePath := localFolder "\Preferences.ini"
-global newVersionPath := "POE-TC-Updater.exe"
+global newVersionPath := "POE-TC-NewVersion.exe"
 global programDL := "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/" programName ".exe"
 
 ;		Retrieving the current date and time, then separating into their own vars
