@@ -49,8 +49,8 @@ Start_Script() {
 
 	ProgramValues := Object() ; Specific to the program's informations
 	ProgramValues.Insert("Name", "POE Trades Companion")
-	ProgramValues.Insert("Version", "1.9.1")
-	ProgramValues.Insert("Debug", 0)
+	ProgramValues.Insert("Version", "1.9.2")
+	ProgramValues.Insert("Debug", 1)
 
 	ProgramValues.Insert("PID", DllCall("GetCurrentProcessId"))
 
@@ -3838,7 +3838,7 @@ Send_InGame_Message(allMessages, tabInfos="", specialEvent="") {
 		StringReplace, message%A_Index%, message%A_Index%, `%lastWhisper`%,% GlobalValues["Last_Whisper"], 1
 	}
 
-	if ( specialEven.isHotkey ) {
+	if ( specialEvent.isHotkey ) {
 		messageToSend := message1
 		if ( GlobalValues["Hotkeys_Mode"] = "Advanced" ) {
 			SendInput,%messageToSend%
