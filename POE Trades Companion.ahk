@@ -50,7 +50,7 @@ Start_Script() {
 	ProgramValues := Object() ; Specific to the program's informations
 	ProgramValues.Insert("Name", "POE Trades Companion")
 	ProgramValues.Insert("Version", "1.9")
-	ProgramValues.Insert("Debug", 1)
+	ProgramValues.Insert("Debug", 0)
 
 	ProgramValues.Insert("PID", DllCall("GetCurrentProcessId"))
 
@@ -401,7 +401,7 @@ Hotkeys_User_Handler(thisLabel) {
 		IniRead, textToSend,% iniFilePath,HOTKEYS,% key "_TEXT"
 	}
 	messages := [textToSend]
-	Send_InGame_Message(messages, tabInfos,1)
+	Send_InGame_Message(messages, tabInfos, {isHotkey:1})
 }
 
 ;==================================================================================================================
@@ -1088,6 +1088,20 @@ Gui_Trades(infosArray="", errorMsg="") {
 			Gosub, Gui_Trades_RemoveItem
 		}
 	Return
+
+	Gui_Trades_Write_Message:
+;		Write a message without sending it.
+		if ( GlobalValues["Trades_GUI_Button_Cancel"] ) {
+			GlobalValues.Insert("Trades_GUI_Button_Cancel", 0)
+			Return
+		}
+
+		RegExMatch(A_GuiControl, "\d+", btnID)
+		tabInfos := Gui_Trades_Get_Trades_Infos(currentActiveTab)
+		messages := Object()
+		messages.Push(GlobalValues["Button" btnID "_Message_1"])
+		Send_InGame_Message(messages, tabInfos, {doNotSend:1})
+	Return
 	
 	Gui_Trades_RemoveItem:
 ;		Empties the current tab content and close it upon pressing the button.
@@ -1720,7 +1734,7 @@ Gui_Settings() {
 			Gui, Add, Edit, xp+50 yp-3 w160 vTradesLabel%index% hwndTradesLabel%index%Handler gGui_Settings_Custom_Label,
 
 			Gui, Add, Text,% "xp-50" . " yp+33" . " hwndTradesAction" index "TextHandler",Action:
-			Gui, Add, DropDownList, xp+50 yp-3 w160 vTradesAction%index% hwndTradesAction%index%Handler gGui_Settings_Custom_Label,% "Clipboard Item|Send Message|Send Message + Close Tab"
+			Gui, Add, DropDownList, xp+50 yp-3 w160 vTradesAction%index% hwndTradesAction%index%Handler gGui_Settings_Custom_Label,% "Clipboard Item|Send Message|Send Message + Close Tab|Write Message"
 			Gui, Add, CheckBox,xp+170 yp+3 vTradesMarkCompleted%index% hwndTradesMarkCompleted%index%Handler,Mark the trade as completed?
 
 			Gui, Add, Edit,% "x" guiXWorkarea+10 . " yp+30 w50" . " hwndTradesMsgEditID" index "Handler" . " ReadOnly Limit1",1|2|3
@@ -2620,6 +2634,7 @@ Get_Control_ToolTip(controlName) {
 	. "`nClipboard Item:" A_Tab . A_Tab "Put the current tab's item into the clipboard."
 	. "`nSend Message:" A_Tab . A_Tab "Send all the messages you have set for this button."
 	. "`nClose Tab:" A_Tab . A_Tab "Close the currently active tab."
+	. "`nWrite Message:" A_Tab . A_Tab "Write a single message in chat, without sending it."
 
 	TradesMarkCompleted_TT := "Store the trade's infos in a local file."
 	. "`nThis will be later used for statistics purposes."
@@ -3800,7 +3815,7 @@ Delete_Old_Logs_Files(filesToKeep) {
 	}
 }
 
-Send_InGame_Message(allMessages, tabInfos="", isHotkey=0) {
+Send_InGame_Message(allMessages, tabInfos="", specialEvent="") {
 /*
  *			Sends a message in game
  *			Replaces all the %variables% into their actual content
@@ -3823,7 +3838,7 @@ Send_InGame_Message(allMessages, tabInfos="", isHotkey=0) {
 		StringReplace, message%A_Index%, message%A_Index%, `%lastWhisper`%,% GlobalValues["Last_Whisper"], 1
 	}
 
-	if ( isHotkey = 1 ) {
+	if ( specialEven.isHotkey ) {
 		messageToSend := message1
 		if ( GlobalValues["Hotkeys_Mode"] = "Advanced" ) {
 			SendInput,%messageToSend%
@@ -3884,7 +3899,8 @@ Send_InGame_Message(allMessages, tabInfos="", isHotkey=0) {
 					if firstChar not in /,`%,&,#,@
 						SendInput,/{BackSpace}
 					SendInput,{Raw}%messageToSend%
-					SendInput,{Enter}
+					if !( specialEvent.doNotSend )
+						SendInput,{Enter}
 					Sleep 10
 				}
 			}
