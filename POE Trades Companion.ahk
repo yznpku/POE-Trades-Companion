@@ -39,8 +39,6 @@ Start_Script() {
 	global POEGameArray, POEGameList
 
 ;	Values Assignation
-	EnvGet, userprofile, userprofile
-
 	TradesGUI_Controls := Object() ; TradesGUI controls handlers
 	ProgramFonts := Object() ; Fonts private to the program
 	RunParameters := Object() ; Run-time parameters
@@ -61,7 +59,7 @@ Start_Script() {
 	ProgramValues.Insert("GitHub", "https://github.com/lemasato/POE-Trades-Companion")
 	ProgramValues.Insert("Paypal", "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=BSWU76BLQBMCU")
 
-	ProgramValues.Insert("Local_Folder", userprofile "\Documents\AutoHotkey\" ProgramValues["Name"])
+	ProgramValues.Insert("Local_Folder", A_MyDocuments "\AutoHotkey\" ProgramValues["Name"])
 	ProgramValues.Insert("SFX_Folder", ProgramValues["Local_Folder"] "\SFX")
 	ProgramValues.Insert("Logs_Folder", ProgramValues["Local_Folder"] "\Logs")
 	ProgramValues.Insert("Skins_Folder", ProgramValues["Local_Folder"] "\Skins")
@@ -72,7 +70,7 @@ Start_Script() {
 	ProgramValues.Insert("Logs_File", ProgramValues["Logs_Folder"] "\" A_YYYY "-" A_MM "-" A_DD "_" A_Hour "-" A_Min "-" A_Sec ".txt")
 	ProgramValues.Insert("Changelogs_File", ProgramValues["Logs_Folder"] "\changelogs.txt")
 
-	ProgramValues.Insert("Game_Folder", userprofile "\Documents\my games\Path of Exile")
+	ProgramValues.Insert("Game_Folder", A_MyDocuments "\my games\Path of Exile")
 	ProgramValues.Insert("Game_Ini_File", ProgramValues.Game_Folder "\production_Config.ini")
 	ProgramValues.Insert("Game_Ini_File_Copy", ProgramValues.Local_Folder "\production_Config.ini")
 
