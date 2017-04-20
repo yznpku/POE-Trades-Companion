@@ -1,4 +1,8 @@
 \\
+--v1.9.3--
+- Fix: Using an hotkey would bring up the "replace PID" prompt.
+//
+\\
 --v1.9.1--
 - Added the button action "Write Message". Allows you to write a single message without sending it.
 - Fixed an issue where the tool would be unable to retrieve the game's key used to open the chat if the "My Documents" folder was not in the userprofile folder.
