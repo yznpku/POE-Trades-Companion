@@ -1,4 +1,10 @@
 \\
+--v1.9.4--
+- Enabling the "Overlay" mode will reset the last registered position to the top right of the monitor. This fixes a behaviour where the main interface would be stuck offscreen.
+- Messages are no longer sent if the chat key is invalid (thus opening random panels, using skills/flasks).
+- Fix: Messages ending with a space would not take the space in consideration when sending it in-game. For this change to take place, you will be required to open then close  [Settings] tray menu after updating.
+//
+\\
 --v1.9.3--
 - Fix: Using an hotkey would bring up the "replace PID" prompt.
 //
