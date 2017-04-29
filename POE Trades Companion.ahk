@@ -49,7 +49,7 @@ Start_Script() {
 
 	ProgramValues := Object() ; Specific to the program's informations
 	ProgramValues.Insert("Name", "POE Trades Companion")
-	ProgramValues.Insert("Version", "1.9.3")
+	ProgramValues.Insert("Version", "1.9.4")
 	ProgramValues.Insert("Debug", 0)
 
 	ProgramValues.Insert("PID", DllCall("GetCurrentProcessId"))
@@ -163,11 +163,7 @@ Restart_Monitor_Game_Logs() {
 	global ProgramValues
 	global guiTradesHandler
 
-	iniFilePath := ProgramValues["Ini_File"]
-
-	WinGetPos, xpos, ypos, , ,% "ahk_id " GuiTradesHandler
-	IniWrite,% xpos,% iniFilePath,PROGRAM,X_POS
-	IniWrite,% ypos,% iniFilePath,PROGRAM,Y_POS
+	Gui_Trades_Save_Position()
 	Monitor_Game_Logs("CLOSE")
 	Monitor_Game_Logs()
 }
@@ -470,7 +466,6 @@ Gui_Trades(infosArray="", errorMsg="") {
 			SetTimer, Remove_TrayTip,-3000
 		}
 
-
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *									System TradesGUI													*
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -478,7 +473,7 @@ Gui_Trades(infosArray="", errorMsg="") {
 		if ( activeSkin = "System" ) {
 ;			Header
 			Gui, Font,s%fontSize%,% fontName
-			Gui, Add, Picture,% "x" borderSize . " y" borderSize . " w" guiWidth-borderSize . " h" 30*guiScale . " +BackgroundTrans",% programSkinFolderPath "\" GlobalValues["Active_Skin"] "\Header.png"
+			Gui, Add, Picture,% "x" borderSize . " y" borderSize . " w" guiWidth-borderSize . " h" 30*guiScale . " +BackgroundTrans",% programSkinFolderPath "\" activeSkin "\Header.png"
 			Gui, Add, Picture,% "x" borderSize+10*guiScale . " y" borderSize+5*guiScale . " w" 22*guiScale . " h" 22*guiScale . " +BackgroundTrans",% programSkinFolderPath "\" activeSkin "\icon.png"
 			Gui, Add, Text,% "x" borderSize+(35*guiScale) . " y" borderSize . " w" guiWidth-(100*guiScale) . " h" 28*guiScale " hwndguiTradesTitleHandler gGui_Trades_Move c" colorTitleInactive . " +BackgroundTrans +0x200 ",% programName " - Queued Trades: 0"
 			Gui, Add, Text,% "x" guiWidth-(65*guiScale) . " y" borderSize . " w" 65*guiScale . " h" 28*guiScale " hwndguiTradesMinimizeHandler gGui_Trades_Minimize c" colorTitleInactive . " +BackgroundTrans +0x200",% "MINIMIZE"
@@ -1231,6 +1226,7 @@ Gui_Trades_Mode_Func(thisMenuItem) {
 /*			Switch between Overlay and Window mode
 */
 	global GlobalValues, ProgramValues
+	global tradesGuiWidth
 
 	iniFilePath := ProgramValues["Ini_File"]
 
@@ -1238,6 +1234,7 @@ Gui_Trades_Mode_Func(thisMenuItem) {
 		Menu, Tray, UnCheck,% "Mode: Window"
 		Menu, Tray, Check,% "Mode: Overlay"
 		GlobalValues.Insert("Trades_GUI_Mode", "Overlay")
+		Gui_Trades_Save_Position(A_ScreenWidth-tradesGuiWidth, 0)
 	}
 	else if ( thisMenuItem = "Mode: Window") {
 		Menu, Tray, UnCheck,% "Mode: Overlay"
@@ -2068,48 +2065,32 @@ return
 ;	Support Message
 		IniWrite,% MessageSupportToggle,% iniFilePath,SETTINGS,Support_Text_Toggle
 ;	Hotkeys
-	;	1
-		IniWrite,% Hotkey1_Toggle,% iniFilePath,HOTKEYS,HK1_Toggle
-		IniWrite,% Hotkey1_Text,% iniFilePath,HOTKEYS,HK1_Text
-		IniWrite,% Hotkey1_KEY,% iniFilePath,HOTKEYS,HK1_KEY
-		IniWrite,% Hotkey1_CTRL,% iniFilePath,HOTKEYS,HK1_CTRL
-		IniWrite,% Hotkey1_ALT,% iniFilePath,HOTKEYS,HK1_ALT
-		IniWrite,% Hotkey1_SHIFT,% iniFilePath,HOTKEYS,HK1_SHIFT
-	;	2
-		IniWrite,% Hotkey2_Toggle,% iniFilePath,HOTKEYS,HK2_Toggle
-		IniWrite,% Hotkey2_Text,% iniFilePath,HOTKEYS,HK2_Text
-		IniWrite,% Hotkey2_KEY,% iniFilePath,HOTKEYS,HK2_KEY
-		IniWrite,% Hotkey2_CTRL,% iniFilePath,HOTKEYS,HK2_CTRL
-		IniWrite,% Hotkey2_ALT,% iniFilePath,HOTKEYS,HK2_ALT
-		IniWrite,% Hotkey2_SHIFT,% iniFilePath,HOTKEYS,HK2_SHIFT
-	;	3
-		IniWrite,% Hotkey3_Toggle,% iniFilePath,HOTKEYS,HK3_Toggle
-		IniWrite,% Hotkey3_Text,% iniFilePath,HOTKEYS,HK3_Text
-		IniWrite,% Hotkey3_KEY,% iniFilePath,HOTKEYS,HK3_KEY
-		IniWrite,% Hotkey3_CTRL,% iniFilePath,HOTKEYS,HK3_CTRL
-		IniWrite,% Hotkey3_ALT,% iniFilePath,HOTKEYS,HK3_ALT
-		IniWrite,% Hotkey3_SHIFT,% iniFilePath,HOTKEYS,HK3_SHIFT
-	;	4
-		IniWrite,% Hotkey4_Toggle,% iniFilePath,HOTKEYS,HK4_Toggle
-		IniWrite,% Hotkey4_Text,% iniFilePath,HOTKEYS,HK4_Text
-		IniWrite,% Hotkey4_KEY,% iniFilePath,HOTKEYS,HK4_KEY
-		IniWrite,% Hotkey4_CTRL,% iniFilePath,HOTKEYS,HK4_CTRL
-		IniWrite,% Hotkey4_ALT,% iniFilePath,HOTKEYS,HK4_ALT
-		IniWrite,% Hotkey4_SHIFT,% iniFilePath,HOTKEYS,HK4_SHIFT
-	;	5
-		IniWrite,% Hotkey5_Toggle,% iniFilePath,HOTKEYS,HK5_Toggle
-		IniWrite,% Hotkey5_Text,% iniFilePath,HOTKEYS,HK5_Text
-		IniWrite,% Hotkey5_KEY,% iniFilePath,HOTKEYS,HK5_KEY
-		IniWrite,% Hotkey5_CTRL,% iniFilePath,HOTKEYS,HK5_CTRL
-		IniWrite,% Hotkey5_ALT,% iniFilePath,HOTKEYS,HK5_ALT
-		IniWrite,% Hotkey5_SHIFT,% iniFilePath,HOTKEYS,HK5_SHIFT
-	;	6
-		IniWrite,% Hotkey6_Toggle,% iniFilePath,HOTKEYS,HK6_Toggle
-		IniWrite,% Hotkey6_Text,% iniFilePath,HOTKEYS,HK6_Text
-		IniWrite,% Hotkey6_KEY,% iniFilePath,HOTKEYS,HK6_KEY
-		IniWrite,% Hotkey6_CTRL,% iniFilePath,HOTKEYS,HK6_CTRL
-		IniWrite,% Hotkey6_ALT,% iniFilePath,HOTKEYS,HK6_ALT
-		IniWrite,% Hotkey6_SHIFT,% iniFilePath,HOTKEYS,HK6_SHIFT
+		Loop 6 {
+			index := A_Index
+			KEY := "HK" index "_Toggle"
+			CONTENT := (index=1)?(Hotkey1_Toggle):(index=2)?(Hotkey2_Toggle):(index=3)?(Hotkey3_Toggle):(index=4)?(Hotkey4_Toggle):(index=5)?(Hotkey5_Toggle):(index=6)?(Hotkey6_Toggle):("ERROR")
+			IniWrite,% CONTENT,% iniFilePath,HOTKEYS,% KEY
+
+			KEY := "HK" index "_KEY"
+			CONTENT := (index=1)?(Hotkey1_KEY):(index=2)?(Hotkey2_KEY):(index=3)?(Hotkey3_KEY):(index=4)?(Hotkey4_KEY):(index=5)?(Hotkey5_KEY):(index=6)?(Hotkey6_KEY):("ERROR")
+			IniWrite,% CONTENT,% iniFilePath,HOTKEYS_ADVANCED,% KEY
+
+			KEY := "HK" index "_Text"
+			CONTENT := (index=1)?(Hotkey1_Text):(index=2)?(Hotkey2_Text):(index=3)?(Hotkey3_Text):(index=4)?(Hotkey4_Text):(index=5)?(Hotkey5_Text):(index=6)?(Hotkey6_Text):("ERROR")
+			IniWrite,% """" CONTENT """",% iniFilePath,HOTKEYS_ADVANCED,% KEY ; Quotes allows us to keep the spaces on IniRead
+
+			KEY := "HK" index "_CTRL"
+			CONTENT := (index=1)?(Hotkey1_CTRL):(index=2)?(Hotkey2_CTRL):(index=3)?(Hotkey3_CTRL):(index=4)?(Hotkey4_CTRL):(index=5)?(Hotkey5_CTRL):(index=6)?(Hotkey6_CTRL):("ERROR")
+			IniWrite,% CONTENT,% iniFilePath,HOTKEYS,% KEY
+
+			KEY := "HK" index "_ALT"
+			CONTENT := (index=1)?(Hotkey1_ALT):(index=2)?(Hotkey2_ALT):(index=3)?(Hotkey3_ALT):(index=4)?(Hotkey4_ALT):(index=5)?(Hotkey5_ALT):(index=6)?(Hotkey6_ALT):("ERROR")
+			IniWrite,% CONTENT,% iniFilePath,HOTKEYS,% KEY
+
+			KEY := "HK" index "_SHIFT"
+			CONTENT := (index=1)?(Hotkey1_SHIFT):(index=2)?(Hotkey2_SHIFT):(index=3)?(Hotkey3_SHIFT):(index=4)?(Hotkey4_SHIFT):(index=5)?(Hotkey5_SHIFT):(index=6)?(Hotkey6_SHIFT):("ERROR")
+			IniWrite,% CONTENT,% iniFilePath,HOTKEYS,% KEY
+		}
 ;	Hotkeys Advanced
 		Loop 16 {
 			index := A_Index
@@ -2123,7 +2104,7 @@ return
 
 			KEY := "HK" index "_ADV_Text"
 			CONTENT := (index=1)?(HotkeyAdvanced1_Text):(index=2)?(HotkeyAdvanced2_Text):(index=3)?(HotkeyAdvanced3_Text):(index=4)?(HotkeyAdvanced4_Text):(index=5)?(HotkeyAdvanced5_Text):(index=6)?(HotkeyAdvanced6_Text):(index=7)?(HotkeyAdvanced7_Text):(index=8)?(HotkeyAdvanced8_Text):(index=9)?(HotkeyAdvanced9_Text):(index=10)?(HotkeyAdvanced10_Text):(index=11)?(HotkeyAdvanced11_Text):(index=12)?(HotkeyAdvanced12_Text):(index=13)?(HotkeyAdvanced13_Text):(index=14)?(HotkeyAdvanced14_Text):(index=15)?(HotkeyAdvanced15_Text):(index=16)?(HotkeyAdvanced16_Text):("ERROR")
-			IniWrite,% CONTENT,% iniFilePath,HOTKEYS_ADVANCED,% KEY
+			IniWrite,% """" CONTENT """",% iniFilePath,HOTKEYS_ADVANCED,% KEY ; Quotes allows us to keep the spaces on IniRead
 		}
 ;	Buttons Actions
 		Loop 9 {
@@ -2155,15 +2136,15 @@ return
 
 			KEY := "Button" index "_Message_1"
 			CONTENT := (index=1)?(TradesMsg1_1):(index=2)?(TradesMsg1_2):(index=3)?(TradesMsg1_3):(index=4)?(TradesMsg1_4):(index=5)?(TradesMsg1_5):(index=6)?(TradesMsg1_6):(index=7)?(TradesMsg1_7):(index=8)?(TradesMsg1_8):(index=9)?(TradesMsg1_9):("ERROR")
-			IniWrite,% CONTENT,% iniFilePath,CUSTOMIZATION_BUTTONS_ACTIONS,% KEY
+			IniWrite,% """" CONTENT """",% iniFilePath,CUSTOMIZATION_BUTTONS_ACTIONS,% KEY ; Quotes allows us to keep the spaces on IniRead
 
 			KEY := "Button" index "_Message_2"
 			CONTENT := (index=1)?(TradesMsg2_1):(index=2)?(TradesMsg2_2):(index=3)?(TradesMsg2_3):(index=4)?(TradesMsg2_4):(index=5)?(TradesMsg2_5):(index=6)?(TradesMsg2_6):(index=7)?(TradesMsg2_7):(index=8)?(TradesMsg2_8):(index=9)?(TradesMsg2_9):("ERROR")
-			IniWrite,% CONTENT,% iniFilePath,CUSTOMIZATION_BUTTONS_ACTIONS,% KEY
+			IniWrite,% """" CONTENT """",% iniFilePath,CUSTOMIZATION_BUTTONS_ACTIONS,% KEY ; Quotes allows us to keep the spaces on IniRead
 
 			KEY := "Button" index "_Message_3"
 			CONTENT := (index=1)?(TradesMsg3_1):(index=2)?(TradesMsg3_2):(index=3)?(TradesMsg3_3):(index=4)?(TradesMsg3_4):(index=5)?(TradesMsg3_5):(index=6)?(TradesMsg3_6):(index=7)?(TradesMsg3_7):(index=8)?(TradesMsg3_8):(index=9)?(TradesMsg3_9):("ERROR")
-			IniWrite,% CONTENT,% iniFilePath,CUSTOMIZATION_BUTTONS_ACTIONS,% KEY
+			IniWrite,% """" CONTENT """",% iniFilePath,CUSTOMIZATION_BUTTONS_ACTIONS,% KEY ; Quotes allows us to keep the spaces on IniRead
 		}
 ;	Appearance Tab
 		IniWrite,% ActivePreset,% iniFilePath,CUSTOMIZATION_APPEARANCE,Active_Preset
@@ -3830,6 +3811,14 @@ Send_InGame_Message(allMessages, tabInfos="", specialEvent="") {
 	message1 := allMessages[1], message2 := allMessages[2], message3 := allMessages[3]
 
 	chatVK := GameValues.Chat_VK
+	if (!chatVK) {
+		MsgBox, 4096,% programName " - Operation Cancelled.",% "Could not detect the chat key!"
+		. "`nPlease send me an archive containing the Logs folder."
+		. "`nYou can find links to GitHub / GGG / Reddit in the [About?] tray menu."
+		. "`n`n(The local folder containing the Logs folder will open upon closing this box)."
+		Run, % ProgramValues.Local_Folder
+		Return 1
+	}
 
 	Loop 3 { ; Include the trade variable content into the variables.
 		StringReplace, message%A_Index%, message%A_Index%, `%buyerName`%, %buyerName%, 1
@@ -3863,7 +3852,7 @@ Send_InGame_Message(allMessages, tabInfos="", specialEvent="") {
 			if ( handlersArray.MaxIndex() = "" ) {
 				Loop 2
 					TrayTip,% programName,% "The PID assigned to the tab does not belong to a POE instance, and no POE instance was found!`n`nPlease click the button again after restarting the game."
-				return 1
+				Return 1
 			}
 			else {
 				newPID := GUI_Replace_PID(handlersArray, PIDArray)
@@ -4360,7 +4349,7 @@ Reload_Func() {
 	Sleep 10000
 }
 
-Gui_Trades_Save_Position() {
+Gui_Trades_Save_Position(X="FALSE", Y="FALSE") {
 ;		Save the current X and Y positions of the Trades GUI.
 ;		Only if the GUI is in Winodw Mode.
 	global GlobalValues, ProgramValues
@@ -4368,10 +4357,16 @@ Gui_Trades_Save_Position() {
 
 	iniFilePath := ProgramValues.Ini_File
 
-	if ( GlobalValues.Trades_GUI_Mode = "Window" ) {
-		WinGetPos, xpos, ypos, , ,% "ahk_id " GuiTradesHandler
-		IniWrite,% xpos,% iniFilePath,PROGRAM,X_POS
-		IniWrite,% ypos,% iniFilePath,PROGRAM,Y_POS
+	if ( X != "FALSE" && Y != "FALSE" ) {
+		IniWrite,% X,% iniFilePath,PROGRAM,X_POS
+		IniWrite,% Y,% iniFilePath,PROGRAM,Y_POS
+	}
+	else {
+		if ( GlobalValues.Trades_GUI_Mode = "Window" ) {
+			WinGetPos, xpos, ypos, , ,% "ahk_id " GuiTradesHandler
+			IniWrite,% xpos,% iniFilePath,PROGRAM,X_POS
+			IniWrite,% ypos,% iniFilePath,PROGRAM,Y_POS
+		}
 	}
 }
 
