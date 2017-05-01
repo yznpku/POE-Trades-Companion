@@ -414,15 +414,17 @@ Gui_Trades(infosArray="", errorMsg="") {
 	static
 	global ProgramValues, GlobalValues, TradesGUI_Controls
 	global GuiTradesHandler, TradesGuiHeight, TradesGuiWidth
-	iniFilePath := ProgramValues["Ini_File"]
-	programName := ProgramValues["Name"]
-	programSkinFolderPath := ProgramValues["Skins_Folder"]
+	iniFilePath := ProgramValues.Ini_File
+	programName := ProgramValues.Name
+	programSkinFolderPath := ProgramValues.Skins_Folder
 
-	activeSkin := GlobalValues["Active_Skin"]
-	guiScale := GlobalValues["Scale_Multiplier"]
-	IniRead, skinFontSize,% ProgramValues["Ini_File"],CUSTOMIZATION_APPEARANCE,Font_Size_Custom
-	fontSize := (GlobalValues["Font_Size_Mode"]="Custom")?(GlobalValues["Font_Size_Custom"]):(activeFont!="System")?(skinFontSize*guiScale):(8*guiScale)
-	fontName := (GlobalValues["Font"]="System")?(""):(GlobalValues["Font"])
+	activeSkin := GlobalValues.Active_Skin
+	guiScale := GlobalValues.Scale_Multiplier
+
+	IniRead, fontSizeAuto,% ProgramValues.Fonts_Folder "\Settings.ini",FONTS,% GlobalValues.Font
+	fontName := (GlobalValues.Font="System")?(""):(GlobalValues["Font"])
+	fontSize := (GlobalValues.Font_Size_Mode="Custom")?(GlobalValues.Font_Size_Custom)
+			   :(fontSizeAuto*guiScale)
 
 	colorTitleActive := GlobalValues["Font_Color_Title_Active"]
 	colorTitleInactive := GlobalValues["Font_Color_Title_Inactive"]
@@ -3931,6 +3933,7 @@ Extract_Font_Files() {
 	programFontFolderPath := ProgramValues["Fonts_Folder"]
 
 	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\Fonts\Fontin-SmallCaps.ttf,% programFontFolderPath "\Fontin-SmallCaps.ttf"
+	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\Fonts\Settings.ini,% programFontFolderPath "\Settings.ini"
 }
 
 Extract_Skin_Files() {
