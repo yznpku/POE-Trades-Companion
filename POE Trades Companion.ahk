@@ -54,6 +54,7 @@ Start_Script() {
 	ProgramValues.Insert("Name", "POE Trades Companion")
 	ProgramValues.Insert("Version", "1.9.4")
 	ProgramValues.Insert("Debug", 0)
+	ProgramValues.Debug := (A_IsCompiled)?(0):(ProgramValues.Debug) ; Prevent from enabling debug on compiled executable
 
 	ProgramValues.Insert("PID", DllCall("GetCurrentProcessId"))
 
@@ -695,8 +696,9 @@ Gui_Trades(infosArray="", errorMsg="") {
 						   :(currentActiveTab) ; Leave it as it is
 
 ;		Update the fields with the trade infos
-		tabsList := ""
+		tabsList := "", isGuiActive := false
 		for key, element in infosArray.BUYERS {
+			isGuiActive := true
 			tabsList .= "|" key
 			GuiControl, Trades:,% buyerSlot%key%Handler,% infosArray.BUYERS[key]
 			GuiControl, Trades:,% itemSlot%key%Handler,% infosArray.ITEMS[key]
@@ -712,7 +714,7 @@ Gui_Trades(infosArray="", errorMsg="") {
 		}
 
 ;		Handle some GUI elements
-		if (tabsCount) {
+		if (isGuiActive) {
 			showState := "Show"
 			GuiControl, Trades:Hide,% ErrorMsgTextHandler
 			GuiControl, Trades: +c%colorTitleActive%,% guiTradesTitleHandler
@@ -725,8 +727,8 @@ Gui_Trades(infosArray="", errorMsg="") {
 			GuiControl, Trades: +c%colorTitleInactive%,% guiTradesTitleHandler
 			GuiControl, Trades: +c%colorTitleInactive%,% guiTradesMinimizeHandler
 		}
-		clickThroughState := ( GlobalValues.Trades_Click_Through && !tabsCount )?("+"):("-")
-		transparency := (!tabsCount)?(GlobalValues.Transparency):(GlobalValues.Transparency_Active)
+		clickThroughState := ( GlobalValues.Trades_Click_Through && !isGuiActive )?("+"):("-")
+		transparency := (!isGuiActive)?(GlobalValues.Transparency):(GlobalValues.Transparency_Active)
 		Gui, Trades: %clickThroughState%E0x20
 		WinSet, Transparent,% transparency,% "ahk_id " guiTradesHandler
 		GuiControl, Trades:Text,% guiTradesTitleHandler,% programName " - Queued Trades: " tabsCount ; Update the title
@@ -826,11 +828,11 @@ Gui_Trades(infosArray="", errorMsg="") {
 			}
 		}
 
-		if ( GlobalValues.Trades_Auto_Minimize && !tabsCount && tradesGuiHeight != guiHeightMin && errorMsg != "EXE_NOT_FOUND" ) {
+		if ( GlobalValues.Trades_Auto_Minimize && !isGuiActive && tradesGuiHeight != guiHeightMin && errorMsg != "EXE_NOT_FOUND" ) {
 			GlobalValues.Trades_GUI_Minimized := 0
 			GoSub, Gui_Trades_Minimize
 		}
-		if ( GlobalValues.Trades_Auto_UnMinimize && tabsCount && tradesGuiHeight != guiHeight ) {
+		if ( GlobalValues.Trades_Auto_UnMinimize && isGuiActive && tradesGuiHeight != guiHeight ) {
 			GlobalValues.Trades_GUI_Minimized := 1
 			GoSub, Gui_Trades_Minimize
 		}
