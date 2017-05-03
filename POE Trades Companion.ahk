@@ -44,6 +44,9 @@ Start_Script() {
 	RunParameters := Object() ; Run-time parameters
 	GameValues := Object() ; Settings from the game .ini
 
+	Handle_CommandLine_Parameters()
+	MyDocuments := (RunParameters.MyDocuments)?(RunParameters.MyDocuments):(A_MyDocuments)
+
 	GlobalValues := Object() ; Preferences.ini keys + some other shared global variables
 	GlobalValues.Insert("Screen_DPI", Get_DPI_Factor())
 
@@ -59,7 +62,7 @@ Start_Script() {
 	ProgramValues.Insert("GitHub", "https://github.com/lemasato/POE-Trades-Companion")
 	ProgramValues.Insert("Paypal", "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=BSWU76BLQBMCU")
 
-	ProgramValues.Insert("Local_Folder", A_MyDocuments "\AutoHotkey\" ProgramValues["Name"])
+	ProgramValues.Insert("Local_Folder", MyDocuments "\AutoHotkey\" ProgramValues["Name"])
 	ProgramValues.Insert("SFX_Folder", ProgramValues["Local_Folder"] "\SFX")
 	ProgramValues.Insert("Logs_Folder", ProgramValues["Local_Folder"] "\Logs")
 	ProgramValues.Insert("Skins_Folder", ProgramValues["Local_Folder"] "\Skins")
@@ -70,7 +73,7 @@ Start_Script() {
 	ProgramValues.Insert("Logs_File", ProgramValues["Logs_Folder"] "\" A_YYYY "-" A_MM "-" A_DD "_" A_Hour "-" A_Min "-" A_Sec ".txt")
 	ProgramValues.Insert("Changelogs_File", ProgramValues["Logs_Folder"] "\changelogs.txt")
 
-	ProgramValues.Insert("Game_Folder", A_MyDocuments "\my games\Path of Exile")
+	ProgramValues.Insert("Game_Folder", MyDocuments "\my games\Path of Exile")
 	ProgramValues.Insert("Game_Ini_File", ProgramValues.Game_Folder "\production_Config.ini")
 	ProgramValues.Insert("Game_Ini_File_Copy", ProgramValues.Local_Folder "\production_Config.ini")
 
@@ -521,6 +524,8 @@ Gui_Trades(infosArray="", errorMsg="") {
 				TradesGUI_Controls.Insert("Time_Slot_" index,TimeSlot%index%Handler)
 				TradesGUI_Controls.Insert("PID_Slot_" index,PIDSlot%index%Handler)
 
+				;__TO_BE_ADDED__ New buttons, smaller with a specific action
+				; Gui, Add, Button,% "xm+10" . " y120" . " w20 h20",->
 				;			Customizable Buttons.
 				Loop 9 {
 					btnW := (GlobalValues["Button" A_Index "_SIZE"]="Small")?(124):(GlobalValues["Button" A_Index "_SIZE"]="Medium")?(254):(GlobalValues["Button" A_Index "_SIZE"]="Large")?(384):("ERROR")
@@ -678,7 +683,7 @@ Gui_Trades(infosArray="", errorMsg="") {
 	}
 	if ( errorMsg = "UPDATE" || errorMsg = "CREATE" ) {
 
-		tabsCount := infosArray.BUYERS.Length()
+		tabsCount := (infosArray.BUYERS.Length())?(infosArray.BUYERS.Length()):(0) ; If empty, set to 0
 		if (activeSkin="System") {
 			currentActiveTab := (Gui_Trades_Get_Tab_ID())?(Gui_Trades_Get_Tab_ID()):(currentActiveTab) ; Retain the value if the return is empty
 		}
@@ -707,19 +712,18 @@ Gui_Trades(infosArray="", errorMsg="") {
 		}
 
 ;		Handle some GUI elements
-		if ( !tabsCount ) {
-			tabsCount := 0 ; In case the variable is empty
+		if (tabsCount) {
+			showState := "Show"
+			GuiControl, Trades:Hide,% ErrorMsgTextHandler
+			GuiControl, Trades: +c%colorTitleActive%,% guiTradesTitleHandler
+			GuiControl, Trades: +c%colorTitleActive%,% guiTradesMinimizeHandler
+		}
+		else {
 			showState := "Hide"
 			GuiControl, Trades:,% ErrorMsgTextHandler,% errorTxt
 			GuiControl, Trades:Show,% ErrorMsgTextHandler
 			GuiControl, Trades: +c%colorTitleInactive%,% guiTradesTitleHandler
 			GuiControl, Trades: +c%colorTitleInactive%,% guiTradesMinimizeHandler
-		}
-		else {
-			showState := "Show"
-			GuiControl, Trades:Hide,% ErrorMsgTextHandler
-			GuiControl, Trades: +c%colorTitleActive%,% guiTradesTitleHandler
-			GuiControl, Trades: +c%colorTitleActive%,% guiTradesMinimizeHandler
 		}
 		clickThroughState := ( GlobalValues.Trades_Click_Through && !tabsCount )?("+"):("-")
 		transparency := (!tabsCount)?(GlobalValues.Transparency):(GlobalValues.Transparency_Active)
@@ -732,10 +736,9 @@ Gui_Trades(infosArray="", errorMsg="") {
 		GuiControl, Trades:%showState%,% TabUnderlineHandler ; Only used for skins
 
 		if ( activeSkin != "System" ) { ; Remove the deleted tab image.
-			tabsCount++
-			GuiControl, Trades:Hide,% TabIMG%tabsCount%Handler
-			GuiControl, Trades:Hide,% TabTXT%tabsCount%Handler
-			tabsCount--
+			tabDeleted := tabCount+1
+			GuiControl, Trades:Hide,% TabIMG%tabDeleted%Handler
+			GuiControl, Trades:Hide,% TabTXT%tabDeleted%Handler
 
 			Loop 9 { ; Hide or show the controls.
 				GuiControl, Trades:%showState%,% CustomBtn%A_Index%Handler
@@ -823,11 +826,11 @@ Gui_Trades(infosArray="", errorMsg="") {
 			}
 		}
 
-		if ( GlobalValues.Trades_Auto_Minimize && tabsCount = 0 && tradesGuiHeight != guiHeightMin && errorMsg != "EXE_NOT_FOUND" ) {
+		if ( GlobalValues.Trades_Auto_Minimize && !tabsCount && tradesGuiHeight != guiHeightMin && errorMsg != "EXE_NOT_FOUND" ) {
 			GlobalValues.Trades_GUI_Minimized := 0
 			GoSub, Gui_Trades_Minimize
 		}
-		if ( GlobalValues.Trades_Auto_UnMinimize && tabsCount > 0 && tradesGuiHeight != guiHeight ) {
+		if ( GlobalValues.Trades_Auto_UnMinimize && tabsCount && tradesGuiHeight != guiHeight ) {
 			GlobalValues.Trades_GUI_Minimized := 1
 			GoSub, Gui_Trades_Minimize
 		}
@@ -1083,6 +1086,7 @@ Gui_Trades(infosArray="", errorMsg="") {
 				Send_InGame_Message(messages, tabInfos)
 			}
 			Gosub, Gui_Trades_RemoveItem
+			;__TO_BE_ADDED__ Append the trade infos to a file.
 		}
 	Return
 
@@ -4187,7 +4191,6 @@ Run_As_Admin() {
 	IniWrite,% A_IsAdmin,% ProgramValues.Ini_File,PROGRAM,Is_Running_As_Admin
 
 	if ( A_IsAdmin ) {
-		Handle_CommandLine_Parameters()
 		IniWrite, 0,% ProgramValues.Ini_File,PROGRAM,Run_As_Admin_Attempts
 		Return
 	}
@@ -4270,6 +4273,9 @@ Handle_CommandLine_Parameters() {
 				ExitApp
 			}
 		}
+		else if RegExMatch(param, "/MyDocuments=(.*)", found) {
+			RunParameters.Insert("MyDocuments", found1)
+		}
 	}
 }
 
@@ -4341,6 +4347,12 @@ Reload_Func() {
 	{
 		param := RegExReplace(%A_Index%, "(.*)=(.*)", "$1=""$2""") ; Add quotation mark to the parameter. Missing quotation marks would incorectly parse the run parameters on next load.
 		params .= A_Space . param
+	}
+	if !(A_IsAdmin) {
+		params .= A_Space . "/MyDocuments=" A_MyDocuments
+	}
+	else {
+		params .= A_Space . "/MyDocuments=" RunParameters.MyDocuments
 	}
 
 	Exit_Func("Reload","")
