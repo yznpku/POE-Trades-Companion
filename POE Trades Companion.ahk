@@ -1041,6 +1041,8 @@ Gui_Trades(infosArray="", errorMsg="") {
 		if ( GlobalValues["Trades_GUI_Mode"] = "Window" ) {
 			PostMessage, 0xA1, 2,,,% "ahk_id " guiTradesHandler
 		}
+		KeyWait, LButton, Up
+		Gui_Trades_Save_Position()
 	Return 
 
 	Gui_Trades_Clipboard_Item:
