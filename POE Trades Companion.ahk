@@ -747,8 +747,11 @@ Gui_Trades(infosArray="", errorMsg="") {
 		clickThroughState := ( GlobalValues.Trades_Click_Through && !isGuiActive )?("+"):("-")
 		transparency := (!isGuiActive)?(GlobalValues.Transparency):(GlobalValues.Transparency_Active)
 		Gui, Trades: %clickThroughState%E0x20
-		WinSet, Transparent,% transparency,% A_Gui ; Using A_Gui instead of the Gui's handle fixes an issue where the transparency would not be applied with EXE_NOT_FOUND.
-												   ; Though, it seems that activating another window prior to applying the transparency allows us to use the handler.
+		if WinExist(A_Gui)
+			WinSet, Transparent,% transparency,% A_Gui ; Using A_Gui instead of the Gui's handle fixes an issue where the transparency would not be applied with EXE_NOT_FOUND.
+												   	   ; Though, it seems that activating another window prior to applying the transparency allows us to use the handler.
+		else
+			WinSet, Transparent,% transparency,% "ahk_id " guiTradesHandler ; Allows using the right handler when calling Gui_Trades_Redraw()
 		GuiControl, Trades:Text,% guiTradesTitleHandler,% programName " - Queued Trades: " tabsCount ; Update the title
 		GuiControl, Trades:%showState%,Tab ; Only used when no skin is applied
 		GuiControl, Trades:%showState%,% GoLeftHandler ; Only used for skins
@@ -881,7 +884,8 @@ Gui_Trades(infosArray="", errorMsg="") {
 		try	Gui_Trades_Set_Position()
 	}
 
-	WinSet, Redraw, ,% A_Gui
+	WinSet, Redraw, ,% "ahk_id " guiTradesHandler
+	WinSet, AlwaysOnTop, On,% "ahk_id " guiTradesHandler
 	IniWrite,% tabsCount,% iniFilePath,PROGRAM,Tabs_Number
 
 	GlobalValues.Trades_GUI_Current_Active_Tab := currentActiveTab
@@ -4179,6 +4183,7 @@ Create_Tray_Menu() {
 	Return
 
 	Delete_Local_Folder:
+		FileRemoveDir,% ProgramValues.Local_Folder, 1
 		Reload_Func()
 	Return
 
