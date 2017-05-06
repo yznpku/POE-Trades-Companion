@@ -526,7 +526,24 @@ Gui_Trades(infosArray="", errorMsg="") {
 				TradesGUI_Controls.Insert("PID_Slot_" index,PIDSlot%index%Handler)
 
 				;__TO_BE_ADDED__ New buttons, smaller with a specific action
-				; Gui, Add, Button,% "xm+10" . " y120" . " w20 h20",->
+				if ( debug = 2 ) {
+					; hexCodes := [ "0527", "0427", "C621", "CC21", "0927", "9923", "2623" ]
+					fonts := ["Wingdings 3", "Wingdings 2", "Wingdings", "Wingdings", "MyScriptFont"]
+					hexCodes := ["44", "32", "2A", "33", "41"]
+					for key, element in hexCodes {
+						xpos := ((A_Index-1)*35)+9
+						Gui, Font,% "S" fontSize+3,% fonts[A_Index]
+						Gui, Add, Button,% "x" xpos . " y120" . " w30 h20 " . " hwndUnicodeBtn" A_Index "Handler",% ""
+						ConvertesChars := Hex2Bin(nString, element) ; Convert hex code into its corresponding unicode character
+		   				SetUnicodeText(nString, UnicodeBtn%A_Index%Handler) ; Replace the control's content with the unicode character
+	   				}
+					; Gui, Add, Button,% "xm+10" . " y120" . " w20 h20",
+					Gui, Font ; Revert to system font
+					Gui, Font,% "S" fontSize
+				}
+				;_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+
 				;			Customizable Buttons.
 				Loop 9 {
 					btnW := (GlobalValues["Button" A_Index "_SIZE"]="Small")?(124):(GlobalValues["Button" A_Index "_SIZE"]="Medium")?(254):(GlobalValues["Button" A_Index "_SIZE"]="Large")?(384):("ERROR")
@@ -730,7 +747,8 @@ Gui_Trades(infosArray="", errorMsg="") {
 		clickThroughState := ( GlobalValues.Trades_Click_Through && !isGuiActive )?("+"):("-")
 		transparency := (!isGuiActive)?(GlobalValues.Transparency):(GlobalValues.Transparency_Active)
 		Gui, Trades: %clickThroughState%E0x20
-		WinSet, Transparent,% transparency,% "ahk_id " guiTradesHandler
+		WinSet, Transparent,% transparency,% A_Gui ; Using A_Gui instead of the Gui's handle fixes an issue where the transparency would not be applied with EXE_NOT_FOUND.
+												   ; Though, it seems that activating another window prior to applying the transparency allows us to use the handler.
 		GuiControl, Trades:Text,% guiTradesTitleHandler,% programName " - Queued Trades: " tabsCount ; Update the title
 		GuiControl, Trades:%showState%,Tab ; Only used when no skin is applied
 		GuiControl, Trades:%showState%,% GoLeftHandler ; Only used for skins
@@ -863,8 +881,7 @@ Gui_Trades(infosArray="", errorMsg="") {
 		try	Gui_Trades_Set_Position()
 	}
 
-	WinSet, Redraw, ,% "ahk_id " guiTradesHandler
-	WinSet, AlwaysOnTop, On,ahk_id %guiTradesHandler%
+	WinSet, Redraw, ,% A_Gui
 	IniWrite,% tabsCount,% iniFilePath,PROGRAM,Tabs_Number
 
 	GlobalValues.Trades_GUI_Current_Active_Tab := currentActiveTab
@@ -4144,6 +4161,7 @@ Create_Tray_Menu() {
 	if ( ProgramValues.Debug ) {
 		Menu, Debug, Add,Open game folder,Open_Game_Folder
 		Menu, Debug, Add,Open local folder,Open_Local_Folder
+		Menu, Debug, Add,Delete local settings (+Reload),Delete_Local_Folder
 		Menu, Tray, Add, Debug,:Debug
 	}
 	Menu, Tray, Add,Settings, Gui_Settings
@@ -4158,6 +4176,10 @@ Create_Tray_Menu() {
 	Menu, Tray, Add,Close, Exit_Func
 	Menu, Tray, Check,% "Mode: " GlobalValues["Trades_GUI_Mode"]
 	Menu, Tray, Icon
+	Return
+
+	Delete_Local_Folder:
+		Reload_Func()
 	Return
 
 	Open_Game_Folder:
@@ -4420,3 +4442,14 @@ Exit_Func(ExitReason, ExitCode) {
 
 DoNothing:
 return
+
+;__TO_BE_ADDED__ Functions used by the unicode buttons.
+SetUnicodeText(ByRef ptrUnicodeText,hWnd) {
+/*	Original function author: derRaphael (nli)
+ *	autohotkey.com/board/topic/28591-displaying-non-supported-characters-and-letters-in-gui/?p=183128
+*/
+   static WM_SETTEXT := 0x0C
+   DllCall("SendMessageW", "UInt",hWnd, "UInt",WM_SETTEXT, "UInt",0, "Uint",&ptrUnicodeText)
+}
+
+#Include %A_ScriptDir%/Resources/AHK/BinaryEncodingDecoding.ahk
