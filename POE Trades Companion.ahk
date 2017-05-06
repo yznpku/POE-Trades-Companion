@@ -134,8 +134,8 @@ Start_Script() {
 
 	;	Debug purposes. Simulates TradesGUI tabs. 
 	if ( ProgramValues["Debug"] ) {
-		Loop 3 {
-			newItemInfos := Object()
+		newItemInfos := Object()
+		Loop 1 {
 			newItemInfos.Insert(0, "iSellStuff", "level 1 Faster Attacks Support", "5 alteration", "Breach (stash tab ""Gems""; position: left 6, top 8)", "",A_Hour ":" A_Min, "Offering 1alch?")
 			newItemArray := Gui_Trades_Manage_Trades("ADD_NEW", newItemInfos)
 			Gui_Trades(newItemArray, "UPDATE")
@@ -250,19 +250,48 @@ Monitor_Game_Logs(mode="") {
 					}
 
 					whisp := whispName ": " whispMsg "`n"
-					if RegExMatch(whisp, ".*: (.*)Hi, I(?: would|'d) like to buy your (?:(.*) |(.*))(?:listed for (.*)|for my (.*)|)(?!:listed for|for my) in (?:(.*)\(.*""(.*)""(.*)\)|Hardcore (.*?)\W|(.*?)\W)(.*)", subPat ) ; poe.trade whisper found
+					poeappRegExStr := "(.*)wtb (.*) listed for (.*) in (?:(.*)\(stash ""(.*)""; left (.*), top (.*)\)|Hardcore (.*?)\W|(.*?)\W)(.*)"
+					poetradeRegExStr := "(.*)Hi, I(?: would|'d) like to buy your (?:(.*) |(.*))(?:listed for (.*)|for my (.*)|)(?!:listed for|for my) in (?:(.*)\(stash tab ""(.*)""; position: left (.*), top (.*)\)|Hardcore (.*?)\W|(.*?)\W)(.*)"
+					allRegExStr := {poeapp:poeappRegExStr, poetrade:poetradeRegExStr}
+					for regExName, regExStr in allRegExStr {
+						if RegExMatch(whisp, "i).*: " regExStr) {
+							Break
+						}
+					}
+					if RegExMatch(whisp, "i).*: " regExStr, subPat ) ; poe.trade whisper found
 					{
 						timeSinceLastTrade := 0
 
-						tradeItem := (subPat2)?(subPat2):(subPat3)?(subPat3):("ERROR RETRIEVING ITEM")
-						tradePrice := (subPat4)?(subPat4):(subPat5)?(subPat5):("See Offer")
-						tradeStash := (subPat6)?(subPat6 "- " subpat7 " " subPat8):(subPat9)?("Hardcore " subPat9):(subPat10)?(subPat10):("ERROR RETRIEVING LOCATION")
-						tradeOther := (subPat10!=subPat6 && subPat10!=subPat9 && subPat10!=tradeStash)?(subPat1 subPat10):(subPat11 && subPat11!="`n")?(subPat11):("-")
-						tradeItem = %tradeItem% ; Remove blank spaces
-						tradePrice = %tradePrice%
-						tradeStash = %tradeStash%
-						tradeOther = %tradeOther%
-						StringReplace, tradeItem, tradeItem,% " 0%",% "", 1 ; Remove 0% quality gem
+						if ( regExName = "poetrade" ) {
+							tradeItem := (subPat2)?(subPat2):(subPat3)?(subPat3):("ERROR RETRIEVING ITEM")
+							if RegExMatch(tradeItem, "level (.*) (.*)% (.*)", itemPat) {
+								tradeItem := itemPat3 " (Lvl:" itemPat1 " / Qual:" itemPat2 "%)"
+								itemPat1 := "", itemPat2 := "", itemPat3 := ""
+							}
+							tradePrice := (subPat4)?(subPat4):(subPat5)?(subPat5):("See Offer")
+							tradeStash := (subPat6)?(subPat6 " (Tab:" subPat7 " / Pos:" subPat8 ";" subPat9 ")"):(subPat10)?("Hardcore " subPat10):(subPat11)?(subPat11):("ERROR RETRIEVING LOCATION")
+							tradeOther := (subPat11!=subPat6 && subPat11!=subPat10 && subPat11!=tradeStash)?(subPat1 subPat11):(subPat12 && subPat12!="`n")?(subPat12):("-")
+
+							tradeItem = %tradeItem% ; Remove blank spaces
+							tradePrice = %tradePrice%
+							tradeStash = %tradeStash%
+							tradeOther = %tradeOther%
+						}
+						else if ( regExName = "poeapp" ) {
+							tradeItem := subPat2
+							if RegExMatch(tradeItem, "(.*) \((.*)/(.*)%\)", itemPat) {
+								tradeItem := itemPat1 " (Lvl:" itemPat2 " / Qual:" itemPat3 "%)"
+								itemPat1 := "", itemPat2 := "", itemPat3 := ""
+							}
+							tradePrice := subPat3
+							tradeStash := (subPat4)?(subPat4 " (Tab:" subpat5 " / Pos:" subPat6 ";" subPat7 ")"):(subPat8)?("Hardcore " subPat8):(subPat9)?(subPat9):("ERROR RETRIEVING LOCATION")								
+							tradeOther := subPat1 . subPat10
+
+							tradeItem = %tradeItem% ; Remove blank spaces
+							tradePrice = %tradePrice%
+							tradeStash = %tradeStash%
+							tradeOther = %tradeOther%
+						}
 
 						; Do not add the trade if the same is already in queue
 						tradesExists := 0
@@ -897,9 +926,8 @@ Gui_Trades(infosArray="", errorMsg="") {
 ;		Clipboard the item's infos on tab switch if the user enabled
 		Gui, Submit, NoHide
 		currentActiveTab := Gui_Trades_Get_Tab_ID()
-		tabInfos := Gui_Trades_Get_Trades_Infos(currentActiveTab)
 		if (  GlobalValues.Clip_On_Tab_Switch )
-			Clipboard := tabInfos.Item
+			Gui_Trades_Clipboard_Item_Func(currentActiveTab)
 		GlobalValues.Insert("Trades_GUI_Current_Active_Tab", currentActiveTab)
 	return
 
@@ -972,9 +1000,8 @@ Gui_Trades(infosArray="", errorMsg="") {
 		if ( btnType = "TabIMG" ) { ; User switched tab
 			GuiControlGet, tabID, Trades:,% TradesGUI_Controls["Tab_TXT_" btnID]
 			currentActiveTab := tabID
-			tabInfos := Gui_Trades_Get_Trades_Infos(currentActiveTab) ; [0] buyerName - [1] itemName - [2] itemPrice
 			if ( GlobalValues["Clip_On_Tab_Switch"] = 1 )
-				Clipboard := tabInfos.Item
+				Gui_Trades_Clipboard_Item_Func(currentActiveTab)
 		}
 
 		if ( btnType != "delBtn" && A_GuiControl ) {
@@ -1073,8 +1100,7 @@ Gui_Trades(infosArray="", errorMsg="") {
 			Return
 		}
 
-		tabInfos := Gui_Trades_Get_Trades_Infos(currentActiveTab) ; [0] buyerName - [1] itemName - [2] itemPrice
-		Clipboard := tabInfos.Item
+		Gui_Trades_Clipboard_Item_Func(currentActiveTab)
 	Return
 
 	Gui_Trades_Send_Message:
@@ -1136,14 +1162,15 @@ Gui_Trades(infosArray="", errorMsg="") {
 			Return
 		}
 
+		RegExMatch(A_GuiControl, "\d+", btnID)
+
 		if ( activeSkin != "System" ) {
 			GuiControlGet, lastTab, Trades:,% TradesGUI_Controls["Tab_TXT_" maxTabsRow]
 			GuiControlGet, firstTab, Trades:,% TradesGUI_Controls["Tab_TXT_1"]
 		}
 
 		if ( GlobalValues["Clip_On_Tab_Switch"] = 1 ) {
-			tabInfos := Gui_Trades_Get_Trades_Infos(btnID) ; [0] buyerName - [1] itemName - [2] itemPrice
-			Clipboard := tabInfos.Item
+			Gui_Trades_Clipboard_Item_Func(btnID)
 		}
 
 ;		Remove the current tab
@@ -1163,6 +1190,20 @@ Gui_Trades(infosArray="", errorMsg="") {
 	Return
 	Gui_Trades_Escape:
 	Return
+}
+
+Gui_Trades_Clipboard_Item_Func(tabID) {
+/*		Retrieve the specified tab's item.
+		Change the clipboard content with a precise item search.
+*/
+	tabInfos := Gui_Trades_Get_Trades_Infos(tabID)
+	item := tabInfos.Item
+	RegExMatch(item, "(.*?) \(Lvl:(.*?) \/ Qual:(.*?)%\)", itemPat)
+	clipContent := (itemPat1 && itemPat2 && itemPat3)?("""" itemPat1 """" . A_Space . """Level: " itemPat2 """" . A_Space . """Quality: +" itemPat3 "%""")
+				  :(itemPat1 && itemPat2 && !itemPat3)?("""" itemPat1 """" . A_Space . """Level: " itemPat2 """")
+				  :(itemPat4)?(itemPat4)
+				  :(item)
+	Clipboard := clipContent
 }
 
 Gui_Trades_Redraw(msg, params="") {
