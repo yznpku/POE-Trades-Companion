@@ -19,7 +19,10 @@ FileEncoding, UTF-8 ; Required for cyrillic characters
 #KeyHistory 0
 SetWinDelay, 0
 DetectHiddenWindows, Off
+
+Menu,Tray,Tip,POE Trades Companion
 Menu,Tray,NoStandard ; Prevent right clicking the icon while initializing
+Menu,Tray,Add,Close,Exit_Func
 
 ;	Creating Window Switch Detect
 Gui +LastFound 
@@ -53,7 +56,7 @@ Start_Script() {
 	ProgramValues := Object() ; Specific to the program's informations
 	ProgramValues.Insert("Name", "POE Trades Companion")
 	ProgramValues.Insert("Version", "1.9.5")
-	ProgramValues.Insert("Debug", 0)
+	ProgramValues.Insert("Debug", 1)
 	ProgramValues.Debug := (A_IsCompiled)?(0):(ProgramValues.Debug) ; Prevent from enabling debug on compiled executable
 
 	ProgramValues.Insert("PID", DllCall("GetCurrentProcessId"))
@@ -348,89 +351,108 @@ Monitor_Game_Logs(mode="") {
 Hotkeys_User_1:
 	Hotkeys_User_Handler(A_ThisLabel)
 Return
-
 Hotkeys_User_2:
 	Hotkeys_User_Handler(A_ThisLabel)
 Return
-
 Hotkeys_User_3:
 	Hotkeys_User_Handler(A_ThisLabel)
 Return
-
 Hotkeys_User_4:
 	Hotkeys_User_Handler(A_ThisLabel)
 Return
-
 Hotkeys_User_5:
 	Hotkeys_User_Handler(A_ThisLabel)
 Return
-
 Hotkeys_User_6:
 	Hotkeys_User_Handler(A_ThisLabel)
 Return
-
 Hotkeys_User_7:
 	Hotkeys_User_Handler(A_ThisLabel)
 Return
-
 Hotkeys_User_8:
 	Hotkeys_User_Handler(A_ThisLabel)
 Return
-
 Hotkeys_User_9:
 	Hotkeys_User_Handler(A_ThisLabel)
 Return
-
 Hotkeys_User_10:
 	Hotkeys_User_Handler(A_ThisLabel)
 Return
-
 Hotkeys_User_11:
 	Hotkeys_User_Handler(A_ThisLabel)
 Return
-
 Hotkeys_User_12:
 	Hotkeys_User_Handler(A_ThisLabel)
 Return
-
 Hotkeys_User_13:
 	Hotkeys_User_Handler(A_ThisLabel)
 Return
-
 Hotkeys_User_14:
 	Hotkeys_User_Handler(A_ThisLabel)
 Return
-
 Hotkeys_User_15:
 	Hotkeys_User_Handler(A_ThisLabel)
 Return
-
 Hotkeys_User_16:
+	Hotkeys_User_Handler(A_ThisLabel)
+Return
+Hotkeys_TradesGUI_1:
+	Hotkeys_User_Handler(A_ThisLabel)
+Return
+Hotkeys_TradesGUI_2:
+	Hotkeys_User_Handler(A_ThisLabel)
+Return
+Hotkeys_TradesGUI_3:
+	Hotkeys_User_Handler(A_ThisLabel)
+Return
+Hotkeys_TradesGUI_4:
+	Hotkeys_User_Handler(A_ThisLabel)
+Return
+Hotkeys_TradesGUI_5:
+	Hotkeys_User_Handler(A_ThisLabel)
+Return
+Hotkeys_TradesGUI_6:
+	Hotkeys_User_Handler(A_ThisLabel)
+Return
+Hotkeys_TradesGUI_7:
+	Hotkeys_User_Handler(A_ThisLabel)
+Return
+Hotkeys_TradesGUI_8:
+	Hotkeys_User_Handler(A_ThisLabel)
+Return
+Hotkeys_TradesGUI_9:
 	Hotkeys_User_Handler(A_ThisLabel)
 Return
 
 Hotkeys_User_Handler(thisLabel) {
-	global GlobalValues, ProgramValues
+
+	global GlobalValues, ProgramValues, TradesGUI_Controls, guiTradesHandler
 
 	iniFilePath := ProgramValues["Ini_File"]
 
 	RegExMatch(thisLabel, "\d+", hotkeyID)
-	tradesInfosArray := Object()
-	tabID := GlobalValues["Trades_GUI_Current_Active_Tab"]
-	if ( tabID ) {
-		tabInfos := Gui_Trades_Get_Trades_Infos(tabID) ; [0] buyerName - [1] itemName - [2] itemPrice
-	}
+	RegExMatch(thisLabel, "\D+", labelType)
 
-	if ( GlobalValues["Hotkeys_Mode"] = "Advanced" ) {
-		key := "HK" hotkeyID
-		IniRead, textToSend,% iniFilePath,HOTKEYS_ADVANCED,% key "_ADV_TEXT"
+	if ( labelType = "Hotkeys_User_" ) {
+		tradesInfosArray := Object()
+		tabID := GlobalValues["Trades_GUI_Current_Active_Tab"]
+		if ( tabID ) {
+			tabInfos := Gui_Trades_Get_Trades_Infos(tabID) ; [0] buyerName - [1] itemName - [2] itemPrice
+		}
+		if ( GlobalValues["Hotkeys_Mode"] = "Advanced" ) {
+			key := "HK" hotkeyID
+			IniRead, textToSend,% iniFilePath,HOTKEYS_ADVANCED,% key "_ADV_TEXT"
+		}
+		else {
+			key := "HK" hotkeyID
+			IniRead, textToSend,% iniFilePath,HOTKEYS,% key "_TEXT"
+		}
+		messages := [textToSend]
+		Send_InGame_Message(messages, tabInfos, {isHotkey:1})
 	}
-	else {
-		key := "HK" hotkeyID
-		IniRead, textToSend,% iniFilePath,HOTKEYS,% key "_TEXT"
+	else if ( labelType = "Hotkeys_TradesGUI_" ) {
+		ControlClick,,% "ahk_id " TradesGUI_Controls["Button_Custom_" hotkeyID]
 	}
-	messages := [textToSend]
-	Send_InGame_Message(messages, tabInfos, {isHotkey:1})
 }
 
 ;==================================================================================================================
@@ -1112,6 +1134,8 @@ Gui_Trades(infosArray="", errorMsg="") {
 
 		RegExMatch(A_GuiControl, "\d+", btnID)
 		tabInfos := Gui_Trades_Get_Trades_Infos(currentActiveTab)
+		if !(tabInfos.Buyer)
+			Return
 		messages := Object()
 		messages.Push(GlobalValues["Button" btnID "_Message_1"], GlobalValues["Button" btnID "_Message_2"], GlobalValues["Button" btnID "_Message_3"])
 		Send_InGame_Message(messages, tabInfos)
@@ -1126,6 +1150,8 @@ Gui_Trades(infosArray="", errorMsg="") {
 
 		RegExMatch(A_GuiControl, "\d+", btnID)
 		tabInfos := Gui_Trades_Get_Trades_Infos(currentActiveTab)
+		if !(tabInfos.Buyer)
+			Return
 		messages := Object()
 		messages.Push(GlobalValues["Button" btnID "_Message_1"], GlobalValues["Button" btnID "_Message_2"], GlobalValues["Button" btnID "_Message_3"])
 		errorLvl := Send_InGame_Message(messages, tabInfos)
@@ -1150,6 +1176,8 @@ Gui_Trades(infosArray="", errorMsg="") {
 
 		RegExMatch(A_GuiControl, "\d+", btnID)
 		tabInfos := Gui_Trades_Get_Trades_Infos(currentActiveTab)
+		if !(tabInfos.Buyer)
+			Return
 		messages := Object()
 		messages.Push(GlobalValues["Button" btnID "_Message_1"])
 		Send_InGame_Message(messages, tabInfos, {doNotSend:1})
@@ -1766,23 +1794,6 @@ Gui_Settings() {
 ;	-------------------------
 	Gui, Tab, Buttons Actions
 	DynamicGUIHandlersArray := Object()
-	DynamicGUIHandlersArray.Btn := Object()
-	DynamicGUIHandlersArray.HPOS := Object()
-	DynamicGUIHandlersArray.HPOSText := Object()
-	DynamicGUIHandlersArray.VPOS := Object()
-	DynamicGUIHandlersArray.VPOSText := Object()
-	DynamicGUIHandlersArray.SIZE := Object()
-	DynamicGUIHandlersArray.SIZEText := Object()
-	DynamicGUIHandlersArray.Label := Object()
-	DynamicGUIHandlersArray.LabelText := Object()
-	DynamicGUIHandlersArray.Action := Object()
-	DynamicGUIHandlersArray.ActionText := Object()
-	DynamicGUIHandlersArray.MarkCompleted := Object()
-	DynamicGUIHandlersArray.MsgEditID := Object()
-	DynamicGUIHandlersArray.MsgID := Object()
-	DynamicGUIHandlersArray.Msg1 := Object()
-	DynamicGUIHandlersArray.Msg2 := Object()
-	DynamicGUIHandlersArray.Msg3 := Object()
 
 	Loop 9 {
 		index := A_Index
@@ -1801,8 +1812,10 @@ Gui_Settings() {
 		Gui, Add, GroupBox,% "x" guiXWorkarea . " y" guiYWorkArea+215 . " w425 h110",Behaviour
 			Gui, Add, Text,% "xp+10" . " yp+20" . " hwndTradesLabel" index "TextHandler",Label:
 			Gui, Add, Edit, xp+50 yp-3 w160 vTradesLabel%index% hwndTradesLabel%index%Handler gGui_Settings_Custom_Label,
+			Gui, Add, Text, xp+170 yp+3 vTradesHK%index%Text hwndTradesHK%index%TextHandler,Hotkey:
+			Gui, Add, Hotkey, xp+50 yp-3 vTradesHK%index% hwndTradesHK%index%Handler,
 
-			Gui, Add, Text,% "xp-50" . " yp+33" . " hwndTradesAction" index "TextHandler",Action:
+			Gui, Add, Text,% "xp-270" . " yp+33" . " hwndTradesAction" index "TextHandler",Action:
 			Gui, Add, DropDownList, xp+50 yp-3 w160 vTradesAction%index% hwndTradesAction%index%Handler gGui_Settings_Custom_Label,% "Clipboard Item|Send Message|Send Message + Close Tab|Write Message"
 			Gui, Add, CheckBox,xp+170 yp+3 vTradesMarkCompleted%index% hwndTradesMarkCompleted%index%Handler,Mark the trade as completed?
 
@@ -1820,6 +1833,8 @@ Gui_Settings() {
 		GuiControl,Settings:Hide,% TradesSIZE%index%TextHandler
 		GuiControl,Settings:Hide,% TradesLabel%index%Handler
 		GuiControl,Settings:Hide,% TradesLabel%index%TextHandler
+		GuiControl,Settings:Hide,% TradesHK%index%Handler
+		GuiControl,Settings:Hide,% TradesHK%index%TextHandler		
 		GuiControl,Settings:Hide,% TradesAction%index%Handler
 		GuiControl,Settings:Hide,% TradesAction%index%TextHandler
 		GuiControl,Settings:Hide,% TradesMarkCompleted%index%Handler
@@ -1829,23 +1844,25 @@ Gui_Settings() {
 		GuiControl,Settings:Hide,% TradesMsg2_%index%Handler
 		GuiControl,Settings:Hide,% TradesMsg3_%index%Handler
 
-		DynamicGUIHandlersArray.Btn.Insert(index,TradesBtn%index%Handler)
-		DynamicGUIHandlersArray.HPOS.Insert(index,TradesHPOS%index%Handler)
-		DynamicGUIHandlersArray.HPOSText.Insert(index, TradesHPOS%index%TextHandler)
-		DynamicGUIHandlersArray.VPOS.Insert(index, TradesVPOS%index%Handler)
-		DynamicGUIHandlersArray.VPOSText.Insert(index, TradesVPOS%index%TextHandler)
-		DynamicGUIHandlersArray.SIZE.Insert(index, TradesSIZE%index%Handler)
-		DynamicGUIHandlersArray.SIZEText.Insert(index, TradesSIZE%index%TextHandler)
-		DynamicGUIHandlersArray.Label.Insert(index,TradesLabel%index%Handler)
-		DynamicGUIHandlersArray.LabelText.Insert(index,TradesLabel%index%TextHandler)
-		DynamicGUIHandlersArray.Action.Insert(index,TradesAction%index%Handler)
-		DynamicGUIHandlersArray.ActionText.Insert(index,TradesAction%index%TextHandler)
-		DynamicGUIHandlersArray.MarkCompleted.Insert(index, TradesMarkCompleted%index%Handler)
-		DynamicGUIHandlersArray.MsgEditID.Insert(index, TradesMsgEditID%index%Handler)
-		DynamicGUIHandlersArray.MsgID.Insert(index, TradesMsgID%index%Handler)
-		DynamicGUIHandlersArray.Msg1.Insert(index,TradesMsg1_%index%Handler)
-		DynamicGUIHandlersArray.Msg2.Insert(index,TradesMsg2_%index%Handler)
-		DynamicGUIHandlersArray.Msg3.Insert(index,TradesMsg3_%index%Handler)
+		DynamicGUIHandlersArray["Btn" index] := TradesBtn%index%Handler
+		DynamicGUIHandlersArray["HPOS" index] := TradesHPOS%index%Handler
+		DynamicGUIHandlersArray["HPOSText" index] := TradesHPOS%index%TextHandler
+		DynamicGUIHandlersArray["VPOS" index] := TradesVPOS%index%Handler
+		DynamicGUIHandlersArray["VPOSText" index] := TradesVPOS%index%TextHandler
+		DynamicGUIHandlersArray["SIZE" index] :=  TradesSIZE%index%Handler
+		DynamicGUIHandlersArray["SIZEText" index] := TradesSIZE%index%TextHandler
+		DynamicGUIHandlersArray["Label" index] := TradesLabel%index%Handler
+		DynamicGUIHandlersArray["LabelText" index] := TradesLabel%index%TextHandler
+		DynamicGUIHandlersArray["Action" index] := TradesAction%index%Handler
+		DynamicGUIHandlersArray["ActionText" index] := TradesAction%index%TextHandler
+		DynamicGUIHandlersArray["Hotkey" index] := TradesHK%index%Handler
+		DynamicGUIHandlersArray["HotkeyText" index] := TradesHK%index%TextHandler
+		DynamicGUIHandlersArray["MarkCompleted" index] := TradesMarkCompleted%index%Handler
+		DynamicGUIHandlersArray["MsgEditID" index] := TradesMsgEditID%index%Handler
+		DynamicGUIHandlersArray["MsgID" index] :=  TradesMsgID%index%Handler
+		DynamicGUIHandlersArray["Msg1" index] := TradesMsg1_%index%Handler
+		DynamicGUIHandlersArray["Msg2" index] := TradesMsg2_%index%Handler
+		DynamicGUIHandlersArray["Msg3" index] := TradesMsg3_%index%Handler
 	}
 	
 ;	Hotkeys Tab
@@ -1905,18 +1922,21 @@ return
 
 	Gui_Settings_Cycle_Messages:
 		Gui, Settings:Submit, NoHide
+
 		btnID := RegExReplace(A_GuiControl, "\D")
-		ctrlHandler := DynamicGUIHandlersArray.MsgID[btnID]
+		ctrlHandler := DynamicGUIHandlersArray["MsgID" btnId]
 		GuiControlGet, currentMsgID,,% ctrlHandler
-		GuiControl, Settings: Hide,% DynamicGUIHandlersArray.Msg1[btnID]
-		GuiControl, Settings: Hide,% DynamicGUIHandlersArray.Msg2[btnID]
-		GuiControl, Settings: Hide,% DynamicGUIHandlersArray.Msg3[btnID]
+
+		GuiControl, Settings: Hide,% DynamicGUIHandlersArray["Msg1" btnID]
+		GuiControl, Settings: Hide,% DynamicGUIHandlersArray["Msg2" btnID]
+		GuiControl, Settings: Hide,% DynamicGUIHandlersArray["Msg3 "btnID]
+
 		if ( currentMsgID = 1 )
-			GuiControl, Settings: Show,% DynamicGUIHandlersArray.Msg1[btnID]
+			GuiControl, Settings: Show,% DynamicGUIHandlersArray["Msg1" btnID]
 		else if ( currentMsgID = 2 )
-			GuiControl, Settings: Show,% DynamicGUIHandlersArray.Msg2[btnID]
+			GuiControl, Settings: Show,% DynamicGUIHandlersArray["Msg2" btnID]
 		else if ( currentMsgID = 3 )
-			GuiControl, Settings: Show,% DynamicGUIHandlersArray.Msg3[btnID]
+			GuiControl, Settings: Show,% DynamicGUIHandlersArray["Msg3" btnID]
 	Return
 
 	Gui_Settings_Set_Custom_Preset:
@@ -2182,6 +2202,10 @@ return
 		Loop 9 {
 			index := A_Index
 
+			KEY := "Button" index "_Hotkey"
+			CONTENT := (index=1)?(TradesHK1):(index=2)?(TradesHK2):(index=3)?(TradesHK3):(index=4)?(TradesHK4):(index=5)?(TradesHK5):(index=6)?(TradesHK6):(index=7)?(TradesHK7):(index=8)?(TradesHK8):(index=9)?(TradesHK9):("ERROR")
+			IniWrite,% CONTENT,% iniFilePath,CUSTOMIZATION_BUTTONS_ACTIONS,% KEY
+
 			KEY := "Button" index "_Label"
 			CONTENT := (index=1)?(TradesLabel1):(index=2)?(TradesLabel2):(index=3)?(TradesLabel3):(index=4)?(TradesLabel4):(index=5)?(TradesLabel5):(index=6)?(TradesLabel6):(index=7)?(TradesLabel7):(index=8)?(TradesLabel8):(index=9)?(TradesLabel9):("ERROR")
 			IniWrite,% CONTENT,% iniFilePath,CUSTOMIZATION_BUTTONS_ACTIONS,% KEY
@@ -2291,7 +2315,7 @@ return
 					GuiControl, Settings:,% Logs%var%Handler,1
 				}
 				else if ( sectionName = "CUSTOMIZATION_BUTTONS_ACTIONS" ) {
-					if keyName contains _H,_V,_SIZE,_ACTION 
+					if RegExMatch(keyName, "_(H|V|SIZE|Action)$") ; Ends with either
 					{
 						GuiControl, Settings:Choose,% %handler%Handler,% var
 					}
@@ -2343,63 +2367,21 @@ return
 
 Gui_Settings_Custom_Label_Func(type, controlsArray, btnID, action, label) {
 	if ( type = "TradesBtn" ) {
-		for key, element in controlsArray.HPOS
-			GuiControl,Settings:Hide,% element
-		for key, element in controlsArray.HPOSText
-			GuiControl,Settings:Hide,% element
+		controlsToHide := "(?:HPOS|HPOSText|VPOS|VPOSText|SIZE|SIZEText|Label|LabelText|Hotkey|HotkeyText|MarkCompleted|Action|ActionText|MsgEditID|MsgID|Msg1|Msg2|Msg3)"
+		controlsToShow := "(?:HPOS" btnID "|HPOSText" btnID "|VPOS" btnID "|VPOSText" btnID "|SIZE" btnID "|SIZEText" btnID "|Label" btnID "|LabelText" btnID "|Hotkey" btnID "|HotkeyText" btnID "|Action" btnID "|ActionText" btnID "|MarkCompleted" btnID ")"
 
-		for key, element in controlsArray.VPOS
-			GuiControl,Settings:Hide,% element
-		for key, element in controlsArray.VPOSText
-			GuiControl,Settings:Hide,% element
-
-		for key, element in controlsArray.SIZE
-			GuiControl,Settings:Hide,% element
-		for key, element in controlsArray.SIZEText
-			GuiControl,Settings:Hide,% element
-		
-		for key, element in controlsArray.Label
-			GuiControl,Settings:Hide,% element
-		for key, element in controlsArray.LabelText
-			GuiControl,Settings:Hide,% element
-		for key, element in controlsArray.MarkCompleted
-			GuiControl,Settings:Hide,% element
-
-		for key, element in controlsArray.Action
-			GuiControl,Settings:Hide,% element	
-		for key, element in controlsArray.ActionText
-			GuiControl,Settings:Hide,% element
-
-		for key, element in controlsArray.MsgEditID
-			GuiControl,Settings:Hide,% element
-		for key, element in controlsArray.MsgID
-			GuiControl,Settings:Hide,% element
-		for key, element in controlsArray.Msg1
-			GuiControl,Settings:Hide,% element
-		for key, element in controlsArray.Msg2
-			GuiControl,Settings:Hide,% element
-		for key, element in controlsArray.Msg3
-			GuiControl,Settings:Hide,% element
-
-		GuiControl,Settings:Show,% controlsArray.HPOS[btnID]
-		GuiControl,Settings:Show,% controlsArray.HPOSText[btnID]
-
-		GuiControl,Settings:Show,% controlsArray.VPOS[btnID]
-		GuiControl,Settings:Show,% controlsArray.VPOSText[btnID]
-
-		GuiControl,Settings:Show,% controlsArray.SIZE[btnID]
-		GuiControl,Settings:Show,% controlsArray.SIZEText[btnID]
-
-		GuiControl,Settings:Show,% controlsArray.Label[btnID]
-		GuiControl,Settings:Show,% controlsArray.LabelText[btnID]
-
-		GuiControl,Settings:Show,% controlsArray.Action[btnID]
-		GuiControl,Settings:Show,% controlsArray.ActionText[btnID]
-		GuiControl,Settings:Show,% controlsArray.MarkCompleted[btnID]
+		for key, element in controlsArray {
+			if RegExMatch(key, controlsToHide) {
+				GuiControl,Settings:Hide,% element
+			}
+			if RegExMatch(key, controlsToShow) {
+				GuiControl,Settings:Show,% element
+			}
+		}
 	}
 
 	if ( type = "TradesLabel" )
-		GuiControl,Settings:,% controlsArray.Btn[btnID],% label
+	GuiControl,Settings:,% controlsArray.Btn[btnID],% label
 
 	if ( type = "TradesAction" || type = "TradesBtn" ) && ( action != "Clipboard Item" && action != "" ) {
 		GuiControl,Settings:Show,% controlsArray.MsgEditID[btnID]
@@ -2514,6 +2496,7 @@ Gui_Settings_Get_Settings_Arrays() {
 		,"TradesVPOS" index
 		,"TradesSIZE" index
 		,"TradesLabel" index
+		,"TradesHK" index
 		,"TradesMsg1_" index
 		,"TradesMsg2_" index
 		,"TradesMsg3_" index
@@ -2526,6 +2509,7 @@ Gui_Settings_Get_Settings_Arrays() {
 		, "Button" index "_V"
 		, "Button" index "_SIZE"
 		, "Button" index "_Label"
+		, "Button" index "_Hotkey"
 		, "Button" index "_Message_1"
 		, "Button" index "_Message_2"
 		, "Button" index "_Message_3"
@@ -2538,6 +2522,7 @@ Gui_Settings_Get_Settings_Arrays() {
 		, "Button" index "_V"
 		, "Button" index "_SIZE"
 		, "Button" index "_Label"
+		, "Button" index "_Hotkey"
 		, "Button" index "_Message_1"
 		, "Button" index "_Message_2"
 		, "Button" index "_Message_3"
@@ -2559,6 +2544,8 @@ Gui_Settings_Get_Settings_Arrays() {
 				  :(index=5)?("Send Message + Close Tab")
 				  :(index=6)?("Send Message")
 				  :(index=7)?("Send Message"):("")
+
+		btnHotkey := ("")
 
 		btnMsg1 := (index=1)?("")
 				:(index=2)?("@%buyerName% Can you wait a moment? Currently busy. (%itemName% listed for %itemPrice%)")
@@ -2589,9 +2576,9 @@ Gui_Settings_Get_Settings_Arrays() {
 		btnH := (index=1)?("Left"):(index=2)?("Center"):(index=3)?("Right"):(index=4)?("Left"):(index=5)?("Right"):(index=6)?:("")
 		btnV := (index=1)?("Top"):(index=2)?("Top"):(index=3)?("Top"):(index=4)?("Middle"):(index=5)?("Middle"):(index=6)?:("")
 		btnSIZE := (index=1)?("Small"):(index=2)?("Small"):(index=3)?("Small"):(index=4)?("Medium"):(index=5)?("Small"):("Disabled")
-		returnArray.CUSTOMIZATION_BUTTONS_ACTIONS_DefaultValues.Insert(keyID2, btnLabel, btnAction, btnH, btnV, btnSIZE, btnLabel, btnMsg1, btnMsg2, btnMsg3, btnMarkCompleted)
-		keyID += 10
-		keyID2 += 10
+		returnArray.CUSTOMIZATION_BUTTONS_ACTIONS_DefaultValues.Insert(keyID2, btnLabel, btnAction, btnH, btnV, btnSIZE, btnLabel, btnHotkey, btnMsg1, btnMsg2, btnMsg3, btnMarkCompleted)
+		keyID += 11
+		keyID2 += 11
 	}
 
 	returnArray.CUSTOMIZATION_APPEARANCE_HandlersArray := Object()
@@ -3047,23 +3034,24 @@ Declare_Local_Settings(iniArray) {
 ;==================================================================================================================
 
 Disable_Hotkeys() {
-;	Disable the current hotkeys
-;	Always run Enable_Hotkeys() after to retrieve and assign the new hotkeys
+	;	Disable the current hotkeys
+	;	Always run Enable_Hotkeys() after to retrieve and assign the new hotkeys
 	global GlobalValues
 
 	titleMatchMode := A_TitleMatchMode
 	SetTitleMatchMode, RegEx
 
+;	Basic Hotkeys
 	Loop 6 {
-	index := A_Index
-	if ( GlobalValues["HK" index "_Toggle"] ) {
+		index := A_Index
+		if ( GlobalValues["HK" index "_Toggle"] ) {
 			userHotkey%index% := GlobalValues["HK" index "_KEY"]
-		if ( GlobalValues["HK" index "_CTRL"] )
-			userHotkey%index% := "^" userHotkey%index%
-		if ( GlobalValues["HK" index "_ALT"] )
-			userHotkey%index% := "!" userHotkey%index%
-		if ( GlobalValues["HK" index "_SHIFT"] )
-			userHotkey%index% := "+" userHotkey%index%
+			if ( GlobalValues["HK" index "_CTRL"] )
+				userHotkey%index% := "^" userHotkey%index%
+			if ( GlobalValues["HK" index "_ALT"] )
+				userHotkey%index% := "!" userHotkey%index%
+			if ( GlobalValues["HK" index "_SHIFT"] )
+				userHotkey%index% := "+" userHotkey%index%
 			Hotkey,IfWinActive,ahk_group POEGame
 			if ( userHotkey%index% != "" && userHotkey%index% != "ERROR" ) {
 				try {
@@ -3072,6 +3060,7 @@ Disable_Hotkeys() {
 			}
 		}
 	}
+;	Advanced Hotkeys
 	Loop 16 {
 		index := A_Index
 		if ( GlobalValues["HK" index "_ADV_Toggle"] ) {
@@ -3084,11 +3073,24 @@ Disable_Hotkeys() {
 			}
 		}
 	}		
+;	Trades GUI Hotkeys
+	Loop 9 {
+		index := A_Index
+		if ( GlobalValues["Button" index "_SIZE"] != "Disabled") {
+			userHotkey%index% := GlobalValues["Button" index "_Hotkey"]
+			Hotkey,IfWinActive,ahk_group POEGame
+			if ( userHotkey%index% != "" && userHotkey%index% != "ERROR" ) {
+				try {
+					Hotkey,% userHotkey%index%, Off
+				}
+			}
+		}
+	}
 	SetTitleMatchMode, %titleMatchMode%	
 }
 
 Enable_Hotkeys() {
-;	Enable the hotkeys, based on its global VALUE_ content
+	;	Enable the hotkeys, based on its global VALUE_ content
 	global GlobalValues, ProgramValues
 
 	programName := ProgramValues["Name"], iniFilePath := ProgramValues["Ini_File"]
@@ -3096,7 +3098,19 @@ Enable_Hotkeys() {
 	titleMatchMode := A_TitleMatchMode
 	SetTitleMatchMode, RegEx
 
-	if ( GlobalValues["Hotkeys_Mode"] = "Advanced" ) {
+;	Trades GUI Hotkeys
+	Loop 9 {
+		index := A_Index
+		if ( GlobalValues["Button" index "_SIZE"] != "Disabled" ) {
+			userHotkey%index% := GlobalValues["Button" index "_Hotkey"]
+			Hotkey,IfWinActive,ahk_group POEGame
+			if ( userHotkey%index% != "" && userHotkey%index% != "ERROR" ) {
+				Hotkey,% userHotkey%index%,Hotkeys_TradesGUI_%index%,On
+			}
+		}
+	}
+;	Advanced Hotkeys
+	if ( GlobalValues.Hotkeys_Mode = "Advanced" ) {
 		Loop 16 {
 			index := A_Index
 			if ( GlobalValues["HK" index "_ADV_Toggle"] ) {
@@ -3115,7 +3129,8 @@ Enable_Hotkeys() {
 			}
 		}		
 	}
-	else {
+;	Basic Hotkeys
+	else if ( GlobalValues.Hotkeys_Mode = "Basic" ) {
 		Loop 6 {
 			index := A_Index
 			if ( GlobalValues["HK" index "_Toggle"] ) {
