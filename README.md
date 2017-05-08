@@ -16,5 +16,4 @@ If you wish to support the tool by donating, you can click on this button right 
 
 
 You can find this tool on **[Reddit](https://www.reddit.com/r/pathofexile/comments/57oo3h)** and **[GGG Forums](https://www.pathofexile.com/forum/view-thread/1755148)**  
-Download:
 **Download Link:** [Direct](https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/POE%20Trades%20Companion.exe) - [Releases](https://github.com/lemasato/POE-Trades-Companion/releases/latest)

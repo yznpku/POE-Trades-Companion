@@ -1,4 +1,34 @@
 \\
+--v1.9.6--
+- Added TradesGUI hotkeys.
+- Fix: An issue where the transparency would be applied to the game's window.
+//
+\\
+--v1.9.5--
+- Added support for poeapp whispers.
+- Slight changes to the item name shown for gems, and the location for premium stash tabs. It's now generally easier to read.
+- Improved the "Clipboard Item" function. Making use of quotes and search tags, it allows a more precise item search.
+- The main interface's position is now also saved after moving the window. Previously, it would only save the position upon reloading or closing the tool from its tray menu. This fixes an issue where killing the process would not save the interface's position.
+- Fix: Run as admin: The local files would be stored in the admin's My Documents folder instead of the current user's My Documents. This would prevent the tool from reading the chat key from the game's config file.
+- Fix: System Theme: Font size, when on automatic mode, would not use the default system's font size.
+- Potential Fix: The transparency/click-through/auto-unminimize settings would sometimes not work correctly for some users.
+//
+\\
+--v1.9.4--
+- Enabling the "Overlay" mode will reset the last registered position to the top right of the monitor. This fixes a behaviour where the main interface would be stuck offscreen.
+- Messages are no longer sent if the chat key is invalid (thus opening random panels, using skills/flasks).
+- Fix: Messages ending with a space would not take the space in consideration when sending it in-game. For this change to take place, you will be required to open then close  [Settings] tray menu after updating.
+//
+\\
+--v1.9.3--
+- Fix: Using an hotkey would bring up the "replace PID" prompt.
+//
+\\
+--v1.9.1--
+- Added the button action "Write Message". Allows you to write a single message without sending it.
+- Fixed an issue where the tool would be unable to retrieve the game's key used to open the chat if the "My Documents" folder was not in the userprofile folder.
+//
+\\
 --v1.9--
 What's new:  
 
