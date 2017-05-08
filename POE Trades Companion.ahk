@@ -55,9 +55,9 @@ Start_Script() {
 
 	ProgramValues := Object() ; Specific to the program's informations
 	ProgramValues.Insert("Name", "POE Trades Companion")
-	ProgramValues.Insert("Version", "1.9.7")
-	ProgramValues.Insert("Debug", 2)
-  
+
+	ProgramValues.Insert("Version", "1.9.8")
+	ProgramValues.Insert("Debug", 0)
 	ProgramValues.Debug := (A_IsCompiled)?(0):(ProgramValues.Debug) ; Prevent from enabling debug on compiled executable
 
 	ProgramValues.Insert("Updater_File", "POE-TC-Updater.exe")
@@ -2171,11 +2171,11 @@ return
 
 			KEY := "HK" index "_KEY"
 			CONTENT := (index=1)?(Hotkey1_KEY):(index=2)?(Hotkey2_KEY):(index=3)?(Hotkey3_KEY):(index=4)?(Hotkey4_KEY):(index=5)?(Hotkey5_KEY):(index=6)?(Hotkey6_KEY):("ERROR")
-			IniWrite,% CONTENT,% iniFilePath,HOTKEYS_ADVANCED,% KEY
+			IniWrite,% CONTENT,% iniFilePath,HOTKEYS,% KEY
 
 			KEY := "HK" index "_Text"
 			CONTENT := (index=1)?(Hotkey1_Text):(index=2)?(Hotkey2_Text):(index=3)?(Hotkey3_Text):(index=4)?(Hotkey4_Text):(index=5)?(Hotkey5_Text):(index=6)?(Hotkey6_Text):("ERROR")
-			IniWrite,% """" CONTENT """",% iniFilePath,HOTKEYS_ADVANCED,% KEY ; Quotes allows us to keep the spaces on IniRead
+			IniWrite,% """" CONTENT """",% iniFilePath,HOTKEYS,% KEY ; Quotes allows us to keep the spaces on IniRead
 
 			KEY := "HK" index "_CTRL"
 			CONTENT := (index=1)?(Hotkey1_CTRL):(index=2)?(Hotkey2_CTRL):(index=3)?(Hotkey3_CTRL):(index=4)?(Hotkey4_CTRL):(index=5)?(Hotkey5_CTRL):(index=6)?(Hotkey6_CTRL):("ERROR")
@@ -2390,15 +2390,15 @@ Gui_Settings_Custom_Label_Func(type, controlsArray, btnID, action, label) {
 	GuiControl,Settings:,% controlsArray.Btn[btnID],% label
 
 	if ( type = "TradesAction" || type = "TradesBtn" ) && ( action != "Clipboard Item" && action != "" ) {
-		GuiControl,Settings:Show,% controlsArray.MsgEditID[btnID]
-		GuiControl,Settings:Show,% controlsArray.MsgID[btnID]
-		GuiControl,Settings:Show,% controlsArray.Msg1[btnID]
+		GuiControl,Settings:Show,% controlsArray["MsgEditID" btnID]
+		GuiControl,Settings:Show,% controlsArray["MsgID" btnID]
+		GuiControl,Settings:Show,% controlsArray["Msg1" btnID]
 	}
 
 	if ( type = "TradesAction" || type = "TradesBtn" ) && ( action = "Clipboard Item" || action = "" ) {
-		GuiControl,Settings:Hide,% controlsArray.MsgEditID[btnID]
-		GuiControl,Settings:Hide,% controlsArray.MsgID[btnID]
-		GuiControl,Settings:Hide,% controlsArray.Msg1[btnID]
+		GuiControl,Settings:Hide,% controlsArray["MsgEditID" btnID]
+		GuiControl,Settings:Hide,% controlsArray["MsgID" btnID]
+		GuiControl,Settings:Hide,% controlsArray["Msg1" btnID]
 	}
 }
 
