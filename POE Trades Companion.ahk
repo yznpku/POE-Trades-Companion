@@ -57,6 +57,7 @@ Start_Script() {
 	ProgramValues.Insert("Name", "POE Trades Companion")
 	ProgramValues.Insert("Version", "1.9.7")
 	ProgramValues.Insert("Debug", 0)
+  
 	ProgramValues.Debug := (A_IsCompiled)?(0):(ProgramValues.Debug) ; Prevent from enabling debug on compiled executable
 
 	ProgramValues.Insert("Updater_File", "POE-TC-Updater.exe")
@@ -816,7 +817,7 @@ Gui_Trades(infosArray="", errorMsg="") {
 		GuiControl, Trades:%showState%,% TabUnderlineHandler ; Only used for skins
 
 		if ( activeSkin != "System" ) { ; Remove the deleted tab image.
-			tabDeleted := tabCount+1
+			tabDeleted := tabsCount+1
 			GuiControl, Trades:Hide,% TabIMG%tabDeleted%Handler
 			GuiControl, Trades:Hide,% TabTXT%tabDeleted%Handler
 
@@ -866,7 +867,6 @@ Gui_Trades(infosArray="", errorMsg="") {
 			currentActiveTab := (!currentActiveTab)?(1):(currentActiveTab)
 			lastActiveTab := currentActiveTab+1
 			Gui_Trades_Redraw("CREATE", {noSplash:1})
-
 
 			if ( activeSkin != "System" ) {
 				Loop { ; Go back to the previously selected tab
