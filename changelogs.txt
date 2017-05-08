@@ -1,4 +1,9 @@
 \\
+--1.9.8--
+- Fix: Custom Buttons: Missing chat edit field.
+- Fix: Hotkeys: Hotkey and text being saved as Advanced Hotkeys instead of regular hotkeys.
+//
+\\
 --v1.9.7--
 - Fix: Path of Exile Skin: An issue since 1.9.5 where the corresponding tab image would not disappear upon closure.
 //
