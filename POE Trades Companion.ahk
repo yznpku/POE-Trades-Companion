@@ -56,7 +56,7 @@ Start_Script() {
 	ProgramValues := Object() ; Specific to the program's informations
 	ProgramValues.Insert("Name", "POE Trades Companion")
 	ProgramValues.Insert("Version", "1.9.5")
-	ProgramValues.Insert("Debug", 1)
+	ProgramValues.Insert("Debug", 0)
 	ProgramValues.Debug := (A_IsCompiled)?(0):(ProgramValues.Debug) ; Prevent from enabling debug on compiled executable
 
 	ProgramValues.Insert("PID", DllCall("GetCurrentProcessId"))
@@ -757,7 +757,7 @@ Gui_Trades(infosArray="", errorMsg="") {
 			currentActiveTab := (Gui_Trades_Get_Tab_ID())?(Gui_Trades_Get_Tab_ID()):(currentActiveTab) ; Retain the value if the return is empty
 		}
 
-		lastActiveTab := (GlobalValues.Trades_Select_Last_Tab && tabsCount > previousTabsCount)?(currentActiveTab) ; Select last tab enabled. Last tab is now the current tab (before current tab is assigned to most recent tab)
+		lastActiveTab := (GlobalValues.Trades_Select_Last_Tab && tabsCount >p reviousTabsCount)?(currentActiveTab) ; Select last tab enabled. Last tab is now the current tab (before current tab is assigned to most recent tab)
 						:(lastActiveTab) ; Leave it as it is
 		currentActiveTab := (!currentActiveTab)?(1) ; Value previously unassigned, make sure to focus tab 1.
 						   :(GlobalValues.Trades_Select_Last_Tab && tabsCount > previousTabsCount)?(tabsCount) ; Assign to most recent tab.
@@ -797,12 +797,13 @@ Gui_Trades(infosArray="", errorMsg="") {
 		}
 		clickThroughState := ( GlobalValues.Trades_Click_Through && !isGuiActive )?("+"):("-")
 		transparency := (!isGuiActive)?(GlobalValues.Transparency):(GlobalValues.Transparency_Active)
+		Gui, Trades: +LastFound
 		Gui, Trades: %clickThroughState%E0x20
-		if WinExist(A_Gui)
-			WinSet, Transparent,% transparency,% A_Gui ; Using A_Gui instead of the Gui's handle fixes an issue where the transparency would not be applied with EXE_NOT_FOUND.
-												   	   ; Though, it seems that activating another window prior to applying the transparency allows us to use the handler.
-		else
-			WinSet, Transparent,% transparency,% "ahk_id " guiTradesHandler ; Allows using the right handler when calling Gui_Trades_Redraw()
+		WinSet, Transparent,% transparency ; Using A_Gui instead of the Gui's handle fixes an issue where the transparency would not be applied with EXE_NOT_FOUND.
+										   ; After testings, it creates another issue where it sets the transparency to the game's window
+										   ; It seems that activating another window prior to applying the transparency allows us to use the handler.
+										   ; Using +LastFound and WinSet without any specified window seems to be the most reliable way to detect the GUI handler.
+
 		GuiControl, Trades:Text,% guiTradesTitleHandler,% programName " - Queued Trades: " tabsCount ; Update the title
 		GuiControl, Trades:%showState%,Tab ; Only used when no skin is applied
 		GuiControl, Trades:%showState%,% GoLeftHandler ; Only used for skins
@@ -935,8 +936,9 @@ Gui_Trades(infosArray="", errorMsg="") {
 		try	Gui_Trades_Set_Position()
 	}
 
-	WinSet, Redraw, ,% "ahk_id " guiTradesHandler
-	WinSet, AlwaysOnTop, On,% "ahk_id " guiTradesHandler
+	Gui, Trades: +LastFound
+	WinSet, Redraw
+	WinSet, AlwaysOnTop, On
 	IniWrite,% tabsCount,% iniFilePath,PROGRAM,Tabs_Number
 
 	GlobalValues.Trades_GUI_Current_Active_Tab := currentActiveTab
@@ -2083,7 +2085,6 @@ return
 			WinSet, Transparent,% transActive
 		if ( A_GuiControlEvent = "Normal" ) {
 			IniRead, isActive,% iniFilePath,PROGRAM,Tabs_Number
-			Gui, Trades: +LastFound
 			if ( isActive > 0 )
 				Winset, Transparent,% transActive
 			else
@@ -3608,7 +3609,8 @@ ShellMessage(wParam,lParam) {
 		if ( GlobalValues["Gui_Trades_Mode"] = "Overlay")
 			Gui_Trades_Set_Position() ; Re-position the GUI
 
-		WinSet, AlwaysOnTop, On, ahk_id %guiTradesHandler%
+		Gui, Trades:+LastFound
+		WinSet, AlwaysOnTop, On
 	}
 }
 
