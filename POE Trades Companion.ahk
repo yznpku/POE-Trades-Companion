@@ -56,7 +56,7 @@ Start_Script() {
 	ProgramValues := Object() ; Specific to the program's informations
 	ProgramValues.Insert("Name", "POE Trades Companion")
 	ProgramValues.Insert("Version", "1.9.7")
-	ProgramValues.Insert("Debug", 1)
+	ProgramValues.Insert("Debug", 2)
   
 	ProgramValues.Debug := (A_IsCompiled)?(0):(ProgramValues.Debug) ; Prevent from enabling debug on compiled executable
 
@@ -583,7 +583,7 @@ Gui_Trades(infosArray="", errorMsg="") {
 				TradesGUI_Controls.Insert("PID_Slot_" index,PIDSlot%index%Handler)
 
 				;__TO_BE_ADDED__ New buttons, smaller with a specific action
-				if ( debug = 2 ) {
+				if ( ProgramValues.Debug = 2 ) {
 					; hexCodes := [ "0527", "0427", "C621", "CC21", "0927", "9923", "2623" ]
 					fonts := ["Wingdings 3", "Wingdings 2", "Wingdings", "Wingdings", "MyScriptFont"]
 					hexCodes := ["44", "32", "2A", "33", "41"]
@@ -612,7 +612,7 @@ Gui_Trades(infosArray="", errorMsg="") {
 					btnSub := RegExReplace(btnSub, "__", "_")
 					btnSub := RegExReplace(btnSub, "_", "", ,1,-1)
 					if ( btnW != "ERROR" && btnX != "ERROR" && btnY != "ERROR" && btnSub != "" && btnSub != "ERROR" ) {
-						Gui, Add, Button,% "x" btnX*guiScale . " y" btnY*guiScale . " w" btnW*guiScale . " h" 35*guiScale . " vCustomBtn" A_Index "_" index  . " hwndCustomBtn" A_Index "_" index "Handler" . " gGui_Trades_" btnSub . " +BackgroundTrans c" colorButtons,% btnName
+						; Gui, Add, Button,% "x" btnX*guiScale . " y" btnY*guiScale . " w" btnW*guiScale . " h" 35*guiScale . " vCustomBtn" A_Index "_" index  . " hwndCustomBtn" A_Index "_" index "Handler" . " gGui_Trades_" btnSub . " +BackgroundTrans c" colorButtons,% btnName
 						TradesGUI_Controls.Insert("Button_Custom_" A_Index, CustomBtn%A_Index%_%index%Handler)
 					}
 				}
@@ -2752,7 +2752,8 @@ Check_Update() {
 		newVersion := programVersion ; couldn't reach the file, cancel update
 
 	ProgramValues.Insert("Version_Latest", newVersion)
-	Gui_About()
+	if ( newVersion != 	programVersion )
+		Gui_About()
 }
 
 ;==================================================================================================================
