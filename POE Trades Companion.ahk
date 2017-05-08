@@ -55,9 +55,14 @@ Start_Script() {
 
 	ProgramValues := Object() ; Specific to the program's informations
 	ProgramValues.Insert("Name", "POE Trades Companion")
-	ProgramValues.Insert("Version", "1.9.6")
+	ProgramValues.Insert("Version", "1.9.7")
 	ProgramValues.Insert("Debug", 0)
 	ProgramValues.Debug := (A_IsCompiled)?(0):(ProgramValues.Debug) ; Prevent from enabling debug on compiled executable
+
+	ProgramValues.Insert("Updater_File", "POE-TC-Updater.exe")
+	ProgramValues.Insert("Updater_Link", "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/Updater.exe")
+	ProgramValues.Insert("Version_Link", "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/version.txt")
+	ProgramValues.Insert("Changelogs_Link", "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/changelogs.txt")
 
 	ProgramValues.Insert("PID", DllCall("GetCurrentProcessId"))
 
@@ -2703,12 +2708,9 @@ Check_Update() {
 	static
 	global ProgramValues
 
-	programVersion := ProgramValues["Version"], programFolder := ProgramValues["Local_Folder"], programChangelogsFilePath := ProgramValues["Changelogs_File"]
-	
-	updaterPath := "POE-TC-Updater.exe"
-	updaterDL := "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/Updater.exe"
-	versionDL := "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/version.txt"
-	changelogDL := "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/changelogs.txt"
+	programVersion := ProgramValues.Version, programFolder := ProgramValues.Local_Folder, programChangelogsFilePath := ProgramValues.Changelogs_File
+	updaterPath := ProgramValues.Updater_File, updaterDL := ProgramValues.Updater_Link
+	versionDL := ProgramValues.Version_Link, changelogsDL := ProgramValues.Changelogs_Link
 	
 ;	Delete files remaining from updating
 	if (FileExist(updaterPath))
@@ -2719,7 +2721,7 @@ Check_Update() {
 ;	Retrieve the changelog file and update the local file if required
 	ComObjError(0)
 	whr := ComObjCreate("WinHttp.WinHttpRequest.5.1")
-	whr.Open("GET", changelogDL, true)
+	whr.Open("GET", changelogsDL, true)
 	whr.Send()
 	; Using 'true' above and the call below allows the script to r'emain responsive.
 	whr.WaitForResponse(10) ; 10 seconds
@@ -2729,7 +2731,7 @@ Check_Update() {
 		FileRead, changelogLocal,% programChangelogsFilePath
 		if ( changelogLocal != changelogText ) {
 			FileDelete, % programChangelogsFilePath
-			UrlDownloadToFile, % changelogDL,% programChangelogsFilePath
+			UrlDownloadToFile, % changelogsDL,% programChangelogsFilePath
 		}
 	}
 	
@@ -2748,8 +2750,109 @@ Check_Update() {
 	}
 	else
 		newVersion := programVersion ; couldn't reach the file, cancel update
-	if ( programVersion != newVersion )
-		Gui_Update(newVersion, updaterPath, updaterDL)
+
+	ProgramValues.Insert("Version_Latest", newVersion)
+	Gui_About()
+}
+
+;==================================================================================================================
+;
+;												ABOUT GUI
+;
+;==================================================================================================================
+
+Gui_About() {
+	static
+	global ProgramValues
+
+	programChangelogsFilePath := ProgramValues["Changelogs_File"]
+	iniFilePath := ProgramValues["Ini_File"], programName := ProgramValues["Name"]
+	programVersion := ProgramValues["Version"], latest := ProgramValues.Version_Latest
+	updaterLink := ProgramValues.Updater_Link, updaterFile := ProgramValues.Updater_File
+
+	isUpdateAvailable := (programVersion != latest)?(1):(0)
+
+	Gui, About:Destroy
+	Gui, About:New, +HwndaboutGuiHandler +AlwaysOnTop +SysMenu -MinimizeBox -MaximizeBox +OwnDialogs +LabelGui_About_,% programName " by lemasato v" programVersion
+	Gui, About:Default
+	Gui, Font, ,Consolas
+
+	groupText := (isUpdateAvailable)?("Update v" latest " available."):("No update available.")
+	Gui, Add, GroupBox, cBlue w500 h60 xm Section,% groupText
+	Gui, Add, Text, xs+20 ys+20,% "Current version: " A_Tab programVersion
+	Gui, Add, Text, xs+20 ys+35 Section,% "Latest version: " A_Tab latest
+	if ( isUpdateAvailable )
+		Gui, Add, Button,x+10 ys-5 Section w80 h20 gGui_About_Update,Update
+	Gui, Add, CheckBox,ys+3 vautoUpdate,Enable automatic updates
+	IniRead, val,% iniFilePath,PROGRAM,AutoUpdate
+	GuiControl,,autoUpdate,1
+
+	FileRead, changelogText,% programChangelogsFilePath
+	allChanges := Object()
+	allVersions := ""
+	Loop {
+		if RegExMatch(changelogText, "sm)\\\\.*?--(.*?)--(.*?)//(.*)", subPat) {
+			version%A_Index% := subPat1, changes%A_Index% := subPat2, changelogText := subPat3
+			StringReplace, changes%A_Index%, changes%A_Index%,`n,% "",0			
+			allVersions .= version%A_Index% "|"
+			allChanges.Insert(changes%A_Index%)
+		}
+		else
+			break
+	}
+	Gui, Add, DropDownList, xm Section w500 gVersion_Change AltSubmit vVerNum hwndVerNumHandler R10,%allVersions%
+	Gui, Add, Edit, Section xs vChangesText hwndChangesTextHandler wp R15 ReadOnly,An internet connection is required
+	GuiControl, Choose,%VerNumHandler%,1
+	GoSub, Version_Change
+	Gui, Add, Text, xm Section ,See on:
+	Gui, Add, Link, gGitHub_Link ys,% "<a href="""">GitHub</a>"
+	Gui, Add, Text, ys,% "-"
+	Gui, Add, Link, gReddit_Link ys,% "<a href="""">Reddit</a>"
+	Gui, Add, Text, ys,% "-"
+	Gui, Add, Link, gGGG_Link ys,% "<a href="""">GGG</a>"
+	Gui, Add, Picture,% "gPaypal_Link xs+" 500-74 " ys-3 w74 h21",% ProgramValues["Others_Folder"] "\DonatePaypal.png"
+
+	Gui, Show, AutoSize
+	return
+	
+	Version_Change:
+		Gui, Submit, NoHide
+		GuiControl, ,%ChangesTextHandler%,% allChanges[verNum]
+		Gui, Show, AutoSize
+	return
+
+	Reddit_Link:
+		Run,% ProgramValues["Reddit"]
+	Return
+
+	Github_Link:
+		Run,% ProgramValues["GitHub"]
+	Return
+
+	GGG_Link:
+		Run,% ProgramValues["GGG"]
+	Return
+
+	Paypal_Link:
+		Run,% ProgramValues["Paypal"]
+	Return
+
+	Gui_About_Update:
+;		Download the updater that will handle the updating process
+		Gui, About:Submit
+		IniWrite,% A_ScriptName,% iniFilePath,PROGRAM,FileName
+		UrlDownloadToFile,% updaterLink,% updaterFile
+		FileSetAttrib, +H,% updaterFile
+		sleep 1000
+		Run, % updaterFile
+		Process, Close, %programPID%
+		ExitApp
+	Return
+
+	Gui_About_Close:
+		Gui, About:Submit
+		IniWrite,% autoUpdate,% iniFilePath,PROGRAM,AutoUpdate
+	Return
 }
 
 Gui_Update(newVersion, updaterPath, updaterDL) {
@@ -2801,73 +2904,6 @@ Gui_Update(newVersion, updaterPath, updaterDL) {
 		Gui, Submit
 		Run, % "https://github.com/lemasato/POE-Trades-Companion/releases"
 	return
-}
-
-;==================================================================================================================
-;
-;												ABOUT GUI
-;
-;==================================================================================================================
-
-Gui_About() {
-	static
-	global ProgramValues
-
-	programChangelogsFilePath := ProgramValues["Changelogs_File"]
-	iniFilePath := ProgramValues["Ini_File"], programName := ProgramValues["Name"], programVersion := ProgramValues["Version"]
-
-	Gui, About:Destroy
-	Gui, About:New, +HwndaboutGuiHandler +AlwaysOnTop +SysMenu -MinimizeBox -MaximizeBox +OwnDialogs,% programName " by lemasato v" programVersion
-	Gui, About:Default
-
-	FileRead, changelogText,% programChangelogsFilePath
-	allChanges := Object()
-	allVersions := ""
-	Loop {
-		if RegExMatch(changelogText, "sm)\\\\.*?--(.*?)--(.*?)//(.*)", subPat) {
-			version%A_Index% := subPat1, changes%A_Index% := subPat2, changelogText := subPat3
-			StringReplace, changes%A_Index%, changes%A_Index%,`n,% "",0			
-			allVersions .= version%A_Index% "|"
-			allChanges.Insert(changes%A_Index%)
-		}
-		else
-			break
-	}
-	Gui, Add, DropDownList, w500 gVersion_Change AltSubmit vVerNum hwndVerNumHandler R10,%allVersions%
-	Gui, Add, Edit, Section vChangesText hwndChangesTextHandler wp R15 ReadOnly,An internet connection is required
-	GuiControl, Choose,%VerNumHandler%,1
-	GoSub, Version_Change
-
-	Gui, Add, Text, xs ,See on:
-	Gui, Add, Link, gGitHub_Link xp yp+15,% "<a href="""">GitHub</a> - "
-	Gui, Add, Link, gReddit_Link xp+45 yp,% "<a href="""">Reddit</a> - "
-	Gui, Add, Link, gGGG_Link xp+45 yp,% "<a href="""">GGG</a>"
-	Gui, Add, Picture,xp+335 yp-5 gPaypal_Link,% ProgramValues["Others_Folder"] "\DonatePaypal.png"
-
-	Gui, Show, AutoSize
-	return
-	
-	Version_Change:
-		Gui, Submit, NoHide
-		GuiControl, ,%ChangesTextHandler%,% allChanges[verNum]
-		Gui, Show, AutoSize
-	return
-
-	Reddit_Link:
-		Run,% ProgramValues["Reddit"]
-	Return
-
-	Github_Link:
-		Run,% ProgramValues["GitHub"]
-	Return
-
-	GGG_Link:
-		Run,% ProgramValues["GGG"]
-	Return
-
-	Paypal_Link:
-		Run,% ProgramValues["Paypal"]
-	Return
 }
 
 ;==================================================================================================================
@@ -4020,6 +4056,7 @@ Extract_Font_Files() {
 	programFontFolderPath := ProgramValues["Fonts_Folder"]
 
 	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\Fonts\Fontin-SmallCaps.ttf,% programFontFolderPath "\Fontin-SmallCaps.ttf"
+	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\Fonts\Consolas.ttf,% programFontFolderPath "\Consolas.ttf"
 	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\Fonts\Settings.ini,% programFontFolderPath "\Settings.ini"
 }
 
