@@ -1,4 +1,9 @@
 \\
+--v1.9.6--
+- Added TradesGUI hotkeys.
+- Fix: An issue where the transparency would be applied to the game's window.
+//
+\\
 --v1.9.5--
 - Added support for poeapp whispers.
 - Slight changes to the item name shown for gems, and the location for premium stash tabs. It's now generally easier to read.
