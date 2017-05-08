@@ -5,6 +5,7 @@ _BETA
 *.exe
 !POE Trades *.*
 _Testings
+_GitHelp.txt
 
 # =========================
 # Default .gitignore
