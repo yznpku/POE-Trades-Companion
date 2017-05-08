@@ -55,7 +55,7 @@ Start_Script() {
 
 	ProgramValues := Object() ; Specific to the program's informations
 	ProgramValues.Insert("Name", "POE Trades Companion")
-	ProgramValues.Insert("Version", "1.9.6")
+	ProgramValues.Insert("Version", "1.9.7")
 	ProgramValues.Insert("Debug", 1)
   
 	ProgramValues.Debug := (A_IsCompiled)?(0):(ProgramValues.Debug) ; Prevent from enabling debug on compiled executable
