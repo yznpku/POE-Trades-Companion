@@ -4,6 +4,7 @@ _BETA
 *.ahk
 *.exe
 !POE Trades *.*
+!/Resources/AHK/*.ahk
 _Testings
 _GitHelp.txt
 
