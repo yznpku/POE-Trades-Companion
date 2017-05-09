@@ -57,7 +57,7 @@ Start_Script() {
 	ProgramValues.Insert("Name", "POE Trades Companion")
 
 	ProgramValues.Insert("Version", "1.9.8")
-	ProgramValues.Insert("Debug", 0)
+	ProgramValues.Insert("Debug", 2)
 	ProgramValues.Debug := (A_IsCompiled)?(0):(ProgramValues.Debug) ; Prevent from enabling debug on compiled executable
 
 	ProgramValues.Insert("Updater_File", "POE-TC-Updater.exe")
@@ -582,37 +582,34 @@ Gui_Trades(infosArray="", errorMsg="") {
 				TradesGUI_Controls.Insert("Time_Slot_" index,TimeSlot%index%Handler)
 				TradesGUI_Controls.Insert("PID_Slot_" index,PIDSlot%index%Handler)
 
-				;__TO_BE_ADDED__ New buttons, smaller with a specific action
 				if ( ProgramValues.Debug = 2 ) {
-					; hexCodes := [ "0527", "0427", "C621", "CC21", "0927", "9923", "2623" ]
-					fonts := ["Wingdings 3", "Wingdings 2", "Wingdings", "Wingdings", "MyScriptFont"]
-					hexCodes := ["44", "32", "2A", "33", "41"]
+					hexCodes := ["62", "61", "63"]
+					ctrlV := ["StaticBtn_Clip" , "StaticBtn_Whisp", "StaticBtn_Trade"]
+					guiScale := 1.0
 					for key, element in hexCodes {
-						xpos := ((A_Index-1)*35)+9
-						Gui, Font,% "S" fontSize+3,% fonts[A_Index]
-						Gui, Add, Button,% "x" xpos . " y120" . " w30 h20 " . " hwndUnicodeBtn" A_Index "Handler",% ""
+						xpos := ((A_Index-1)*(40*guiScale))+9
+						Gui, Font,% "S" 16*guiScale,% "TC-Symbols"
+						Gui, Add, Button,% "x" xpos . " y115" . " w" 35*guiScale . " h" 25*guiScale . " v" ctrlV[key] index . " hwnd" ctrlV[key] index "Handler" . " gGui_Trades_Do_Action_Func",% ""
+						handler := ctrlV[key] index "Handler"
 						ConvertesChars := Hex2Bin(nString, element) ; Convert hex code into its corresponding unicode character
-		   				SetUnicodeText(nString, UnicodeBtn%A_Index%Handler) ; Replace the control's content with the unicode character
+		   				SetUnicodeText(nString, %handler%) ; Replace the control's content with the unicode character
 	   				}
-					; Gui, Add, Button,% "xm+10" . " y120" . " w20 h20",
 					Gui, Font ; Revert to system font
 					Gui, Font,% "S" fontSize
 				}
-				;_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 
-
-				;			Customizable Buttons.
+;				Customizable Buttons.
 				Loop 9 {
 					btnW := (GlobalValues["Button" A_Index "_SIZE"]="Small")?(124):(GlobalValues["Button" A_Index "_SIZE"]="Medium")?(254):(GlobalValues["Button" A_Index "_SIZE"]="Large")?(384):("ERROR")
 					btnX := (GlobalValues["Button" A_Index "_H"]="Left")?(9):(GlobalValues["Button" A_Index "_H"]="Center")?(139):(GlobalValues["Button" A_Index "_H"]="Right")?(269):("ERROR")
-					btnY := (GlobalValues["Button" A_Index "_V"]="Top")?(120):(GlobalValues["Button" A_Index "_V"]="Middle")?(160):(GlobalValues["Button" A_Index "_V"]="Bottom")?(200):("ERROR")
+					btnY := (GlobalValues["Button" A_Index "_V"]="Top")?(145):(GlobalValues["Button" A_Index "_V"]="Middle")?(185):(GlobalValues["Button" A_Index "_V"]="Bottom")?(225):("ERROR")
 					btnName := GlobalValues["Button" A_Index "_Label"]
 					btnSub := RegExReplace(GlobalValues["Button" A_Index "_Action"], "[ _+()]", "_")
 					btnSub := RegExReplace(btnSub, "___", "_")
 					btnSub := RegExReplace(btnSub, "__", "_")
 					btnSub := RegExReplace(btnSub, "_", "", ,1,-1)
 					if ( btnW != "ERROR" && btnX != "ERROR" && btnY != "ERROR" && btnSub != "" && btnSub != "ERROR" ) {
-						; Gui, Add, Button,% "x" btnX*guiScale . " y" btnY*guiScale . " w" btnW*guiScale . " h" 35*guiScale . " vCustomBtn" A_Index "_" index  . " hwndCustomBtn" A_Index "_" index "Handler" . " gGui_Trades_" btnSub . " +BackgroundTrans c" colorButtons,% btnName
+						Gui, Add, Button,% "x" btnX*guiScale . " y" btnY*guiScale . " w" btnW*guiScale . " h" 35*guiScale . " vCustomBtn" A_Index "_" index  . " hwndCustomBtn" A_Index "_" index "Handler" . " gGui_Trades_" btnSub . " +BackgroundTrans c" colorButtons,% btnName
 						TradesGUI_Controls.Insert("Button_Custom_" A_Index, CustomBtn%A_Index%_%index%Handler)
 					}
 				}
@@ -951,6 +948,10 @@ Gui_Trades(infosArray="", errorMsg="") {
 	sleep 10
 	return
 
+	Gui_Trades_Do_Action:
+		; Gui_Trades_Do_Action_Func(A_GuiControl)
+	Return
+
 	Gui_Trades_OnTabSwitch:
 ;		Clipboard the item's infos on tab switch if the user enabled
 		Gui, Submit, NoHide
@@ -1225,6 +1226,16 @@ Gui_Trades(infosArray="", errorMsg="") {
 	Return
 	Gui_Trades_Escape:
 	Return
+}
+
+Gui_Trades_Do_Action_Func(CtrlHwnd, GuiEvent, EventInfo) {
+	global GlobalValues
+
+	GuiControlGet, varName, Name,% ctrlHwnd
+	RegExMatch(varName, "\d+", varNum)
+	RegExMatch(varName, "\D+", varAlpha)
+
+	msgbox % varNum "`n" varAlpha "`n" GlobalValues.Trades_GUI_Current_Active_Tab
 }
 
 Gui_Trades_Clipboard_Item_Func(tabID) {
@@ -1769,7 +1780,8 @@ Gui_Settings() {
 
 		fontsList := "System"
 		for fontFile, fontTitle in ProgramFonts {
-			fontsList .= "|" fontTitle
+			if fontTitle not in TC-Symbols
+				fontsList .= "|" fontTitle
 		}
 		Sort, fontsList,D|
 		Sleep 1
@@ -4058,6 +4070,7 @@ Extract_Font_Files() {
 
 	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\Fonts\Fontin-SmallCaps.ttf,% programFontFolderPath "\Fontin-SmallCaps.ttf"
 	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\Fonts\Consolas.ttf,% programFontFolderPath "\Consolas.ttf"
+	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\Fonts\TC-Symbols.ttf,% programFontFolderPath "\TC-Symbols.ttf"
 	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\Fonts\Settings.ini,% programFontFolderPath "\Settings.ini"
 }
 
