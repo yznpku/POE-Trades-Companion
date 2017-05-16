@@ -22,7 +22,7 @@ SetWinDelay, 0
 DetectHiddenWindows, Off
 
 Menu,Tray,Tip,POE Trades Companion
-Menu,Tray,NoStandard ; Prevent right clicking the icon while initializing
+Menu,Tray,NoStandard
 Menu,Tray,Add,Close,Exit_Func
 
 ;	Creating Window Switch Detect
@@ -61,8 +61,8 @@ Start_Script() {
 
 	ProgramValues.Insert("Name", "POE Trades Companion")
 	ProgramValues.Insert("Version", "1.9.8")
-	ProgramValues.Insert("Debug", 2)
-	ProgramValues.Debug := (A_IsCompiled)?(0):(ProgramValues.Debug) ; Prevent from enabling debug on compiled executable
+	ProgramValues.Insert("Debug", 0)
+	; ProgramValues.Debug := (A_IsCompiled)?(0):(ProgramValues.Debug) ; Prevent from enabling debug on compiled executable
 
 	ProgramValues.Insert("Updater_File", "POE-TC-Updater.exe")
 	ProgramValues.Insert("Updater_Link", "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/Updater.exe")
@@ -143,11 +143,9 @@ Start_Script() {
 	Gui_Trades(,"CREATE")
 	Create_Tray_Menu()
 
-
-	;	Debug purposes. Simulates TradesGUI tabs. 
-	if ( ProgramValues.Debug ) {
+	if ( ProgramValues["Debug"] ) {
 		newItemInfos := Object()
-		Loop 1 {
+		Loop 4 {
 			newItemInfos.Insert(0, "iSellStuff", "level 1 Faster Attacks Support", "5 alteration", "Breach (stash tab ""Gems""; position: left 6, top 8)", "",A_Hour ":" A_Min, "Offering 1alch?")
 			newItemArray := Gui_Trades_Manage_Trades("ADD_NEW", newItemInfos)
 			Gui_Trades(newItemArray, "UPDATE")
@@ -176,8 +174,6 @@ Start_Script() {
 ;==================================================================================================================
 
 Restart_Monitor_Game_Logs() {
-	global ProgramValues
-
 	Gui_Trades_Save_Position()
 	Monitor_Game_Logs("CLOSE")
 	Monitor_Game_Logs()
@@ -501,10 +497,10 @@ Gui_Trades(infosArray="", errorMsg="") {
 	colorTabs := (colorTabs="SYSTEM")?(""):(colorTabs)
 	colorButtons := (colorButtons="SYSTEM")?(""):(colorButtons)
 
-	maxTabsRow := 7
+	TradesGUI_Values.Max_Tabs_Per_Row := maxTabsRow := 7
 	maxTabsStage1 := 10
-	maxTabsStage2 := 25
-	maxTabsStage3 := 50
+	maxTabsStage2 := 50
+	maxTabsStage3 := 75
 	maxTabsStage4 := 100
 	maxTabsStage5 := 255
 
@@ -516,6 +512,7 @@ Gui_Trades(infosArray="", errorMsg="") {
 		Gui, Trades:New, +ToolWindow +AlwaysOnTop -Border +hwndGuiTradesHandler +LabelGui_Trades_ +LastFound -SysMenu -Caption
 		Gui, Trades:Default
 		Gui, Margin, 0, 0
+		Gui, +OwnDialogs
 		TradesGUI_Values.Handler := GuiTradesHandler
 
 		tabHeight := Gui_Trades_Get_Tab_Height(), tabWidth := 390*guiScale
@@ -558,7 +555,7 @@ Gui_Trades(infosArray="", errorMsg="") {
 				index := A_Index
 				Gui, Tab,%index%
 
-				Gui, Add, Button,% "x" 374*guiScale . " y" 38*guiScale . " w" 20*guiScale . " h" 20*guiScale . " vdelBtn" index . " hwndCloseBtn1Handler" . " gGui_Trades_RemoveItem +BackgroundTrans",X
+				Gui, Add, Button,% "x" 374*guiScale . " y" 38*guiScale . " w" 20*guiScale . " h" 20*guiScale . " vBtnClose" index . " hwndBtnClose" index "Handler" . " gGui_Trades_Do_Action_Func +BackgroundTrans",X
 
 ;				Buyer / Item / ... Static Text
 				Gui, Add, Text,% "x" 9*guiScale . " y" 40*guiScale . " w" 60*guiScale . " h" 15*guiScale . " hwndBuyerText" index "Handler" . " +BackgroundTrans" . " c" colorTradesInfos1,% "Buyer: "
@@ -584,35 +581,39 @@ Gui_Trades(infosArray="", errorMsg="") {
 				TradesGUI_Controls.Insert("Time_Slot_" index,TimeSlot%index%Handler)
 				TradesGUI_Controls.Insert("PID_Slot_" index,PIDSlot%index%Handler)
 
-				if ( ProgramValues.Debug = 2 ) {
-					hexCodes := ["62", "61", "63"]
-					ctrlV := ["StaticBtn_Clip" , "StaticBtn_Whisp", "StaticBtn_Trade"]
-					guiScale := 1.0
-					for key, element in hexCodes {
-						xpos := ((A_Index-1)*(40*guiScale))+9
-						Gui, Font,% "S" 16*guiScale,% "TC-Symbols"
-						Gui, Add, Button,% "x" xpos . " y115" . " w" 35*guiScale . " h" 25*guiScale . " v" ctrlV[key] index . " hwnd" ctrlV[key] index "Handler" . " gGui_Trades_Do_Action_Func",% ""
-						handler := ctrlV[key] index "Handler"
-						ConvertesChars := Hex2Bin(nString, element) ; Convert hex code into its corresponding unicode character
-		   				SetUnicodeText(nString, %handler%) ; Replace the control's content with the unicode character
-	   				}
-					Gui, Font ; Revert to system font
-					Gui, Font,% "S" fontSize
-				}
+				hexCodes := ["41", "42", "43"]
+				ctrlActions := ["Clipboard" , "Whisper", "Trade"]
+				for key, element in hexCodes {
+					xpos := ((A_Index-1)*(40*guiScale))+(9*guiScale)
+					ypos := 115*guiScale
+					Gui, Font,% "S" 20*guiScale,% "TC-Symbols"
+					Gui, Add, Button,% "x" xpos . " y" ypos . " w" 35*guiScale . " h" 23*guiScale . " vStaticBtn" A_Index "_" index . " hwndStaticBtn" A_Index "_" index "Handler" . " gGui_Trades_Do_Action_Func",% ""
+					handler := "StaticBtn" A_Index "_" index "Handler"
+					ConvertesChars := Hex2Bin(nString, element) ; Convert hex code into its corresponding unicode character
+	   				SetUnicodeText(nString, %handler%) ; Replace the control's content with the unicode character
+	   				TradesGUI_Controls.Insert("Button_Static_" A_Index, ctrlActions[key])
+	   			}
+				Gui, Font ; Revert to system font
+				Gui, Font,% "S" fontSize
 
 ;				Customizable Buttons.
 				Loop 9 {
 					btnW := (ProgramSettings["Button" A_Index "_SIZE"]="Small")?(124):(ProgramSettings["Button" A_Index "_SIZE"]="Medium")?(254):(ProgramSettings["Button" A_Index "_SIZE"]="Large")?(384):("ERROR")
 					btnX := (ProgramSettings["Button" A_Index "_H"]="Left")?(9):(ProgramSettings["Button" A_Index "_H"]="Center")?(139):(ProgramSettings["Button" A_Index "_H"]="Right")?(269):("ERROR")
-					btnY := (ProgramSettings["Button" A_Index "_V"]="Top")?(145):(ProgramSettings["Button" A_Index "_V"]="Middle")?(185):(ProgramSettings["Button" A_Index "_V"]="Bottom")?(225):("ERROR")
+					btnY := (ProgramSettings["Button" A_Index "_V"]="Top")?(143):(ProgramSettings["Button" A_Index "_V"]="Middle")?(183):(ProgramSettings["Button" A_Index "_V"]="Bottom")?(223):("ERROR")
 					btnName := ProgramSettings["Button" A_Index "_Label"]
 					btnSub := RegExReplace(ProgramSettings["Button" A_Index "_Action"], "[ _+()]", "_")
 					btnSub := RegExReplace(btnSub, "___", "_")
 					btnSub := RegExReplace(btnSub, "__", "_")
 					btnSub := RegExReplace(btnSub, "_", "", ,1,-1)
+
 					if ( btnW != "ERROR" && btnX != "ERROR" && btnY != "ERROR" && btnSub != "" && btnSub != "ERROR" ) {
-						Gui, Add, Button,% "x" btnX*guiScale . " y" btnY*guiScale . " w" btnW*guiScale . " h" 35*guiScale . " vCustomBtn" A_Index "_" index  . " hwndCustomBtn" A_Index "_" index "Handler" . " gGui_Trades_" btnSub . " +BackgroundTrans c" colorButtons,% btnName
+						Gui, Add, Button,% "x" btnX*guiScale . " y" btnY*guiScale . " w" btnW*guiScale . " h" 35*guiScale . " vCustomBtn" A_Index "_" index  . " hwndCustomBtn" A_Index "_" index "Handler" . " gGui_Trades_Do_Action_Func" " +BackgroundTrans c" colorButtons,% btnName
 						TradesGUI_Controls.Insert("Button_Custom_" A_Index, CustomBtn%A_Index%_%index%Handler)
+						TradesGUI_Controls.Insert("Button_Custom_" A_Index "_Action", btnSub)
+					}
+					else {
+						TradesGUI_Controls.Insert("Button_Custom_" A_Index "_Action", "")
 					}
 				}
 			}
@@ -634,12 +635,12 @@ Gui_Trades(infosArray="", errorMsg="") {
 ;			Static pictures assets
 			Gui, Add, Picture,% "x" borderSize . " y" 30*guiScale . " w" guiWidth-borderSize . " h" guiHeight-borderSize . " +BackgroundTrans",% programSkinFolderPath "\" activeSkin "\Background.png"
 			Gui, Add, Picture,% "x" 0 . " y" 50*guiScale . " w" guiWidth . " h" 2*guiScale . " hwndTabUnderlineHandler" . " +BackgroundTrans",% programSkinFolderPath "\" activeSkin "\TabUnderline.png"
-			Gui, Add, Picture,% "x" 360*guiScale . " y" 30*guiScale . " w" 20*guiScale . " h" 20*guiScale . " vGoLeft" . " hwndGoLeftHandler" . " gGui_Trades_Arrow_Left +BackgroundTrans",% programSkinFolderPath "\" activeSkin "\ArrowLeft.png"
-			Gui, Add, Picture,% "x" 380*guiScale . " y" 30*guiScale . " w" 20*guiScale . " h" 20*guiScale . " vGoRight" . " hwndGoRightHandler" . " gGui_Trades_Arrow_Right +BackgroundTrans",% programSkinFolderPath "\" activeSkin "\ArrowRight.png"
-			Gui, Add, Picture,% "x" 374*guiScale . " y" 53*guiScale . " w" 25*guiScale . " h" 25*guiScale . " vdelBtn1" . " hwndCloseBtn1Handler" . " gGui_Trades_RemoveItem  +BackgroundTrans",% programSkinFolderPath "\" activeSkin "\Close.png"
+			Gui, Add, Picture,% "x" 360*guiScale . " y" 30*guiScale . " w" 20*guiScale . " h" 20*guiScale . " vGoLeft" . " hwndGoLeftHandler" . " gGui_Trades_Skinned_Arrow_Left +BackgroundTrans",% programSkinFolderPath "\" activeSkin "\ArrowLeft.png"
+			Gui, Add, Picture,% "x" 380*guiScale . " y" 30*guiScale . " w" 20*guiScale . " h" 20*guiScale . " vGoRight" . " hwndGoRightHandler" . " gGui_Trades_Skinned_Arrow_Right +BackgroundTrans",% programSkinFolderPath "\" activeSkin "\ArrowRight.png"
+			Gui, Add, Picture,% "x" 374*guiScale . " y" 53*guiScale . " w" 25*guiScale . " h" 25*guiScale . " vBtnClose1" . " hwndBtnClose1Handler" . " gGui_Trades_Do_Action_Func  +BackgroundTrans",% programSkinFolderPath "\" activeSkin "\Close.png"
 			TradesGUI_Controls.Insert("Arrow_Left", GoLeftHandler)
 			TradesGUI_Controls.Insert("Arrow_Right", GoRightHandler)
-			TradesGUI_Controls.Insert("Button_Close", CloseBtn1Handler)
+			TradesGUI_Controls.Insert("Button_Close", BtnClose1Handler)
 
 ;			Borders
 			Gui, Add, Picture,% "x" 0 . " y" 0 . " w" guiWidth . " h" borderSize,% programSkinFolderPath "\" activeSkin "\Border.png" ; Top
@@ -655,14 +656,14 @@ Gui_Trades(infosArray="", errorMsg="") {
 				xpos := (tabPos * xposMult) - xposMult + borderSize, ypos := 30
 
 ;				Tab Pictures
-				Gui, Add, Picture,% "x" xpos*guiScale . " y" ypos*guiScale . " w" 48*guiScale . " h" 20*guiScale " hwndTabIMG" index "Handler" . " vTabIMG" index . " gGui_Trades_Tabs_Handler +BackgroundTrans",% programSkinFolderPath "\" activeSkin "\TabInactive.png"
+				Gui, Add, Picture,% "x" xpos*guiScale . " y" ypos*guiScale . " w" 48*guiScale . " h" 20*guiScale " hwndTabIMG" index "Handler" . " vTabIMG" index . " gGui_Trades_Skinned_OnTabSwitch +BackgroundTrans",% programSkinFolderPath "\" activeSkin "\TabInactive.png"
 				Gui, Font,% "Bold"
-				Gui, Add, Text,% "xp" . " yp+" 3*guiScale . " w" 50*guiScale . " h" 20*guiScale . " hwndTabTXT" index "Handler" . " vTabTXT" index . " gGui_Trades_Tabs_Handler +BackgroundTrans 0x01 c" colorTabs,% index
+				Gui, Add, Text,% "xp" . " yp+" 3*guiScale . " w" 50*guiScale . " h" 20*guiScale . " hwndTabTXT" index "Handler" . " vTabTXT" index . " gGui_Trades_Skinned_OnTabSwitch +BackgroundTrans 0x01 c" colorTabs,% index
 				Gui, Font, Norm
 
 ;				Buyer / Item / ... Static Text
 				if ( index = 1 ) {
-					Gui, Add, Text,% "x" 9*guiScale . " y" 60*guiScale . " w" 60*guiScale . " h" 15*guiScale . " hwndBuyerText" index "Handler" . " +BackgroundTrans" . " c" colorTradesInfos1,% "Buyer: "
+					Gui, Add, Text,% "x" 9*guiScale . " y" 55*guiScale . " w" 60*guiScale . " h" 15*guiScale . " hwndBuyerText" index "Handler" . " +BackgroundTrans" . " c" colorTradesInfos1,% "Buyer: "
 					Gui, Add, Text,% "x" 9*guiScale . " yp+" 15*guiScale . " w" 60*guiScale . " h" 15*guiScale " hwndItemText" index "Handler" . " +BackgroundTrans" . " c" colorTradesInfos1,% "Item: "
 					Gui, Add, Text,% "xp" . " yp+" 15*guiScale . " w" 60*guiScale . " h" 15*guiScale " hwndPriceText" index "Handler" . " +BackgroundTrans" . " c" colorTradesInfos1,% "Price: "
 					Gui, Add, Text,% "xp" . " yp+" 15*guiScale . " w" 60*guiScale . " h" 15*guiScale " hwndLocationText" index "Handler" . " +BackgroundTrans" . " c" colorTradesInfos1,% "Location: "
@@ -670,12 +671,12 @@ Gui_Trades(infosArray="", errorMsg="") {
 				}
 
 ;				Buyer / Item / ... Slots
-				Gui, Add, Text,% "x" 75*guiScale . " y" 60*guiScale . " w" 255*guiScale . " h" 15*guiScale . " vBuyerSlot" index . " hwndBuyerSlot" index "Handler" . " +BackgroundTrans +0x0100 R1 c" colorTradesInfos2,% ""
+				Gui, Add, Text,% "x" 75*guiScale . " y" 55*guiScale . " w" 255*guiScale . " h" 15*guiScale . " vBuyerSlot" index . " hwndBuyerSlot" index "Handler" . " +BackgroundTrans +0x0100 R1 c" colorTradesInfos2,% ""
 				Gui, Add, Text,% "xp" . " yp+" 15*guiScale . " w" 310*guiScale . " h" 15*guiScale . " vItemSlot" index . " hwndItemSlot" index "Handler" . " +BackgroundTrans +0x0100 R1 c" colorTradesInfos2,% ""
 				Gui, Add, Text,% "xp" . " yp+" 15*guiScale . " w" 310*guiScale . " h" 15*guiScale . " vPriceSlot" index . " hwndPriceSlot" index "Handler" . " +BackgroundTrans +0x0100 R1 c" colorTradesInfos2,% ""
 				Gui, Add, Text,% "xp" . " yp+" 15*guiScale . " w" 310*guiScale . " h" 15*guiScale . " vLocationSlot" index . " hwndLocationSlot" index "Handler" . " +BackgroundTrans +0x0100 R1 c" colorTradesInfos2,% ""
 				Gui, Add, Text,% "xp" . " yp+" 15*guiScale . " w" 310*guiScale . " h" 15*guiScale . " vOtherSlot" index . " hwndOtherSlot" index "Handler" . " +BackgroundTrans +0x100 R1 c" colorTradesInfos2,% ""
-				Gui, Add, Text,% "x" 340*guiScale . " y" 60*guiScale " w" 30*guiScale . " h" 15*guiScale . " vTimeSlot" index . " hwndTimeSlot" index "Handler" . " +BackgroundTrans R1 c" colorTradesInfos2,% ""
+				Gui, Add, Text,% "x" 340*guiScale . " y" 55*guiScale " w" 30*guiScale . " h" 15*guiScale . " vTimeSlot" index . " hwndTimeSlot" index "Handler" . " +BackgroundTrans R1 c" colorTradesInfos2,% ""
 				Gui, Add, Text,% "xp" . " yp" . " w0" . " h0" . " vPIDSlot" index . " hwndPIDSlot" index "Handler",
 
 
@@ -700,26 +701,50 @@ Gui_Trades(infosArray="", errorMsg="") {
 				TradesGUI_Controls.Insert("PID_Slot_" index,PIDSlot%index%Handler)
 			}
 
+			hexCodes := ["41", "42", "43"]
+			ctrlActions := ["Clipboard" , "Whisper", "Trade"]
+			for key, element in hexCodes {
+				btnX := ((A_Index-1)*(40*guiScale))+(9*guiScale), btnY := 135*guiScale, btnW := 35*guiScale, btnH := 23*guiScale
+				Gui, Font,% "S" 20*guiScale,% "TC-Symbols"
+
+				Gui, Add, Picture,% "x" btnX . " y" btnY . " w" btnW . " h" btnH . " vStaticBtn" A_Index . " hwndStaticBtn" A_Index "Handler" . " gGui_Trades_Do_Action_Func +BackgroundTrans",% programSkinFolderPath "\" activeSkin "\ButtonBackground.png"
+				Gui, Add, Picture,% "x" btnX . " y" btnY . " w" 6*guiScale . " h" btnH  . " hwndStaticBtn" A_Index "OrnamentLeftHandler" . " +BackgroundTrans",% programSkinFolderPath "\" activeSkin "\ButtonOrnamentLeft.png"
+				Gui, Add, Picture,% "x" btnX+btnW-(6*guiScale) . " y" btnY . " w" 6*guiScale . " h" btnH . " hwndStaticBtn" A_Index "OrnamentRightHandler" . " +BackgroundTrans",% programSkinFolderPath "\" activeSkin "\ButtonOrnamentRight.png"
+				Gui, Add, Text,% "x" btnX . " y" btnY-(2*guiScale) . " w" btnW . " h" btnH . " vStaticBtn" A_Index "TXT" . " hwndStaticBtn" A_Index "TXTHandler" . " gGui_Trades_Do_Action_Func Center +BackgroundTrans c" colorButtons,% ""
+				handler := "StaticBtn" A_Index "TXTHandler"
+				ConvertesChars := Hex2Bin(nString, element) ; Convert hex code into its corresponding unicode character
+	   			SetUnicodeText(nString, %handler%) ; Replace the control's content with the unicode character
+
+	   			TradesGUI_Controls.Insert("Button_Static_" A_Index "_Action", ctrlActions[key])
+	   			handler :=  "StaticBtn" A_Index "Handler", TradesGUI_Controls.Insert("Button_Static_" A_Index, %handler% )
+	   			handler :=  "StaticBtn" A_Index "OrnamentLeftHandler", TradesGUI_Controls.Insert("Button_Static_" A_Index "_OrnamentLeft", %handler%)
+	   			handler := "StaticBtn" A_Index "OrnamentRightHandler", TradesGUI_Controls.Insert("Button_Static_" A_Index "_OrnamentRight", %handler%)
+	   			handler := "StaticBtn" A_Index "TXTHandler", TradesGUI_Controls.Insert("Button_Static_" A_Index "_Text", %handler%)
+   			}
+			Gui, Font ; Revert to system font
+			Gui, Font,% "S" fontSize,% fontName
+
 ;			Customizable Buttons.
 			Loop 9 {
 				btnW := (ProgramSettings["Button" A_Index "_SIZE"]="Small")?(124):(ProgramSettings["Button" A_Index "_SIZE"]="Medium")?(254):(ProgramSettings["Button" A_Index "_SIZE"]="Large")?(384):("ERROR")
 				btnX := (ProgramSettings["Button" A_Index "_H"]="Left")?(9):(ProgramSettings["Button" A_Index "_H"]="Center")?(139):(ProgramSettings["Button" A_Index "_H"]="Right")?(269):("ERROR")
-				btnY := (ProgramSettings["Button" A_Index "_V"]="Top")?(140):(ProgramSettings["Button" A_Index "_V"]="Middle")?(180):(ProgramSettings["Button" A_Index "_V"]="Bottom")?(220):("ERROR")
+				btnY := (ProgramSettings["Button" A_Index "_V"]="Top")?(163):(ProgramSettings["Button" A_Index "_V"]="Middle")?(203):(ProgramSettings["Button" A_Index "_V"]="Bottom")?(243):("ERROR")
 				btnName := ProgramSettings["Button" A_Index "_Label"]ProgramSettings
 				btnSub := RegExReplace(ProgramSettings["Button" A_Index "_Action"], "[ _+()]", "_")
 				btnSub := RegExReplace(btnSub, "___", "_")
 				btnSub := RegExReplace(btnSub, "__", "_")
 				btnSub := RegExReplace(btnSub, "_", "", ,1,-1)
 				if ( btnW != "ERROR" && btnX != "ERROR" && btnY != "ERROR" && btnSub != "" && btnSub != "ERROR" ) {
-					Gui, Add, Picture,% "x" btnX*guiScale . " y" btnY*guiScale . " w" btnW*guiScale . " h" 35*guiScale . " vCustomBtn" A_Index . " hwndCustomBtn" A_Index "Handler" . " +BackgroundTrans gGui_Trades_" btnSub,% programSkinFolderPath "\" activeSkin "\ButtonBackground.png"
+					Gui, Add, Picture,% "x" btnX*guiScale . " y" btnY*guiScale . " w" btnW*guiScale . " h" 35*guiScale . " vCustomBtn" A_Index . " hwndCustomBtn" A_Index "Handler" . " +BackgroundTrans gGui_Trades_Do_Action_Func",% programSkinFolderPath "\" activeSkin "\ButtonBackground.png"
 					Gui, Add, Picture,% "x" btnX*guiScale . " y" btnY*guiScale . " w" 8*guiScale . " h" 35*guiScale . " vCustomBtn" A_Index "OrnamentLeft" . " hwndCustomBtn" A_Index "OrnamentLeftHandler" . " +BackgroundTrans",% programSkinFolderPath "\" activeSkin "\ButtonOrnamentLeft.png"
 					Gui, Add, Picture,% "x" (btnX*guiScale)+(btnW-8)*guiScale . " y" btnY*guiScale . " w" 8*guiScale . " h" 35*guiScale . " vCustomBtn" A_Index "OrnamentRight" . " hwndCustomBtn" A_Index "OrnamentRightHandler" . " +BackgroundTrans",% programSkinFolderPath "\" activeSkin "\ButtonOrnamentRight.png"
-					Gui, Add, Text,% "x" btnX*guiScale . " yp+" 10*guiScale . " w" btnW*guiScale . " vCustomBtnTXT" A_Index . " hwndCustomBtnTXT" A_Index "Handler" . " Center +BackgroundTrans c" colorButtons,% btnName
+					Gui, Add, Text,% "x" btnX*guiScale . " yp+" 10*guiScale . " w" btnW*guiScale . " vCustomBtn" A_Index . "TXT hwndCustomBtn" A_Index "TXTHandler" . " Center +BackgroundTrans c" colorButtons,% btnName
 
 					TradesGUI_Controls.Insert("Button_Custom_" A_Index, CustomBtn%A_Index%Handler)
 					TradesGUI_Controls.Insert("Button_Custom_" A_Index "_OrnamentLeft", CustomBtn%A_Index%OrnamentLeftHandler)
 					TradesGUI_Controls.Insert("Button_Custom_" A_Index "_OrnamentRight", CustomBtn%A_Index%OrnamentRightHandler)
-					TradesGUI_Controls.Insert("Button_Custom_" A_Index "_Text", CustomBtnTXT%A_Index%Handler)
+					TradesGUI_Controls.Insert("Button_Custom_" A_Index "_Text", CustomBtn%A_Index%TXTHandler)
+					TradesGUI_Controls.Insert("Button_Custom_" A_Index "_Action", btnSub)
 				}
 			}
 		}
@@ -744,6 +769,7 @@ Gui_Trades(infosArray="", errorMsg="") {
 		gameInstances := ""
 		Monitor_Game_Logs()
 	}
+
 	else if ( errorMsg = "REMOVE_DUPLICATES" ) {
 		tabToDel := infosArray[0]
 		for key, element in infosArray {
@@ -751,22 +777,31 @@ Gui_Trades(infosArray="", errorMsg="") {
 			if ( tabToDel >= element ) ; our tabToDel moved to the left due to a lesser tab being deleted
 				tabToDel--
 			Gui_Trades(messagesArray, "UPDATE")
-			if ( activeSkin != "System" )
-				Gosub, Gui_Trades_Tabs_Handler
+			if ( activeSkin != "System" ) {
+				GoSub Gui_Trades_Skinned_OnTabSwitch
+			}
 		}
 	}
+
 	if ( errorMsg = "UPDATE" || errorMsg = "CREATE" ) {
 
-		tabsCount := (infosArray.BUYERS.Length())?(infosArray.BUYERS.Length()):(0) ; If empty, set to 0
+		tabsCount := infosArray.BUYERS.Length()
+		tabsCount := (!tabsCount)?(0):(tabsCount)
+		TradesGUI_Values.Tabs_Count := tabsCount
+
+		tabsCountReduced := (previousTabsCount > tabsCount)?(1):(0), TradesGUI_Values.Tabs_Count_Reduced := tabsCountReduced
+		tabsCountIncreased := (previousTabsCount < tabsCount)?(1):(0), TradesGUI_Values.Tabs_Count_Increased := tabsCountIncreased
+		tabsCountChanged := (previousTabsCount != tabsCount)?(1):(0), TradesGUI_Values.Tabs_Count_Changed := tabsCountChanged
+
 		if (activeSkin="System") {
-			currentActiveTab := (Gui_Trades_Get_Tab_ID())?(Gui_Trades_Get_Tab_ID()):(currentActiveTab) ; Retain the value if the return is empty
+			TradesGUI_Values.Active_Tab := Gui_Trades_Get_Tab_ID()
 		}
 
-		lastActiveTab := (ProgramSettings.Trades_Select_Last_Tab && tabsCount >p reviousTabsCount)?(currentActiveTab) ; Select last tab enabled. Last tab is now the current tab (before current tab is assigned to most recent tab)
-						:(lastActiveTab) ; Leave it as it is
-		currentActiveTab := (!currentActiveTab)?(1) ; Value previously unassigned, make sure to focus tab 1.
-						   :(ProgramSettings.Trades_Select_Last_Tab && tabsCount > previousTabsCount)?(tabsCount) ; Assign to most recent tab.
-						   :(currentActiveTab) ; Leave it as it is
+		TradesGUI_Values.Previous_Active_Tab := (ProgramSettings.Trades_Select_Last_Tab && tabsCountIncreased)?(TradesGUI_Values.Active_Tab) ; Select last tab enabled. Last tab is now the current tab (before current tab is assigned to most recent tab)
+										   :(TradesGUI_Values.Previous_Active_Tab) ; Leave it as it is
+		TradesGUI_Values.Active_Tab := (!TradesGUI_Values.Active_Tab)?(1) ; Value previously unassigned, make sure to focus tab 1.
+								      :(ProgramSettings.Trades_Select_Last_Tab && tabsCountIncreased)?(tabsCount) ; Assign to most recent tab.
+						   			  :(TradesGUI_Values.Active_Tab) ; Leave it as it is
 
 ;		Update the fields with the trade infos
 		tabsList := "", isGuiActive := false
@@ -808,7 +843,6 @@ Gui_Trades(infosArray="", errorMsg="") {
 										   ; After testings, it creates another issue where it sets the transparency to the game's window
 										   ; It seems that activating another window prior to applying the transparency allows us to use the handler.
 										   ; Using +LastFound and WinSet without any specified window seems to be the most reliable way to detect the GUI handler.
-
 		GuiControl, Trades:Text,% guiTradesTitleHandler,% programName " - Queued Trades: " tabsCount ; Update the title
 		GuiControl, Trades:%showState%,Tab ; Only used when no skin is applied
 		GuiControl, Trades:%showState%,% GoLeftHandler ; Only used for skins
@@ -822,19 +856,24 @@ Gui_Trades(infosArray="", errorMsg="") {
 
 			Loop 9 { ; Hide or show the controls.
 				GuiControl, Trades:%showState%,% CustomBtn%A_Index%Handler
-				GuiControl, Trades:%showState%,% CustomBtnTXT%A_Index%Handler
+				GuiControl, Trades:%showState%,% CustomBtn%A_Index%TXTHandler
 				GuiControl, Trades:%showState%,% CustomBtn%A_Index%OrnamentLeftHandler
 				GuiControl, Trades:%showState%,% CustomBtn%A_Index%OrnamentRightHandler
+
+				GuiControl, Trades:%showState%,% StaticBtn%A_Index%Handler
+				GuiControl, Trades:%showState%,% StaticBtn%A_Index%TXTHandler
+				GuiControl, Trades:%showState%,% StaticBtn%A_Index%OrnamentLeftHandler
+				GuiControl, Trades:%showState%,% StaticBtn%A_Index%OrnamentRightHandler
 
 				GuiControl, Trades:%showState%,% BuyerText1Handler
 				GuiControl, Trades:%showState%,% ItemText1Handler
 				GuiControl, Trades:%showState%,% PriceText1Handler
 				GuiControl, Trades:%showState%,% LocationText1Handler
-				GuiControl, Trades:%showState%,% CloseBtn1Handler
+				GuiControl, Trades:%showState%,% BtnClose1Handler
 				GuiControl, Trades:%showState%,% OtherText1Handler
 			}
 
-			Gosub Gui_Trades_Tabs_Handler ;	Make sure all tabs are correctly ordered.
+			GoSub Gui_Trades_Skinned_OnTabSwitch
 		}
 		else {
 			GuiControl, Trades:,Tab,% tabsList  ;	Apply the new list of tabs.
@@ -844,10 +883,10 @@ Gui_Trades(infosArray="", errorMsg="") {
 				TradesGUI_Values.Active_Tab := tabsCount
 			}
 			else {
-				GuiControl, Trades:Choose,Tab,%currentActiveTab%
+				GuiControl, Trades:Choose,Tab,% TradesGUI_Values.Active_Tab
 				if ( ErrorLevel ) {
-					GuiControl, Trades:Choose,Tab,% currentActiveTab-1
-					currentActiveTab--
+					TradesGUI_Values.Active_Tab--
+					GuiControl, Trades:Choose,Tab,% TradesGUI_Values.Active_Tab
 				}
 			}
 		}
@@ -859,63 +898,49 @@ Gui_Trades(infosArray="", errorMsg="") {
 							  :(maxTabsRendered=maxTabsStage4)?(maxTabsStage5)
 							  :(maxTabsStage2)
 			if ( activeSkin="System")
-				currentActiveTab := Gui_Trades_Get_Tab_ID()
-			else
-				currentActiveTab := TradesGUI_Values.Active_Tab
+				TradesGUI_Values.Active_Tab := Gui_Trades_Get_Tab_ID()
 
-			currentActiveTab := (!currentActiveTab)?(1):(currentActiveTab)
-			lastActiveTab := currentActiveTab+1
+			TradesGUI_Values.Active_Tab := (!TradesGUI_Values.Active_Tab)?(1):(TradesGUI_Values.Active_Tab)
+			TradesGUI_Values.Previous_Active_Tab := TradesGUI_Values.Active_Tab+1
 			Gui_Trades_Redraw("CREATE", {noSplash:1})
 
 			if ( activeSkin != "System" ) {
 				Loop { ; Go back to the previously selected tab
-					currentActiveTab := (ProgramSettings.Trades_Select_Last_Tab = 1)?(tabsCount):(currentActiveTab) ; Set the active tab to the latest available tab if Select_Last_Tab is enabled
+					TradesGUI_Values.Active_Tab := (ProgramSettings.Trades_Select_Last_Tab = 1)?(tabsCount):(TradesGUI_Values.Active_Tab) ; Set the active tab to the latest available tab if Select_Last_Tab is enabled
 
-					GuiControlGet, lastTab, Trades:,% TradesGUI_Controls["Tab_TXT_" maxTabsRow]
-					GuiControlGet, firstTab, Trades:,% TradesGUI_Controls["Tab_TXT_1"]
-					if currentActiveTab between %firstTab% and %lastTab%
+					tabRanges := Gui_Trades_Skinned_Get_Tabs_Images_Range() 
+					firstTab := tabRanges.First_Tab, lastTab := tabRanges.Last_Tab, num := TradesGUI_Values.Active_Tab
+					if num between %firstTab% and %lastTab%
 						Break
-					GoSub Gui_Trades_Arrow_Right
+					Gui_Trades_Skinned_Arrow_Right()
 				}
-				GoSub Gui_Trades_Tabs_Handler
-				lastActiveTab := (ProgramSettings.Trades_Select_Last_Tab = 1)?(currentActiveTab):(lastActiveTab) ; Avoid controls content overlap
-				if ( ProgramSettings.Clip_On_Tab_Switch )
-					GoSub Gui_Trades_Clipboard_Item
 			}
 			else {
-				currentActiveTab := (ProgramSettings.Trades_Select_Last_Tab)?(tabsCount):(lastActiveTab-1)
-				GuiControl, Trades:Choose,Tab,% currentActiveTab
-				if ( ProgramSettings.Clip_On_Tab_Switch )
-					GoSub Gui_Trades_Clipboard_Item
+				TradesGUI_Values.Active_Tab := (ProgramSettings.Trades_Select_Last_Tab)?(tabsCount):(TradesGUI_Values.Previous_Active_Tab-1)
+				GuiControl, Trades:Choose,Tab,% TradesGUI_Values.Active_Tab
 			}
-			Return
 		}
 		if (tabsCount=0 && maxTabsRendered>maxTabsStage1) && (errorMsg!="CREATE") { ; Tabs limit higher than default, and no tab on queue. We can reset to default limit.
 			maxTabsRendered := maxTabsStage1
 			Gui_Trades_Redraw("CREATE", {noSplash:1})
-			currentActiveTab := 0, lastActiveTab := 0
-			Return
+			TradesGUI_Values.Active_Tab := 0, TradesGUI_Values.Previous_Active_Tab := 0
 		}
 
 		if ( activeSkin != "System") {
-			if ( ProgramSettings.Trades_Select_Last_Tab ) && ( tabsCount > previousTabsCount ) {
-					GoSub Gui_Trades_Tabs_Handler
-					GoSub Gui_Trades_Arrow_Right
-					GoSub Gui_Trades_Arrow_Right ; Make sure the tab bar is on far right
+			if ( ProgramSettings.Trades_Select_Last_Tab ) && ( tabsCountIncreased ) {
+					Gui_Trades_Skinned_Arrow_Right(,,,1)
 			}
 		}
 
-		if ( ProgramSettings.Trades_Auto_Minimize && !isGuiActive && TradesGui_Values.Height != guiHeightMin && errorMsg != "EXE_NOT_FOUND" ) {
-			TradesGUI_Values.Is_Minimized := 0
+		if ( ProgramSettings.Trades_Auto_Minimize && !isGuiActive && !TradesGUI_Values.Is_Minimized && errorMsg != "EXE_NOT_FOUND" ) {
 			GoSub, Gui_Trades_Minimize
 		}
-		if ( ProgramSettings.Trades_Auto_UnMinimize && isGuiActive && TradesGui_Values.Height != guiHeight ) {
-			TradesGUI_Values.Is_Minimized := 1
+		if ( ProgramSettings.Trades_Auto_UnMinimize && isGuiActive && TradesGUI_Values.Is_Minimized ) {
 			GoSub, Gui_Trades_Minimize
 		}
 
 		if ( ProgramSettings.Clip_On_Tab_Switch )
-			GoSub Gui_Trades_Clipboard_Item
+			Gui_Trades_Clipboard_Item_Func()
 	}
 	if ( errorMsg = "CREATE" ) {
 		showWidth := guiWidth
@@ -944,144 +969,36 @@ Gui_Trades(infosArray="", errorMsg="") {
 	WinSet, AlwaysOnTop, On
 	IniWrite,% tabsCount,% iniFilePath,PROGRAM,Tabs_Number
 
-	TradesGUI_Values.Active_Tab := currentActiveTab
 	previousTabsCount := tabsCount
+
 	sleep 10
 	return
 
-	Gui_Trades_Do_Action:
-		; Gui_Trades_Do_Action_Func(A_GuiControl)
-	Return
-
 	Gui_Trades_OnTabSwitch:
 ;		Clipboard the item's infos on tab switch if the user enabled
-		Gui, Submit, NoHide
-		currentActiveTab := Gui_Trades_Get_Tab_ID()
+		Gui, Trades:Submit, NoHide
+
+		TradesGUI_Values.Active_Tab := Gui_Trades_Get_Tab_ID()
 		if (  ProgramSettings.Clip_On_Tab_Switch )
-			Gui_Trades_Clipboard_Item_Func(currentActiveTab)
-		TradesGUI_Values.Active_Tab := currentActiveTab
+			Gui_Trades_Clipboard_Item_Func()
 	return
 
-	Gui_Trades_Arrow_Left:
-;		Only used when a skin is applied.
-;		Simulates scrolling through tabs.
-		if ( TradesGUI_Values.Cancel_Action ) {
-			TradesGUI_Values.Cancel_Action := 0
-			Return
-		}
+	Gui_Trades_Skinned_OnTabSwitch:
+		Gui, Trades:Submit, NoHide
 
-		GuiControlGet, lastTab, Trades:,% TradesGUI_Controls["Tab_TXT_" maxTabsRow]
-		GuiControlGet, firstTab, Trades:,% TradesGUI_Controls["Tab_TXT_1"]
-
-		if ( firstTab > 1 ) {
-			index := maxTabsRow
-			Loop %maxTabsRow% {
-				index := A_Index
-				txtContent := firstTab+index-2
-				GuiControl,Trades:,% TradesGUI_Controls["Tab_TXT_" index],% txtContent
-			}
-			inactiveTabID := lastActiveTab-firstTab+1
-			activeTabID := currentActiveTab-firstTab+2
-			if (inactiveTabID > 0) ; Prevents from using a negative TabID due to the users selecting a tab, then moving with the arrows and selecting a new tab while the old one is out of range
-				GuiControl, Trades:,% TradesGUI_Controls["Tab_IMG_" inactiveTabID],% programSkinFolderPath "\" ProgramSettings.Active_Skin "\TabInactive.png"
-			if (activeTabID > 0)
-				GuiControl, Trades:,% TradesGUI_Controls["Tab_IMG_" activeTabID],% programSkinFolderPath "\" ProgramSettings.Active_Skin "\TabActive.png"
-		}
-	Return
-
-	Gui_Trades_Arrow_Right:
-;		Only used when a skin is applied.
-;		Simulates scrolling through tabs.
-		if ( TradesGUI_Values.Cancel_Action ) {
-			TradesGUI_Values.Cancel_Action := 0
-			Return
-		}
-
-		GuiControlGet, lastTab, Trades:,% TradesGUI_Controls["Tab_TXT_" maxTabsRow]
-		GuiControlGet, firstTab, Trades:,% TradesGUI_Controls["Tab_TXT_1"]
-
-		if ( tabsCount > lastTab ) {
-			index := maxTabsRow
-			Loop %maxTabsRow% {
-				index := A_Index
-				txtContent := firstTab+index
-				GuiControl,Trades:,% TradesGUI_Controls["Tab_TXT_" index],% txtContent
-			}
-			inactiveTabID := lastActiveTab-firstTab+1
-			activeTabID := currentActiveTab-firstTab
-			if (inactiveTabID > 0) ; Prevents from using a negative TabID due to the users selecting a tab, then moving with the arrows and selecting a new tab while the old one is out of range
-				GuiControl, Trades:,% TradesGUI_Controls["Tab_IMG_" inactiveTabID],% programSkinFolderPath "\" ProgramSettings.Active_Skin "\TabInactive.png"
-			if (activeTabID > 0)
-				GuiControl, Trades:,% TradesGUI_Controls["Tab_IMG_" activeTabID],% programSkinFolderPath "\" ProgramSettings.Active_Skin "\TabActive.png"
-		}
-
-	Return
-
-	Gui_Trades_Tabs_Handler:
-;		Only used when a skin is applied.
-;		Set the "Active" tab image when the user click a tab.
-;		Reposition the tab-bar after deleting a tab.
-		GuiControlGet, lastTab, Trades:,% TradesGUI_Controls["Tab_TXT_" maxTabsRow]
-		GuiControlGet, firstTab, Trades:,% TradesGUI_Controls["Tab_TXT_1"]
-
-		RegExMatch(A_GuiControl, "\D+", btnType)
-		RegExMatch(A_GuiControl, "\d+", btnID)
-		btnType := (btnType = "CustomBtn")?("delBtn"):(btnType) ; Label is accessed from a Custom button, act like the DelBtn
-
-		if ( btnType = "TabIMG" ) { ; User switched tab
+		if RegExMatch(A_GuiControl, "TabIMG|TabTXT") {
+			RegExMatch(A_GuiControl, "\d+", btnID)
 			GuiControlGet, tabID, Trades:,% TradesGUI_Controls["Tab_TXT_" btnID]
-			currentActiveTab := tabID
-			if ( ProgramSettings.Clip_On_Tab_Switch = 1 )
-				Gui_Trades_Clipboard_Item_Func(currentActiveTab)
+			TradesGUI_Values.Active_Tab := tabID
 		}
 
-		if ( btnType != "delBtn" && A_GuiControl ) {
-			GuiControlGet, tabID, Trades:,% TradesGUI_Controls["Tab_TXT_" btnID]
-			currentActiveTab := (tabID)?(tabID):(currentActiveTab)
-		}
+		TradesGUI_Values.Active_Tab := ( TradesGUI_Values.Tabs_Count && (TradesGUI_Values.Tabs_Count < TradesGUI_Values.Active_Tab) )?(TradesGUI_Values.Tabs_Count)
+									  :(TradesGUI_Values.Active_Tab)
 
-		if ( tabsCount < currentActiveTab ) && ( tabsCount > 0 ) {
-;			User closed the highest available tab
-;			Add one to the lastActiveTab prevent from having new trades text from overlapping the current tab
-			currentActiveTab--
-			lastActiveTab := currentActiveTab+1
-			wasReduced := 1
-		}
-
-		showState := "Hide"
-		GuiControl, Trades:%showState%,% TradesGUI_Controls["Buyer_Slot_" lastActiveTab]
-		GuiControl, Trades:%showState%,% TradesGUI_Controls["Item_Slot_" lastActiveTab]
-		GuiControl, Trades:%showState%,% TradesGUI_Controls["Price_Slot_" lastActiveTab]
-		GuiControl, Trades:%showState%,% TradesGUI_Controls["Location_Slot_" lastActiveTab]
-		GuiControl, Trades:%showState%,% TradesGUI_Controls["Time_Slot_" lastActiveTab]
-		GuiControl, Trades:%showState%,% TradesGUI_Controls["Other_Slot_" lastActiveTab]
-
-		showState := "Show"
-		GuiControl, Trades:%showState%,% TradesGUI_Controls["Buyer_Slot_" currentActiveTab]
-		GuiControl, Trades:%showState%,% TradesGUI_Controls["Item_Slot_" currentActiveTab]
-		GuiControl, Trades:%showState%,% TradesGUI_Controls["Price_Slot_" currentActiveTab]
-		GuiControl, Trades:%showState%,% TradesGUI_Controls["Location_Slot_" currentActiveTab]
-		GuiControl, Trades:%showState%,% TradesGUI_Controls["Time_Slot_" currentActiveTab]
-		GuiControl, Trades:%showState%,% TradesGUI_Controls["Other_Slot_" currentActiveTab]
-
-		activeTabID := (wasReduced=1 && currentActiveTab > maxTabsRow)?(currentActiveTab-firstTab+2):(currentActiveTab-firstTab+1)
-		inactiveTabID := (wasReduced=1)?(activeTabID+1):(lastActiveTab-firstTab+1)
-
-		if (inactiveTabID > 0) ; Prevents from using a negative TabID due to the users selecting a tab, then moving with the arrows and selecting a new tab while the old one is out of range 
-			GuiControl, Trades:,% TradesGUI_Controls["Tab_IMG_" inactiveTabID],% programSkinFolderPath "\" ProgramSettings.Active_Skin "\TabInactive.png"
-		GuiControl, Trades:,% TradesGUI_Controls["Tab_IMG_" activeTabID],% programSkinFolderPath "\" ProgramSettings.Active_Skin "\TabActive.png"
-
-		if ( btnType != "delBtn" || wasReduced = 1 ) {
-			lastActiveTab := currentActiveTab
-			wasReduced := 0
-		}
-
-		if ( (lastTab > tabsCount && tabsCount > maxTabsRow) || (lastTab = maxTabsRow+1 && firstTab = 2 && tabsCount = maxTabsRow) ) {
-			GoSub Gui_Trades_Arrow_Right
-			GoSub Gui_Trades_Arrow_Left
-		}
-
-		TradesGUI_Values.Active_Tab := currentActiveTab
+		Gui_Trades_Skinned_Show_Active_Tab_Content()
+		if ( ProgramSettings.Clip_On_Tab_Switch )
+			Gui_Trades_Clipboard_Item_Func()
+		TradesGUI_Values.Previous_Active_Tab := TradesGUI_Values.Active_Tab
 	Return
 
 	Gui_Trades_Minimize:
@@ -1092,7 +1009,7 @@ Gui_Trades(infosArray="", errorMsg="") {
 		TradesGUI_Values.Is_Minimized := !TradesGUI_Values.Is_Minimized
 		if ( TradesGUI_Values.Is_Minimized ) {
 			tHeight := guiHeight
-			Loop {
+			Loop { ; Create the illusion of an animation
 				if ( tHeight = guiHeightMin )
 					Break
 				tHeight := (guiHeightMin<tHeight)?(tHeight-30):(guiHeightMin)
@@ -1118,109 +1035,16 @@ Gui_Trades(infosArray="", errorMsg="") {
 	Gui_Trades_Move:
 ;		Allows dragging the GUI when holding left click on the title bar.
 		if ( ProgramSettings.Trades_GUI_Mode = "Window" ) {
-			PostMessage, 0xA1, 2,,,% "ahk_id " TradesGui_Values.Handler
+			PostMessage, 0xA1, 2,,,% "ahk_id " TradesGUI_Values.Handler
 		}
 		KeyWait, LButton, Up
 		Gui_Trades_Save_Position()
 	Return 
 
-	Gui_Trades_Clipboard_Item:
-;		Clipboard the current tab item upon pressing the button.
-		if ( TradesGUI_Values.Cancel_Action ) {
-			TradesGUI_Values.Cancel_Action := 0
-			Return
-		}
-
-		Gui_Trades_Clipboard_Item_Func(currentActiveTab)
-	Return
-
-	Gui_Trades_Send_Message:
-;		Send a sinle message in-game upon pressing the button.
-		if ( TradesGUI_Values.Cancel_Action ) {
-			TradesGUI_Values.Cancel_Action := 0
-			Return
-		}
-
-		RegExMatch(A_GuiControl, "\d+", btnID)
-		tabInfos := Gui_Trades_Get_Trades_Infos(currentActiveTab)
-		if !(tabInfos.Buyer)
-			Return
-		messages := Object()
-		messages.Push(ProgramSettings["Button" btnID "_Message_1"], ProgramSettings["Button" btnID "_Message_2"], ProgramSettings["Button" btnID "_Message_3"])
-		Send_InGame_Message(messages, tabInfos)
-	Return
-
-	Gui_Trades_Send_Message_Close_Tab:
-;		Send a single message in-game and close the current tab upon pressing the button.
-		if ( TradesGUI_Values.Cancel_Action ) {
-			TradesGUI_Values.Cancel_Action := 0
-			Return
-		}
-
-		RegExMatch(A_GuiControl, "\d+", btnID)
-		tabInfos := Gui_Trades_Get_Trades_Infos(currentActiveTab)
-		if !(tabInfos.Buyer)
-			Return
-		messages := Object()
-		messages.Push(ProgramSettings["Button" btnID "_Message_1"], ProgramSettings["Button" btnID "_Message_2"], ProgramSettings["Button" btnID "_Message_3"])
-		errorLvl := Send_InGame_Message(messages, tabInfos)
-		if !(errorLvl) {
-			if ( ProgramSettings.Support_Text_Toggle = 1 ) {
-				tabInfos := Gui_Trades_Get_Trades_Infos(currentActiveTab) ; Prevent from asking to replace the PID twice
-				messages.Delete(0, 10)
-				messages.Push(ProgramSettings.Support_Message)
-				Send_InGame_Message(messages, tabInfos)
-			}
-			Gosub, Gui_Trades_RemoveItem
-			;__TO_BE_ADDED__ Append the trade infos to a file.
-		}
-	Return
-
-	Gui_Trades_Write_Message:
-;		Write a message without sending it.
-		if ( TradesGUI_Values.Cancel_Action ) {
-			TradesGUI_Values.Cancel_Action := 0
-			Return
-		}
-
-		RegExMatch(A_GuiControl, "\d+", btnID)
-		tabInfos := Gui_Trades_Get_Trades_Infos(currentActiveTab)
-		if !(tabInfos.Buyer)
-			Return
-		messages := Object()
-		messages.Push(ProgramSettings["Button" btnID "_Message_1"])
-		Send_InGame_Message(messages, tabInfos, {doNotSend:1})
-	Return
-	
-	Gui_Trades_RemoveItem:
-;		Empties the current tab content and close it upon pressing the button.
-		if ( TradesGUI_Values.Cancel_Action ) {
-			TradesGUI_Values.Cancel_Action := 0
-			Return
-		}
-
-		RegExMatch(A_GuiControl, "\d+", btnID)
-
-		if ( activeSkin != "System" ) {
-			GuiControlGet, lastTab, Trades:,% TradesGUI_Controls["Tab_TXT_" maxTabsRow]
-			GuiControlGet, firstTab, Trades:,% TradesGUI_Controls["Tab_TXT_1"]
-		}
-
-		if ( ProgramSettings.Clip_On_Tab_Switch = 1 ) {
-			Gui_Trades_Clipboard_Item_Func(btnID)
-		}
-
-;		Remove the current tab
-		messagesArray := Gui_Trades_Manage_Trades("REMOVE_CURRENT", ,currentActiveTab)
-		Gui_Trades(messagesArray, "UPDATE")
-		if (activeSkin != "System")
-			Gosub, Gui_Trades_Tabs_Handler
-	return
-
 	Gui_Trades_Size:
 ;		Declare the global GUI width and height
-		TradesGui_Values.Width := A_GuiWidth
-		TradesGui_Values.Height := A_GuiHeight
+		TradesGUI_Values.Width := A_GuiWidth
+		TradesGUI_Values.Height := A_GuiHeight
 	return
 
 	Gui_Trades_Close:
@@ -1229,20 +1053,219 @@ Gui_Trades(infosArray="", errorMsg="") {
 	Return
 }
 
-Gui_Trades_Do_Action_Func(CtrlHwnd, GuiEvent, EventInfo) {
-	global TradesGUI_Values
+Gui_Trades_Skinned_Arrow_Left(CtrlHwnd="", GuiEvent="", EventInfo="") {
+;		Only used when a skin is applied.
+;		Simulates scrolling through tabs.
+	global TradesGUI_Values, TradesGUI_Controls
+	if ( TradesGUI_Values.Cancel_Action ) {
+		TradesGUI_Values.Cancel_Action := 0
+		Return
+	}
 
-	GuiControlGet, varName, Name,% ctrlHwnd
-	RegExMatch(varName, "\d+", varNum)
-	RegExMatch(varName, "\D+", varAlpha)
+	maxTabsRow := TradesGUI_Values.Max_Tabs_Per_Row
+	tabsCount := TradesGUI_Values.Tabs_Count
 
-	msgbox % varNum "`n" varAlpha "`n" TradesGUI_Values.Active_Tab
+	tabsRange := Gui_TradeS_Skinned_Get_Tabs_Images_Range()
+	if ( tabsRange.First_Tab > 1 ) {
+		index := maxTabsRow
+		Loop %maxTabsRow% {
+			index := A_Index
+			txtContent := tabsRange.First_Tab+index-2
+			GuiControl,Trades:,% TradesGUI_Controls["Tab_TXT_" index],% txtContent
+		}
+		Gui_Trades_Skinned_Set_Tab_Images_State("LEFT")
+	}	
 }
 
-Gui_Trades_Clipboard_Item_Func(tabID) {
+Gui_Trades_Skinned_Arrow_Right(CtrlHwnd="", GuiEvent="", EventInfo="", goFar=0) {
+;		Only used when a skin is applied.
+;		Simulates scrolling through tabs.
+	global TradesGUI_Values, TradesGUI_Controls
+
+	if ( TradesGUI_Values.Cancel_Action ) {
+		TradesGUI_Values.Cancel_Action := 0
+		Return
+	}
+
+	maxTabsRow := TradesGUI_Values.Max_Tabs_Per_Row
+	tabsCount := TradesGUI_Values.Tabs_Count
+	tabsRange := Gui_TradeS_Skinned_Get_Tabs_Images_Range()
+
+	if (goFar) {
+		Loop {
+			tabsRange := Gui_TradeS_Skinned_Get_Tabs_Images_Range()
+			lastTab := tabsRange.Last_Tab
+			if (tabsCount && lastTab < TradesGUI_Values.Tabs_Count) {
+				Gui_Trades_Skinned_Arrow_Right()
+			}
+			else Break
+		}
+	}
+	if ( tabsCount > tabsRange.Last_Tab ) {
+		index := maxTabsRow
+		Loop %maxTabsRow% {
+			index := A_Index
+			txtContent := tabsRange.First_Tab+index
+			GuiControl,Trades:,% TradesGUI_Controls["Tab_TXT_" index],% txtContent
+		}
+		Gui_Trades_Skinned_Set_Tab_Images_State("RIGHT")
+	}
+}
+
+Gui_TradeS_Skinned_Get_Tabs_Images_Range() {
+	global TradesGUI_Values, TradesGUI_Controls, ProgramSettings, ProgramValues
+
+	GuiControlGet, lastTab, Trades:,% TradesGUI_Controls["Tab_TXT_" TradesGUI_Values.Max_Tabs_Per_Row]
+	GuiControlGet, firstTab, Trades:,% TradesGUI_Controls["Tab_TXT_1"]
+
+	return {Last_Tab:lastTab,First_Tab:firstTab}
+}
+
+Gui_Trades_Skinned_Set_Tab_Images_State(arrow="") {
+	global TradesGUI_Values, TradesGUI_Controls, ProgramSettings, ProgramValues
+
+	previousID := TradesGUI_Values.Previous_Active_Tab
+	currentID := TradesGUI_Values.Active_Tab
+	previousID := (previousID="")?(1):(previousID)
+
+	tabsRange := Gui_TradeS_Skinned_Get_Tabs_Images_Range()
+
+	activeTabID := (arrow="LEFT")?(TradesGUI_Values.Active_Tab-tabsRange.First_Tab+1) ; Left arrow pressed
+				  :(arrow="RIGHT")?(TradesGUI_Values.Active_Tab-tabsRange.First_Tab+1) ; Right arrow pressed
+				  :(TradesGUI_Values.Tabs_Count_Reduced && TradesGUI_Values.Active_Tab > TradesGUI_Values.Max_Tabs_Per_Row)?(TradesGUI_Values.Active_Tab-tabsRange.First_Tab+1) ; 
+				  :(currentID-tabsRange.First_Tab+1)
+	inactiveTabID := (arrow="LEFT")?(TradesGUI_Values.Active_Tab-tabsRange.First_Tab)
+					:(arrow="RIGHT")?(TradesGUI_Values.Active_Tab-(tabsRange.First_Tab)+2)
+					:(TradesGUI_Values.Tabs_Count_Reduced)?(activeTabID+1)
+					:(previousID-tabsRange.First_Tab+1)
+	
+	; tooltip % activeTabID "`n" inactiveTabID "`n" TradesGUI_Values.Active_Tab "`n" TradesGUI_Values.Previous_Active_Tab "`n" tabsRange.First_Tab "`n" TradesGUI_Values.Tabs_Count_Reduced "`n" A_GuiControl
+
+	if (inactiveTabID > 0) ; Prevents from using a negative TabID due to the users selecting a tab, then moving with the arrows and selecting a new tab while the old one is out of range 
+		GuiControl, Trades:,% TradesGUI_Controls["Tab_IMG_" inactiveTabID],% ProgramValues.Skins_Folder "\" ProgramSettings.Active_Skin "\TabInactive.png"
+	if (activeTabID > 0)
+		GuiControl, Trades:,% TradesGUI_Controls["Tab_IMG_" activeTabID],% ProgramValues.Skins_Folder "\" ProgramSettings.Active_Skin "\TabActive.png"
+
+	if ( (TradesGUI_Values.Tabs_Count_Reduced && TradesGUI_Values.Active_Tab = TradesGUI_Values.Tabs_Count) || (TradesGUI_Values.Tabs_Count_Reduced && tabsRange.Last_Tab >= TradesGUI_Values.Tabs_Count) ) {
+;		Highest tab deleted while active - Or tab deleted while fully (or minus one) scrolled to the right
+		TradesGUI_Values.Tabs_Count_Reduced := 0
+		Gui_Trades_Skinned_Arrow_Left() ; Hide the tab that has been removed
+		Gui_Trades_Skinned_Arrow_Right() ; Stay in the same tabs range
+	}
+	TradesGUI_Values.Tabs_Count_Reduced := 0
+	; else if (TradesGUI_Values.Tabs_Count_Reduced && tabsRange.Last_Tab = tabsCount) { 
+		; TradesGUI_Values.Tabs_Count_Reduced := 0
+	; }
+
+}
+
+Gui_Trades_Skinned_Show_Active_Tab_Content() {
+	global TradesGUI_Values, TradesGUI_Controls, ProgramSettings, ProgramValues
+
+	previousID := TradesGUI_Values.Previous_Active_Tab
+	currentID := TradesGUI_Values.Active_Tab
+	previousID := (previousID="")?(1):(previousID)
+
+;	Hide previous tab, show current tab
+	Loop 2 {
+		showState := (A_Index=1)?("Hide"):("Show")
+		tabID := (A_Index=1)?(previousID):(currentID)
+
+		GuiControl, Trades:%showState%,% TradesGUI_Controls["Buyer_Slot_" tabID]
+		GuiControl, Trades:%showState%,% TradesGUI_Controls["Item_Slot_" tabID]
+		GuiControl, Trades:%showState%,% TradesGUI_Controls["Price_Slot_" tabID]
+		GuiControl, Trades:%showState%,% TradesGUI_Controls["Location_Slot_" tabID]
+		GuiControl, Trades:%showState%,% TradesGUI_Controls["Time_Slot_" tabID]
+		GuiControl, Trades:%showState%,% TradesGUI_Controls["Other_Slot_" tabID]
+	}
+
+	Gui_Trades_Skinned_Set_Tab_Images_State()
+	TradesGUI_Values.Previous_Active_Tab := currentID
+}
+
+Gui_Trades_Do_Action_Func(CtrlHwnd, GuiEvent, EventInfo) {
+	global TradesGUI_Values, ProgramSettings, TradesGUI_Controls, ProgramValues
+
+	if ( TradesGUI_Values.Cancel_Action ) {
+		TradesGUI_Values.Cancel_Action := 0
+		Return
+	}
+
+	GuiControlGet, varName, Name,% CtrlHwnd
+	RegExMatch(varName, "\d+", varNum)
+	RegExMatch(varName, "\D+", varAlpha)
+	btnAction := (varAlpha="CustomBtn")?(TradesGUI_Controls["Button_Custom_" varNum "_Action"])
+				:(varAlpha="StaticBtn")?(TradesGUI_Controls["Button_Static_" varNum "_Action"])
+				:(varAlpha="BtnClose")?("Close_Tab")
+				:(varAlpha)
+
+	messages := Object()
+	tabInfos := Gui_Trades_Get_Trades_Infos(TradesGUI_Values.Active_Tab)
+	if !(tabInfos.Buyer) {
+		TrayTip,% ProgramValues.Name,% "No buyer found for tab """ TradesGUI_Values.Active_Tab """`nOperation cancelled. Please report this issue."
+		Return
+	}
+
+	if btnAction contains Send_Message,Write_Message
+	{
+		if btnAction contains Write_Message
+		{
+			messages.Push(ProgramSettings["Button" varNum "_Message_1"])
+			doNotSend := true
+		}
+		else {
+			messages.Push(ProgramSettings["Button" varNum "_Message_1"], ProgramSettings["Button" varNum "_Message_2"], ProgramSettings["Button" varNum "_Message_3"])
+			doNotSend := false
+		}
+		errorLvl := Send_InGame_Message(messages, tabInfos, {doNotSend:doNotSend})
+		if (errorLvl)
+			Return
+	}
+
+	if btnAction contains Close_Tab
+	{
+		if (RegExMatch(btnAction,"Send_Message") && ProgramSettings.Support_Text_Toggle) {
+			tabInfos := Gui_Trades_Get_Trades_Infos(TradesGUI_Values.Active_Tab) ; Retrieve the new PID in case it changed
+			Send_InGame_Message({1:ProgramSettings.Support_Message}, tabInfos)
+		}
+
+		countBeforeDeletion := TradesGUI_Values.Tabs_Count
+		tradesMessages := Gui_Trades_Manage_Trades("REMOVE_CURRENT", ,TradesGUI_Values.Active_Tab)
+		Gui_Trades(tradesMessages, "UPDATE")
+		if (ProgramSettings.Active_Skin != "System") {
+			if (countBeforeDeletion = TradesGUI_Values.Active_Tab) {
+				TradesGUI_Values.Active_Tab--
+			}
+			Gui_Trades_Skinned_Show_Active_Tab_Content()
+		}
+	}
+	else if btnAction in Clipboard,Whisper,Trade
+	{
+		if (btnAction="Clipboard") {
+			Gui_Trades_Clipboard_Item_Func()
+		}
+		else if (btnAction="Whisper") {
+			messages.Push("@%buyerName% ")
+			doNotSend := true
+			Send_InGame_Message(messages, tabInfos, {doNotSend:doNotSend})
+		}
+		else if (btnAction="Trade") {
+			messages.Push("/tradewith %buyerName%")
+			doNotSend := false
+			Send_InGame_Message(messages, tabInfos, {doNotSend:doNotSend})
+		}
+	}
+
+}
+
+Gui_Trades_Clipboard_Item_Func(tabID="NONE") {
 /*		Retrieve the specified tab's item.
 		Change the clipboard content with a precise item search.
 */
+	global TradesGUI_Values
+
+	tabID := (tabID="NONE")?(TradesGUI_Values.Active_Tab):(tabID)
+
 	tabInfos := Gui_Trades_Get_Trades_Infos(tabID)
 	item := tabInfos.Item
 	RegExMatch(item, "(.*?) \(Lvl:(.*?) \/ Qual:(.*?)%\)", itemPat)
@@ -1322,18 +1345,30 @@ Gui_Trades_Get_Tab_Height() {
 */
 	global ProgramSettings
 
-	tabHeight := 145
+	tabHeight := tabHeightNoRown := 125
+	tabHeightOneRow := 165
+	tabHeightTwoRow := 205
+	tabHeightThreeRow := 245
 	Loop 9 {
 		index := A_Index
-		if ( ProgramSettings["Button" index "_SIZE"] != "Disabled" ) {
-			if ( ProgramSettings["Button" index "_V"] = "Middle" && tabHeight = 145 ) {
-				tabHeight := 185
+		btnSize := ProgramSettings["Button" index "_SIZE"]
+		btnVerticalPos := ProgramSettings["Button" index "_V"]
+		if ( btnSize != "Disabled" ) {
+			if ( btnVerticalPos = "Top" ) {
+				isRowTop := 1
 			}
-			if ( ProgramSettings["Button" index "_V"] = "Bottom" && ( tabHeight = 145 || tabHeight = 185 ) ) {
-				tabHeight := 225
+			else if ( btnVerticalPos = "Middle" ) {
+				isRowMiddle := 1, isRowTop := 0
+			}
+			else if ( btnVerticalPos = "Bottom" ) {
+				isRowBottom := 1, isRowTop := 0, isRowMiddle := 0
 			}
 		}
 	}
+	tabHeight := (isRowTop)?(tabHeightOneRow)
+				:(isRowMiddle)?(tabHeightTwoRow)
+				:(isRowBottom)?(tabHeightThreeRow)
+				:(tabHeightNoRown)
 	return tabHeight
 }
 
@@ -1344,7 +1379,7 @@ Return
 Gui_Trades_Mode_Func(thisMenuItem) {
 /*			Switch between Overlay and Window mode
 */
-	global ProgramSettings, ProgramValues, TradesGui_Values
+	global ProgramSettings, ProgramValues, TradesGUI_Values
 
 	iniFilePath := ProgramValues.Ini_File
 
@@ -1352,7 +1387,7 @@ Gui_Trades_Mode_Func(thisMenuItem) {
 		Menu, Tray, UnCheck,% "Mode: Window"
 		Menu, Tray, Check,% "Mode: Overlay"
 		ProgramSettings.Insert("Trades_GUI_Mode", "Overlay")
-		Gui_Trades_Save_Position(A_ScreenWidth-TradesGui_Values.Width, 0)
+		Gui_Trades_Save_Position(A_ScreenWidth-TradesGUI_Values.Width, 0)
 	}
 	else if ( thisMenuItem = "Mode: Window") {
 		Menu, Tray, UnCheck,% "Mode: Overlay"
@@ -1654,18 +1689,18 @@ Gui_Trades_Set_Position(xpos="UNSPECIFIED", ypos="UNSPECIFIED"){
 
 	if WinExist("ahk_id " TradesGUI_Values.Dock_Window) {
 		WinGetPos, winX, winY, winWidth, winHeight,% "ahk_id " TradesGUI_Values.Dock_Window
-		xpos := ( (winX+winWidth)-TradesGui_Values.Width * dpiFactor ), ypos := winY
+		xpos := ( (winX+winWidth)-TradesGUI_Values.Width * dpiFactor ), ypos := winY
 		WinGet, isMinMax, MinMax,% "ahk_id " TradesGUI_Values.Dock_Window ; -1: Min | 1: Max | 0: Neither
-		xpos := (isMinMax=1)?(xpos-8):(isMinMax=-1)?(((A_ScreenWidth/dpiFactor) - TradesGui_Values.Width ) * dpiFactor):(xpos)
+		xpos := (isMinMax=1)?(xpos-8):(isMinMax=-1)?(((A_ScreenWidth/dpiFactor) - TradesGUI_Values.Width ) * dpiFactor):(xpos)
 		ypos := (isMinMax=1)?(ypos+8):(isMinMax=-1)?(0):(ypos)
 		if xpos is not number
-			xpos := ( ( (A_ScreenWidth/dpiFactor) - TradesGui_Values.Width ) * dpiFactor )
+			xpos := ( ( (A_ScreenWidth/dpiFactor) - TradesGUI_Values.Width ) * dpiFactor )
 		if ypos is not number
 			ypos := 0
 		Gui, Trades:Show, % "x" xpos " y" ypos " NoActivate"
 	}
 	else {
-		xpos := ( ( (A_ScreenWidth/dpiFactor) - TradesGui_Values.Width ) * dpiFactor )
+		xpos := ( ( (A_ScreenWidth/dpiFactor) - TradesGUI_Values.Width ) * dpiFactor )
 		Gui, Trades:Show, % "x" xpos " y0" " NoActivate"
 	}
 	Logs_Append(A_ThisFunc, {xpos:xpos, ypos:ypos})
@@ -1680,7 +1715,7 @@ Gui_Trades_Set_Position(xpos="UNSPECIFIED", ypos="UNSPECIFIED"){
 
 Gui_Settings() {
 	static
-	global ProgramSettings, ProgramValues, ProgramFonts, TradesGui_Values
+	global ProgramSettings, ProgramValues, ProgramFonts, TradesGUI_Values
 	global Hotkey1_KEYHandler, Hotkey2_KEYHandler, Hotkey3_KEYHandler, Hotkey4_KEYHandler, Hotkey5_KEYHandler, Hotkey6_KEYHandler
 
 	programName := ProgramValues.Name, iniFilePath := ProgramValues.Ini_File, programSFXFolderPath := ProgramValues.SFX_Folder
@@ -2372,8 +2407,6 @@ return
 				}
 				else if ( var != "ERROR" && var != "" ) { ; Everything else)
 					handler := %sectionName%_HandlersArray[key]
-					if ( handler = "FontSizeCustom")
-						msgbox
 					GuiControl, Settings:,% %handler%Handler,% var
 				}
 			}
@@ -3296,7 +3329,7 @@ WM_RBUTTONDOWN(wParam, lParam, msg, hwnd) {
 	RegExMatch(A_GuiControl, "\d+", btnID)
 
 	if ( A_Gui = "Trades" ) {
-		if (btnType = "delBtn") {
+		if (btnType = "BtnClose") {
 			Menu, TradesCloseBtn, Add, Close similar trades, Gui_Trades_Close_Similar
 			Menu, TradesCloseBtn, Show
 		}
@@ -3379,7 +3412,6 @@ WM_MOUSEMOVE(wParam, lParam, msg, hwnd) {
 	if (A_GUI = "Trades") {
 
 		btnHandler := (btnType="CustomBtn")?(TradesGUI_Controls["Button_Custom_" btnID])
-				     :(btntype="delBtn")?(TradesGUI_Controls["Button_Close"])
 				     :(btnType="GoRight")?(TradesGUI_Controls["Arrow_Right"])
 				     :(btnType="GoLeft")?(TradesGUI_Controls["Arrow_Left"])
 				     :(btntype="BuyerSlot")?(TradesGUI_Controls["Buyer_Slot_" btnID])
@@ -3387,34 +3419,45 @@ WM_MOUSEMOVE(wParam, lParam, msg, hwnd) {
 				     :(btntype="PriceSlot")?(TradesGUI_Controls["Price_Slot_" btnID])
 				     :(btntype="LocationSlot")?(TradesGUI_Controls["Location_Slot_" btnID])
 				     :(btntype="OtherSlot")?(TradesGUI_Controls["Other_Slot_" btnID])
+				     :(btntype="BtnClose")?(TradesGUI_Controls["Button_Close"])
+				     :(btntype="StaticBtn")?(TradesGUI_Controls["Button_Static_" btnID])
 				     :("ERROR")
 
-		if (btnType = "CustomBtn" || btnType = "delBtn" || btnType = "GoRight" || btnType = "GoLeft") {
-			if ( btnHandler != lastButton && btnHandler ) {
-				pngFilePrefix := (btnType="CustomBtn")?("ButtonBackground"):(btnType="delBtn")?("Close"):(btnType="GoRight")?("ArrowRight"):(btnType="GoLeft")?("ArrowLeft"):("ERROR")
-				if FileExist(programSkinFolderPath "\" ProgramSettings.Active_Skin "\" pngFilePrefix "Hover.png") && FileExist(programSkinFolderPath "\" ProgramSettings.Active_Skin "\" pngFilePrefix "Press.png") {
-					GetKeyState, LButtonState, LButton
-					if ( LButtonState = "D" && btnHandler = TradesGUI_Values.Current_Held_Button ) {
-					 	GuiControl, Trades:,% btnHandler,% programSkinFolderPath "\" ProgramSettings.Active_Skin "\" pngFilePrefix "Press.png"
+		if (ProgramSettings.Active_Skin != "System") {
+			if btnType in CustomBtn,BtnClose,GoRight,GoLeft,StaticBtn
+			{
+				if ( btnHandler != lastButton && btnHandler ) {
+					pngFilePrefix := (btnType="CustomBtn")?("ButtonBackground")
+									:(btnType="BtnClose")?("Close")
+									:(btnType="GoRight")?("ArrowRight")
+									:(btnType="GoLeft")?("ArrowLeft")
+									:(btnType="StaticBtn")?("ButtonBackground")
+									:("ERROR")
+					if FileExist(programSkinFolderPath "\" ProgramSettings.Active_Skin "\" pngFilePrefix "Hover.png") && FileExist(programSkinFolderPath "\" ProgramSettings.Active_Skin "\" pngFilePrefix "Press.png") {
+						GetKeyState, LButtonState, LButton
+						if ( LButtonState = "D" && btnHandler = TradesGUI_Values.Current_Held_Button ) {
+						 	GuiControl, Trades:,% btnHandler,% programSkinFolderPath "\" ProgramSettings.Active_Skin "\" pngFilePrefix "Press.png"
+						}
+						else {
+							GuiControl, Trades:,% btnHandler,% programSkinFolderPath "\" ProgramSettings.Active_Skin "\" pngFilePrefix "Hover.png"
+						}
+						GuiControl, Trades:,% lastButton,% programSkinFolderPath "\" ProgramSettings.Active_Skin "\" lastPngFilePrefix ".png"
+						lastPngFilePrefix := pngFilePrefix
 					}
-					else {
-						GuiControl, Trades:,% btnHandler,% programSkinFolderPath "\" ProgramSettings.Active_Skin "\" pngFilePrefix "Hover.png"
-					}
-					GuiControl, Trades:,% lastButton,% programSkinFolderPath "\" ProgramSettings.Active_Skin "\" lastPngFilePrefix ".png"
-					lastPngFilePrefix := pngFilePrefix
 				}
-			}
 
-			TradesGUI_Values.Last_Hovered_Button := btnHandler
-			btnState := "Hover"
+				TradesGUI_Values.Last_Hovered_Button := btnHandler
+				btnState := "Hover"
+			}
+			else if (btnState = "Hover") {
+				GuiControl, Trades:,% lastButton,% programSkinFolderPath "\" ProgramSettings.Active_Skin "\" lastPngFilePrefix ".png"
+				btnState := "Default"
+				RegExMatch(TradesGUI_Values.Last_Hovered_Button, "\D+", lastbtnType)
+				TradesGUI_Values.Insert.Last_Hovered_Button := ""
+			}
 		}
-		else if (btnState = "Hover") {
-			GuiControl, Trades:,% lastButton,% programSkinFolderPath "\" ProgramSettings.Active_Skin "\" lastPngFilePrefix ".png"
-			btnState := "Default"
-			RegExMatch(TradesGUI_Values.Last_Hovered_Button, "\D+", lastbtnType)
-			TradesGUI_Values.Insert.Last_Hovered_Button := ""
-		}
-		else if (btnType = "BuyerSlot" || btnType = "ItemSlot" || btnType = "PriceSlot" || btnType = "LocationSlot" || btnType = "OtherSlot") {
+		if btnType in BuyerSlot,ItemSlot,PriceSlot,LocationSlot,OtherSlot
+		{
 			CoordMode, ToolTip, Screen
 			GuiControlGet, content,Trades:,% btnHandler
 			GuiControlGet, ctrlPOS,Trades:Pos,% btnHandler
@@ -3423,12 +3466,8 @@ WM_MOUSEMOVE(wParam, lParam, msg, hwnd) {
 			MouseGetPos, mouseX, mouseY
 			SetTimer, ToolTipTimer, 100
 		}
-		else {
-			if !ProgramValues.Debug
-				ToolTip, 
-		}
 		if !A_GuiControl ; No control hovered, reset the value
-			TradesGui_Values.Last_Hovered_Button := ""
+			TradesGUI_Values.Last_Hovered_Button := ""
 	}
 
 	else if ( A_GUI = "Settings" ) {
@@ -3489,13 +3528,20 @@ WM_LBUTTONDOWN(wParam, lParam, msg, hwnd) {
 
 	if (A_GUI = "Trades") {
 		btnHandler := (btnType="CustomBtn")?(TradesGUI_Controls["Button_Custom_" btnID])
-				     :(btntype="delBtn")?(TradesGUI_Controls["Button_Close"])
+				     :(btntype="BtnClose")?(TradesGUI_Controls["Button_Close"])
 				     :(btnType="GoRight")?(TradesGUI_Controls["Arrow_Right"])
 				     :(btnType="GoLeft")?(TradesGUI_Controls["Arrow_Left"])
+				     :(btnType="StaticBtn")?(TradesGUI_Controls["Button_Static_" btnID])
 				     :("ERROR")
 
-		if (btnType = "CustomBtn" || btnType = "delBtn" || btnType = "GoRight" || btnType = "GoLeft") {
-			pngFilePrefix := (btnType="CustomBtn")?("ButtonBackground"):(btnType="delBtn")?("Close"):(btnType="GoRight")?("ArrowRight"):(btnType="GoLeft")?("ArrowLeft"):("ERROR")
+		if btnType in CustomBtn,BtnClose,GoRight,GoLeft,StaticBtn
+		{
+			pngFilePrefix := (btnType="CustomBtn")?("ButtonBackground")
+							:(btnType="BtnClose")?("Close")
+							:(btnType="GoRight")?("ArrowRight")
+							:(btnType="GoLeft")?("ArrowLeft")
+							:(btnType="StaticBtn")?("ButtonBackground")
+							:("ERROR")
 			if FileExist(programSkinFolderPath "\" ProgramSettings.Active_Skin "\" pngFilePrefix "Hover.png") && FileExist(programSkinFolderPath "\" ProgramSettings.Active_Skin "\" pngFilePrefix "Press.png") {
 				GuiControl, Trades:,% btnHandler,% programSkinFolderPath "\" ProgramSettings.Active_Skin "\" pngFilePrefix "Press.png"
 				TradesGUI_Values.Current_Held_Button := btnHandler
@@ -3503,11 +3549,15 @@ WM_LBUTTONDOWN(wParam, lParam, msg, hwnd) {
 
 ;				Retrieve handlers of the button's assets
 				MouseGetPos, , , , underMouseHandler, 2
-				if ( btnType = "CustomBtn" ) {
-					GuiControlGet, ClickedBtnHandler, Trades:Hwnd,% TradesGUI_Controls["Button_Custom_" btnID]
-					GuiControlGet, ClickedBtnOrnateLeftHandler, Trades:Hwnd,% TradesGUI_Controls["Button_Custom_" btnID "_OrnamentLeft"]
-					GuiControlGet, ClickedBtnOrnateRightHandler, Trades:Hwnd,% TradesGUI_Controls["Button_Custom_" btnID "_OrnamentRight"]
-					GuiControlGet, ClickedBtnTXTHandler, Trades:Hwnd,% TradesGUI_Controls["Button_Custom_" btnID "_Text"]
+				if btnType in CustomBtn,StaticBtn
+				{
+					prefix := (btnType="CustomBtn")?("Button_Custom_")
+							 :(btnType="StaticBtn")?("Button_Static_")
+							 :("ERROR")
+					GuiControlGet, ClickedBtnHandler, Trades:Hwnd,% TradesGUI_Controls[prefix btnID]
+					GuiControlGet, ClickedBtnOrnateLeftHandler, Trades:Hwnd,% TradesGUI_Controls[prefix btnID "_OrnamentLeft"]
+					GuiControlGet, ClickedBtnOrnateRightHandler, Trades:Hwnd,% TradesGUI_Controls[prefix btnID "_OrnamentRight"]
+					GuiControlGet, ClickedBtnTXTHandler, Trades:Hwnd,% TradesGUI_Controls[prefix btnID "_Text"]
 					matchsList := ClickedBtnHandler "," ClickedBtnOrnateLeftHandler "," ClickedBtnOrnateRightHandler "," ClickedBtnTXTHandler
 				}
 				else {
@@ -3528,15 +3578,15 @@ ShellMessage(wParam,lParam) {
 /*			Triggered upon activating a window
  *			Is used to correctly position the Trades GUI while in Overlay mode
 */
-	global ProgramValues, ProgramSettings, TradesGui_Values
+	global ProgramValues, ProgramSettings, TradesGUI_Values
 	global POEGameList
 
 	programSkinFolderPath := ProgramValues.Skins_Folder
 
 	if ( wParam=4 or wParam=32772 ) { ; 4=HSHELL_WINDOWACTIVATED | 32772=HSHELL_RUDEAPPACTIVATED
-		if WinActive("ahk_id" TradesGui_Values.Handler) {
+		if WinActive("ahk_id" TradesGUI_Values.Handler) {
 ;		Prevent these keyboard presses from interacting with the Trades GUI
-			Hotkey, IfWinActive,% "ahk_id " TradesGui_Values.Handler
+			Hotkey, IfWinActive,% "ahk_id " TradesGUI_Values.Handler
 			Hotkey, NumpadEnter, DoNothing, 
 			Hotkey, Escape, DoNothing, On
 			Hotkey, Space, DoNothing, On
@@ -3553,7 +3603,7 @@ ShellMessage(wParam,lParam) {
 		WinGet, winID, ID, ahk_id %lParam%
 		if ( ProgramSettings.Show_Mode = "InGame" ) {
 
-			if ( TradesGui_Values.Width ) { ; TradesGUI exists
+			if ( TradesGUI_Values.Width ) { ; TradesGUI exists
 				if POEGameList not contains %winEXE%
 				{
 					Gui, Trades:Show, NoActivate Hide
@@ -3981,7 +4031,7 @@ Extract_Font_Files() {
 
 	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\Fonts\Fontin-SmallCaps.ttf,% programFontFolderPath "\Fontin-SmallCaps.ttf"
 	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\Fonts\Consolas.ttf,% programFontFolderPath "\Consolas.ttf"
-	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\Fonts\TC-Symbols.ttf,% programFontFolderPath "\TC-Symbols.ttf"
+	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\Fonts\TC-Symbols.otf,% programFontFolderPath "\TC-Symbols.otf"
 	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\Fonts\Settings.ini,% programFontFolderPath "\Settings.ini"
 }
 
@@ -4112,7 +4162,7 @@ Gui_Trades_Cycle_Func() {
 	if ( ProgramSettings.Trades_GUI_Mode != "Overlay" )
 		Return
 
-	if !WinExist("ahk_id " TradesGui_Values.Handler) {
+	if !WinExist("ahk_id " TradesGUI_Values.Handler) {
 		Loop 2
 			TrayTip,% programName,% "Couldn't find the Trades GUI!`nOperation Canceled."
 		Return
@@ -4419,7 +4469,7 @@ Reload_Func() {
 Gui_Trades_Save_Position(X="FALSE", Y="FALSE") {
 ;		Save the current X and Y positions of the Trades GUI.
 ;		Only if the GUI is in Winodw Mode.
-	global ProgramSettings, ProgramValues, TradesGui_Values
+	global ProgramSettings, ProgramValues, TradesGUI_Values
 
 	iniFilePath := ProgramValues.Ini_File
 
@@ -4428,8 +4478,8 @@ Gui_Trades_Save_Position(X="FALSE", Y="FALSE") {
 		IniWrite,% Y,% iniFilePath,PROGRAM,Y_POS
 	}
 	else {
-		if ( ProgramSettings.Trades_GUI_Mode = "Window" ) && WinExist("ahk_id " TradesGui_Values.Handler) {
-			WinGetPos, xpos, ypos, , ,% "ahk_id " TradesGui_Values.Handler
+		if ( ProgramSettings.Trades_GUI_Mode = "Window" ) && WinExist("ahk_id " TradesGUI_Values.Handler) {
+			WinGetPos, xpos, ypos, , ,% "ahk_id " TradesGUI_Values.Handler
 			IniWrite,% xpos,% iniFilePath,PROGRAM,X_POS
 			IniWrite,% ypos,% iniFilePath,PROGRAM,Y_POS
 		}
