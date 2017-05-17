@@ -901,8 +901,8 @@ Gui_Trades(infosArray="", errorMsg="") {
 		IniRead, showX,% iniFilePath,PROGRAM,X_POS
 		IniRead, showY,% iniFilePath,PROGRAM,Y_POS
 		showXDefault := A_ScreenWidth-(showWidth), showYDefault := 0 ; Top right
-		showX := (showX="ERROR"||showX=""||(!showX && showX != 0))?(showXDefault):(showX) ; Prevent unassigned or incorrect value
-		showY := (showY="ERROR"||showY=""||(!showY && showY != 0))?(showYDefault):(showY)
+		showX := (IsNum(showX))?(showX):(showXDefault) ; Prevent unassigned or incorrect value
+		showY := (IsNum(showY))?(showY):(showYDefault) ; Prevent unassigned or incorrect value
 		Gui, Trades:Show,% "NoActivate w" showWidth " h" showHeight " x" showX " y" showY,% programName " - Queued Trades"
 		OnMessage(0x200, "WM_MOUSEMOVE")
 		OnMessage(0x201, "WM_LBUTTONDOWN")
@@ -4277,7 +4277,7 @@ Run_As_Admin() {
 	}
 
 	IniRead, attempts,% ProgramValues.Ini_File,PROGRAM,Run_As_Admin_Attempts
-	attempts := (attempts=""||attempts="ERROR")?(0):(attempts), attempts++
+	attempts := (IsNum(attempts))?(attempts):(0), attempts++
 	IniWrite,% attempts,% ProgramValues.Ini_File,PROGRAM,Run_As_Admin_Attempts
 	if ( attempts > 2 ) {
 		IniWrite,0,% ProgramValues.Ini_File,PROGRAM,Run_As_Admin_Attempts
@@ -4453,13 +4453,16 @@ Gui_Trades_Save_Position(X="FALSE", Y="FALSE") {
 
 	iniFilePath := ProgramValues.Ini_File
 
-	if ( X != "FALSE" && Y != "FALSE" ) {
+	Sleep 500
+
+	if (IsNum(X) && IsNum(Y)) {
 		IniWrite,% X,% iniFilePath,PROGRAM,X_POS
 		IniWrite,% Y,% iniFilePath,PROGRAM,Y_POS
 	}
 	else {
 		if ( GlobalValues.Trades_GUI_Mode = "Window" ) {
 			WinGetPos, xpos, ypos, , ,% "ahk_id " GuiTradesHandler
+			if (IsNum(xpos) && IsNum(ypos))
 			IniWrite,% xpos,% iniFilePath,PROGRAM,X_POS
 			IniWrite,% ypos,% iniFilePath,PROGRAM,Y_POS
 		}
@@ -4485,6 +4488,12 @@ Manage_Font_Resources(mode) {
 			}
 		}
 	}
+}
+
+IsNum(str) {
+	if str is number
+		return true
+	return false
 }
 
 Exit_Func(ExitReason, ExitCode) {
