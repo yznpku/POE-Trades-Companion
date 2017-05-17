@@ -60,7 +60,7 @@ Start_Script() {
 	MyDocuments := (RunParameters.MyDocuments)?(RunParameters.MyDocuments):(A_MyDocuments)
 
 	ProgramValues.Insert("Name", "POE Trades Companion")
-	ProgramValues.Insert("Version", "1.9.8")
+	ProgramValues.Insert("Version", "1.9.9")
 	ProgramValues.Insert("Debug", 0)
 	; ProgramValues.Debug := (A_IsCompiled)?(0):(ProgramValues.Debug) ; Prevent from enabling debug on compiled executable
 
@@ -455,7 +455,9 @@ Hotkeys_User_Handler(thisLabel) {
 		Send_InGame_Message(messages, tabInfos, {isHotkey:1})
 	}
 	else if ( labelType = "Hotkeys_TradesGUI_" ) {
+		WM_Messages_Set_State(0)
 		ControlClick,,% "ahk_id " TradesGUI_Controls["Button_Custom_" hotkeyID]
+		WM_Messages_Set_State(1)
 	}
 }
 
@@ -948,8 +950,8 @@ Gui_Trades(infosArray="", errorMsg="") {
 		IniRead, showX,% iniFilePath,PROGRAM,X_POS
 		IniRead, showY,% iniFilePath,PROGRAM,Y_POS
 		showXDefault := A_ScreenWidth-(showWidth), showYDefault := 0 ; Top right
-		showX := (showX="ERROR"||showX=""||(!showX && showX != 0))?(showXDefault):(showX) ; Prevent unassigned or incorrect value
-		showY := (showY="ERROR"||showY=""||(!showY && showY != 0))?(showYDefault):(showY)
+		showX := (IsNum(showX))?(showX):(showXDefault) ; Prevent unassigned or incorrect value
+		showY := (IsNum(showY))?(showY):(showYDefault) ; Prevent unassigned or incorrect value
 		Gui, Trades:Show,% "NoActivate w" showWidth " h" showHeight " x" showX " y" showY,% programName " - Queued Trades"
 		OnMessage(0x200, "WM_MOUSEMOVE")
 		OnMessage(0x201, "WM_LBUTTONDOWN")
@@ -3322,6 +3324,16 @@ GUI_Multiple_Instances(handlersArray) {
 ;
 ;==================================================================================================================
 
+WM_Messages_Set_State(state) {
+/*		Disable/Enable the WM_Messages.
+		This allows us to simulate clicking on a button without having to hover the GUI.
+*/
+	OnMessage(0x200, "WM_MOUSEMOVE", state)
+	OnMessage(0x201, "WM_LBUTTONDOWN", state)
+	OnMessage(0x203, "WM_LBUTTONDBLCLK", state)
+	OnMessage(0x204, "WM_RBUTTONDOWN", state)
+}
+
 WM_RBUTTONDOWN(wParam, lParam, msg, hwnd) {
 	global TradesGUI_Controls, TradesGUI_Values
 
@@ -4598,15 +4610,17 @@ Gui_Trades_Save_Position(X="FALSE", Y="FALSE") {
 
 	iniFilePath := ProgramValues.Ini_File
 
-	if ( X != "FALSE" && Y != "FALSE" ) {
+	if (IsNum(X) && IsNum(Y)) {
 		IniWrite,% X,% iniFilePath,PROGRAM,X_POS
 		IniWrite,% Y,% iniFilePath,PROGRAM,Y_POS
 	}
 	else {
 		if ( ProgramSettings.Trades_GUI_Mode = "Window" ) && WinExist("ahk_id " TradesGUI_Values.Handler) {
 			WinGetPos, xpos, ypos, , ,% "ahk_id " TradesGUI_Values.Handler
-			IniWrite,% xpos,% iniFilePath,PROGRAM,X_POS
-			IniWrite,% ypos,% iniFilePath,PROGRAM,Y_POS
+			if (IsNum(xpos) && IsNum(ypos)) {
+				IniWrite,% xpos,% iniFilePath,PROGRAM,X_POS
+				IniWrite,% ypos,% iniFilePath,PROGRAM,Y_POS
+			}
 		}
 	}
 }
@@ -4630,6 +4644,12 @@ Manage_Font_Resources(mode) {
 			}
 		}
 	}
+}
+
+IsNum(str) {
+	if str is number
+		return true
+	return false
 }
 
 Exit_Func(ExitReason, ExitCode) {
