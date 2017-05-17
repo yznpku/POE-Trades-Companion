@@ -451,7 +451,9 @@ Hotkeys_User_Handler(thisLabel) {
 		Send_InGame_Message(messages, tabInfos, {isHotkey:1})
 	}
 	else if ( labelType = "Hotkeys_TradesGUI_" ) {
+		WM_Messages_Set_State(0)
 		ControlClick,,% "ahk_id " TradesGUI_Controls["Button_Custom_" hotkeyID]
+		WM_Messages_Set_State(1)
 	}
 }
 
@@ -575,25 +577,6 @@ Gui_Trades(infosArray="", errorMsg="") {
 				TradesGUI_Controls.Insert("Other_Slot_" index,OtherSlot%index%Handler)
 				TradesGUI_Controls.Insert("Time_Slot_" index,TimeSlot%index%Handler)
 				TradesGUI_Controls.Insert("PID_Slot_" index,PIDSlot%index%Handler)
-
-				;__TO_BE_ADDED__ New buttons, smaller with a specific action
-				if ( debug = 2 ) {
-					; hexCodes := [ "0527", "0427", "C621", "CC21", "0927", "9923", "2623" ]
-					fonts := ["Wingdings 3", "Wingdings 2", "Wingdings", "Wingdings", "MyScriptFont"]
-					hexCodes := ["44", "32", "2A", "33", "41"]
-					for key, element in hexCodes {
-						xpos := ((A_Index-1)*35)+9
-						Gui, Font,% "S" fontSize+3,% fonts[A_Index]
-						Gui, Add, Button,% "x" xpos . " y120" . " w30 h20 " . " hwndUnicodeBtn" A_Index "Handler",% ""
-						ConvertesChars := Hex2Bin(nString, element) ; Convert hex code into its corresponding unicode character
-		   				SetUnicodeText(nString, UnicodeBtn%A_Index%Handler) ; Replace the control's content with the unicode character
-	   				}
-					; Gui, Add, Button,% "xm+10" . " y120" . " w20 h20",
-					Gui, Font ; Revert to system font
-					Gui, Font,% "S" fontSize
-				}
-				;_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-
 
 				;			Customizable Buttons.
 				Loop 9 {
@@ -3240,6 +3223,16 @@ GUI_Multiple_Instances(handlersArray) {
 ;
 ;==================================================================================================================
 
+WM_Messages_Set_State(state) {
+/*		Disable/Enable the WM_Messages.
+		This allows us to simulate clicking on a button without having to hover the GUI.
+*/
+	OnMessage(0x200, "WM_MOUSEMOVE", state)
+	OnMessage(0x201, "WM_LBUTTONDOWN", state)
+	OnMessage(0x203, "WM_LBUTTONDBLCLK", state)
+	OnMessage(0x204, "WM_RBUTTONDOWN", state)
+}
+
 WM_RBUTTONDOWN(wParam, lParam, msg, hwnd) {
 	global TradesGUI_Controls, GlobalValues
 
@@ -4504,14 +4497,3 @@ Exit_Func(ExitReason, ExitCode) {
 
 DoNothing:
 return
-
-;__TO_BE_ADDED__ Functions used by the unicode buttons.
-SetUnicodeText(ByRef ptrUnicodeText,hWnd) {
-/*	Original function author: derRaphael (nli)
- *	autohotkey.com/board/topic/28591-displaying-non-supported-characters-and-letters-in-gui/?p=183128
-*/
-   static WM_SETTEXT := 0x0C
-   DllCall("SendMessageW", "UInt",hWnd, "UInt",WM_SETTEXT, "UInt",0, "Uint",&ptrUnicodeText)
-}
-
-#Include %A_ScriptDir%/Resources/AHK/BinaryEncodingDecoding.ahk
