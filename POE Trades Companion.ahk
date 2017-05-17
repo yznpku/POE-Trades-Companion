@@ -118,8 +118,8 @@ Start_Script() {
 	}
 
 ;	Function Calls
-	Run_As_Admin()
 	Close_Previous_Program_Instance()
+	Run_As_Admin()
 	Tray_Refresh()
 
 	Set_Local_Settings()
@@ -4120,9 +4120,6 @@ Close_Previous_Program_Instance() {
 	IniRead, lastPID,% iniFilePath,PROGRAM,PID
 	IniRead, lastProcessName,% iniFilePath,PROGRAM,FileProcessName
 
-	if ( A_IsAdmin = 0 )
-		Return ; Not running as admin means script will be going through the Run_As_Admin function
-
 	Process, Exist, %lastPID%
 	existingPID := ErrorLevel
 	if ( existingPID = 0 )
@@ -4133,11 +4130,27 @@ Close_Previous_Program_Instance() {
 		WinGet, existingProcessName, ProcessName, ahk_pid %existingPID% ; Get process name from PID
 		DetectHiddenWindows, %HiddenWindows%
 		if ( existingProcessName = lastProcessName ) { ; Match found, close the previous instance
-			Process, Close, %existingPID%
-			Process, WaitClose, %existingPID%
+			if (A_IsAdmin) {
+				Process, Close, %existingPID%
+				Process, WaitClose, %existingPID%
+			}
+			else { ; Unable to close process due to lack of admin 
+				funcParams := {	 Width:350
+								,Height:125
+								,BorderColor:"White"
+								,Background:"Red"
+								,Title:"Missing admin rights, unable to close instance."
+								,TitleColor:"White"
+								,Text:"Previous instance detected."
+								. "`nUnable to close it due to missing admin rights."
+								. "`nPlease close it before continuing."
+								. "`n`nThis window will be closed automatically."
+								,TextColor:"White"
+								,Condition:"Previous_Instance_Close"}
+				GUI_Beautiful_Warning(funcParams)
+			}
 		}
 	}
-
 }
 
 GUI_Trades_Cycle:
@@ -4286,51 +4299,160 @@ Get_System_Error_Codes(Err) {
 Run_As_Admin() {
 /*			If not running with as admin, reload with admin rights. 
 */
-	global ProgramValues, ProgramSettings
+	global ProgramValues, ProgramSettings, RunParameters
 
 	programName := ProgramValues.Name
 
 	IniWrite,% A_IsAdmin,% ProgramValues.Ini_File,PROGRAM,Is_Running_As_Admin
 
-	if ( A_IsAdmin ) {
+	if ( A_IsAdmin || RunParameters.NoAdmin ) {
 		IniWrite, 0,% ProgramValues.Ini_File,PROGRAM,Run_As_Admin_Attempts
 		Return
 	}
 
 	IniRead, attempts,% ProgramValues.Ini_File,PROGRAM,Run_As_Admin_Attempts
-	attempts := (attempts=""||attempts="ERROR")?(0):(attempts), attempts++
-	IniWrite,% attempts,% ProgramValues.Ini_File,PROGRAM,Run_As_Admin_Attempts
-	if ( attempts > 2 ) {
-		IniWrite,0,% ProgramValues.Ini_File,PROGRAM,Run_As_Admin_Attempts
-		MsgBox, 4100,% "Running as admin failed!",% "It seems " programName " was unable to run with admin rights previously."
-		. "`nTry right clicking the executable and choose ""Run as Administrator""."
-		. "`n`nPossible known causes could be:"
-		. "`n-You are not using an account with administrative rights."
-		. "`n-You are using an account with administrative right"
-		. "`n    but declined the UAC prompt."
-		. "`n-You are using an account with standard rights"
-		. "`n    and the administrator disabled UAC."
-		. "`n`nWoud you like to continue without admin rights?"
-		. "`nYou will still be able to see the incoming trade requests."
-		. "`nThough, clicking the buttons and using hotkeys will not work."
-		IfMsgBox, Yes
-		{
-			return
-		}
-		IfMsgBox, Cancel
-		{
-			ExitApp
-		}
-		IfMsgBox, No
-		{
-			ExitApp
-		}
+	attempts := (attempts=""||attempts="ERROR")?(0):(attempts)
+	IniWrite,% attempts+1,% ProgramValues.Ini_File,PROGRAM,Run_As_Admin_Attempts
+	if ( attempts ) {
+		IniWrite, 0,% ProgramValues.Ini_File,PROGRAM,Run_As_Admin_Attempts
+		FileCreateShortcut,% A_ScriptFullPath,% A_ScriptDir "\" programName " (No Admin).lnk",% A_ScriptDir,% "/NoAdmin"
+		Gui_AdminWarn()
+		ExitApp
 	}
-	dpiFactor := ProgramSettings.Screen_DPI
-	SplashTextOn, 370*dpiFactor, 40*dpiFactor,% programName,% programName " needs to run with Admin .`nAttempt to restart with admin rights in 3 seconds..."
-	sleep 3000
-
+	funcParams := {  Width:350
+					,Height:50
+					,Background:"Green"
+					,BorderColor:"White"
+					,TitleColor:"White"
+					,Text:"Reloading to request admin privilieges in %count%..."
+					,TextColor:"White"
+					,Condition:"Reload_Timer"
+					,ConditionCount:3}
+	GUI_Beautiful_Warning(funcParams)
 	Reload_Func()
+}
+
+GUI_Beautiful_Warning(params) {
+	global ProgramValues
+
+	guiWidth := params.Width
+	guiHeight := params.Height
+	guiBackground := params.Background
+	borderSize := (params.Border)?(params.Border):(2)
+	borderColor := params.BorderColor
+
+	warnTitle := params.Title
+	warnTitleColor := params.TitleColor
+	warnText := params.Text
+	warnTextColor := params.TextColor
+
+	condition := params.Condition
+	count := params.ConditionCount
+
+	if (condition = "Previous_Instance_Close") {
+		SetTimer, GUI_Beautiful_Warning_Instance_WaitClose, 1000
+	}
+
+	static WarnTextHandler
+
+	Gui, BeautifulWarn:Destroy
+	Gui, BeautifulWarn:New, +AlwaysOnTop +ToolWindow -Caption -Border +LabelGui_Beautiful_Warning_ hwndGuiBeautifulWarningHandler,% ProgramValues.Name
+	Gui, BeautifulWarn:Default
+	Gui, Margin, 0, 0
+	Gui, Color,% guiBackground
+	Gui, Font, S10 Bold, Consolas
+	Gui, Add, Progress,% "x0" . " y0" . " h" borderSize . " w" guiWidth . " Background" borderColor ; Top
+	Gui, Add, Text, xm ym+5 Center w%guiWidth% c%warnTitleColor% BackgroundTrans Section,% ProgramValues.Name
+	if (warnTitle) {
+		Gui, Add, Text, xs Center w%guiWidth% c%warnTitleColor% BackgroundTrans Section,% warnTitle
+		Gui, Add, Progress,% "xs" . " y+5 h" borderSize . " w" guiWidth . " Background" borderColor " Section" ; Underline
+		underlineExists := true
+	}
+	Gui, Add, Progress,% "x" guiWidth-borderSize . " y0" . " h" guiHeight . " w" borderSize . " Background" borderColor ; Right
+	Gui, Add, Progress,% "x0" . " y" guiHeight-borderSize . " h" borderSize . " w" guiWidth . " Background" borderColor ; Bot
+	Gui, Add, Progress,% "x0" . " y0" . " h" guiHeight . " w" borderSize . " Background" borderColor ; Left
+	yOffset := (underlineExists)?(5):(20)
+	Gui, Add, Text, xs ys+%yOffset% Center w%guiWidth% c%warnTextColor% BackgroundTrans hwndWarnTextHandler,% warnText
+	if (condition = "Reload_Timer") {
+		GoSub GUI_Beautiful_Warning_Reload_Timer
+		SetTimer, GUI_Beautiful_Warning_Reload_Timer, 1000
+	}
+	Gui, Show, w%guiWidth% h%guiHeight%
+	WinWait,% "ahk_id " GuiBeautifulWarningHandler
+	WinWaitClose,% "ahk_id " GuiBeautifulWarningHandler
+	Return
+
+	GUI_Beautiful_Warning_Reload_Timer:
+		StringReplace,warnTextEdit, warnText,`%count`%,%count%
+		GuiControl, BeautifulWarn:,% WarnTextHandler,% warnTextEdit
+		if (!count)
+			Gui, BeautifulWarn:Destroy
+		count--
+	Return
+
+	GUI_Beautiful_Warning_Instance_WaitClose:
+		IniRead, lastPID,% ProgramValues.Ini_File,PROGRAM,PID
+		IniRead, lastProcessName,% ProgramValues.Ini_File,PROGRAM,FileProcessName
+
+		Process, Exist, %lastPID%
+		existingPID := ErrorLevel
+
+		HiddenWindows := A_DetectHiddenWindows
+		DetectHiddenWindows, On ; Required to access the process name
+
+		WinGet, existingProcessName, ProcessName, ahk_pid %existingPID% ; Get process name from PID
+		DetectHiddenWindows, %HiddenWindows%
+		if ( existingProcessName != lastProcessName ) { ; Match found, close the previous instance
+			Gui,BeautifulWarn:+OwnDialogs
+			SetTimer,% A_ThisLabel, Off
+			Gui, BeautifulWarn:Destroy
+		}
+	Return
+
+	GUI_Beautiful_Warning_Close:
+	Return
+	GUI_Beautiful_Warning_Escape:
+	Return
+
+}
+
+Gui_AdminWarn() {
+	global ProgramValues
+	static UnlockBtn
+
+	Gui, AdminWarn:Destroy
+	Gui, AdminWarn:New, +AlwaysOnTop -SysMenu -MinimizeBox -MaximizeBox +LabelGui_AdminWarn_ hwndGuiAdminWarnHandler,% ProgramValues.Name
+	Gui, AdminWarn:Default
+	Gui, Font, ,Consolas
+	Gui, Font, Bold
+	Gui, Add, GroupBox, xm ym cRed w460 h140 Center Section,% "IMPORTANT INFORMATIONS, PLEASE READ"
+	Gui, Add, Text,xs+15 ys+25 Center,% ProgramValues.Name " was unable to start with admin rights previously."
+	. "`nTry right clicking the executable and choose ""Run as Administrator""."
+	. "`n`nIf for some reason you prefer not to use admin elevation, please use"
+	. "`nthe shorcut that has been placed in the same folder as the executable."
+	. "`nPlease be aware that unexpected behaiour may happen."
+	. "`n`nThe tool will exit upon closing this window."
+	Gui, Add, Button, xs w460 h30 Disabled vUnlockBtn gGui_AdminWarn_Accept,% "This button will be unlocked in 10..."
+	Gui, Show
+	WinWait,% "ahk_id " GuiAdminWarnHandler
+	count := 10
+	Loop %count% {
+		Sleep 1000
+		count--
+		GuiControl, , UnlockBtn,% "This button will be unlocked in " count "..."
+	}
+	GuiControl, , UnlockBtn,% "Alright, got it!"
+	GuiControl, Enable, UnlockBtn
+	WinWaitClose,% "ahk_id " GuiAdminWarnHandler
+	Return
+
+	Gui_AdminWarn_Accept:
+		Gui, AdminWarn:Destroy
+	Return
+	Gui_AdminWarn_Close:
+	Return
+	Gui_AdminWarn_Escape:
+	Return
 }
 
 Handle_CommandLine_Parameters() {
@@ -4377,6 +4499,9 @@ Handle_CommandLine_Parameters() {
 		}
 		else if RegExMatch(param, "/MyDocuments=(.*)", found) {
 			RunParameters.Insert("MyDocuments", found1)
+		}
+		else if (param="/NoAdmin") {
+			RunParameters.Insert("NoAdmin", 1)
 		}
 	}
 }
