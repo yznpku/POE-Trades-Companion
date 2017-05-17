@@ -1,4 +1,9 @@
 \\
+--1.9.9--
+- Fix: Custom Buttons hotkeys would only work while the cursor was on the main interface.
+- Potential Fix: On launch, under specific conditions, the main interface's position would be reverted to default (top-right).
+//
+\\
 --1.9.8--
 - Fix: Custom Buttons: Missing chat edit field.
 - Fix: Hotkeys: Hotkey and text being saved as Advanced Hotkeys instead of regular hotkeys.
