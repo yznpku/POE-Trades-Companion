@@ -9,8 +9,10 @@
 **It all takes just a single click to give your buyer some attention.**
 
 Two skins are available. The regular system interface, or a POE-themed interface:  
-![Skin-System](https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/Screenshots/GUI%20Trades%20System.png)  
-![Skin-PathOfExile](https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/Screenshots/GUI%20Trades%20PathOfExile.png)
+
+|System|Path of Exile|
+|---|---|
+|![](https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/Screenshots/GUI%20Trades%20System.png) | ![](https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/Screenshots/GUI%20Trades%20PathOfExile.png)|
 
 If you wish to support the tool by donating, you can click on this button right here: [![Paypal](https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/Resources/Others/DonatePaypal.png)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=BSWU76BLQBMCU)
 
