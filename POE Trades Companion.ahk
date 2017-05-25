@@ -590,8 +590,8 @@ Gui_Trades(infosArray="", errorMsg="") {
 				TradesGUI_Controls.Insert("Time_Slot_" index,TimeSlot%index%Handler)
 				TradesGUI_Controls.Insert("PID_Slot_" index,PIDSlot%index%Handler)
 
-				hexCodes := ["41", "42", "43"]
-				ctrlActions := ["Clipboard" , "Whisper", "Trade"]
+				hexCodes := ["41", "42", "45", "43", "44"] ; 41:Clip/42:Whis/43:Trade/44:Kick/45:Inv
+				ctrlActions := ["Clipboard" , "Whisper", "Invite", "Trade", "Kick"]
 				for key, element in hexCodes {
 					xpos := (A_Index=1)?("s+" 5*guiScale):("p+" 40*guiScale), ypos := "s+" 105*guiScale
 					Gui, Font,% "S" 20*guiScale,% "TC-Symbols"
@@ -599,7 +599,9 @@ Gui_Trades(infosArray="", errorMsg="") {
 					handler := "StaticBtn" A_Index "_" index "Handler"
 					ConvertesChars := Hex2Bin(nString, element) ; Convert hex code into its corresponding unicode character
 	   				SetUnicodeText(nString, %handler%) ; Replace the control's content with the unicode character
+
 	   				TradesGUI_Controls.Insert("Button_Static_" A_Index, ctrlActions[key])
+	   				TradesGUI_Controls.Insert("Button_Static_" A_Index "_Action", ctrlActions[key])
 	   			}
 	   			hexCodes := "", ctrlActions := "", element := "", xpos := "", ypos := "", handler := "", ConvertesChars := "", nString := ""
 				Gui, Font ; Revert to system font
@@ -725,8 +727,8 @@ Gui_Trades(infosArray="", errorMsg="") {
 				TradesGUI_Controls.Insert("PID_Slot_" index,PIDSlot%index%Handler)
 			}
 
-			hexCodes := ["41", "42", "43"]
-			ctrlActions := ["Clipboard" , "Whisper", "Trade"]
+			hexCodes := ["41", "42", "45", "43", "44"] ; 41:Clip/42:Whis/43:Trade/44:Kick/45:Inv
+			ctrlActions := ["Clipboard" , "Whisper", "Invite", "Trade", "Kick"]
 			for key, element in hexCodes {
 				btnX := ((A_Index-1)*(40*guiScale))+(7*guiScale)
 				btnY := 135*guiScale
@@ -749,11 +751,12 @@ Gui_Trades(infosArray="", errorMsg="") {
 				ConvertesChars := Hex2Bin(nString, element) ; Convert hex code into its corresponding unicode character
 	   			SetUnicodeText(nString, %handler%) ; Replace the control's content with the unicode character
 
-	   			TradesGUI_Controls.Insert("Button_Static_" A_Index "_Action", ctrlActions[key])
 	   			handler :=  "StaticBtn" A_Index "Handler", TradesGUI_Controls.Insert("Button_Static_" A_Index, %handler% )
 	   			handler :=  "StaticBtn" A_Index "OrnamentLeftHandler", TradesGUI_Controls.Insert("Button_Static_" A_Index "_OrnamentLeft", %handler%)
 	   			handler := "StaticBtn" A_Index "OrnamentRightHandler", TradesGUI_Controls.Insert("Button_Static_" A_Index "_OrnamentRight", %handler%)
-	   			handler := "StaticBtn" A_Index "TXTHandler", TradesGUI_Controls.Insert("Button_Static_" A_Index "_Text", %handler%)
+	   			handler := "StaticBtn" A_Index "TXTHandler"
+	   			TradesGUI_Controls.Insert("Button_Static_" A_Index "_Action", ctrlActions[key])
+	   			TradesGUI_Controls.Insert("Button_Static_" A_Index "_Text", %handler%)
    			}
    			hexCodes := "", ctrlActions := "", element := "", xpos := "", ypos := "", handler := "", ConvertesChars := "", nString := ""
    			btnX := "", btnY := "", btnW := "", btnH := ""
@@ -1322,20 +1325,24 @@ Gui_Trades_Do_Action_Func(CtrlHwnd, GuiEvent, EventInfo) {
 			Gui_Trades_Skinned_Show_Active_Tab_Content()
 		}
 	}
-	else if btnAction in Clipboard,Whisper,Trade
+	else if btnAction in Clipboard,Whisper,Trade,Invite,Kick
 	{
 		if (btnAction="Clipboard") {
 			Gui_Trades_Clipboard_Item_Func()
 		}
-		else if (btnAction="Whisper") {
-			messages.Push("@%buyerName% ")
-			doNotSend := true
-			Send_InGame_Message(messages, tabInfos, {doNotSend:doNotSend})
-		}
-		else if (btnAction="Trade") {
-			messages.Push("/tradewith %buyerName%")
-			doNotSend := false
-			Send_InGame_Message(messages, tabInfos, {doNotSend:doNotSend})
+		else {
+			msg := (btnAction="Whisper")?("@%buyerName% ")
+				  :(btnAction="Trade")?("/tradewith %buyerName%")
+				  :(btnAction="Invite")?("/invite %buyerName%")
+				  :(btnAction="Kick")?("/kick %buyerName%")
+				  :("ERROR")
+			doNotSend := (btnAction="Whisper")?(true):(false)
+
+			if (msg="ERROR") {
+				Logs_Append(A_ThisFunc, {btnVar:varName, btnAction:btnAction, btnAlpha:varAlpha})
+				Return
+			}
+			Send_InGame_Message({1:msg}, tabInfos, {doNotSend:doNotSend})
 		}
 	}
 
@@ -3962,6 +3969,11 @@ Logs_Append(funcName, params) {
 		FileAppend,% "Replacing linked PID (Return). PID: " params.PID,% programLogsFilePath
 	}
 
+	if ( funcName = "Gui_Trades_Do_Action_Func") {
+		FileAppend,% "[" A_YYYY "-" A_MM "-" A_DD "_" A_Hour ":" A_Min ":" A_Sec "] ",% programLogsFilePath
+		FileAppend,% "Could not find a matching action for button: Name:" params.btnName ", Alpha:" params.btnAlpha ", Action:" params.btnAction,% programLogsFilePath
+	}
+
 	FileAppend,% "`n",% programLogsFilePath
 }
 
@@ -4129,10 +4141,10 @@ Extract_Font_Files() {
 
 	programFontFolderPath := ProgramValues.Fonts_Folder
 
-	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\Fonts\Fontin-SmallCaps.ttf,% programFontFolderPath "\Fontin-SmallCaps.ttf"
-	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\Fonts\Consolas.ttf,% programFontFolderPath "\Consolas.ttf"
-	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\Fonts\TC-Symbols.otf,% programFontFolderPath "\TC-Symbols.otf"
-	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\Fonts\Settings.ini,% programFontFolderPath "\Settings.ini"
+	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\Fonts\Fontin-SmallCaps.ttf,% programFontFolderPath "\Fontin-SmallCaps.ttf", 1
+	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\Fonts\Consolas.ttf,% paogramFontFolderPath "\Consolas.ttf", 1
+	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\Fonts\TC-Symbols.otf,% programFontFolderPath "\TC-Symbols.otf", 1
+	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\Fonts\Settings.ini,% programFontFolderPath "\Settings.ini", 1
 }
 
 Extract_Skin_Files() {
