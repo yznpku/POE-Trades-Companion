@@ -61,7 +61,7 @@ Start_Script() {
 
 	ProgramValues.Insert("Name", "POE Trades Companion")
 	ProgramValues.Insert("Version", "1.9.9")
-	ProgramValues.Insert("Debug", 0)
+	ProgramValues.Insert("Debug", 1)
 	; ProgramValues.Debug := (A_IsCompiled)?(0):(ProgramValues.Debug) ; Prevent from enabling debug on compiled executable
 
 	ProgramValues.Insert("Updater_File", "POE-TC-Updater.exe")
@@ -81,6 +81,7 @@ Start_Script() {
 	ProgramValues.Insert("Logs_Folder", ProgramValues.Local_Folder "\Logs")
 	ProgramValues.Insert("Skins_Folder", ProgramValues.Local_Folder "\Skins")
 	ProgramValues.Insert("Fonts_Folder", ProgramValues.Local_Folder "\Fonts")
+	ProgramValues.Insert("Fonts_Settings_File", ProgramValues.Fonts_Folder "\Settings.ini")
 	ProgramValues.Insert("Others_Folder", ProgramValues.Local_Folder "\Others")
 
 	ProgramValues.Insert("Ini_File", ProgramValues.Local_Folder "\Preferences.ini")
@@ -487,10 +488,15 @@ Gui_Trades(infosArray="", errorMsg="") {
 	activeSkin := ProgramSettings.Active_Skin
 	guiScale := ProgramSettings.Scale_Multiplier
 
-	IniRead, fontSizeAuto,% ProgramValues.Fonts_Folder "\Settings.ini",FONTS,% ProgramSettings.Font
+	IniRead, fontSizeAuto,% ProgramValues.Fonts_Settings_File,SIZE,% ProgramSettings.Font
 	fontName := (ProgramSettings.Font="System")?(""):(ProgramSettings.Font)
 	fontSize := (ProgramSettings.Font_Size_Mode="Custom")?(ProgramSettings.Font_Size_Custom)
 			   :(fontSizeAuto*guiScale)
+	IniRead, fontQualAuto,% ProgramValues.Fonts_Settings_File,QUALITY,% ProgramSettings.Font
+	if !IsNum(fontQualAuto)
+		IniRead, fontQualAuto,% ProgramValues.Fonts_Settings_File,QUALITY,% "Default"
+	fontQual := (ProgramSettings.Font_Quality_Mode="Custom")?(ProgramSettings.Font_Quality_Custom)
+			   :(fontQualAuto)
 
 	colorTitleActive := ProgramSettings.Font_Color_Title_Active
 	colorTitleInactive := ProgramSettings.Font_Color_Title_Inactive
@@ -545,7 +551,7 @@ Gui_Trades(infosArray="", errorMsg="") {
 */
 		if ( activeSkin = "System" ) {
 ;			Header
-			Gui, Font,s%fontSize%,% fontName
+			Gui, Font,S%fontSize% Q%fontQual%,% fontName
 			Gui, Add, Picture,% "x" borderSize . " y" borderSize . " w" guiWidth-borderSize . " h" 30*guiScale . " +BackgroundTrans",% programSkinFolderPath "\" activeSkin "\Header.png"
 			Gui, Add, Picture,% "x" borderSize+10*guiScale . " y" borderSize+5*guiScale . " w" 22*guiScale . " h" 22*guiScale . " +BackgroundTrans",% programSkinFolderPath "\" activeSkin "\icon.png"
 			Gui, Add, Text,% "x" borderSize+(35*guiScale) . " y" borderSize . " w" guiWidth-(100*guiScale) . " h" 28*guiScale " hwndguiTradesTitleHandler gGui_Trades_Move c" colorTitleInactive . " +BackgroundTrans +0x200 ",% programName " - Queued Trades: 0"
@@ -611,7 +617,7 @@ Gui_Trades(infosArray="", errorMsg="") {
 	   			}
 	   			hexCodes := "", ctrlActions := "", element := "", xpos := "", ypos := "", handler := "", ConvertesChars := "", nString := ""
 				Gui, Font ; Revert to system font
-				Gui, Font,% "S" fontSize
+				Gui, Font,% "S" fontSize " Q" fontQual
 
 ;				Custom Buttons.
 				Loop 9 {
@@ -654,7 +660,7 @@ Gui_Trades(infosArray="", errorMsg="") {
 		else {
 ;			Header
 			Gui, Color, Black ; Prevents the flickering from being too noticeable
-			Gui, Font,s%fontSize%,% fontName
+			Gui, Font,S%fontSize% Q%fontQual%,% fontName
 			Gui, Add, Picture,% "x" borderSize . " y" borderSize . " w" guiWidth-borderSize . " h" 30*guiScale . " +BackgroundTrans",% programSkinFolderPath "\" activeSkin "\Header.png"
 			Gui, Add, Picture,% "x" borderSize+10*guiScale . " y" borderSize+5*guiScale . " w" 22*guiScale . " h" 22*guiScale . " +BackgroundTrans",% programSkinFolderPath "\" activeSkin "\icon.png"
 			Gui, Add, Text,% "x" borderSize+(35*guiScale) . " y" borderSize . " w" guiWidth-(100*guiScale) . " h" 28*guiScale " hwndguiTradesTitleHandler gGui_Trades_Move c" colorTitleInactive . " +BackgroundTrans +0x200 ",% programName " - Queued Trades: 0"
@@ -689,9 +695,9 @@ Gui_Trades(infosArray="", errorMsg="") {
 
 ;				Tab Pictures
 				Gui, Add, Picture,% "x" xpos*guiScale . " y" ypos*guiScale . " w" 48*guiScale . " h" 20*guiScale " hwndTabIMG" index "Handler" . " vTabIMG" index . " gGui_Trades_Skinned_OnTabSwitch +BackgroundTrans",% programSkinFolderPath "\" activeSkin "\TabInactive.png"
-				Gui, Font,% "Bold"
+				Gui, Font,% "Bold Q" fontQual
 				Gui, Add, Text,% "xp" . " yp+" 3*guiScale . " w" 48*guiScale . " h" 20*guiScale . " hwndTabTXT" index "Handler" . " vTabTXT" index . " gGui_Trades_Skinned_OnTabSwitch +BackgroundTrans 0x01 c" colorTabs,% index
-				Gui, Font, Norm
+				Gui, Font, Norm S%fontSize% Q%fontQual%
 
 ;				Buyer / Item / ... Static Text
 				if ( index = 1 ) {
@@ -769,7 +775,7 @@ Gui_Trades(infosArray="", errorMsg="") {
    			btnOrnaW := "", btnOrnaH := "", btnOrnaLeftX := "", btnOrnaRightX := "", btnOrnaLeftY := "", btnOrnaRightY := ""
 			btnTextX := "", btnTextY := "", btnTextW := "", btnTextH := ""
 			Gui, Font ; Revert to system font
-			Gui, Font,% "S" fontSize,% fontName
+			Gui, Font,% "S" fontSize " Q" fontQual,% fontName
 
 ;			Custom Buttons.
 			Loop 9 {
@@ -1864,7 +1870,7 @@ Gui_Settings() {
 ;		Apply Button
 
 	guiXWorkArea := 150, guiYWorkArea := 10
-	Gui, Add, TreeView, x10 y10 h380 w140 -0x4 -Buttons gGui_Settings_TreeView
+	Gui, Add, TreeView, x10 y10 h380 w130 -0x4 -Buttons gGui_Settings_TreeView
     P1 := TV_Add("Settings","", "Expand")
     P2 := TV_Add("Customization","","Expand")
     P2C1 := TV_Add("Appearance", P2, "Expand")
@@ -1879,7 +1885,7 @@ Gui_Settings() {
 	Gui, Tab, Settings
 ;	Settings Tab
 ;		Trades GUI
-		Gui, Add, GroupBox,% " x" guiXWorkArea . " y" guiYWorkArea . " w430 h340",Main interface
+		Gui, Add, GroupBox,% " x" guiXWorkArea . " y" guiYWorkArea . " w430 h340" . " c000000",Main interface
 		Gui, Add, Radio, xp+10 yp+20 vShowAlways hwndShowAlwaysHandler,Always show
 		Gui, Add, Radio, xp yp+15 vShowInGame hwndShowInGameHandler,Only show while in game
 
@@ -1889,7 +1895,7 @@ Gui_Settings() {
 		Gui, Add, Checkbox, xp yp+30 hwndAutoMinimizeHandler vAutoMinimize,Minimize when inactive
 		Gui, Add, Checkbox, xp yp+15 hwndAutoUnMinimizeHandler vAutoUnMinimize,Un-Minimize when active
 ;			Transparency
-			Gui, Add, GroupBox,% " x" guiXWorkArea+215 . " y" guiYWorkArea+125 " w205 h140",Transparency
+			Gui, Add, GroupBox,% " x" guiXWorkArea+215 . " y" guiYWorkArea+125 " w205 h140" . " c000000",Transparency
 			Gui, Add, Checkbox, xp+30 yp+25 hwndClickThroughHandler vClickThrough,Click-through while inactive
 			Gui, Add, Text, xp yp+20,Inactive (no trade on queue)
 			Gui, Add, Slider, xp+10 yp+15 hwndShowTransparencyHandler gGui_Settings_Transparency vShowTransparency AltSubmit ToolTip Range0-100
@@ -1898,7 +1904,7 @@ Gui_Settings() {
 
 ; ;		Notifications
 ;			 Trade Sound Group
-			Gui, Add, GroupBox,% "x" guiXWorkarea+215 . " y" guiYWorkArea+10 . " w205 h110",Notifications
+			Gui, Add, GroupBox,% "x" guiXWorkarea+215 . " y" guiYWorkArea+10 . " w205 h110" . " c000000",Notifications
 			Gui, Add, Checkbox, xp+10 yp+20 vNotifyTradeToggle hwndNotifyTradeToggleHandler,Trade
 			Gui, Add, Edit, xp+65 yp-2 w70 h17 vNotifyTradeSound hwndNotifyTradeSoundHandler ReadOnly
 			Gui, Add, Button, xp+80 yp-2 h20 vNotifyTradeBrowse gGui_Settings_Notifications_Browse,Browse
@@ -1910,7 +1916,7 @@ Gui_Settings() {
 			Gui, Add, Checkbox,% "xp-145"   " yp+29 vNotifyWhisperTray hwndNotifyWhisperTrayHandler",Show tray notifications
 			Gui, Add, Checkbox,% "xp"  " yp+14 vNotifyWhisperFlash hwndNotifyWhisperFlashHandler",Flash the taskbar icon
 ; ;		Support
-		Gui, Add, GroupBox,% "x" guiXWorkArea+10 " y" guiYWorkArea+180 . " w200 h85",Support
+		Gui, Add, GroupBox,% "x" guiXWorkArea+10 " y" guiYWorkArea+180 . " w200 h85" . " c000000",Support
 		Gui, Add, Checkbox, xp+90 yp+20 vMessageSupportToggle hwndMessageSupportToggleHandler
 		Gui, Add, Text, gGUI_Settings_Tick_Case vMessageSupportToggleText xp-55 yp+18,% "Send an additional message`n   containing the thread-id`n     upon closing a trade"
 
@@ -1919,7 +1925,7 @@ Gui_Settings() {
 	Gui, Add, Text,% "x" guiXWorkarea+80 . " y" guiYWorkArea+100 " Center",% "This section is empty.`nSelect one of the sub-sections to change your settings."
 ;	--------------------
 	Gui, Tab, Appearance
-	Gui, Add, GroupBox,% "x" guiXWorkarea . " y" guiYWorkArea . " w420 h55",Preset
+	Gui, Add, GroupBox,% "x" guiXWorkarea . " y" guiYWorkArea . " w420 h55" . " c000000",Preset
 		presetsList := "User Defined"
 		Loop, Files,% ProgramValues.Skins_Folder "\*", D
 		{
@@ -1928,7 +1934,7 @@ Gui_Settings() {
 		Sort, presetsList,D|
 		Gui, Add, DropDownList,% "x" guiXWorkarea+10 . " y" guiYWorkArea+20 . " w400" . " vActivePreset hwndActivePresetHandler gGui_Settings_Presets",% presetsList
 
-	Gui, Add, GroupBox,% "x" guiXWorkArea . " y" guiYWorkArea+60 . " w430 h85",Skin
+	Gui, Add, GroupBox,% "x" guiXWorkArea . " y" guiYWorkArea+60 . " w430 h85" . " c000000",Skin
 
 		skinsList := ""
 		Loop, Files,% ProgramValues.Skins_Folder "\*", D
@@ -1945,7 +1951,7 @@ Gui_Settings() {
 		Gui, Add, Text,% "xp+200" . " yp+3",Scale: 
 		Gui, Add, DropDownList,% "xp+40" . " yp-3" . " w145" . " vSkinScaling hwndSkinScalingHandler" . " gGui_Settings_Set_Custom_Preset",% scalingList
 
-	Gui, Add, GroupBox,% "x" guiXWorkArea . " y" guiYWorkArea+150 . " w430 h85",Font
+	Gui, Add, GroupBox,% "x" guiXWorkArea . " y" guiYWorkArea+150 . " w430 h85" . " c000000",Font
 
 		fontsList := "System"
 		for fontFile, fontTitle in ProgramFonts {
@@ -1960,7 +1966,12 @@ Gui_Settings() {
 		Gui, Add, Edit,% "xp+100" . " yp" . " w50" . " ReadOnly"
 		Gui, Add, UpDown, vFontSizeCustom hwndFontSizeCustomHandler gGui_Settings_Set_Custom_Preset
 
-	Gui, Add, GroupBox,% "x" guiXWorkArea . " y" guiYWorkArea+240 . " w430 h85",Font Colors
+		Gui, Add, Text,% "xp-140" . " yp+33",Quality:
+		Gui, Add, DropDownList,% "xp+40" . " yp-3" . " w100" . " vFontQuality hwndFontQualityHandler" . " gGui_Settings_Set_Custom_Preset",% "Automatic|Custom"
+		Gui, Add, Edit,% "xp+100" . " yp" . " w50" . " ReadOnly"
+		Gui, Add, UpDown, vFontQualityCustom hwndFontQualityCustomHandler gGui_Settings_Set_Custom_Preset
+
+	Gui, Add, GroupBox,% "x" guiXWorkArea . " y" guiYWorkArea+240 . " w430 h85" . " c000000",Font Colors
 
 		Gui, Add, Text,% "xp+10" . " yp+23",Title (Active):
 		Gui, Add, Edit,% "xp+75" . " yp-3" . " w60" . " vTitleActiveColor" . " hwndTitleActiveColorHandler" . " Limit6",% ""
@@ -1989,7 +2000,7 @@ Gui_Settings() {
 		ypos := (index=1||index=2||index=3)?(guiYWorkArea):(index=4||index=5||index=6)?(guiYWorkArea+35):(index=7||index=8||index=9)?(guiYWorkArea+70):("ERROR")
 		Gui, Add, Button, x%xpos% y%ypos% w120 h35 vTradesBtn%index% hwndTradesBtn%index%Handler gGui_Settings_Custom_Label,% "Custom " index
 
-		Gui, Add, GroupBox,% "x" guiXWorkArea . " y" guiYWorkArea+120 . " w425 h85",Positioning
+		Gui, Add, GroupBox,% "x" guiXWorkArea . " y" guiYWorkArea+120 . " w425 h85" . " c000000",Positioning
 			Gui, Add, Text,% "xp+10" . " yp+20" . " hwndTradesHPOS" index "TextHandler",Horizontal:
 			Gui, Add, ListBox, w70 xp+55 yp vTradesHPOS%index% hwndTradesHPOS%index%Handler gGui_Settings_Trades_Preview R3,% "Left|Center|Right"
 			Gui, Add, Text, xp+75 yp hwndTradesVPOS%index%TextHandler,Vertical:
@@ -1997,7 +2008,7 @@ Gui_Settings() {
 			Gui, Add, Text, xp+75 yp hwndTradesSIZE%index%TextHandler,Size:
 			Gui, Add, ListBox, w70 xp+30 yp vTradesSIZE%index% hwndTradesSIZE%index%Handler gGui_Settings_Trades_Preview R4,% "Disabled|Small|Medium|Large"
 
-		Gui, Add, GroupBox,% "x" guiXWorkarea . " y" guiYWorkArea+215 . " w425 h110",Behaviour
+		Gui, Add, GroupBox,% "x" guiXWorkarea . " y" guiYWorkArea+215 . " w425 h110" . " c000000",Behaviour
 			Gui, Add, Text,% "xp+10" . " yp+20" . " hwndTradesLabel" index "TextHandler",Label:
 			Gui, Add, Edit, xp+50 yp-3 w160 vTradesLabel%index% hwndTradesLabel%index%Handler gGui_Settings_Custom_Label,
 			Gui, Add, Text, xp+170 yp+3 vTradesHK%index%Text hwndTradesHK%index%TextHandler,Hotkey:
@@ -2083,7 +2094,7 @@ Gui_Settings() {
 			ypos += 80
 		else if (btnID = 4)
 			xpos := guiXWorkArea+210, ypos := guiYWorkArea+20
-		Gui, Add, GroupBox, x%xpos% y%ypos% w209 h90 hwndHotkey%btnID%_GroupBox
+		Gui, Add, GroupBox, x%xpos% y%ypos% w209 h90 hwndHotkey%btnID%_GroupBox c000000
 		Gui, Add, Checkbox, xp+10 yp+20 vHotkey%btnID%_Toggle hwndHotkey%btnID%_ToggleHandler
 		Gui, Add, Edit, xp+30 yp-4 w150 vHotkey%btnID%_Text hwndHotkey%btnID%_TextHandler,
 		Gui, Add, Hotkey, xp yp+25 w150 vHotkey%btnID%_KEY hwndHotkey%btnID%_KEYHandler gGui_Settings_Hotkeys,
@@ -2134,9 +2145,26 @@ return
 			GuiControl, Settings:Choose,% ActivePresetHandler,User Defined
 		}
 
+		if ( A_GuiControl = "SelectedFont" ) {
+			if (FontSize = "Automatic") {
+				IniRead, fontSizeAuto,% ProgramValues.Fonts_Settings_File,SIZE,% SelectedFont
+				if !IsNum(fontSizeAuto)
+					IniRead, fontSizeAuto,% ProgramValues.Fonts_Settings_File,SIZE,% "Default"
+				GuiControl, Settings:,% FontSizeCustomHandler,% fontSizeAuto
+			}
+			if (FontQuality = "Automatic") {
+				IniRead, fontQualAuto,% ProgramValues.Fonts_Settings_File,QUALITY,% SelectedFont
+				if !IsNum(fontQualAuto)
+					IniRead, fontQualAuto,% ProgramValues.Fonts_Settings_File,QUALITY,% "Default"
+				GuiControl, Settings:,% FontQualityCustomHandler,% fontQualAuto
+			}
+		}
+
 ;		Enable or disable the control.
 		state := (FontSize="Custom")?("Enable"):("Disable")
 		GuiControl, Settings:%state%,% FontSizeCustomHandler
+		state := (FontQuality="Custom")?("Enable"):("Disable")
+		GuiControl, Settings:%state%,% FontQualityCustomHandler
 		state := (SelectedSkin="System")?("Disable"):("Enable")
 		GuiControl, Settings:%state%,% ButtonsColorHandler
 		GuiControl, Settings:%state%,% TabsColorHandler
@@ -2162,6 +2190,8 @@ return
 						  :(ctrlName="SelectedFont")?(SelectedFontHandler)
 						  :(ctrlName="FontSize")?(FontSizeHandler)
 						  :(ctrlName="FontSizeCustom")?(FontSizeCustomHandler)
+						  :(ctrlName="FontQuality")?(FontQualityHandler)
+						  :(ctrlName="FontQualityCustom")?(FontQualityCustomHandler)
 						  :(ctrlName="TitleActiveColor")?(TitleActiveColorHandler)
 						  :(ctrlName="TitleInactiveColor")?(TitleInactiveColorHandler)
 						  :(ctrlName="TradesInfos1Color")?(TradesInfos1ColorHandler)
@@ -2171,7 +2201,7 @@ return
 						  :("ERROR")
 
 			GuiControl, Settings:-g,% ctrlHandler ; Prevent from triggeting the gLabel
-			if element in Font_Size_Custom,Font_Color_Title_Active,Font_Color_Title_Inactive,Font_Color_Trades_Infos_1,Font_Color_Trades_Infos_2,Font_Color_Tabs,Font_Color_Buttons
+			if element in Font_Size_Custom,Font_Quality_Custom,Font_Color_Title_Active,Font_Color_Title_Inactive,Font_Color_Trades_Infos_1,Font_Color_Trades_Infos_2,Font_Color_Tabs,Font_Color_Buttons
 			{
 				GuiControl, Settings:,% ctrlHandler,% value
 			}
@@ -2440,6 +2470,8 @@ return
 		IniWrite,% SelectedFont,% iniFilePath,CUSTOMIZATION_APPEARANCE,Font
 		IniWrite,% FontSize,% iniFilePath,CUSTOMIZATION_APPEARANCE,Font_Size_Mode
 		IniWrite,% FontSizeCustom,% iniFilePath,CUSTOMIZATION_APPEARANCE,Font_Size_Custom
+		IniWrite,% FontQuality,% iniFilePath,CUSTOMIZATION_APPEARANCE,Font_Quality_Mode
+		IniWrite,% FontQualityCustom,% iniFilePath,CUSTOMIZATION_APPEARANCE,Font_Quality_Custom
 		IniWrite,% TitleActiveColor,% iniFilePath,CUSTOMIZATION_APPEARANCE,Font_Color_Title_Active
 		IniWrite,% TitleInactiveColor,% iniFilePath,CUSTOMIZATION_APPEARANCE,Font_Color_Title_Inactive
 		IniWrite,% TradesInfos1Color,% iniFilePath,CUSTOMIZATION_APPEARANCE,Font_Color_Trades_Infos_1
@@ -2513,9 +2545,9 @@ return
 					}
 				}
 				else if ( sectionName = "CUSTOMIZATION_APPEARANCE" ) {
-					if keyName in Active_Skin,Font,Font_Size_Mode,Font_Size_Custom,Active_Preset,Font_Color_Title_Active,Font_Color_Title_Inactive,Font_Color_Trades_Infos_1,Font_Color_Trades_Infos_2,Font_Color_Tabs,Font_Color_Buttons
+					if keyName in Active_Skin,Font,Font_Size_Mode,Font_Size_Custom,Font_Quality_Mode,Font_Quality_Custom,Active_Preset,Font_Color_Title_Active,Font_Color_Title_Inactive,Font_Color_Trades_Infos_1,Font_Color_Trades_Infos_2,Font_Color_Tabs,Font_Color_Buttons
 					{
-						if keyName in Font_Size_Custom,Font_Color_Title_Active,Font_Color_Title_Inactive,Font_Color_Trades_Infos_1,Font_Color_Trades_Infos_2,Font_Color_Tabs,Font_Color_Buttons
+						if keyName in Font_Size_Custom,Font_Quality_Custom,Font_Color_Title_Active,Font_Color_Title_Inactive,Font_Color_Trades_Infos_1,Font_Color_Trades_Infos_2,Font_Color_Tabs,Font_Color_Buttons
 						{
 							GuiControl, Settings:-g,% %handler%Handler ; Prevent from triggeting the gLabel
 							GuiControl, Settings:,% %handler%Handler,% var
@@ -2531,6 +2563,10 @@ return
 							if ( keyName = "Font_Size_Mode" ) {
 								state := (var="Custom")?("Enable"):("Disable")
 								GuiControl, Settings:%state%,% FontSizeCustomHandler
+							}
+							if (keyName = "Font_Quality_Mode") {
+								state := (var="Custom")?("Enable"):("Disable")
+								GuiControl, Settings:%state%,% FontQualityCustomHandler
 							}
 						}
 					}
@@ -2775,10 +2811,10 @@ Gui_Settings_Get_Settings_Arrays() {
 	returnArray.CUSTOMIZATION_APPEARANCE_HandlersKeysArray := Object()
 	returnArray.CUSTOMIZATION_APPEARANCE_KeysArray := Object()
 	returnArray.CUSTOMIZATION_APPEARANCE_DefaultValues := Object()
-	returnArray.CUSTOMIZATION_APPEARANCE_HandlersArray.Insert(0, "ActivePreset", "SelectedSkin", "SkinScaling", "SelectedFont", "FontSize", "FontSizeCustom", "TitleActiveColor", "TitleInactiveColor", "TradesInfos1Color", "TradesInfos2Color", "TabsColor", "ButtonsColor")
-	returnArray.CUSTOMIZATION_APPEARANCE_HandlersKeysArray.Insert(0, "Active_Preset", "Active_Skin", "Scale_Multiplier", "Font", "Font_Size_Mode", "Font_Size_Custom", "Font_Color_Title_Active", "Font_Color_Title_Inactive", "Font_Color_Trades_Infos_1", "Font_Color_Trades_Infos_2", "Font_Color_Tabs", "Font_Color_Buttons")
-	returnArray.CUSTOMIZATION_APPEARANCE_KeysArray.Insert(0, "Active_Preset", "Active_Skin", "Scale_Multiplier", "Font", "Font_Size_Mode", "Font_Size_Custom", "Font_Color_Title_Active", "Font_Color_Title_Inactive", "Font_Color_Trades_Infos_1", "Font_Color_Trades_Infos_2", "Font_Color_Tabs", "Font_Color_Buttons")
-	returnArray.CUSTOMIZATION_APPEARANCE_DefaultValues.Insert(0, "System", "System", "1", "System", "Automatic", "8", "FFFF00", "FFFFFF", "SYSTEM", "SYSTEM" , "SYSTEM", "SYSTEM")
+	returnArray.CUSTOMIZATION_APPEARANCE_HandlersArray.Insert(0, "ActivePreset", "SelectedSkin", "SkinScaling", "SelectedFont", "FontSize", "FontSizeCustom", "FontQuality", "FontQualityCustom", "TitleActiveColor", "TitleInactiveColor", "TradesInfos1Color", "TradesInfos2Color", "TabsColor", "ButtonsColor")
+	returnArray.CUSTOMIZATION_APPEARANCE_HandlersKeysArray.Insert(0, "Active_Preset", "Active_Skin", "Scale_Multiplier", "Font", "Font_Size_Mode", "Font_Size_Custom", "Font_Quality_Mode", "Font_Quality_Custom", "Font_Color_Title_Active", "Font_Color_Title_Inactive", "Font_Color_Trades_Infos_1", "Font_Color_Trades_Infos_2", "Font_Color_Tabs", "Font_Color_Buttons")
+	returnArray.CUSTOMIZATION_APPEARANCE_KeysArray.Insert(0, "Active_Preset", "Active_Skin", "Scale_Multiplier", "Font", "Font_Size_Mode", "Font_Size_Custom", "Font_Quality_Mode", "Font_Quality_Custom", "Font_Color_Title_Active", "Font_Color_Title_Inactive", "Font_Color_Trades_Infos_1", "Font_Color_Trades_Infos_2", "Font_Color_Tabs", "Font_Color_Buttons")
+	returnArray.CUSTOMIZATION_APPEARANCE_DefaultValues.Insert(0, "System", "System", "1", "System", "Automatic", "8", "Automatic", "5", "FFFF00", "FFFFFF", "SYSTEM", "SYSTEM" , "SYSTEM", "SYSTEM")
 
 	return returnArray
 }
@@ -2963,12 +2999,12 @@ Gui_About() {
 	Gui, Font, ,Consolas
 
 	groupText := (isUpdateAvailable)?("Update v" latest " available."):("No update available.")
-	Gui, Add, GroupBox, cBlue w500 h60 xm Section,% groupText
+	Gui, Add, GroupBox, cBlue w500 h60 xm Section c000000,% groupText
 	Gui, Add, Text, xs+20 ys+20,% "Current version: " A_Tab programVersion
 	Gui, Add, Text, xs+20 ys+35 Section,% "Latest version: " A_Tab latest
 	if ( isUpdateAvailable )
 		Gui, Add, Button,x+10 ys-5 Section w80 h20 gGui_About_Update,Update
-	Gui, Add, CheckBox,ys+3 vautoUpdate,Enable automatic updates
+	Gui, Add, CheckBox,ys vautoUpdate,Enable automatic updates
 	IniRead, val,% iniFilePath,PROGRAM,AutoUpdate
 	GuiControl,,autoUpdate,1
 
@@ -4580,7 +4616,7 @@ Gui_AdminWarn() {
 	Gui, AdminWarn:Default
 	Gui, Font, ,Consolas
 	Gui, Font, Bold
-	Gui, Add, GroupBox, xm ym cRed w460 h140 Center Section,% "IMPORTANT INFORMATIONS, PLEASE READ"
+	Gui, Add, GroupBox, xm ym cRed w460 h140 Center Section c000000,% "IMPORTANT INFORMATIONS, PLEASE READ"
 	Gui, Add, Text,xs+15 ys+25 Center,% ProgramValues.Name " was unable to start with admin rights previously."
 	. "`nTry right clicking the executable and choose ""Run as Administrator""."
 	. "`n`nIf for some reason you prefer not to use admin elevation, please use"
