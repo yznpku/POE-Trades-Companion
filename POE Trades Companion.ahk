@@ -61,7 +61,7 @@ Start_Script() {
 
 	ProgramValues.Insert("Name", "POE Trades Companion")
 	ProgramValues.Insert("Version", "1.9.9")
-	ProgramValues.Insert("Debug", 1)
+	ProgramValues.Insert("Debug", 0)
 	; ProgramValues.Debug := (A_IsCompiled)?(0):(ProgramValues.Debug) ; Prevent from enabling debug on compiled executable
 
 	ProgramValues.Insert("Updater_File", "POE-TC-Updater.exe")
@@ -86,6 +86,7 @@ Start_Script() {
 	ProgramValues.Insert("Ini_File", ProgramValues.Local_Folder "\Preferences.ini")
 	ProgramValues.Insert("Logs_File", ProgramValues.Logs_Folder "\" A_YYYY "-" A_MM "-" A_DD "_" A_Hour "-" A_Min "-" A_Sec ".txt")
 	ProgramValues.Insert("Changelogs_File", ProgramValues.Logs_Folder "\changelogs.txt")
+	ProgramValues.Insert("Trades_History_File", ProgramValues.Local_Folder "\Trades_History.ini" )
 
 	ProgramValues.Insert("Game_Folder", MyDocuments "\my games\Path of Exile")
 	ProgramValues.Insert("Game_Ini_File", ProgramValues.Game_Folder "\production_Config.ini")
@@ -232,14 +233,19 @@ Monitor_Game_Logs(mode="") {
 					for key, element in tradesInfos.BUYERS {
 						if (whispName = element) {
 							otherContent := tradesInfos.OTHER[key]
-							if otherContent not contains (Hover to see all messages) ; Only one message in the Other slot.
-							{
-								StringReplace, otherContent, otherContent,% "`n",% "",1 ; Remove blank lines
-								otherContent := "[" tradesInfos.TIME[key] "] " otherContent ; Add timestamp
+							if (otherContent != "-" && otherContent != "`n") { ; Already contains text, include previous text
+								if otherContent not contains (Hover to see all messages) ; Only one message in the Other slot.
+								{
+									StringReplace, otherContent, otherContent,% "`n",% "",1 ; Remove blank lines
+									otherContent := "[" tradesInfos.TIME[key] "] " otherContent ; Add timestamp
+								}
+								StringReplace, otherContent, otherContent,% "(Hover to see all messages)`n",% "",1
+								otherText := "(Hover to see all messages)`n" otherContent "`n[" A_Hour ":" A_Min "] " whispMsg
 							}
-							StringReplace, otherContent, otherContent,% "(Hover to see all messages)`n",% "",1
-							otherText := "(Hover to see all messages)`n" otherContent "`n[" A_Hour ":" A_Min "] " whispMsg
-							setInfos := Object(), setInfos.OTHER := otherText, setInfos.TabID := key
+							else { ; Does not contains text, do not include previous text
+								otherText := "(Hover to see all messages)`n" "[" A_Hour ":" A_Min "] " whispMsg
+							}
+							setInfos := { OTHER:otherText, TabID:key }
 							Gui_Trades_Set_Trades_Infos(setInfos)
 						}
 					}
@@ -292,7 +298,7 @@ Monitor_Game_Logs(mode="") {
 							}
 							tradePrice := subPat3
 							tradeStash := (subPat4)?(subPat4 " (Tab:" subpat5 " / Pos:" subPat6 ";" subPat7 ")"):(subPat8)?("Hardcore " subPat8):(subPat9)?(subPat9):("ERROR RETRIEVING LOCATION")								
-							tradeOther := subPat1 . subPat10
+							tradeOther := (subPat1 || subPat10)?(subPat1 . subPat10):("-")
 
 							tradeItem = %tradeItem% ; Remove blank spaces
 							tradePrice = %tradePrice%
@@ -607,7 +613,7 @@ Gui_Trades(infosArray="", errorMsg="") {
 				Gui, Font ; Revert to system font
 				Gui, Font,% "S" fontSize
 
-;				Customizable Buttons.
+;				Custom Buttons.
 				Loop 9 {
 					btnSettingsSize := ProgramSettings["Button" A_Index "_SIZE"]
 					btnSettingsHor := ProgramSettings["Button" A_Index "_H"]
@@ -765,7 +771,7 @@ Gui_Trades(infosArray="", errorMsg="") {
 			Gui, Font ; Revert to system font
 			Gui, Font,% "S" fontSize,% fontName
 
-;			Customizable Buttons.
+;			Custom Buttons.
 			Loop 9 {
 				btnSettingsSize := ProgramSettings["Button" A_Index "_SIZE"]
 				btnSettingsHor := ProgramSettings["Button" A_Index "_H"]
@@ -1303,12 +1309,9 @@ Gui_Trades_Do_Action_Func(CtrlHwnd, GuiEvent, EventInfo) {
 	if btnAction contains Close_Tab
 	{
 		if (RegExMatch(btnAction,"Send_Message"))  {
-			/*	TO_BE_ADDED
-				If corresponding button has "Mark trade as completed" enabled,
-					Write the trade infos in a file.
-				But before that, add a "League:" and "Stah:" on the TradesGUI
-					so we can separate each info.
-			*/
+			if (ProgramSettings["Button" varNum "_Mark_Completed"]) {
+				Gui_Trades_Statistics("ADD", tabInfos)
+			}
 			if (ProgramSettings.Support_Text_Toggle) {
 				tabInfos := Gui_Trades_Get_Trades_Infos(TradesGUI_Values.Active_Tab) ; Retrieve the new PID in case it changed
 				Send_InGame_Message({1:ProgramSettings.Support_Message}, tabInfos)
@@ -1505,16 +1508,55 @@ Gui_Trades_Get_Trades_Infos(tabID){
 	GuiControlGet, tabPID, Trades:,% TradesGUI_Controls["PID_Slot_" tabID]
 	GuiControlGet, tabTime, Trades:,% TradesGUI_Controls["Time_Slot_" tabID]
 
-	TabInfos := {}
-	TabInfos.Buyer := tabBuyer
-	TabInfos.Item := tabItem
-	TabInfos.Price := tabPrice
-	TabInfos.Location := tabLocation
-	TabInfos.Other := tabOther
-	TabInfos.PID := tabPID
-	TabInfos.Time := tabTime
-	TabInfos.TabID := tabID
+	if RegExMatch(tabLocation, "(.*)\(Tab:(.*) / Pos:(.*)\)", tabLocationPat) 
+		leagueName := tabLocationPat1, stashName := tabLocationPat2, stashPos := tabLocationPat3
+	if RegExMatch(tabItem, "(.*)\(Lvl:(.*) / Qual:(.*)\)", tabItemPat)
+		itemName := tabItemPat1, itemQual := tabItemPat2
+
+	TabInfos := {Buyer:tabBuyer
+				,Item:tabItem
+				,Item_Name:itemName
+				,Item_Quality:itemQual
+				,Price:tabPrice
+				,Location:tabLocation
+				,League:leagueName
+				,Stash_Tab:stashName
+				,Stash_Position:stashPos
+				,Other:tabOther
+				,PID:tabPID
+				,Time:tabTime
+				,TabID:tabID}
+
 	return tabInfos
+}
+
+Gui_Trades_Statistics(mode, tabInfos) {
+	global ProgramValues
+
+	historyFile := ProgramValues.Trades_History_File
+
+	if (mode="ADD") {
+		IniRead, index,% historyFile,% "GENERAL", % "Index"
+		if !isNum(index) {
+			index := 0
+		}
+		index++
+		IniWrite,% index,% historyFile, % "GENERAL",% "Index"
+
+		for key, element in tabInfos {
+			element = %element% ; Blank spaces removal
+			if ( element || element != "-" ) {
+				if key in Buyer,Item,Item_Name,Item_Quality,League,Location,,Price,Stash_Position,Stash_Tab,Time
+					IniWrite,% element,% historyFile,% index,% key
+				else if (key="OTHER") {
+					if (element && element!="-" && element !="`n") {
+						Loop, Parse, element,`n
+							IniWrite,% A_LoopField,% historyFile,% index,% key "_" A_Index
+					}
+				}
+			}
+		}
+	}
 }
 
 Gui_Trades_Set_Trades_Infos(setInfos){
@@ -1822,18 +1864,18 @@ Gui_Settings() {
 ;		Apply Button
 
 	guiXWorkArea := 150, guiYWorkArea := 10
-	Gui, Add, TreeView, x10 y10 h380 w130 -0x4 -Buttons gGui_Settings_TreeView
+	Gui, Add, TreeView, x10 y10 h380 w140 -0x4 -Buttons gGui_Settings_TreeView
     P1 := TV_Add("Settings","", "Expand")
     P2 := TV_Add("Customization","","Expand")
     P2C1 := TV_Add("Appearance", P2, "Expand")
-    P2C2 := TV_Add("Buttons Actions", P2, "Expand")
+    P2C2 := TV_Add("Custom Buttons", P2, "Expand")
     P3 := TV_Add("Hotkeys","","Expand")
 
 	Gui, Add, Text,% "x" guiXWorkarea . " y" 360,% "Settings will be saved upon closing this window."
 	Gui, Add, Link,% "x" guiXWorkarea . " y" 375 . " vWikiBtn gGui_Settings_Btn_WIKI",% "Keep the cursor above a control to know more about it. You may also <a href="""">Visit the Wiki</a>"
     ; Gui, Add, Button,% "x" guiXWorkArea . " y" 360 . " w" 430 . " h" 30 . " gGui_Settings_Btn_Apply vApplyBtn",Apply Settings
 
-	Gui, Add, Tab2, x10 y10 w0 h0 vTab hwndTabHandler,Settings|Customization|Appearance|Buttons Actions|Hotkeys
+	Gui, Add, Tab2, x10 y10 w0 h0 vTab hwndTabHandler,Settings|Customization|Appearance|Custom Buttons|Hotkeys
 	Gui, Tab, Settings
 ;	Settings Tab
 ;		Trades GUI
@@ -1938,7 +1980,7 @@ Gui_Settings() {
 		Gui, Add, Link,% "x" guiXWorkArea + 80 . " y" guiYWorkArea+240,% "(Use <a href=""http://hslpicker.com/"">HSL Color Picker</a> to retrieve the 6 characters code starting with #) "
 
 ;	-------------------------
-	Gui, Tab, Buttons Actions
+	Gui, Tab, Custom Buttons
 	DynamicGUIHandlersArray := Object()
 
 	Loop 9 {
@@ -2010,7 +2052,8 @@ Gui_Settings() {
 		DynamicGUIHandlersArray["Msg2" index] := TradesMsg2_%index%Handler
 		DynamicGUIHandlersArray["Msg3" index] := TradesMsg3_%index%Handler
 	}
-	
+
+;------------------------------
 ;	Hotkeys Tab
 	Gui, Tab, Hotkeys
 	Gui, Add, Button,% "x" guiXWorkArea . " y" guiYWorkArea . " w415 h22 gGui_Settings_Hotkeys_Switch hwndHotkeys_SwitchToBasicHandler",Switch to Basic
@@ -2152,7 +2195,7 @@ return
 	  	tabName := (evntinf=P1)?("Settings")
 	  			:(evntinf=P2)?("Customization")
 	  			:(evntinf=P2C1)?("Appearance")
-	  			:(evntinf=P2C2)?("Buttons Actions")
+	  			:(evntinf=P2C2)?("Custom Buttons")
 	  			:(evntinf=P3)?("Hotkeys")
 	  			:("ERROR")
 	      GuiControl, Settings:Choose,% TabHandler,% tabName
@@ -2343,7 +2386,7 @@ return
 			CONTENT := (index=1)?(HotkeyAdvanced1_Text):(index=2)?(HotkeyAdvanced2_Text):(index=3)?(HotkeyAdvanced3_Text):(index=4)?(HotkeyAdvanced4_Text):(index=5)?(HotkeyAdvanced5_Text):(index=6)?(HotkeyAdvanced6_Text):(index=7)?(HotkeyAdvanced7_Text):(index=8)?(HotkeyAdvanced8_Text):(index=9)?(HotkeyAdvanced9_Text):(index=10)?(HotkeyAdvanced10_Text):(index=11)?(HotkeyAdvanced11_Text):(index=12)?(HotkeyAdvanced12_Text):(index=13)?(HotkeyAdvanced13_Text):(index=14)?(HotkeyAdvanced14_Text):(index=15)?(HotkeyAdvanced15_Text):(index=16)?(HotkeyAdvanced16_Text):("ERROR")
 			IniWrite,% """" CONTENT """",% iniFilePath,HOTKEYS_ADVANCED,% KEY ; Quotes allows us to keep the spaces on IniRead
 		}
-;	Buttons Actions
+;	Custom Buttons
 		Loop 9 {
 			index := A_Index
 
