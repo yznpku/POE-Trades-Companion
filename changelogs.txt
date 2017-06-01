@@ -1,4 +1,42 @@
 \\
+--1.10--
+What's new:
+	- The "Mark trade as completed?" feature has been added, and its setting renamed to "Save the trade infos into a file?"
+	You can find the file containing all logged trades in MyDocuments\AutoHotkey\POE Trades Companion\Trades_History.ini
+	- A new Hotkeys sub-tab: Special. These allows you to bind the following actions:
+	Choosing the next tab / Choosing the previous tab / Closing the current tab / Toggling the minimize state.
+	- Five new smaller buttons that have a specific action: Clipboard / Whisper To / Invite / Trade / Kick.
+	These buttons use a special font that contains symbols corresponding to the button's purpose.
+	Each can be linked to an hotkey via the new tab: Smaller Buttons.
+	- The /NoAdmin Command-Line Parameter can be used to skip admin elevation.
+	- You can now set the font's quality from the Appearance tab. This allows fixing the issue with the Fontin SmallCaps font, where some characters would appear cropped.
+
+ 
+What's changed:
+	- Many visual changes in the Settings.
+	- The "Update available" GUI has been replaced with the About GUI, and the About GUI has received some visual improvements.
+	- The "Reloading as admin in X seconds" splash screen has been replaced with a proper GUI.
+	- The minimized state of the main interface now also include the bottom border.
+	- The Settings tab "Buttons Actions" has been renamed to "Custom Buttons"
+	- Basic and Advanced Hotkeys now have their own specific tab, and can be used together.
+	For this reason, if you had the Basic mode enabled, all Advanced hotkeys have been toggled off (and vice-versa).
+	The CTRL/ALT/SHIFT toggles from the Basic mode have been removed (it is now handled by the hotkey control itself), and two more hotkeys have been added.
+	- The "Close" asset from the Path of Exile skin has been resized to 20x20 (from 25x25).
+	- Changing a Custom Button's name in the Settings now also live-update the button's name on the main interface.
+	- It now takes only one admin elevation failed attempt (from two) before offering the user the possibility to run without elevation.
+	A proper GUI has been created (previously it was a simple message box).
+	Additionally, a shortcut with the /NoAdmin Command-Line Parameter will be automatically added to the executable's folder.
+	- The title on the main interface would not be vertically centered (OCD TRIGGERS). The same is true for the "MINIMIZE" text.
+
+What's fixed:
+	- An issue with the Path of Exile skin where hovering a Custom Button would not highlight the picture under specific conditions.
+	- Changing a Custom Button's name in the Settings would no longer live-update the button's name on the Settings GUI (since 1.9.5)
+	- When receiving a new trade whisper without additional message, the "Other:" slot is set as "-".
+	Upon receiving another whisper from the same buyer, when hovering the "Other:" slot to see the full list of messages, the "-" would be included to the messages list.
+	- Some characters on the Fontin SmallCaps font would appear cropped. This has been fixed with the new addition of the "Font Quality" setting.
+	- With the Font Size set to "Automatic", upon choosing a font from the Appearance tab, the size number would not be updated to its default value. This could cause confusion for the user.
+//
+\\
 --1.9.9--
 - Fix: Custom Buttons hotkeys would only work while the cursor was on the main interface.
 - Potential Fix: On launch, under specific conditions, the main interface's position would be reverted to default (top-right).
