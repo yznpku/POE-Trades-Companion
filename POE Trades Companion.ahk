@@ -148,7 +148,7 @@ Start_Script() {
 
 	if ( ProgramValues["Debug"] ) {
 		newItemInfos := Object()
-		Loop 4 {
+		Loop 3 {
 			newItemInfos.Insert(0, "iSellStuff", "level 1 Faster Attacks Support", "5 alteration", "Breach (stash tab ""Gems""; position: left 6, top 8)", "",A_Hour ":" A_Min, "Offering 1alch?")
 			newItemArray := Gui_Trades_Manage_Trades("ADD_NEW", newItemInfos)
 			Gui_Trades(newItemArray, "UPDATE")
@@ -164,7 +164,7 @@ Start_Script() {
 		}
 	}
 
-	Gui_Settings()
+	; Gui_Settings()
 	; Gui_About()
 	Logs_Append("DUMP", localSettings)
 	Monitor_Game_Logs()
@@ -439,9 +439,9 @@ Gui_Trades(infosArray="", errorMsg="") {
 ;			Header
 			Gui, Font,S%fontSize% Q%fontQual%,% fontName
 			Gui, Add, Picture,% "x" borderSize . " y" borderSize . " w" guiWidth-borderSize . " h" 30*guiScale . " +BackgroundTrans",% programSkinFolderPath "\" activeSkin "\Header.png"
-			Gui, Add, Picture,% "x" borderSize+10*guiScale . " y" borderSize+5*guiScale . " w" 22*guiScale . " h" 22*guiScale . " +BackgroundTrans",% programSkinFolderPath "\" activeSkin "\icon.png"
-			Gui, Add, Text,% "x" borderSize+(35*guiScale) . " y" borderSize . " w" guiWidth-(100*guiScale) . " h" 28*guiScale " hwndguiTradesTitleHandler gGui_Trades_Move c" colorTitleInactive . " +BackgroundTrans +0x200 ",% programName " - Queued Trades: 0"
-			Gui, Add, Text,% "x" guiWidth-(65*guiScale) . " y" borderSize . " w" 65*guiScale . " h" 28*guiScale " hwndguiTradesMinimizeHandler gGui_Trades_Minimize c" colorTitleInactive . " +BackgroundTrans +0x200",% "MINIMIZE"
+			Gui, Add, Picture,% "x" borderSize+(10*guiScale) . " y" borderSize+(5*guiScale) . " w" 22*guiScale . " h" 22*guiScale . " +BackgroundTrans",% programSkinFolderPath "\" activeSkin "\icon.png"
+			Gui, Add, Text,% "x" borderSize+(35*guiScale) . " y" borderSize+(2*guiScale) . " w" guiWidth-(100*guiScale) . " h" 28*guiScale+(2*guiScale) " hwndguiTradesTitleHandler gGui_Trades_Move c" colorTitleInactive . " +BackgroundTrans +0x200 ",% programName " - Queued Trades: 0"
+			Gui, Add, Text,% "x" guiWidth-(65*guiScale) . " yp" . " w" 65*guiScale . " hp" . " hwndguiTradesMinimizeHandler gGui_Trades_Minimize c" colorTitleInactive . " +BackgroundTrans +0x200",% "MINIMIZE"
 
 ;			Borders
 			Gui, Add, Picture,% "x" 0 . " y" 0 . " w" guiWidth . " h" borderSize . " hwndguiTradesBorderTop",% programSkinFolderPath "\" activeSkin "\Border.png" ; Top
@@ -548,16 +548,16 @@ Gui_Trades(infosArray="", errorMsg="") {
 			Gui, Color, Black ; Prevents the flickering from being too noticeable
 			Gui, Font,S%fontSize% Q%fontQual%,% fontName
 			Gui, Add, Picture,% "x" borderSize . " y" borderSize . " w" guiWidth-borderSize . " h" 30*guiScale . " +BackgroundTrans",% programSkinFolderPath "\" activeSkin "\Header.png"
-			Gui, Add, Picture,% "x" borderSize+10*guiScale . " y" borderSize+5*guiScale . " w" 22*guiScale . " h" 22*guiScale . " +BackgroundTrans",% programSkinFolderPath "\" activeSkin "\icon.png"
-			Gui, Add, Text,% "x" borderSize+(35*guiScale) . " y" borderSize . " w" guiWidth-(100*guiScale) . " h" 28*guiScale " hwndguiTradesTitleHandler gGui_Trades_Move c" colorTitleInactive . " +BackgroundTrans +0x200 ",% programName " - Queued Trades: 0"
-			Gui, Add, Text,% "x" guiWidth-(65*guiScale) . " y" borderSize . " w" 65*guiScale . " h" 28*guiScale " hwndguiTradesMinimizeHandler gGui_Trades_Minimize c" colorTitleInactive . " +BackgroundTrans +0x200",% "MINIMIZE"
+			Gui, Add, Picture,% "x" borderSize+(10*guiScale) . " y" borderSize+(5*guiScale) . " w" 22*guiScale . " h" 22*guiScale . " +BackgroundTrans",% programSkinFolderPath "\" activeSkin "\icon.png"
+			Gui, Add, Text,% "x" borderSize+(35*guiScale) . " y" borderSize+(2*guiScale) . " w" guiWidth-(100*guiScale) . " h" 28*guiScale+(2*guiScale) " hwndguiTradesTitleHandler gGui_Trades_Move c" colorTitleInactive . " +BackgroundTrans +0x200 ",% programName " - Queued Trades: 0"
+			Gui, Add, Text,% "x" guiWidth-(65*guiScale) . " yp" . " w" 65*guiScale . " hp" " hwndguiTradesMinimizeHandler gGui_Trades_Minimize c" colorTitleInactive . " +BackgroundTrans +0x200",% "MINIMIZE"
 
 ;			Static pictures assets
 			Gui, Add, Picture,% "x" borderSize . " y" 32*guiScale . " w" guiWidth-borderSize . " h" guiHeight-borderSize . " +BackgroundTrans",% programSkinFolderPath "\" activeSkin "\Background.png"
 			Gui, Add, Picture,% "x" 0 . " y" 52*guiScale . " w" guiWidth . " h" 2*guiScale . " hwndTabUnderlineHandler" . " +BackgroundTrans Section",% programSkinFolderPath "\" activeSkin "\TabUnderline.png"
 			Gui, Add, Picture,% "xs" +360*guiScale . " ys" -20*guiScale . " w" 20*guiScale . " h" 20*guiScale . " vGoLeft" . " hwndGoLeftHandler" . " gGui_Trades_Skinned_Arrow_Left +BackgroundTrans",% programSkinFolderPath "\" activeSkin "\ArrowLeft.png"
 			Gui, Add, Picture,% "x" 380*guiScale . " yp" . " wp" . " hp" . " vGoRight" . " hwndGoRightHandler" . " gGui_Trades_Skinned_Arrow_Right +BackgroundTrans",% programSkinFolderPath "\" activeSkin "\ArrowRight.png"
-			Gui, Add, Picture,% "x" 374*guiScale . " y" 54*guiScale . " w" 25*guiScale . " h" 25*guiScale . " vBtnClose1" . " hwndBtnClose1Handler" . " gGui_Trades_Do_Action_Func  +BackgroundTrans",% programSkinFolderPath "\" activeSkin "\Close.png"
+			Gui, Add, Picture,% "x" 378*guiScale . " y" 55*guiScale . " w" 20*guiScale . " h" 20*guiScale . " vBtnClose1" . " hwndBtnClose1Handler" . " gGui_Trades_Do_Action_Func  +BackgroundTrans",% programSkinFolderPath "\" activeSkin "\Close.png"
 			TradesGUI_Controls.Insert("Arrow_Left", GoLeftHandler)
 			TradesGUI_Controls.Insert("Arrow_Right", GoRightHandler)
 			TradesGUI_Controls.Insert("Button_Close", BtnClose1Handler)
@@ -600,7 +600,7 @@ Gui_Trades(infosArray="", errorMsg="") {
 				Gui, Add, Text,% "xp" . " yp+" 15*guiScale . " wp" . " hp" . " vPriceSlot" index . " hwndPriceSlot" index "Handler" . " +BackgroundTrans +0x0100 R1 c" colorTradesInfos2,% ""
 				Gui, Add, Text,% "xp" . " yp+" 15*guiScale . " wp" . " hp" . " vLocationSlot" index . " hwndLocationSlot" index "Handler" . " +BackgroundTrans +0x0100 R1 c" colorTradesInfos2,% ""
 				Gui, Add, Text,% "xp" . " yp+" 15*guiScale . " wp" . " hp" . " vOtherSlot" index . " hwndOtherSlot" index "Handler" . " +BackgroundTrans +0x100 R1 c" colorTradesInfos2,% ""
-				Gui, Add, Text,% "x" 340*guiScale . " y" 55*guiScale " w" 30*guiScale . " h" 15*guiScale . " vTimeSlot" index . " hwndTimeSlot" index "Handler" . " +BackgroundTrans R1 c" colorTradesInfos2,% ""
+				Gui, Add, Text,% "x" 345*guiScale . " y" 57*guiScale " w" 30*guiScale . " h" 15*guiScale . " vTimeSlot" index . " hwndTimeSlot" index "Handler" . " +BackgroundTrans R1 c" colorTradesInfos2,% ""
 				Gui, Add, Text,% "xp" . " yp" . " w0" . " h0" . " vPIDSlot" index . " hwndPIDSlot" index "Handler",
 
 
@@ -680,7 +680,7 @@ Gui_Trades(infosArray="", errorMsg="") {
 				btnOrnaLeftX := btnX, btnOrnaRightX := btnX+btnW-btnOrnaW
 				btnOrnaLeftY := btnY, btnOrnaRightY := btnY
 
-				btnTextX := btnX, btnTextY := "p+10", btnTextW := btnW, btnTextH := btnH
+				btnTextX := btnX, btnTextY := "p+" 10*guiScale, btnTextW := btnW, btnTextH := btnH
 
 				btnName := btnSettingsName
 				btnAction := RegExReplace(btnSettingsAction, "[ _+()]", "_")
@@ -953,7 +953,7 @@ Gui_Trades(infosArray="", errorMsg="") {
 		TradesGUI_Values.Active_Tab := ( TradesGUI_Values.Tabs_Count && (TradesGUI_Values.Tabs_Count < TradesGUI_Values.Active_Tab) )?(TradesGUI_Values.Tabs_Count)
 									  :(TradesGUI_Values.Active_Tab)
 
-		Gui_Trades_Skinned_Show_Active_Tab_Content()
+		Gui_Trades_Skinned_Show_Tab_Content()
 		if ( ProgramSettings.Clip_On_Tab_Switch )
 			Gui_Trades_Clipboard_Item_Func()
 		TradesGUI_Values.Previous_Active_Tab := TradesGUI_Values.Active_Tab
@@ -961,33 +961,7 @@ Gui_Trades(infosArray="", errorMsg="") {
 
 	Gui_Trades_Minimize:
 ;		Switch between minimized and full-sized.
-		if !WinExist("ahk_id " TradesGUI_Values.Handler)
-			Return
-
-		TradesGUI_Values.Is_Minimized := !TradesGUI_Values.Is_Minimized
-		if ( TradesGUI_Values.Is_Minimized ) {
-			tHeight := guiHeight
-			Loop { ; Create the illusion of an animation
-				if ( tHeight = guiHeightMin )
-					Break
-				tHeight := (guiHeightMin<tHeight)?(tHeight-30):(guiHeightMin)
-				tHeight := (tHeight-30<guiHeightMin)?(guiHeightMin):(tHeight)
-				Gui_Trades_Set_Height(tHeight)
-				sleep 1 ; Smoothen up the animation
-			}
-		}
-		else  {
-			tHeight := guiHeightMin
-			Loop {
-				if ( tHeight = guiHeight )
-					Break
-				tHeight := (guiHeight>tHeight)?(tHeight+30):(guiHeight)
-				tHeight := (tHeight+30>guiHeight)?(guiHeight):(tHeight)
-				Gui_Trades_Set_Height(tHeight)
-				sleep 1
-			}
-		}
-		sleep 10
+		Gui_Trades_Minimize_Func()
 	Return
 
 	Gui_Trades_Move:
@@ -1010,6 +984,108 @@ Gui_Trades(infosArray="", errorMsg="") {
 	Gui_Trades_Escape:
 	Return
 }
+
+Gui_Trades_Minimize_Func() {
+	global TradesGUI_Values
+
+	guiHeight := TradesGUI_Values.Height_Full
+	guiHeightMin := TradesGUI_Values.Height_Minimized
+
+	if !WinExist("ahk_id " TradesGUI_Values.Handler)
+			Return
+
+	TradesGUI_Values.Is_Minimized := !TradesGUI_Values.Is_Minimized
+	if ( TradesGUI_Values.Is_Minimized ) {
+		tHeight := guiHeight
+		Loop { ; Create the illusion of an animation
+			if ( tHeight = guiHeightMin )
+				Break
+			tHeight := (guiHeightMin<tHeight)?(tHeight-30):(guiHeightMin)
+			tHeight := (tHeight-30<guiHeightMin)?(guiHeightMin):(tHeight)
+			Gui_Trades_Set_Height(tHeight)
+			sleep 1 ; Smoothen up the animation
+		}
+	}
+	else  {
+		tHeight := guiHeightMin
+		Loop {
+			if ( tHeight = guiHeight )
+				Break
+			tHeight := (guiHeight>tHeight)?(tHeight+30):(guiHeight)
+			tHeight := (tHeight+30>guiHeight)?(guiHeight):(tHeight)
+			Gui_Trades_Set_Height(tHeight)
+			sleep 1
+		}
+	}
+	sleep 10
+}
+
+Gui_Trades_Skinned_Adjust_Tab_Range() {
+/*		Clicks on the left/right arrows based
+		on the difference between active tab and tab range
+*/
+	global TradesGUI_Values, TradesGUI_Controls
+
+	activeTab := TradesGUI_Values.Active_Tab
+	tabRange := Gui_Trades_Skinned_Get_Tabs_Images_Range()
+
+	firstID := tabRange.First_Tab
+	lastID := tabRange.Last_Tab
+
+	isLowerThanFirst := (activeTab < firstID)?(1):(0)
+	isGreaterThanLast := (activeTab > lastID)?(1):(0)
+
+	if (isGreaterThanLast || isLowerThanFirst) {
+		diff := (isGreaterThanLast)?(activeTab-lastID)
+			   :(isLowerThanFirst)?(firstID-activeTab)
+			   :(0)
+		Loop %diff% {
+			if (isGreaterThanLast)
+				Gui_Trades_Skinned_Arrow_Right()
+			else if (isLowerThanFirst)
+				Gui_Trades_Skinned_Arrow_Left(7)
+		}
+	}
+}
+
+
+Gui_Trades_Select_Tab(params="") {
+/*		Allows the use of an hotkey to select the next or previous tab
+*/
+	global TradesGUI_Controls, TradesGUI_Values, ProgramSettings
+
+	currentTabID := TradesGUI_Values.Active_Tab
+	tabsCount := TradesGUI_Values.Tabs_Count
+	tabCtrl := TradesGUI_Controls.Tab
+
+	chooseNext := params.Choose_Next
+	choosePrev := params.Choose_Prev
+	chooseID := params.Choose_ID
+
+	selectTabID := (chooseNext)?(currentTabID+1)
+				  :(choosePrev)?(currentTabID-1)
+				  :(chooseID)?(chooseID)
+				  :("ERROR")
+
+	if !(IsNum(selectTabID)) {
+		Logs_Append(A_ThisFunc, {Tab_ID:selectTabID
+								,Choose_Next:chooseNext
+								,Choose_Prev:choosePrev
+								,Choose_ID:chooseID})
+		Return
+	}
+	if (selectTabID >= 1 && selectTabID <= tabsCount) {
+		if (ProgramSettings.Active_Skin = "System") {
+			GuiControl, Trades:Choose,% tabCtrl,% selectTabID
+			TradesGUI_Values.Previous_Active_Tab := currentTabID
+			TradesGUI_Values.Active_Tab := selectTabID
+		}
+		else {
+			Gui_Trades_Skinned_Show_Tab_Content(selectTabID)
+		}
+	}
+}
+
 
 Gui_Trades_Set_Height(derisedHeight) {
 /*		Move the bottom border and set the GUI height
@@ -1135,17 +1211,19 @@ Gui_Trades_Skinned_Set_Tab_Images_State(arrow="") {
 
 }
 
-Gui_Trades_Skinned_Show_Active_Tab_Content() {
+Gui_Trades_Skinned_Show_Tab_Content(showTabID="") {
 	global TradesGUI_Values, TradesGUI_Controls, ProgramSettings, ProgramValues
 
 	previousID := TradesGUI_Values.Previous_Active_Tab
 	currentID := TradesGUI_Values.Active_Tab
 	previousID := (previousID="")?(1):(previousID)
 
+	showTabID := (showTabID)?(showTabID):(currentID)
+
 ;	Hide previous tab, show current tab
 	Loop 2 {
 		showState := (A_Index=1)?("Hide"):("Show")
-		tabID := (A_Index=1)?(previousID):(currentID)
+		tabID := (A_Index=1)?(previousID):(showTabID)
 
 		GuiControl, Trades:%showState%,% TradesGUI_Controls["Buyer_Slot_" tabID]
 		GuiControl, Trades:%showState%,% TradesGUI_Controls["Item_Slot_" tabID]
@@ -1155,8 +1233,24 @@ Gui_Trades_Skinned_Show_Active_Tab_Content() {
 		GuiControl, Trades:%showState%,% TradesGUI_Controls["Other_Slot_" tabID]
 	}
 
+	TradesGUI_Values.Active_Tab := showTabID
 	Gui_Trades_Skinned_Set_Tab_Images_State()
-	TradesGUI_Values.Previous_Active_Tab := currentID
+	TradesGUI_Values.Previous_Active_Tab := showTabID
+	Gui_Trades_Skinned_Adjust_Tab_Range()
+}
+
+Gui_Trades_Close_Tab() {
+	global TradesGUI_Values, ProgramSettings
+
+	countBeforeDeletion := TradesGUI_Values.Tabs_Count
+	tradesMessages := Gui_Trades_Manage_Trades("REMOVE_CURRENT", ,TradesGUI_Values.Active_Tab)
+	Gui_Trades(tradesMessages, "UPDATE")
+	if (ProgramSettings.Active_Skin != "System") {
+		if (countBeforeDeletion = TradesGUI_Values.Active_Tab) {
+			TradesGUI_Values.Active_Tab--
+		}
+		Gui_Trades_Skinned_Show_Tab_Content()
+	}
 }
 
 Gui_Trades_Do_Action_Func(CtrlHwnd, GuiEvent, EventInfo) {
@@ -1209,16 +1303,7 @@ Gui_Trades_Do_Action_Func(CtrlHwnd, GuiEvent, EventInfo) {
 				Send_InGame_Message({1:ProgramSettings.Support_Message}, tabInfos)
 			}
 		}
-
-		countBeforeDeletion := TradesGUI_Values.Tabs_Count
-		tradesMessages := Gui_Trades_Manage_Trades("REMOVE_CURRENT", ,TradesGUI_Values.Active_Tab)
-		Gui_Trades(tradesMessages, "UPDATE")
-		if (ProgramSettings.Active_Skin != "System") {
-			if (countBeforeDeletion = TradesGUI_Values.Active_Tab) {
-				TradesGUI_Values.Active_Tab--
-			}
-			Gui_Trades_Skinned_Show_Active_Tab_Content()
-		}
+		Gui_Trades_Close_Tab()
 	}
 	else if btnAction in Clipboard,Whisper,Trade,Invite,Kick
 	{
@@ -1753,7 +1838,7 @@ Gui_Settings() {
 	Gui, Settings:New, +AlwaysOnTop +SysMenu -MinimizeBox -MaximizeBox +OwnDialogs +LabelGui_Settings_ hwndSettingsHandler,% programName " - Settings"
 	Gui, Settings:Default
 
-;		Apply Button
+	tabsList := "Settings|Customization|Customization Appearance|Customization Custom Buttons|Customization Smaller Buttons|Hotkeys|Hotkeys Basic|Hotkeys Advanced|Hotkeys Special"
 
 	guiXWorkArea := 150, guiYWorkArea := 10
 	Gui, Add, TreeView, x10 y10 h380 w130 -0x4 -Buttons gGui_Settings_TreeView
@@ -1765,16 +1850,16 @@ Gui_Settings() {
     P3 := TV_Add("Hotkeys","","Expand")
     P3C1 := TV_Add("Basic", P3, "Expand")
     P3C2 := TV_Add("Advanced", P3, "Expand")
+    P3C3 := TV_Add("Special", P3, "Expand")
 
 	Gui, Add, Text,% "x" guiXWorkarea . " y" 360,% "Settings will be saved upon closing this window."
 	Gui, Add, Link,% "x" guiXWorkarea . " y" 375 . " vWikiBtn gGui_Settings_Btn_WIKI",% "Keep the cursor above a control to know more about it. You may also <a href="""">Visit the Wiki</a>"
-    ; Gui, Add, Button,% "x" guiXWorkArea . " y" 360 . " w" 430 . " h" 30 . " gGui_Settings_Btn_Apply vApplyBtn",Apply Settings
 
-	Gui, Add, Tab2, x10 y10 w0 h0 vTab hwndTabHandler,Settings|Customization|Customization Appearance|Customization Custom Buttons|Customization Smaller Buttons|Hotkeys|Hotkeys Basic|Hotkeys Advanced
+	Gui, Add, Tab2, x10 y10 w0 h0 vTab hwndTabHandler,% tabsList
 ;---------------------------
 	Gui, Tab, Settings
 ;	Settings Tab
-	Gui, Add, GroupBox, x%GuiXWorkArea% y%GuiYWorkArea% w430 h55 c000000 Section Center,About this tab:
+	Gui, Add, GroupBox,% "x" GuiXWorkArea " y" GuiYWorkArea-5 " w430 h55" . " c000000 Section Center",About this tab:
 		Gui, Add, Text,xs+10 ys+20 BackgroundTrans,Main settings about how should the tool behave.
 ;		Trades GUI
 		Gui, Add, GroupBox,% " x" guiXWorkArea . " ys+60" . " w430 h280" . " c000000",Main interface
@@ -1815,26 +1900,26 @@ Gui_Settings() {
 ;	-----------------------
 	Gui, Tab, Customization
 
-	Gui, Add, GroupBox, x%GuiXWorkArea% y%GuiYWorkArea% w430 h55 c000000 Section Center,Appearance:
+	Gui, Add, GroupBox,% "x" GuiXWorkArea " y" GuiYWorkArea-5 " w430 h55" . " c000000 Section Center",Appearance:
 		Gui, Add, Text,xs+10 ys+20 BackgroundTrans,Choose a skin preset or customize it to your liking.
 
-	Gui, Add, GroupBox, x%GuiXWorkArea% yp+50 w430 h55 c000000 Section Center,Custom Buttons:
+	Gui, Add, GroupBox, x%GuiXWorkArea% yp+40 w430 h55 c000000 Section Center,Custom Buttons:
 		Gui, Add, Text,xp+10 yp+20 BackgroundTrans,Rename and define button's actions or positions.
 
-	Gui, Add, GroupBox, x%GuiXWorkArea% yp+50 w430 h55 c000000 Section Center,Smaller Buttons:
+	Gui, Add, GroupBox, x%GuiXWorkArea% yp+40 w430 h55 c000000 Section Center,Smaller Buttons:
 		Gui, Add, Text,xp+10 yp+20 BackgroundTrans,Choose to bind the buttons to an hotkey.
 ;	--------------------
 	Gui, Tab, Customization Appearance
-	Gui, Add, GroupBox,% "x" guiXWorkarea . " y" guiYWorkArea . " w420 h55" . " c000000",Preset
+	Gui, Add, GroupBox,% "x" guiXWorkarea . " y" guiYWorkArea-5 . " w430 h55" . " c000000",Preset
 		presetsList := "User Defined"
 		Loop, Files,% ProgramValues.Skins_Folder "\*", D
 		{
 			presetsList .= "|" A_LoopFileName
 		}
 		Sort, presetsList,D|
-		Gui, Add, DropDownList,% "x" guiXWorkarea+10 . " y" guiYWorkArea+20 . " w400" . " vActivePreset hwndActivePresetHandler gGui_Settings_Presets",% presetsList
+		Gui, Add, DropDownList,% "x" guiXWorkarea+10 . " y" guiYWorkArea+15 . " w400" . " vActivePreset hwndActivePresetHandler gGui_Settings_Presets",% presetsList
 
-	Gui, Add, GroupBox,% "x" guiXWorkArea . " y" guiYWorkArea+60 . " w430 h85" . " c000000",Skin
+	Gui, Add, GroupBox,% "x" guiXWorkArea . " y" guiYWorkArea+55 . " w430 h85" . " c000000",Skin
 
 		skinsList := ""
 		Loop, Files,% ProgramValues.Skins_Folder "\*", D
@@ -1851,7 +1936,7 @@ Gui_Settings() {
 		Gui, Add, Text,% "xp+200" . " yp+3",Scale: 
 		Gui, Add, DropDownList,% "xp+40" . " yp-3" . " w145" . " vSkinScaling hwndSkinScalingHandler" . " gGui_Settings_Set_Custom_Preset",% scalingList
 
-	Gui, Add, GroupBox,% "x" guiXWorkArea . " y" guiYWorkArea+150 . " w430 h85" . " c000000",Font
+	Gui, Add, GroupBox,% "x" guiXWorkArea . " y" guiYWorkArea+145 . " w430 h85" . " c000000",Font
 
 		fontsList := "System"
 		for fontFile, fontTitle in ProgramFonts {
@@ -1871,7 +1956,7 @@ Gui_Settings() {
 		Gui, Add, Edit,% "xp+100" . " yp" . " w50" . " ReadOnly"
 		Gui, Add, UpDown, vFontQualityCustom hwndFontQualityCustomHandler gGui_Settings_Set_Custom_Preset
 
-	Gui, Add, GroupBox,% "x" guiXWorkArea . " y" guiYWorkArea+240 . " w430 h85" . " c000000",Font Colors
+	Gui, Add, GroupBox,% "x" guiXWorkArea . " y" guiYWorkArea+235 . " w430 h75" . " c000000",Font Colors
 
 		Gui, Add, Text,% "xp+10" . " yp+23",Title (Active):
 		Gui, Add, Edit,% "xp+75" . " yp-3" . " w60" . " vTitleActiveColor" . " hwndTitleActiveColorHandler" . " Limit6",% ""
@@ -1888,19 +1973,20 @@ Gui_Settings() {
 		Gui, Add, Text,% "xp-75" . " yp+28",Buttons:
 		Gui, Add, Edit,% "xp+75" . " yp-3" . " w60" . " vButtonsColor" . " hwndButtonsColorHandler" . " Limit6",% ""
 
-		Gui, Add, Link,% "x" guiXWorkArea + 80 . " y" guiYWorkArea+240,% "(Use <a href=""http://hslpicker.com/"">HSL Color Picker</a> to retrieve the 6 characters code starting with #) "
+		Gui, Add, Link,% "x" guiXWorkArea + 80 . " y" guiYWorkArea+235,% "(Use <a href=""http://hslpicker.com/"">HSL Color Picker</a> to retrieve the 6 characters code starting with #) "
 
 ;	-------------------------
 	Gui, Tab, Customization Custom Buttons
 	DynamicGUIHandlersArray := Object()
 
+		Gui, Add, GroupBox,% "x" guiXWorkarea . " y" guiYWorkArea-5 . " w430 h110" . " c000000",Buttons
 	Loop 9 {
 		index := A_Index
 		xpos := (index=1||index=4||index=7)?(guiXWorkArea+32):(index=2||index=5||index=8)?(guiXWorkArea+152):(index=3||index=6||index=9)?(guiXWorkArea+272):("ERROR")
-		ypos := (index=1||index=2||index=3)?(guiYWorkArea):(index=4||index=5||index=6)?(guiYWorkArea+35):(index=7||index=8||index=9)?(guiYWorkArea+70):("ERROR")
-		Gui, Add, Button, x%xpos% y%ypos% w120 h35 vTradesBtn%index% hwndTradesBtn%index%Handler gGui_Settings_Custom_Label,% "Custom " index
+		ypos := (index=1||index=2||index=3)?(guiYWorkArea+20):(index=4||index=5||index=6)?(guiYWorkArea+45):(index=7||index=8||index=9)?(guiYWorkArea+70):("ERROR")
+		Gui, Add, Button, x%xpos% y%ypos% w120 h25 vTradesBtn%index% hwndTradesBtn%index%Handler gGui_Settings_Custom_Label,% "Custom " index
 
-		Gui, Add, GroupBox,% "x" guiXWorkArea . " y" guiYWorkArea+120 . " w425 h85" . " c000000",Positioning
+		Gui, Add, GroupBox,% "x" guiXWorkArea . " y" guiYWorkArea+110 . " w430 h85" . " c000000",Positioning
 			Gui, Add, Text,% "xp+10" . " yp+20" . " hwndTradesHPOS" index "TextHandler",Horizontal:
 			Gui, Add, ListBox, w70 xp+55 yp vTradesHPOS%index% hwndTradesHPOS%index%Handler gGui_Settings_Trades_Preview R3,% "Left|Center|Right"
 			Gui, Add, Text, xp+75 yp hwndTradesVPOS%index%TextHandler,Vertical:
@@ -1908,7 +1994,7 @@ Gui_Settings() {
 			Gui, Add, Text, xp+75 yp hwndTradesSIZE%index%TextHandler,Size:
 			Gui, Add, ListBox, w70 xp+30 yp vTradesSIZE%index% hwndTradesSIZE%index%Handler gGui_Settings_Trades_Preview R4,% "Disabled|Small|Medium|Large"
 
-		Gui, Add, GroupBox,% "x" guiXWorkarea . " y" guiYWorkArea+215 . " w425 h110" . " c000000",Behaviour
+		Gui, Add, GroupBox,% "x" guiXWorkarea . " y" guiYWorkArea+200 . " w430 h110" . " c000000",Behaviour
 			Gui, Add, Text,% "xp+10" . " yp+20" . " hwndTradesLabel" index "TextHandler",Label:
 			Gui, Add, Edit, xp+50 yp-3 w160 vTradesLabel%index% hwndTradesLabel%index%Handler gGui_Settings_Custom_Label,
 			Gui, Add, Text, xp+170 yp+3 vTradesHK%index%Text hwndTradesHK%index%TextHandler,Hotkey:
@@ -1967,29 +2053,30 @@ Gui_Settings() {
 ;	Smaller Buttons
 	Gui, Tab, Customization Smaller Buttons
 
-	Gui, Add, GroupBox, x%GuiXWorkArea% y%GuiYWorkArea% w430 h55 c000000 Section Center,About this tab:
+	Gui, Add, GroupBox,% "x" GuiXWorkArea " y" GuiYWorkArea-5 " w430 h55" . " c000000 Section Center",About this tab:
 		Gui, Add, Text,xs+10 ys+15 BackgroundTrans,Allows to bind hotkeys to these buttons.
 		Gui, Add, Text,xp yp+15 BackgroundTrans,Disabling all Custom Buttons will effectively show only this row.
 
-	hexCodes := ["41", "42", "45", "43", "44", "46"] ; 41:Clip/42:Whis/43:Trade/44:Kick/45:Inv
+	hexCodes := ["41", "42", "45", "43", "44"] ; 41:Clip/42:Whis/43:Trade/44:Kick/45:Inv
 	ctrlActions := ["Clipboard" , "Whisper", "Invite", "Trade", "Kick"]
 	for key, element in hexCodes {
 		xpos := (Mod(A_Index,2)!=0)?(guiXWorkarea)
-			   :(360)
-		ypos := (A_Index=1)?(70)
+			   :(370)
+		ypos := (A_Index=1)?(GuiYWorkArea+55)
 			   :(Mod(A_Index,2)!=0 && A_Index!=1)?(ypos+60)
 			   :(ypos)
+		width := 210, height := 60
 
 		Gui, Font,% "S" 20,% "TC-Symbols"
-		Gui, Add, GroupBox,% "x" xpos " y" ypos " w200 h60" . " c000000 hwndUnicodeBtn" A_Index "Handler",% ""
+		Gui, Add, GroupBox,% "x" xpos " y" ypos " w" width " h" height . " c000000 hwndUnicodeBtn" A_Index "Handler",% ""
 			handler := "UnicodeBtn" A_Index "Handler"
 			ConvertesChars := Hex2Bin(nString, element) ; Convert hex code into its corresponding unicode character
 		   	SetUnicodeText(nString, %handler%) ; Replace the control's content with the unicode character
 		   	Gui, Font
 		   	Gui, Add, Text,% "xp+50 yp+7",% "(" ctrlActions[key] ")"
-		   	Gui, Add, CheckBox,% "x" xpos+10 " yp+20 w15 h15" . " vUnicodeBtn" A_Index "HotkeyToggle" " hwndUnicodeBtn" A_Index "HotkeyToggleHandler"
+		   	Gui, Add, CheckBox,% "x" xpos+10 " yp+22 w15 h15" . " vUnicodeBtn" A_Index "HotkeyToggle" " hwndUnicodeBtn" A_Index "HotkeyToggleHandler"
 		   	Gui, Add, Text,% "x" xpos+27 " yp+1",Hotkey:
-		   	Gui, Add, Hotkey,% "xp+45" " yp-3" " w120" . " vUnicodeBtn" A_Index "Hotkey" " hwndUnicodeBtn" A_Index "HotkeyHandler"
+		   	Gui, Add, Hotkey,% "xp+45" " yp-3" " w" width-80 . " vUnicodeBtn" A_Index "Hotkey" " hwndUnicodeBtn" A_Index "HotkeyHandler"
 		   	index := A_Index
 	}
 	key := "", element := "", hexCodes := "", xpos := "", ypos := "", handler := "", ConvertesChars := "", nString := ""
@@ -1998,65 +2085,82 @@ Gui_Settings() {
 ;	Hotkeys Tab
 	Gui, Tab, Hotkeys
 
-	Gui, Add, GroupBox, x%GuiXWorkArea% y%GuiYWorkArea% w430 h55 c000000 Section Center,Basic:
+	Gui, Add, GroupBox,% "x" GuiXWorkArea " y" GuiYWorkArea-5 " w430 h55" . " c000000 Section Center",Basic:
 		Gui, Add, Text,xs+10 ys+15 BackgroundTrans,Allows to bind an hotkey to send a single message or command.
-		Gui, Add, Text,xp yp+15 BackgroundTrans,Some keys such as Space or Escape cannot be bound.
+		Gui, Add, Text,xp yp+15 BackgroundTrans,Some keys such as Space or Escape can only be bound in Advanced.
 
-	Gui, Add, GroupBox, x%GuiXWorkArea% yp+40 w430 h55 c000000 Section Center,Advanced:
+	Gui, Add, GroupBox, x%GuiXWorkArea% yp+30 w430 h55 c000000 Section Center,Advanced:
 		Gui, Add, Text,xs+10 ys+15 BackgroundTrans,Allows to bind an hotkey to send multiple messages.
 		Gui, Add, Text,xp yp+15 BackgroundTrans,Please refer to the Wiki to find out how to correctly set them up.
 
 ;------------------------------
 	Gui, Tab, Hotkeys Basic
 
-	Gui, Add, GroupBox, x%GuiXWorkArea% y%GuiYWorkArea% w430 h55 c000000 Section Center,About this tab:
+	Gui, Add, GroupBox,% "x" GuiXWorkArea " y" GuiYWorkArea-5 " w430 h55" . " c000000 Section Center",About this tab:
 		Gui, Add, Text,xs+10 ys+15 BackgroundTrans,Allows to bind an hotkey to send a single message or command.
-		Gui, Add, Text,xp yp+15 BackgroundTrans,Some keys such as Space or Escape cannot be bound.
+		Gui, Add, Text,xp yp+15 BackgroundTrans,Some keys such as Space or Escape can only be bound in Advanced.
 
-	xpos := guiXWorkArea, ypos := guiYWorkArea+60
+	xpos := guiXWorkArea, ypos := guiYWorkArea+55
 	Loop 8 {
 		btnID := A_Index
 		if (btnID > 1 && btnID <= 4) || (btnID > 5)
-			ypos += 65
+			ypos += 70
 		else if (btnID = 5)
-			xpos := guiXWorkArea+220, ypos := guiYWorkArea+60
-		Gui, Add, GroupBox, x%xpos% y%ypos% w209 h60 hwndHotkey%btnID%_GroupBox c000000
-		Gui, Add, Checkbox, xp+10 yp+13 vHotkey%btnID%_Toggle hwndHotkey%btnID%_ToggleHandler
-		Gui, Add, Edit, xp+30 yp-4 w150 vHotkey%btnID%_Text hwndHotkey%btnID%_TextHandler,
+			xpos := guiXWorkArea+220, ypos := guiYWorkArea+55
+		Gui, Add, GroupBox, x%xpos% y%ypos% w210 h70 hwndHotkey%btnID%_GroupBox c000000
+		Gui, Add, Checkbox, xp+10 yp+31 vHotkey%btnID%_Toggle hwndHotkey%btnID%_ToggleHandler
+		Gui, Add, Edit, xp+30 yp-17 w150 vHotkey%btnID%_Text hwndHotkey%btnID%_TextHandler,
 		Gui, Add, Hotkey, xp yp+25 w150 vHotkey%btnID%_KEY hwndHotkey%btnID%_KEYHandler,
 	}
 ;-----------------------------------
 	Gui, Tab, Hotkeys Advanced
 
-	Gui, Add, GroupBox, x%GuiXWorkArea% y%GuiYWorkArea% w430 h55 c000000 Section Center,About this tab:
+	Gui, Add, GroupBox,% "x" GuiXWorkArea " y" GuiYWorkArea-5 " w430 h55" . " c000000 Section Center",About this tab:
 		Gui, Add, Text,xs+10 ys+15 BackgroundTrans,Allows to bind an hotkey to send multiple messages.
 		Gui, Add, Text,xp yp+15 BackgroundTrans,Please refer to the Wiki to find out how to correctly set them up.
 
-	xpos := guiXWorkArea, ypos := guiYWorkArea+60
+	xpos := guiXWorkArea, ypos := guiYWorkArea+55
 	Loop 16 {
 		btnID := A_Index
 		if ( btnID > 1 && btnID <= 8 ) || ( btnID > 9 )
 			ypos += 35
 		else if ( btnID = 9 )
-			xpos := guiXWorkArea+220, ypos := guiYWorkArea+60
+			xpos := guiXWorkArea+220, ypos := guiYWorkArea+55
 		Gui, Add, GroupBox, x%xpos% y%ypos% w210 h35 c000000
 		Gui, Add, Checkbox, xp+7 yp+13 w15 h15 vHotkeyAdvanced%btnID%_Toggle hwndHotkeyAdvanced%btnID%_ToggleHandler
 		Gui, Add, Edit, xp+30 yp-3 w60 vHotkeyAdvanced%btnID%_KEY hwndHotkeyAdvanced%btnID%_KEYHandler
 		Gui, Add, Edit, xp+65 yp w100 gGui_Settings_Hotkeys_Tooltip vHotkeyAdvanced%btnID%_Text hwndHotkeyAdvanced%btnID%_TextHandler
 	}
 ;-----------------------------------
-	; Gui, Tab, Hotkeys Controlling Tabs
+	Gui, Tab, Hotkeys Special
 
-	; Gui, Add, GroupBox, x%GuiXWorkArea% y%GuiYWorkArea% w430 h55 c000000 Section Center,About this tab:
-	; 	Gui, Add, Text,xs+10 ys+15 BackgroundTrans,Allows to bind an hotkey to send multiple messages.
-	; 	Gui, Add, Text,xp yp+15 BackgroundTrans,Please refer to the Wiki to find out how to correctly set them up.
+	Gui, Add, GroupBox, x%GuiXWorkArea% y%GuiYWorkArea% w430 h55 c000000 Section Center,About this tab:
+		Gui, Add, Text,xs+10 ys+15 BackgroundTrans,Allows to bind an hotkey to special actions.
+
+	ctrlNames := ["Choose Next Tab" , "Choose Previous Tab", "Close Current Tab", "Toggle Minimize State"]
+	ctrlVars := ["ChooseNextTab", "ChoosePrevTab", "CloseCurrentTab", "ToggleMinimize"]
+	for key, element in ctrlNames {
+		xpos := (Mod(A_Index,2)!=0)?(guiXWorkarea)
+			   :(370)
+		ypos := (A_Index=1)?(GuiYWorkArea+55)
+			   :(Mod(A_Index,2)!=0 && A_Index!=1)?(ypos+60)
+			   :(ypos)
+		width := 210, height := 60
+
+		Gui, Add, GroupBox,% "x" xpos " y" ypos " w" width " h" height . " c000000",% ctrlNames[A_Index]
+		   	Gui, Add, CheckBox,% "x" xpos+10 " yp+25 w15 h15" . " v" ctrlVars[A_Index] "HotkeyToggle" " hwnd" ctrlVars[A_Index] "HotkeyToggleHandler"
+		   	Gui, Add, Text,% "x" xpos+27 " yp+1",Hotkey:
+		   	Gui, Add, Hotkey,% "xp+45" " yp-3" " w" width-80 . " v" ctrlVars[A_Index] "Hotkey" " hwnd" ctrlVars[A_Index] "HotkeyHandler"
+	}
+
+
 
 ;-----------------------------------
 
 	GoSub, Gui_Settings_Set_Preferences
 	Gui, Trades: -E0x20
 	Gui, Show
-	GuiControl, Settings:Choose,% TabHandler, Smaller Buttons
+	GuiControl, Settings:Choose,% TabHandler,1
 	guiCreated := 1
 return
 
@@ -2170,6 +2274,7 @@ return
 	  			:(evntinf=P3)?("Hotkeys")
 	  			:(evntinf=P3C1)?("Hotkeys Basic")
 	  			:(evntinf=P3C2)?("Hotkeys Advanced")
+	  			:(evntinf=P3C3)?("Hotkeys Special")
 	  			:("ERROR")
 	      GuiControl, Settings:Choose,% TabHandler,% tabName
 	  }
@@ -2332,6 +2437,18 @@ return
 			CONTENT := (index=1)?(HotkeyAdvanced1_Text):(index=2)?(HotkeyAdvanced2_Text):(index=3)?(HotkeyAdvanced3_Text):(index=4)?(HotkeyAdvanced4_Text):(index=5)?(HotkeyAdvanced5_Text):(index=6)?(HotkeyAdvanced6_Text):(index=7)?(HotkeyAdvanced7_Text):(index=8)?(HotkeyAdvanced8_Text):(index=9)?(HotkeyAdvanced9_Text):(index=10)?(HotkeyAdvanced10_Text):(index=11)?(HotkeyAdvanced11_Text):(index=12)?(HotkeyAdvanced12_Text):(index=13)?(HotkeyAdvanced13_Text):(index=14)?(HotkeyAdvanced14_Text):(index=15)?(HotkeyAdvanced15_Text):(index=16)?(HotkeyAdvanced16_Text):("ERROR")
 			IniWrite,% """" CONTENT """",% iniFilePath,HOTKEYS_ADVANCED,% KEY ; Quotes allows us to keep the spaces on IniRead
 		}
+;	Hotkeys Special
+		Loop 4 {
+			index := A_Index
+
+			KEY := "HK_Special_" index "_Hotkey_Toggle"
+			CONTENT := (index=1)?(ChooseNextTabHotkeyToggle):(index=2)?(ChoosePrevTabHotkeyToggle):(index=3)?(CloseCurrentTabHotkeyToggle):(index=4)?(ToggleMinimizeHotkeyToggle):("ERROR")
+			IniWrite,% CONTENT,% iniFilePath,HOTKEYS_SPECIAL,% KEY
+
+			KEY := "HK_Special_" index "_Hotkey"
+			CONTENT := (index=1)?(ChooseNextTabHotkey):(index=2)?(ChoosePrevTabHotkey):(index=3)?(CloseCurrentTabHotkey):(index=4)?(ToggleMinimizeHotkey):("ERROR")
+			IniWrite,% CONTENT,% iniFilePath,HOTKEYS_SPECIAL,% KEY
+		}
 ;	Custom Buttons
 		Loop 9 {
 			index := A_Index
@@ -2377,7 +2494,7 @@ return
 			IniWrite,% """" CONTENT """",% iniFilePath,CUSTOMIZATION_BUTTONS_ACTIONS,% KEY ; Quotes allows us to keep the spaces on IniRead
 		}
 ;	Unicode Buttons
-		Loop 6 {
+		Loop 5 {
 			index := A_Index
 			SECT := "CUSTOMIZATION_BUTTONS_UNICODE"
 
@@ -2442,6 +2559,8 @@ return
 		CUSTOMIZATION_APPEARANCE_HandlersKeysArray := returnArray.CUSTOMIZATION_APPEARANCE_HandlersKeysArray
 		CUSTOMIZATION_BUTTONS_UNICODE_HandlersArray := returnArray.CUSTOMIZATION_BUTTONS_UNICODE_HandlersArray
 		CUSTOMIZATION_BUTTONS_UNICODE_HandlersKeysArray := returnArray.CUSTOMIZATION_BUTTONS_UNICODE_HandlersKeysArray
+		HOTKEYS_SPECIAL_HandlersArray := returnArray.HOTKEYS_SPECIAL_HandlersArray
+		HOTKEYS_SPECIAL_HandlersKeysArray := returnArray.HOTKEYS_SPECIAL_HandlersKeysArray
 
 		for key, element in sectionArray
 		{
@@ -2507,7 +2626,7 @@ return
 						GuiControl, Settings:Choose,% %handler%Handler,% var "%"
 					}
 				}
-				else if ( var != "ERROR" && var != "" ) { ; Everything else)
+				else if ( var != "ERROR" && var != "" ) { ; Everything else
 					GuiControl, Settings:,% %handler%Handler,% var
 				}
 			}
@@ -2517,7 +2636,7 @@ return
 }
 
 Gui_Settings_Custom_Label_Func(type, controlsArray, btnID, action, label) {
-	global TradesGUI_Controls
+	global TradesGUI_Controls, ProgramSettings, TradesGUI_Values
 
 	if ( type = "TradesBtn" ) {
 		controlsToHide := "(?:HPOS|HPOSText|VPOS|VPOSText|SIZE|SIZEText|Label|LabelText|Hotkey|HotkeyText|MarkCompleted|Action|ActionText|MsgEditID|MsgID|Msg1|Msg2|Msg3)"
@@ -2535,7 +2654,15 @@ Gui_Settings_Custom_Label_Func(type, controlsArray, btnID, action, label) {
 
 	if ( type = "TradesLabel" ) {
 		GuiControl,Settings:,% controlsArray["Btn" btnID],% label
-		GuiControl,Trades:,% TradesGUI_Controls["Button_Custom_" btnID "_Text"],% label
+
+		if ( ProgramSettings.Active_Skin = "System" ) {
+			Loop % TradesGUI_Values.Tabs_Count {
+				GuiControl,Trades:,% TradesGUI_Controls["Button_Custom_" btnID "_" A_Index],% label
+			}
+		}
+		else {
+			GuiControl,Trades:,% TradesGUI_Controls["Button_Custom_" btnID "_Text"],% label
+		}
 	}
 
 	if ( type = "TradesAction" || type = "TradesBtn" ) && ( action != "Clipboard Item" && action != "" ) {
@@ -2575,7 +2702,8 @@ Gui_Settings_Get_Settings_Arrays() {
 	, "HOTKEYS_ADVANCED"
 	, "CUSTOMIZATION_BUTTONS_ACTIONS"
 	, "CUSTOMIZATION_APPEARANCE"
-	, "CUSTOMIZATION_BUTTONS_UNICODE")
+	, "CUSTOMIZATION_BUTTONS_UNICODE"
+	, "HOTKEYS_SPECIAL")
 
 	
 	returnArray.SETTINGS_HandlersArray := Object() ; contains all the Gui_Settings HANDLERS from this SECTION
@@ -2743,23 +2871,26 @@ Gui_Settings_Get_Settings_Arrays() {
 	returnArray.CUSTOMIZATION_BUTTONS_UNICODE_HandlersKeysArray := Object()
 	returnArray.CUSTOMIZATION_BUTTONS_UNICODE_KeysArray := Object()
 	returnArray.CUSTOMIZATION_BUTTONS_UNICODE_DefaultValues := Object()
-	Loop 6 {
+	keyID := 0
+	Loop 5 {
 		index := A_Index
-		returnArray.CUSTOMIZATION_BUTTONS_UNICODE_HandlersArray.Insert(index
+		returnArray.CUSTOMIZATION_BUTTONS_UNICODE_HandlersArray.Insert(keyID
 		,"UnicodeBtn" index "HotkeyToggle"
 		,"UnicodeBtn" index "Hotkey")
 
-		returnArray.CUSTOMIZATION_BUTTONS_UNICODE_HandlersKeysArray.Insert(index
+		returnArray.CUSTOMIZATION_BUTTONS_UNICODE_HandlersKeysArray.Insert(keyID
 		, "Button_Unicode_" index "_Hotkey_Toggle"
 		, "Button_Unicode_" index "_Hotkey")
 
-		returnArray.CUSTOMIZATION_BUTTONS_UNICODE_KeysArray.Insert(index
+		returnArray.CUSTOMIZATION_BUTTONS_UNICODE_KeysArray.Insert(keyID
 		, "Button_Unicode_" index "_Hotkey_Toggle"
 		, "Button_Unicode_" index "_Hotkey")
 
-		returnArray.CUSTOMIZATION_BUTTONS_UNICODE_DefaultValues.Insert(index
+		returnArray.CUSTOMIZATION_BUTTONS_UNICODE_DefaultValues.Insert(keyID
 		, 0
 		, "")
+
+		keyID += 2
 	}
 
 	returnArray.CUSTOMIZATION_APPEARANCE_HandlersArray := Object()
@@ -2770,6 +2901,39 @@ Gui_Settings_Get_Settings_Arrays() {
 	returnArray.CUSTOMIZATION_APPEARANCE_HandlersKeysArray.Insert(0, "Active_Preset", "Active_Skin", "Scale_Multiplier", "Font", "Font_Size_Mode", "Font_Size_Custom", "Font_Quality_Mode", "Font_Quality_Custom", "Font_Color_Title_Active", "Font_Color_Title_Inactive", "Font_Color_Trades_Infos_1", "Font_Color_Trades_Infos_2", "Font_Color_Tabs", "Font_Color_Buttons")
 	returnArray.CUSTOMIZATION_APPEARANCE_KeysArray.Insert(0, "Active_Preset", "Active_Skin", "Scale_Multiplier", "Font", "Font_Size_Mode", "Font_Size_Custom", "Font_Quality_Mode", "Font_Quality_Custom", "Font_Color_Title_Active", "Font_Color_Title_Inactive", "Font_Color_Trades_Infos_1", "Font_Color_Trades_Infos_2", "Font_Color_Tabs", "Font_Color_Buttons")
 	returnArray.CUSTOMIZATION_APPEARANCE_DefaultValues.Insert(0, "System", "System", "1", "System", "Automatic", "8", "Automatic", "5", "FFFF00", "FFFFFF", "SYSTEM", "SYSTEM" , "SYSTEM", "SYSTEM")
+
+	returnArray.HOTKEYS_SPECIAL_HandlersArray := Object()
+	returnArray.HOTKEYS_SPECIAL_HandlersKeysArray := Object()	
+	returnArray.HOTKEYS_SPECIAL_KeysArray := Object()
+	returnArray.HOTKEYS_SPECIAL_DefaultValues := Object()
+
+	returnArray.HOTKEYS_SPECIAL_HandlersArray.Insert(0
+	, "ChooseNextTabHotkeyToggle"
+	, "ChooseNextTabHotkey"
+	, "ChoosePrevTabHotkeyToggle"
+	, "ChoosePrevTabHotkey"
+	, "CloseCurrentTabHotkeyToggle"
+	, "CloseCurrentTabHotkey"
+	, "ToggleMinimizeHotkeyToggle"
+	, "ToggleMinimizeHotkey")
+
+	keyID := 0
+	Loop 4 {
+		index := A_Index
+		returnArray.HOTKEYS_SPECIAL_HandlersKeysArray.Insert(keyID
+		, "HK_Special_" index "_Hotkey_Toggle"
+		, "HK_Special_" index "_Hotkey")
+
+		returnArray.HOTKEYS_SPECIAL_KeysArray.Insert(keyID
+		, "HK_Special_" index "_Hotkey_Toggle"
+		, "HK_Special_" index "_Hotkey")
+
+		returnArray.HOTKEYS_SPECIAL_DefaultValues.Insert(keyID
+		, "0"
+		, "")
+
+		keyID += 2
+	}
 
 	return returnArray
 }
@@ -3225,6 +3389,7 @@ Get_Local_Settings() {
 	CUSTOMIZATION_BUTTONS_ACTIONS_KeysArray := returnArray.CUSTOMIZATION_BUTTONS_ACTIONS_KeysArray
 	CUSTOMIZATION_APPEARANCE_KeysArray := returnArray.CUSTOMIZATION_APPEARANCE_KeysArray
 	CUSTOMIZATION_BUTTONS_UNICODE_KeysArray := returnArray.CUSTOMIZATION_BUTTONS_UNICODE_KeysArray
+	HOTKEYS_SPECIAL_KeysArray := returnArray.HOTKEYS_SPECIAL_KeysArray
 	
 	returnArray.KEYS := Object()
 	returnArray.VALUES := Object()
@@ -3277,6 +3442,8 @@ Set_Local_Settings(){
 	CUSTOMIZATION_APPEARANCE_DefaultValues := settingsArray.CUSTOMIZATION_APPEARANCE_DefaultValues
 	CUSTOMIZATION_BUTTONS_UNICODE_KeysArray := settingsArray.CUSTOMIZATION_BUTTONS_UNICODE_KeysArray
 	CUSTOMIZATION_BUTTONS_UNICODE_DefaultValues := settingsArray.CUSTOMIZATION_BUTTONS_UNICODE_DefaultValues
+	HOTKEYS_SPECIAL_KeysArray := settingsArray.HOTKEYS_SPECIAL_KeysArray
+	HOTKEYS_SPECIAL_DefaultValues := settingsArray.HOTKEYS_SPECIAL_DefaultValues
 ;	Set the value for each key
 	for key, element in sectionArray
 	{
@@ -3325,6 +3492,12 @@ Hotkeys_Basic_5:
 	Hotkeys_Handler(A_ThisLabel)
 Return
 Hotkeys_Basic_6:
+	Hotkeys_Handler(A_ThisLabel)
+Return
+Hotkeys_Basic_7:
+	Hotkeys_Handler(A_ThisLabel)
+Return
+Hotkeys_Basic_8:
 	Hotkeys_Handler(A_ThisLabel)
 Return
 
@@ -3424,6 +3597,19 @@ Hotkeys_TradesGUI_Unicode_6:
 	Hotkeys_Handler(A_ThisLabel)
 Return
 
+Hotkeys_Special_1:
+	Hotkeys_Handler(A_ThisLabel)
+Return
+Hotkeys_Special_2:
+	Hotkeys_Handler(A_ThisLabel)
+Return
+Hotkeys_Special_3:
+	Hotkeys_Handler(A_ThisLabel)
+Return
+Hotkeys_Special_4:
+	Hotkeys_Handler(A_ThisLabel)
+Return
+
 Hotkeys_Handler(thisLabel) {
 
 	global TradesGUI_Values, ProgramValues, TradesGUI_Controls, ProgramSettings
@@ -3437,6 +3623,7 @@ Hotkeys_Handler(thisLabel) {
 				 :(labelType="Hotkeys_Advanced_")?("Advanced")
 				 :(labelType="Hotkeys_TradesGUI_Custom_")?("TradesGUI_Custom")
 				 :(labelType="Hotkeys_TradesGUI_Unicode_")?("TradesGUI_Unicode")
+				 :(labelType="Hotkeys_Special_")?("Special")
 				 :("ERROR")
 
 	if ( hotkeyType = "Basic" || hotkeyType = "Advanced" ) {
@@ -3466,6 +3653,16 @@ Hotkeys_Handler(thisLabel) {
 		else if ( hotkeyType = "TradesGUI_Unicode" )
 			ControlClick,,% "ahk_id " TradesGUI_Controls["Button_Unicode_" hotkeyID]
 		WM_Messages_Set_State(1)
+	}
+	else if ( hotkeyType = "Special" ){
+		if (hotkeyID = 1)
+			Gui_Trades_Select_Tab({Choose_Next:1})
+		else if (hotkeyID = 2)
+			Gui_Trades_Select_Tab({Choose_Prev:1})
+		else if (hotkeyID = 3)
+			Gui_Trades_Close_Tab()
+		else if (hotkeyID = 4)
+			Gui_Trades_Minimize_Func()
 	}
 }
 
@@ -3517,10 +3714,23 @@ Disable_Hotkeys() {
 		}
 	}
 ;	Trades GUI Unicode Buttons
-	Loop 6 {
+	Loop 5 {
 		index := A_Index
 		if ( ProgramSettings["Button_Unicode_" index "_Hotkey_Toggle"] ) {
 			userHotkey%index% := ProgramSettings["Button_Unicode_" index "_Hotkey"]
+			Hotkey,IfWinActive,ahk_group POEGame
+			if ( userHotkey%index% != "" && userHotkey%index% != "ERROR" ) {
+				try {
+					Hotkey,% userHotkey%index%, Off
+				}
+			}
+		}
+	}
+;	Special Hotkeys
+	Loop 4 {
+		index := A_Index
+		if ( ProgramSettings["HK_Special_" index "_Hotkey_Toggle"] ) {
+			userHotkey%index% := ProgramSettings["HK_Special_" index "_Hotkey"]
 			Hotkey,IfWinActive,ahk_group POEGame
 			if ( userHotkey%index% != "" && userHotkey%index% != "ERROR" ) {
 				try {
@@ -3582,13 +3792,24 @@ Enable_Hotkeys() {
 		}
 	}
 ;	Trades GUI Unicode Buttons
-	Loop 6 {
+	Loop 5 {
 		index := A_Index
 		if ( ProgramSettings["Button_Unicode_" index "_Hotkey_Toggle"] ) {
 			userHotkey%index% := ProgramSettings["Button_Unicode_" index "_Hotkey"]
 			Hotkey,IfWinActive,ahk_group POEGame
 			if ( userHotkey%index% != "" && userHotkey%index% != "ERROR" ) {
 				Hotkey,% userHotkey%index%,Hotkeys_TradesGUI_Unicode_%index%,On
+			}
+		}
+	}
+;	Special Hotkeys
+	Loop 4 {
+		index := A_Index
+		if ( ProgramSettings["HK_Special_" index "_Hotkey_Toggle"] ) {
+			userHotkey%index% := ProgramSettings["HK_Special_" index "_Hotkey"]
+			Hotkey,IfWinActive,ahk_group POEGame
+			if ( userHotkey%index% != "" && userHotkey%index% != "ERROR" ) {
+				Hotkey,% userHotkey%index%,Hotkeys_Special_%index%,On
 			}
 		}
 	}
@@ -3687,6 +3908,7 @@ GUI_Multiple_Instances(handlersArray) {
 WM_Messages_Set_State(state) {
 /*		Disable/Enable the WM_Messages.
 		This allows us to simulate clicking on a button without having to hover the GUI.
+*/
 
 	OnMessage(0x200, "WM_MOUSEMOVE", state)
 	OnMessage(0x201, "WM_LBUTTONDOWN", state)
