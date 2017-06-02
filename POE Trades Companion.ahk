@@ -61,8 +61,8 @@ Start_Script() {
 
 	ProgramValues.Insert("Name", "POE Trades Companion")
 	ProgramValues.Insert("Version", "1.9.9")
-	ProgramValues.Insert("Debug", 1)
-	; ProgramValues.Debug := (A_IsCompiled)?(0):(ProgramValues.Debug) ; Prevent from enabling debug on compiled executable
+	ProgramValues.Insert("Debug", 0)
+	ProgramValues.Debug := (A_IsCompiled)?(0):(ProgramValues.Debug) ; Prevent from enabling debug on compiled executable
 
 	ProgramValues.Insert("Updater_File", "POE-TC-Updater.exe")
 	ProgramValues.Insert("Updater_Link", "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/Updater.exe")
@@ -149,16 +149,16 @@ Start_Script() {
 	if ( ProgramValues["Debug"] ) {
 		newItemInfos := Object()
 		Loop 3 {
-			newItemInfos.Insert(0, "iSellStuff", "level 1 Faster Attacks Support", "5 alteration", "Breach (stash tab ""Gems""; position: left 6, top 8)", "",A_Hour ":" A_Min, "Offering 1alch?")
+			newItemInfos.Insert(0, "iSellStuff", "Faster Attacks Support (Lvl: 1 / Qual: 0%)", "5 alteration", "Breach (Tab: ""Gems"" / Posn: 6;8)", "1",A_Hour ":" A_Min, "Offering 1alch?")
 			newItemArray := Gui_Trades_Manage_Trades("ADD_NEW", newItemInfos)
 			Gui_Trades(newItemArray, "UPDATE")
-			newItemInfos.Insert(0, "aktai0", "Kaom's Heart Glorious Plate", "10 exalted", "Hardcore Legacy", "",A_Hour ":" A_Min, "-")
+			newItemInfos.Insert(0, "aktai0", "Kaom's Heart Glorious Plate", "10 exalted", "Hardcore Legacy", "2",A_Hour ":" A_Min, "-")
 			newItemArray := Gui_Trades_Manage_Trades("ADD_NEW", newItemInfos)
 			Gui_Trades(newItemArray, "UPDATE")
-			newItemInfos.Insert(0, "MindDOTA2pl", "Voll's Devotion Agate Amulet ", "4 exalted", "Standard", "",A_Hour ":" A_Min, "-")
+			newItemInfos.Insert(0, "MindDOTA2pl", "Voll's Devotion Agate Amulet ", "4 exalted", "Standard", "3",A_Hour ":" A_Min, "-")
 			newItemArray := Gui_Trades_Manage_Trades("ADD_NEW", newItemInfos)
 			Gui_Trades(newItemArray, "UPDATE")
-			newItemInfos.Insert(0, "Krillson", "Rainbowstride Conjurer Boots", "3 mirror", "Hadcore", "",A_Hour ":" A_Min, "-")
+			newItemInfos.Insert(0, "Krillson", "Rainbowstride Conjurer Boots", "3 mirror", "Hadcore", "4",A_Hour ":" A_Min, "-")
 			newItemArray := Gui_Trades_Manage_Trades("ADD_NEW", newItemInfos)
 			Gui_Trades(newItemArray, "UPDATE")
 		}
@@ -252,16 +252,17 @@ Monitor_Game_Logs(mode="") {
 						}
 					}
 
-					if ( ProgramSettings.Whisper_Tray = 1 ) && !WinActive("ahk_pid " gamePID) { ; Show a tray notification of the whisper
-						Loop 2 {
-							TrayTip, Whisper Received:,%whispName%: %whispMsg%
+					if !WinActive("ahk_pid " gamePID) {
+						if ( ProgramSettings.Whisper_Tray ) {
+							Loop 2
+								TrayTip, Whisper Received:,%whispName%: %whispMsg%
+							SetTimer, Remove_TrayTip, -10000
 						}
-						SetTimer, Remove_TrayTip, -10000
-					}
 
-					if ( ProgramSettings.Whisper_Flash = 1 ) && !WinActive("ahk_pid " gamePID) { ; Flash the game window taskbar icon
-						gameHwnd := WinExist("ahk_pid " gamePID)
-						DllCall("FlashWindow", UInt, gameHwnd, Int, 1)
+						if ( ProgramSettings.Whisper_Flash ) {
+							gameHwnd := WinExist("ahk_pid " gamePID)
+							DllCall("FlashWindow", UInt, gameHwnd, Int, 1)
+						}
 					}
 
 					whisp := whispName ": " whispMsg "`n"
@@ -321,12 +322,15 @@ Monitor_Game_Logs(mode="") {
 						; Trade does not already exist
 						if (tradesExists = 0) {
 							newTradesInfos := Object()
-							newTradesInfos.Insert(0, whispName, tradeItem, tradePrice, tradeStash, gamePID, A_Hour ":" A_Min, tradeOther)
+							newTradesInfos.Insert(0, whispName, tradeItem, tradePrice, tradeStash, gamePID, A_Hour ":" A_Min, tradeOther, A_YYYY "-" A_MM "-" A_DD)
 							messagesArray := Gui_Trades_Manage_Trades("ADD_NEW", newTradesInfos)
 							Gui_Trades(messagesArray, "UPDATE")
 
 							if ( ProgramSettings.Trade_Toggle = 1 ) && FileExist(ProgramSettings.Trade_Sound_Path) { ; Play the sound set for trades
 								SoundPlay,% ProgramSettings.Trade_Sound_Path
+							}
+							else if ( ProgramSettings.Whisper_Toggle = 1 ) && FileExist(ProgramSettings.Whisper_Sound_Path) { ; Play the sound set for whispers{
+								SoundPlay,% ProgramSettings.Whisper_Sound_Path
 							}
 						}
 					}
@@ -337,7 +341,7 @@ Monitor_Game_Logs(mode="") {
 					}
 				}
 			}
-		}
+		}1
 		sleepTime := (timeSinceLastTrade>300)?(500):(100)
 		timeSinceLastTrade += 1*(sleepTime/1000)
 		Sleep %sleepTime%
@@ -398,7 +402,7 @@ Gui_Trades(infosArray="", errorMsg="") {
 	colorButtons := (colorButtons="SYSTEM")?(""):(colorButtons)
 
 	TradesGUI_Values.Max_Tabs_Per_Row := maxTabsRow := 7
-	maxTabsStage1 := 10
+	maxTabsStage1 := 25
 	maxTabsStage2 := 50
 	maxTabsStage3 := 75
 	maxTabsStage4 := 100
@@ -479,6 +483,7 @@ Gui_Trades(infosArray="", errorMsg="") {
 				Gui, Add, Text,% "xp" . " yp+" 15*guiScale . " wp hp" . " vLocationSlot" index . " hwndLocationSlot" index "Handler" . " +BackgroundTrans +0x0100 R1" . " c" colorTradesInfos2,% ""
 				Gui, Add, Text,% "xp" . " yp+" 15*guiScale . " wp hp" . " vOtherSlot" index . " hwndOtherSlot" index "Handler" . " +BackgroundTrans +0x100 R1" . " c" colorTradesInfos2,% ""
 				Gui, Add, Text,% "xp" . " yp" . " w0" . " h0" . " vPIDSlot" index . " hwndPIDSlot" index "Handler +BackgroundTrans" . " c" colorTradesInfos2,% ""
+				Gui, Add, Text,% "xp" . " yp" . " w0" . " h0" . " vDateSlot" index . " hwndDateSlot" index "Handler +BackgroundTrans" . " c" colorTradesInfos2,% ""
 
 				TradesGUI_Controls.Insert("Buyer_Slot_" index,BuyerSlot%index%Handler)
 				TradesGUI_Controls.Insert("Item_Slot_" index,ItemSlot%index%Handler)
@@ -487,6 +492,7 @@ Gui_Trades(infosArray="", errorMsg="") {
 				TradesGUI_Controls.Insert("Other_Slot_" index,OtherSlot%index%Handler)
 				TradesGUI_Controls.Insert("Time_Slot_" index,TimeSlot%index%Handler)
 				TradesGUI_Controls.Insert("PID_Slot_" index,PIDSlot%index%Handler)
+				TradesGUI_Controls.Insert("Date_Slot_" index,DateSlot%index%Handler)
 
 				hexCodes := ["41", "42", "45", "43", "44"] ; 41:Clip/42:Whis/43:Trade/44:Kick/45:Inv
 				ctrlActions := ["Clipboard" , "Whisper", "Invite", "Trade", "Kick"]
@@ -601,8 +607,8 @@ Gui_Trades(infosArray="", errorMsg="") {
 				Gui, Add, Text,% "xp" . " yp+" 15*guiScale . " wp" . " hp" . " vLocationSlot" index . " hwndLocationSlot" index "Handler" . " +BackgroundTrans +0x0100 R1 c" colorTradesInfos2,% ""
 				Gui, Add, Text,% "xp" . " yp+" 15*guiScale . " wp" . " hp" . " vOtherSlot" index . " hwndOtherSlot" index "Handler" . " +BackgroundTrans +0x100 R1 c" colorTradesInfos2,% ""
 				Gui, Add, Text,% "x" 345*guiScale . " y" 57*guiScale " w" 30*guiScale . " h" 15*guiScale . " vTimeSlot" index . " hwndTimeSlot" index "Handler" . " +BackgroundTrans R1 c" colorTradesInfos2,% ""
-				Gui, Add, Text,% "xp" . " yp" . " w0" . " h0" . " vPIDSlot" index . " hwndPIDSlot" index "Handler",
-
+				Gui, Add, Text,% "xp" . " yp" . " w0" . " h0" . " vPIDSlot" index . " hwndPIDSlot" index "Handler",% ""
+				Gui, Add, Text,% "xp" . " yp" . " w0" . " h0" . " vDateSlot" index . " hwndDateSlot" index "Handler",% ""
 
 ;				Hide the controls. They will be re-enabled later, based on the current amount of trade requests.
 				GuiControl, Trades:Hide,% TabIMG%index%Handler
@@ -623,6 +629,7 @@ Gui_Trades(infosArray="", errorMsg="") {
 				TradesGUI_Controls.Insert("Other_Slot_" index,OtherSlot%index%Handler)
 				TradesGUI_Controls.Insert("Time_Slot_" index,TimeSlot%index%Handler)
 				TradesGUI_Controls.Insert("PID_Slot_" index,PIDSlot%index%Handler)
+				TradesGUI_Controls.Insert("Date_Slot_" index,DateSlot%index%Handler)
 			}
 
 			hexCodes := ["41", "42", "45", "43", "44"] ; 41:Clip/42:Whis/43:Trade/44:Kick/45:Inv
@@ -773,6 +780,7 @@ Gui_Trades(infosArray="", errorMsg="") {
 			GuiControl, Trades:,% PIDSlot%key%Handler,% infosArray.GAMEPID[key]
 			GuiControl, Trades:,% TimeSlot%key%Handler,% infosArray.TIME[key]
 			GuiControl, Trades:,% OtherSlot%key%Handler,% infosArray.OTHER[key]
+			GuiControl, Trades:,% DateSlot%key%Handler,% infosArray.DATES[key]
 			if ( key <= maxTabsRow && activeSkin != "System" ) {
 				GuiControl, Trades:Show,% TabIMG%key%Handler
 				GuiControl, Trades:Show,% TabTXT%key%Handler
@@ -1366,6 +1374,7 @@ Gui_Trades_Redraw(msg, params="") {
 			allTrades.OTHER.Push("Offering 1 alch?")
 			allTrades.TIME.Push(A_Hour ":" A_Min)
 			allTrades.PID.Push(0)
+			allTrades.DATES.Push(A_YYYY "-" A_MM "-" A_DD)
 		}
 	}
 	Gui_Trades(, msg)
@@ -1484,24 +1493,32 @@ Gui_Trades_Get_Trades_Infos(tabID){
 	GuiControlGet, tabOther,Trades:,% TradesGUI_Controls["Other_Slot_" tabID]
 	GuiControlGet, tabPID, Trades:,% TradesGUI_Controls["PID_Slot_" tabID]
 	GuiControlGet, tabTime, Trades:,% TradesGUI_Controls["Time_Slot_" tabID]
+	GuiControlGet, tabDate, Trades:,% TradesGUI_Controls["Date_Slot_" tabID]
 
 	if RegExMatch(tabLocation, "(.*)\(Tab:(.*) / Pos:(.*)\)", tabLocationPat) 
 		leagueName := tabLocationPat1, stashName := tabLocationPat2, stashPos := tabLocationPat3
+	else
+		leagueName := tabLocation
+
 	if RegExMatch(tabItem, "(.*)\(Lvl:(.*) / Qual:(.*)\)", tabItemPat)
-		itemName := tabItemPat1, itemQual := tabItemPat2
+		itemName := tabItemPat1, itemLevel := tabItemPat2, itemQual := tabItemPat3
+	else
+		itemName := tabItem
 
 	TabInfos := {Buyer:tabBuyer
 				,Item:tabItem
 				,Item_Name:itemName
+				,Item_Level:itemLevel
 				,Item_Quality:itemQual
 				,Price:tabPrice
 				,Location:tabLocation
-				,League:leagueName
-				,Stash_Tab:stashName
-				,Stash_Position:stashPos
+				,Location_League:leagueName
+				,Location_Tab:stashName
+				,Location_Position:stashPos
 				,Other:tabOther
 				,PID:tabPID
 				,Time:tabTime
+				,Date_YYYYMMDD:tabDate
 				,TabID:tabID}
 
 	return tabInfos
@@ -1522,9 +1539,11 @@ Gui_Trades_Statistics(mode, tabInfos) {
 
 		for key, element in tabInfos {
 			element = %element% ; Blank spaces removal
-			if ( element || element != "-" ) {
-				if key in Buyer,Item,Item_Name,Item_Quality,League,Location,,Price,Stash_Position,Stash_Tab,Time
+			if ( element && element != "-" ) {
+				if key in Buyer,Date_YYYYMMDD,Item,Item_Level,Item_Name,Item_Quality,Location,Location_League,Location_Position,Location_Tab,Price,Time
+				{
 					IniWrite,% element,% historyFile,% index,% key
+				}
 				else if (key="OTHER") {
 					if (element && element!="-" && element !="`n") {
 						Loop, Parse, element,`n
@@ -1546,9 +1565,8 @@ Gui_Trades_Set_Trades_Infos(setInfos){
 	if ( newPID ) {
 		; Replace the PID for all trades matching the same PID
 		allTrades := Gui_Trades_Manage_Trades("GET_ALL")
-		tradeInfos := Gui_Trades_Get_Trades_Infos(tabID)
 		for key, element in allTrades.BUYERS {
-			if ( tradeInfos.PID = oldPID ) {
+			if ( allTrades.GAMEPID[key] = oldPID ) {
 				GuiControl,Trades:,% TradesGUI_Controls["PID_Slot_" key],% newPID
 			}
 		}
@@ -1575,6 +1593,7 @@ Gui_Trades_Manage_Trades(mode, newItemInfos="", activeTabID=""){
 	returnArray.GAMEPID := Object()
 	returnArray.TIME := Object()
 	returnArray.OTHER := Object()
+	returnArray.DATES := Object()
 	btnID := activeTabID
 
 	if ( mode = "GET_ALL" || mode = "ADD_NEW") {
@@ -1646,10 +1665,19 @@ Gui_Trades_Manage_Trades(mode, newItemInfos="", activeTabID=""){
 			}
 			else break
 		}
+	;	___DATE___
+		Loop {
+			datesCount := A_Index
+			GuiControlGet, content, Trades:,% TradesGUI_Controls["Date_Slot_" A_Index]
+			if ( content ) {
+				returnArray.DATES.Insert(A_Index, content)
+			}
+			else break
+		}
 	}
 
 	if ( mode = "ADD_NEW") {
-		name := newItemInfos[0], item := newItemInfos[1], price := newItemInfos[2], location := newItemInfos[3], gamePID := newItemInfos[4], time := newItemInfos[5], other := newItemInfos[6]
+		name := newItemInfos[0], item := newItemInfos[1], price := newItemInfos[2], location := newItemInfos[3], gamePID := newItemInfos[4], time := newItemInfos[5], other := newItemInfos[6], date := newItemInfos[7]
 		returnArray.COUNT.Insert(0, bCount)
 		returnArray.BUYERS.Insert(bCount, name)
 		returnArray.ITEMS.Insert(iCount, item)
@@ -1657,7 +1685,8 @@ Gui_Trades_Manage_Trades(mode, newItemInfos="", activeTabID=""){
 		returnArray.LOCATIONS.Insert(lCount, location)
 		returnArray.GAMEPID.Insert(PIDCount, gamePID)
 		returnArray.TIME.Insert(timeCount, time)
-		returnArray.OTHER.Insert(timeCount, other)
+		returnArray.OTHER.Insert(otherCount, other)
+		returnArray.DATES.Insert(datesCount, date)
 	}
 
 	if ( mode = "REMOVE_CURRENT") {
@@ -1772,6 +1801,23 @@ Gui_Trades_Manage_Trades(mode, newItemInfos="", activeTabID=""){
 		}
 		counter--
 		GuiControl,Trades:,% TradesGUI_Controls["Other_Slot_" counter],% ""
+
+;	___DATES___
+		Loop {
+			if ( A_Index < btnID )
+				counter := A_Index
+			else if ( A_Index >= btnID )
+				counter := A_Index+1
+			GuiControlGet, content, Trades:,% TradesGUI_Controls["Date_Slot_" counter]
+			if ( content ) {
+				index := A_Index
+				returnArray.Dates.Insert(index, content)
+			}
+			else break
+		}
+		counter--
+		GuiControl,Trades:,% TradesGUI_Controls["Date_Slot_" counter],% ""
+
 	}
 
 	return returnArray
@@ -2092,6 +2138,9 @@ Gui_Settings() {
 	Gui, Add, GroupBox, x%GuiXWorkArea% yp+30 w430 h55 c000000 Section Center,Advanced:
 		Gui, Add, Text,xs+10 ys+15 BackgroundTrans,Allows to bind an hotkey to send multiple messages.
 		Gui, Add, Text,xp yp+15 BackgroundTrans,Please refer to the Wiki to find out how to correctly set them up.
+
+	Gui, Add, GroupBox, x%GuiXWorkArea% yp+30 w430 h55 c000000 Section Center,Special:
+		Gui, Add, Text,xs+10 ys+15 BackgroundTrans,Allows to bind an hotkey to special actions.
 
 ;------------------------------
 	Gui, Tab, Hotkeys Basic
@@ -2591,6 +2640,11 @@ return
 					}
 					else {
 						GuiControl, Settings:,% %handler%Handler,% var
+						if RegExMatch(keyName, "_Mark_Completed$") {
+							RegExMatch(keyName, "\d+", btnID)
+							if ProgramSettings["Button" btnID "_Action"] != "Send Message + Close Tab"
+								GuiControl, Settings:+Disabled,% %handler%Handler
+						}
 					}
 				}
 				else if ( sectionName = "CUSTOMIZATION_APPEARANCE" ) {
@@ -2665,16 +2719,16 @@ Gui_Settings_Custom_Label_Func(type, controlsArray, btnID, action, label) {
 		}
 	}
 
-	if ( type = "TradesAction" || type = "TradesBtn" ) && ( action != "Clipboard Item" && action != "" ) {
-		GuiControl,Settings:Show,% controlsArray["MsgEditID" btnID]
-		GuiControl,Settings:Show,% controlsArray["MsgID" btnID]
-		GuiControl,Settings:Show,% controlsArray["Msg1" btnID]
+	if ( type = "TradesAction" || type = "TradesBtn" ) {
+		showOrHide := (action="Clipboard Item")?("Hide"):("Show")
+		GuiControl,Settings:%showOrHide%,% controlsArray["MsgEditID" btnID]
+		GuiControl,Settings:%showOrHide%,% controlsArray["MsgID" btnID]
+		GuiControl,Settings:%showOrHide%,% controlsArray["Msg1" btnID]
 	}
 
-	if ( type = "TradesAction" || type = "TradesBtn" ) && ( action = "Clipboard Item" || action = "" ) {
-		GuiControl,Settings:Hide,% controlsArray["MsgEditID" btnID]
-		GuiControl,Settings:Hide,% controlsArray["MsgID" btnID]
-		GuiControl,Settings:Hide,% controlsArray["Msg1" btnID]
+	if ( type = "TradesAction" ) {
+		enableOrDisable := (action="Send Message + Close Tab")?("-Disabled"):("+Disabled")
+		GuiControl,Settings:%enableOrDisable%,% controlsArray["MarkCompleted" btnID]
 	}
 }
 
@@ -3022,7 +3076,7 @@ Get_Control_ToolTip(controlName) {
 	. "`nWrite Message:" A_Tab . A_Tab "Write a single message in chat, without sending it."
 
 	TradesMarkCompleted_TT := "Store the trade's infos in a local file."
-	. "`nThis will be later used for statistics purposes."
+	. "`nCan only be used with Send Message + Close Tab."
 
 	TradesMSG__TT := TradesMsgID_TT := "Cycle between the messages that will be sent upon pressing this button."
 	
