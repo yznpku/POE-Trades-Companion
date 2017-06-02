@@ -1,3 +1,4 @@
+*.sfd
 *.psd
 todo.txt
 _BETA
@@ -7,6 +8,8 @@ _BETA
 !/Resources/AHK/*.ahk
 _Testings
 _GitHelp.txt
+/_Scrapped_Ideas/*
+/Resources/AHK/BetaFuncs.ahk
 
 # =========================
 # Default .gitignore
