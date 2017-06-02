@@ -1,10 +1,15 @@
+*.sfd
 *.psd
 todo.txt
 _BETA
 *.ahk
 *.exe
 !POE Trades *.*
+!/Resources/AHK/*.ahk
 _Testings
+_GitHelp.txt
+/_Scrapped_Ideas/*
+/Resources/AHK/BetaFuncs.ahk
 
 # =========================
 # Default .gitignore
