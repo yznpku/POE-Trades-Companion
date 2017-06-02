@@ -29,6 +29,7 @@ What's changed:
 	- The title on the main interface would not be vertically centered (OCD TRIGGERS). The same is true for the "MINIMIZE" text.
 
 What's fixed:
+	- Receiving a whisper with the "Trade Notification" sound toggle disabled, but with the "Whisper Notification" sound toggle enabled would not play the "Whisper Notification" sound.
 	- An issue with the Path of Exile skin where hovering a Custom Button would not highlight the picture under specific conditions.
 	- Changing a Custom Button's name in the Settings would no longer live-update the button's name on the Settings GUI (since 1.9.5)
 	- When receiving a new trade whisper without additional message, the "Other:" slot is set as "-".

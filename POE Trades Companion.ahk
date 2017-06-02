@@ -60,7 +60,7 @@ Start_Script() {
 	MyDocuments := (RunParameters.MyDocuments)?(RunParameters.MyDocuments):(A_MyDocuments)
 
 	ProgramValues.Insert("Name", "POE Trades Companion")
-	ProgramValues.Insert("Version", "1.9.9")
+	ProgramValues.Insert("Version", "1.10")
 	ProgramValues.Insert("Debug", 0)
 	ProgramValues.Debug := (A_IsCompiled)?(0):(ProgramValues.Debug) ; Prevent from enabling debug on compiled executable
 
@@ -341,7 +341,7 @@ Monitor_Game_Logs(mode="") {
 					}
 				}
 			}
-		}1
+		}
 		sleepTime := (timeSinceLastTrade>300)?(500):(100)
 		timeSinceLastTrade += 1*(sleepTime/1000)
 		Sleep %sleepTime%
@@ -3172,11 +3172,14 @@ Gui_About() {
 	Gui, Font, ,Consolas
 
 	groupText := (isUpdateAvailable)?("Update v" latest " available."):("No update available.")
-	Gui, Add, GroupBox, cBlue w500 h60 xm Section c000000,% groupText
+	Gui, Add, GroupBox, w500 h60 xm Section c000000 hwndUpdateAvailableTextHandler,% groupText
 	Gui, Add, Text, xs+20 ys+20,% "Current version: " A_Tab programVersion
-	Gui, Add, Text, xs+20 ys+35 Section,% "Latest version: " A_Tab latest
-	if ( isUpdateAvailable )
-		Gui, Add, Button,x+10 ys-5 Section w80 h20 gGui_About_Update,Update
+	Gui, Add, Text, xs+20 ys+35 Section hwndLastestVersionTextHandler,% "Latest version: " A_Tab latest
+	if ( isUpdateAvailable ) {
+		GuiControl, About:+cGreen +Redraw,% UpdateAvailableTextHandler
+		GuiControl, About:+cGreen +Redraw,% LastestVersionTextHandler
+		Gui, Add, Button,x+10 ys-5 w80 h20 gGui_About_Update,Update
+	}
 	Gui, Add, CheckBox,ys vautoUpdate,Enable automatic updates
 	IniRead, val,% iniFilePath,PROGRAM,AutoUpdate
 	GuiControl,,autoUpdate,1
