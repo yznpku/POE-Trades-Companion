@@ -1,4 +1,8 @@
 \\
+--1.10.1--
+- Fix: An issue where the GUI's height would be based only on the latest Custom Button's "Vertical Pos", instead of whichever one is the highest.
+//
+\\
 --1.10--
 What's new:
 	- The "Mark trade as completed?" feature has been added, and its setting renamed to "Save the trade infos into a file?"

@@ -60,8 +60,8 @@ Start_Script() {
 	MyDocuments := (RunParameters.MyDocuments)?(RunParameters.MyDocuments):(A_MyDocuments)
 
 	ProgramValues.Insert("Name", "POE Trades Companion")
-	ProgramValues.Insert("Version", "1.10")
-	ProgramValues.Insert("Debug", 0)
+	ProgramValues.Insert("Version", "1.10.1")
+	ProgramValues.Insert("Debug", 1)
 	ProgramValues.Debug := (A_IsCompiled)?(0):(ProgramValues.Debug) ; Prevent from enabling debug on compiled executable
 
 	ProgramValues.Insert("Updater_File", "POE-TC-Updater.exe")
@@ -1436,10 +1436,10 @@ Gui_Trades_Get_Tab_Height() {
 		btnSize := ProgramSettings["Button" index "_SIZE"]
 		btnVerticalPos := ProgramSettings["Button" index "_V"]
 		if ( btnSize != "Disabled" ) {
-			if ( btnVerticalPos = "Top" ) {
+			if ( btnVerticalPos = "Top"  && !isRowMiddle && !isRowBottom) {
 				isRowTop := 1
 			}
-			else if ( btnVerticalPos = "Middle" ) {
+			else if ( btnVerticalPos = "Middle" && !isRowBottom ) {
 				isRowMiddle := 1, isRowTop := 0
 			}
 			else if ( btnVerticalPos = "Bottom" ) {
@@ -3178,7 +3178,7 @@ Gui_About() {
 	if ( isUpdateAvailable ) {
 		GuiControl, About:+cGreen +Redraw,% UpdateAvailableTextHandler
 		GuiControl, About:+cGreen +Redraw,% LastestVersionTextHandler
-		Gui, Add, Button,x+10 ys-5 w80 h20 gGui_About_Update,Update
+		Gui, Add, Button,x+25 ys-5 w80 h20 gGui_About_Update,Update
 	}
 	Gui, Add, CheckBox,ys vautoUpdate,Enable automatic updates
 	IniRead, val,% iniFilePath,PROGRAM,AutoUpdate
