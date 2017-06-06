@@ -379,12 +379,14 @@ Gui_Trades(infosArray="", errorMsg="") {
 	guiScale := ProgramSettings.Scale_Multiplier
 
 	IniRead, fontSizeAuto,% ProgramValues.Fonts_Settings_File,SIZE,% ProgramSettings.Font
+	if !IsNum(fontSizeAuto)
+		IniRead, fontSizeAuto,% ProgramValues.Fonts_Settings_File,SIZE,Default
 	fontName := (ProgramSettings.Font="System")?(""):(ProgramSettings.Font)
 	fontSize := (ProgramSettings.Font_Size_Mode="Custom")?(ProgramSettings.Font_Size_Custom)
 			   :(fontSizeAuto*guiScale)
 	IniRead, fontQualAuto,% ProgramValues.Fonts_Settings_File,QUALITY,% ProgramSettings.Font
 	if !IsNum(fontQualAuto)
-		IniRead, fontQualAuto,% ProgramValues.Fonts_Settings_File,QUALITY,% "Default"
+		IniRead, fontQualAuto,% ProgramValues.Fonts_Settings_File,QUALITY,Default
 	fontQual := (ProgramSettings.Font_Quality_Mode="Custom")?(ProgramSettings.Font_Quality_Custom)
 			   :(fontQualAuto)
 
@@ -444,6 +446,12 @@ Gui_Trades(infosArray="", errorMsg="") {
 			SetTimer, Remove_TrayTip,-3000
 		}
 
+		Gui, GetSize:Font, S%fontSize%,% fontName
+		Gui, GetSize:Add, Text,x0 y0 hwndTxtHandler,88:88
+		coords := Get_Control_Coords("GetSize", TxtHandler)
+		timeSlotWidth := coords.W+(2*guiScale)*guiScale, coords := ""
+		Gui, GetSize:Destroy
+
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *									System TradesGUI													*
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -476,7 +484,7 @@ Gui_Trades(infosArray="", errorMsg="") {
 
 ;				Close button, time slot
 				Gui, Add, Button,% "xs" +(372*guiScale) . " ys" +(25*guiScale) . " w" 20*guiScale . " h" 20*guiScale . " vBtnClose" index . " hwndBtnClose" index "Handler" . " gGui_Trades_Do_Action_Func +BackgroundTrans",X
-				Gui, Add, Text,% "xp" -(30*guiScale) . " yp+3" . " w" 30*guiScale . " h" 15*guiScale . " vTimeSlot" index . " hwndTimeSlot" index "Handler" . " +BackgroundTrans R1" . " c" colorTradesInfos2,% ""
+				Gui, Add, Text,% "xp" -timeSlotWidth . " yp+3" . " w" timeSlotWidth . " h" 15*guiScale . " vTimeSlot" index . " hwndTimeSlot" index "Handler" . " +BackgroundTrans R1" . " c" colorTradesInfos2,% ""
 
 ;				Buyer / Item / ... Static Text
 				Gui, Add, Text,% "xs" +(6*guiScale) . " ys" +(27*guiScale) . " w" 60*guiScale . " h" 15*guiScale . " hwndBuyerText" index "Handler" . " +BackgroundTrans" . " c" colorTradesInfos1,% "Buyer: "
@@ -523,7 +531,7 @@ Gui_Trades(infosArray="", errorMsg="") {
 	   			}
 	   			hexCodes := "", ctrlActions := "", element := "", xpos := "", ypos := "", handler := "", ConvertesChars := "", nString := ""
 				Gui, Font ; Revert to system font
-				Gui, Font,% "S" fontSize " Q" fontQual
+				Gui, Font,% "S" fontSize " Q" fontQual,% fontName
 
 ;				Custom Buttons.
 				Loop 9 {
@@ -533,7 +541,7 @@ Gui_Trades(infosArray="", errorMsg="") {
 					btnSettingsAction := ProgramSettings["Button" A_Index "_Action"]
 					btnSettingsName := ProgramSettings["Button" A_Index "_Label"]
 
-					defaultBtnY := (TradesGUI_Values.Use_Smaller_Buttons)?(131*guiScale):(106*guiScale)
+					defaultBtnY := (TradesGUI_Values.Use_Smaller_Buttons)?(131):(106)
 
 					btnH := 35*guiScale
 					btnW := (btnSettingsSize="Small")?(127*guiScale):(btnSettingsSize="Medium")?(257*guiScale):(btnSettingsSize="Large")?(387*guiScale):("ERROR")
@@ -618,7 +626,7 @@ Gui_Trades(infosArray="", errorMsg="") {
 				Gui, Add, Text,% "xp" . " yp+" 15*guiScale . " wp" . " hp" . " vPriceSlot" index . " hwndPriceSlot" index "Handler" . " +BackgroundTrans +0x0100 R1 c" colorTradesInfos2,% ""
 				Gui, Add, Text,% "xp" . " yp+" 15*guiScale . " wp" . " hp" . " vLocationSlot" index . " hwndLocationSlot" index "Handler" . " +BackgroundTrans +0x0100 R1 c" colorTradesInfos2,% ""
 				Gui, Add, Text,% "xp" . " yp+" 15*guiScale . " wp" . " hp" . " vOtherSlot" index . " hwndOtherSlot" index "Handler" . " +BackgroundTrans +0x100 R1 c" colorTradesInfos2,% ""
-				Gui, Add, Text,% "x" 345*guiScale . " y" 57*guiScale " w" 30*guiScale . " h" 15*guiScale . " vTimeSlot" index . " hwndTimeSlot" index "Handler" . " +BackgroundTrans R1 c" colorTradesInfos2,% ""
+				Gui, Add, Text,% "x" (378*guiScale)-timeSlotWidth . " y" 57*guiScale " w" timeSlotWidth . " h" 15*guiScale . " vTimeSlot" index . " hwndTimeSlot" index "Handler" . " +BackgroundTrans R1 c" colorTradesInfos2,% ""
 				Gui, Add, Text,% "xp" . " yp" . " w0" . " h0" . " vPIDSlot" index . " hwndPIDSlot" index "Handler",% ""
 				Gui, Add, Text,% "xp" . " yp" . " w0" . " h0" . " vDateSlot" index . " hwndDateSlot" index "Handler",% ""
 
@@ -2267,13 +2275,13 @@ return
 			if (FontSize = "Automatic") {
 				IniRead, fontSizeAuto,% ProgramValues.Fonts_Settings_File,SIZE,% SelectedFont
 				if !IsNum(fontSizeAuto)
-					IniRead, fontSizeAuto,% ProgramValues.Fonts_Settings_File,SIZE,% "Default"
+					IniRead, fontSizeAuto,% ProgramValues.Fonts_Settings_File,SIZE,Default
 				GuiControl, Settings:,% FontSizeCustomHandler,% fontSizeAuto
 			}
 			if (FontQuality = "Automatic") {
 				IniRead, fontQualAuto,% ProgramValues.Fonts_Settings_File,QUALITY,% SelectedFont
 				if !IsNum(fontQualAuto)
-					IniRead, fontQualAuto,% ProgramValues.Fonts_Settings_File,QUALITY,% "Default"
+					IniRead, fontQualAuto,% ProgramValues.Fonts_Settings_File,QUALITY,Default
 				GuiControl, Settings:,% FontQualityCustomHandler,% fontQualAuto
 			}
 		}
@@ -4680,6 +4688,7 @@ Extract_Font_Files() {
 	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\Fonts\Fontin-SmallCaps.ttf,% programFontFolderPath "\Fontin-SmallCaps.ttf", 1
 	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\Fonts\Consolas.ttf,% programFontFolderPath "\Consolas.ttf", 1
 	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\Fonts\TC-Symbols.otf,% programFontFolderPath "\TC-Symbols.otf", 1
+	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\Fonts\Segoe UI.ttf,% programFontFolderPath "\Segoe UI.ttf", 1
 	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\Fonts\Settings.ini,% programFontFolderPath "\Settings.ini", 1
 }
 
@@ -5309,11 +5318,10 @@ Exit_Func(ExitReason, ExitCode) {
 DoNothing:
 return
 
-;__TO_BE_ADDED__ Functions used by the unicode buttons.
 SetUnicodeText(ByRef ptrUnicodeText,hWnd) {
-/*	Original function author: derRaphael (nli)
- *	autohotkey.com/board/topic/28591-displaying-non-supported-characters-and-letters-in-gui/?p=183128
-*/
+/*		Original function author: derRaphael (nli)
+ *		autohotkey.com/board/topic/28591-displaying-non-supported-characters-and-letters-in-gui/?p=183128
+ */
    static WM_SETTEXT := 0x0C
    DllCall("SendMessageW", "UInt",hWnd, "UInt",WM_SETTEXT, "UInt",0, "Uint",&ptrUnicodeText)
 }
