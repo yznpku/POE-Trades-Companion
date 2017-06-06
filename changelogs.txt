@@ -1,4 +1,18 @@
 \\
+--1.10.2--
+Features:
+- Smaller Buttons can now be moved, or disabled.
+
+Changes:
+- Segoe UI has been added has an usable font.
+
+Fixes: 
+- Auto Updating upon detection of a new version would not function since 1.10.
+- Depending on the font used, the time of the trade shown on the main interface would clip behind the close button. 
+- The Consolas font would be extracted to the disk root. You can safely delete the Consolas.ttf file on your drive root.
+- The Clipboard Item Custom Button's action would not work.
+//
+\\
 --1.10.1--
 - Fix: An issue where the GUI's height would be based only on the latest Custom Button's "Vertical Pos", instead of whichever one is the highest.
 //
