@@ -133,13 +133,13 @@ Start_Script() {
 	Declare_Game_Settings(settings)
 
 	Delete_Old_Logs_Files(10)
-	Do_Once()
 	Extract_Sound_Files()
 	Extract_Skin_Files()
 	Extract_Font_Files()
 	Extract_Others_Files()
 	Manage_Font_Resources("LOAD")
 	Check_Update()
+	Do_Once()
 	Enable_Hotkeys()
 
 	; Pre-rendering Trades-GUI
@@ -3205,8 +3205,8 @@ Gui_About() {
 
 	isUpdateAvailable := (latest && programVersion != latest)?(1):(0)
 
-	IniRead, autoUpdate,% iniFile, PROGRAM, AutoUpdate
-	if (autoUpdate) {
+	IniRead, autoUpdate,% iniFilePath, PROGRAM, AutoUpdate
+	if (autoUpdate = 1) {
 		GoSub Gui_About_Update
 		Return
 	}
