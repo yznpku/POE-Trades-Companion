@@ -408,6 +408,15 @@ Gui_Trades(infosArray="", errorMsg="") {
 	maxTabsStage4 := 100
 	maxTabsStage5 := 255
 
+	Loop 5 {
+		local btnUnicodePos := ProgramSettings["Button_Unicode_" A_Index "_Position"]
+		local useSmallerButtons := (btnUnicodePos != "Disabled")?(true):(false)
+		if ( useSmallerButtons = true )
+			Break
+	}
+	TradesGUI_Values.Use_Smaller_Buttons := useSmallerButtons
+	btnUnicodePos := "", useSmallerButtons := ""
+
 	errorTxt := (errorMsg="EXE_NOT_FOUND")?("Process not found, retrying in 10 seconds...`n`nRight click on the tray icon,`nthen [Settings] to set your preferences.")
 				:("No trade on queue!`n`nRight click on the tray icon,`nthen [Settings] to set your preferences.")
 
@@ -497,15 +506,20 @@ Gui_Trades(infosArray="", errorMsg="") {
 				hexCodes := ["41", "42", "45", "43", "44"] ; 41:Clip/42:Whis/43:Trade/44:Kick/45:Inv
 				ctrlActions := ["Clipboard" , "Whisper", "Invite", "Trade", "Kick"]
 				for key, element in hexCodes {
-					xpos := (A_Index=1)?("s+" 5*guiScale):("p+" 40*guiScale), ypos := "s+" 105*guiScale
-					Gui, Font,% "S" 20*guiScale,% "TC-Symbols"
-					Gui, Add, Button,% "x" xpos . " y" ypos . " w" 35*guiScale . " h" 23*guiScale . " vUnicodeBtn" A_Index "_" index . " hwndUnicodeBtn" A_Index "_" index "Handler" . " gGui_Trades_Do_Action_Func c" colorButtons,% ""
-					handler := "UnicodeBtn" A_Index "_" index "Handler"
-					ConvertesChars := Hex2Bin(nString, element) ; Convert hex code into its corresponding unicode character
-	   				SetUnicodeText(nString, %handler%) ; Replace the control's content with the unicode character
+					btnPos := ProgramSettings["Button_Unicode_" A_Index "_Position"]
+					if ( btnPos != "Disabled" ) {
+						xpos := ((btnPos-1)*(40*guiScale))+(7*guiScale)
+						ypos := "s+" 105*guiScale
 
-	   				TradesGUI_Controls.Insert("Button_Unicode_" A_Index, %handler%)
-	   				TradesGUI_Controls.Insert("Button_Unicode_" A_Index "_Action", ctrlActions[key])
+						Gui, Font,% "S" 20*guiScale,% "TC-Symbols"
+						Gui, Add, Button,% "x" xpos . " y" ypos . " w" 35*guiScale . " h" 23*guiScale . " vUnicodeBtn" A_Index "_" index . " hwndUnicodeBtn" A_Index "_" index "Handler" . " gGui_Trades_Do_Action_Func c" colorButtons,% ""
+						handler := "UnicodeBtn" A_Index "_" index "Handler"
+						ConvertesChars := Hex2Bin(nString, element) ; Convert hex code into its corresponding unicode character
+		   				SetUnicodeText(nString, %handler%) ; Replace the control's content with the unicode character
+
+		   				TradesGUI_Controls.Insert("Button_Unicode_" A_Index, %handler%)
+	   					TradesGUI_Controls.Insert("Button_Unicode_" A_Index "_Action", ctrlActions[key])
+		   			}
 	   			}
 	   			hexCodes := "", ctrlActions := "", element := "", xpos := "", ypos := "", handler := "", ConvertesChars := "", nString := ""
 				Gui, Font ; Revert to system font
@@ -519,10 +533,12 @@ Gui_Trades(infosArray="", errorMsg="") {
 					btnSettingsAction := ProgramSettings["Button" A_Index "_Action"]
 					btnSettingsName := ProgramSettings["Button" A_Index "_Label"]
 
+					defaultBtnY := (TradesGUI_Values.Use_Smaller_Buttons)?(131*guiScale):(106*guiScale)
+
 					btnH := 35*guiScale
 					btnW := (btnSettingsSize="Small")?(127*guiScale):(btnSettingsSize="Medium")?(257*guiScale):(btnSettingsSize="Large")?(387*guiScale):("ERROR")
 					btnX := (btnSettingsHor="Left")?("s+" 5*guiScale):(btnSettingsHor="Center")?("s+" 135*guiScale):(btnSettingsHor="Right")?("s+" 265*guiScale):("ERROR")
-					btnY := (btnSettingsVer="Top")?("s+" 131*guiScale):(btnSettingsVer="Middle")?("s+" (131*guiScale)+(btnH+(3*guiScale))):(btnSettingsVer="Bottom")?("s+" (131*guiScale)+(2*(btnH+(3*guiScale)))):("ERROR")
+					btnY := (btnSettingsVer="Top")?("s+" defaultBtnY*guiScale):(btnSettingsVer="Middle")?("s+" (defaultBtnY*guiScale)+(btnH+(3*guiScale))):(btnSettingsVer="Bottom")?("s+" (defaultBtnY*guiScale)+(2*(btnH+(3*guiScale)))):("ERROR")
 					
 					btnName := btnSettingsName
 					btnAction := RegExReplace(btnSettingsAction, "[ _+()]", "_")
@@ -533,10 +549,6 @@ Gui_Trades(infosArray="", errorMsg="") {
 					if ( btnW != "ERROR" && btnX != "ERROR" && btnY != "ERROR" && btnAction != "" && btnAction != "ERROR" ) {
 						Gui, Add, Button,% "x" btnX . " y" btnY . " w" btnW . " h" btnH . " vCustomBtn" A_Index "_" index  . " hwndCustomBtn" A_Index "_" index "Handler" . " gGui_Trades_Do_Action_Func" " +BackgroundTrans c" colorButtons,% btnName
 					}
-					; else {
-					; 	Gui, Add, Button,% "x" 0 . " y" 0 . " w" 0 . " h" btnH . " vCustomBtn" A_Index "_" index  . " hwndCustomBtn" A_Index "_" index "Handler" . " gGui_Trades_Do_Action_Func" " +BackgroundTrans c" colorButtons,% btnName
-					; 	GuiControl, Hide,% CustomBtn%A_Index%_%index%Handler
-					; }
 					TradesGUI_Controls.Insert("Button_Custom_" A_Index "_" index, CustomBtn%A_Index%_%index%Handler)
 					TradesGUI_Controls.Insert("Button_Custom_" A_Index "_Action", btnAction)
 				}
@@ -635,33 +647,37 @@ Gui_Trades(infosArray="", errorMsg="") {
 			hexCodes := ["41", "42", "45", "43", "44"] ; 41:Clip/42:Whis/43:Trade/44:Kick/45:Inv
 			ctrlActions := ["Clipboard" , "Whisper", "Invite", "Trade", "Kick"]
 			for key, element in hexCodes {
-				btnX := ((A_Index-1)*(40*guiScale))+(7*guiScale)
-				btnY := 135*guiScale
-				btnW := 35*guiScale, btnH := 23*guiScale
+				btnPos := ProgramSettings["Button_Unicode_" A_Index "_Position"]
+				if ( btnPos != "Disabled" ) {
 
-				btnOrnaW := 6*guiScale, btnOrnaH := btnH
-				btnOrnaLeftX := btnX, btnOrnaRightX := btnX+btnW-btnOrnaW
-				btnOrnaLeftY := btnY, btnOrnaRightY := btnY
+					btnX := ((btnPos-1)*(40*guiScale))+(7*guiScale)
+					btnY := 135*guiScale
+					btnW := 35*guiScale, btnH := 23*guiScale
 
-				btnTextX := btnX, btnTextY := btnY-(2*guiScale)
-				btnTextW := btnW, btnTextH := btnH
+					btnOrnaW := 6*guiScale, btnOrnaH := btnH
+					btnOrnaLeftX := btnX, btnOrnaRightX := btnX+btnW-btnOrnaW
+					btnOrnaLeftY := btnY, btnOrnaRightY := btnY
 
-				Gui, Font,% "S" 20*guiScale,% "TC-Symbols"
+					btnTextX := btnX, btnTextY := btnY-(2*guiScale)
+					btnTextW := btnW, btnTextH := btnH
 
-				Gui, Add, Picture,% "x" btnX . " y" btnY . " w" btnW . " h" btnH . " vUnicodeBtn" A_Index . " hwndUnicodeBtn" A_Index "Handler" . " gGui_Trades_Do_Action_Func +BackgroundTrans",% programSkinFolderPath "\" activeSkin "\ButtonBackground.png"
-				Gui, Add, Picture,% "x" btnOrnaLeftX . " y" btnOrnaLeftY . " w" btnOrnaW . " h" btnOrnaH  . " hwndUnicodeBtn" A_Index "OrnamentLeftHandler" . " +BackgroundTrans",% programSkinFolderPath "\" activeSkin "\ButtonOrnamentLeft.png"
-				Gui, Add, Picture,% "x" btnOrnaRightX . " y" btnOrnaRightY . " w" btnOrnaW . " h" btnOrnaH . " hwndUnicodeBtn" A_Index "OrnamentRightHandler" . " +BackgroundTrans",% programSkinFolderPath "\" activeSkin "\ButtonOrnamentRight.png"
-				Gui, Add, Text,% "x" btnTextX . " y" btnTextY . " w" btnTextW . " h" btnTextH . " vUnicodeBtn" A_Index "TXT" . " hwndUnicodeBtn" A_Index "TXTHandler" . " gGui_Trades_Do_Action_Func Center +BackgroundTrans c" colorButtons,% ""
-				handler := "UnicodeBtn" A_Index "TXTHandler"
-				ConvertesChars := Hex2Bin(nString, element) ; Convert hex code into its corresponding unicode character
-	   			SetUnicodeText(nString, %handler%) ; Replace the control's content with the unicode character
+					Gui, Font,% "S" 20*guiScale,% "TC-Symbols"
 
-	   			handler :=  "UnicodeBtn" A_Index "Handler", TradesGUI_Controls.Insert("Button_Unicode_" A_Index, %handler% )
-	   			handler :=  "UnicodeBtn" A_Index "OrnamentLeftHandler", TradesGUI_Controls.Insert("Button_Unicode_" A_Index "_OrnamentLeft", %handler%)
-	   			handler := "UnicodeBtn" A_Index "OrnamentRightHandler", TradesGUI_Controls.Insert("Button_Unicode_" A_Index "_OrnamentRight", %handler%)
-	   			handler := "UnicodeBtn" A_Index "TXTHandler"
-	   			TradesGUI_Controls.Insert("Button_Unicode_" A_Index "_Action", ctrlActions[key])
-	   			TradesGUI_Controls.Insert("Button_Unicode_" A_Index "_Text", %handler%)
+					Gui, Add, Picture,% "x" btnX . " y" btnY . " w" btnW . " h" btnH . " vUnicodeBtn" A_Index . " hwndUnicodeBtn" A_Index "Handler" . " gGui_Trades_Do_Action_Func +BackgroundTrans",% programSkinFolderPath "\" activeSkin "\ButtonBackground.png"
+					Gui, Add, Picture,% "x" btnOrnaLeftX . " y" btnOrnaLeftY . " w" btnOrnaW . " h" btnOrnaH  . " hwndUnicodeBtn" A_Index "OrnamentLeftHandler" . " +BackgroundTrans",% programSkinFolderPath "\" activeSkin "\ButtonOrnamentLeft.png"
+					Gui, Add, Picture,% "x" btnOrnaRightX . " y" btnOrnaRightY . " w" btnOrnaW . " h" btnOrnaH . " hwndUnicodeBtn" A_Index "OrnamentRightHandler" . " +BackgroundTrans",% programSkinFolderPath "\" activeSkin "\ButtonOrnamentRight.png"
+					Gui, Add, Text,% "x" btnTextX . " y" btnTextY . " w" btnTextW . " h" btnTextH . " vUnicodeBtn" A_Index "TXT" . " hwndUnicodeBtn" A_Index "TXTHandler" . " gGui_Trades_Do_Action_Func Center +BackgroundTrans c" colorButtons,% ""
+					handler := "UnicodeBtn" A_Index "TXTHandler"
+					ConvertesChars := Hex2Bin(nString, element) ; Convert hex code into its corresponding unicode character
+		   			SetUnicodeText(nString, %handler%) ; Replace the control's content with the unicode character
+
+		   			handler :=  "UnicodeBtn" A_Index "Handler", TradesGUI_Controls.Insert("Button_Unicode_" A_Index, %handler% )
+		   			handler :=  "UnicodeBtn" A_Index "OrnamentLeftHandler", TradesGUI_Controls.Insert("Button_Unicode_" A_Index "_OrnamentLeft", %handler%)
+		   			handler := "UnicodeBtn" A_Index "OrnamentRightHandler", TradesGUI_Controls.Insert("Button_Unicode_" A_Index "_OrnamentRight", %handler%)
+		   			handler := "UnicodeBtn" A_Index "TXTHandler"
+		   			TradesGUI_Controls.Insert("Button_Unicode_" A_Index "_Action", ctrlActions[key])
+		   			TradesGUI_Controls.Insert("Button_Unicode_" A_Index "_Text", %handler%)
+		   		}
    			}
    			hexCodes := "", ctrlActions := "", element := "", xpos := "", ypos := "", handler := "", ConvertesChars := "", nString := ""
    			btnX := "", btnY := "", btnW := "", btnH := ""
@@ -678,10 +694,12 @@ Gui_Trades(infosArray="", errorMsg="") {
 				btnSettingsAction := ProgramSettings["Button" A_Index "_Action"]
 				btnSettingsName := ProgramSettings["Button" A_Index "_Label"]
 
+				defaultBtnY := (TradesGUI_Values.Use_Smaller_Buttons)?(163*guiScale):(138*guiScale)
+
 				btnH := 35*guiScale
 				btnW := (btnSettingsSize="Small")?(127*guiScale):(btnSettingsSize="Medium")?(257*guiScale):(btnSettingsSize="Large")?(387*guiScale):("ERROR")
 				btnX := (btnSettingsHor="Left")?(7*guiScale):(btnSettingsHor="Center")?(137*guiScale):(btnSettingsHor="Right")?(267*guiScale):("ERROR")
-				btnY := (btnSettingsVer="Top")?(163*guiScale):(btnSettingsVer="Middle")?(203*guiScale):(btnSettingsVer="Bottom")?(243*guiScale):("ERROR")
+				btnY := (btnSettingsVer="Top")?(defaultBtnY):(btnSettingsVer="Middle")?(defaultBtnY+(40*guiScale)):(btnSettingsVer="Bottom")?(defaultBtnY+(80*guiScale)):("ERROR")
 
 				btnOrnaW := 8*guiscale, btnOrnaH := btnH
 				btnOrnaLeftX := btnX, btnOrnaRightX := btnX+btnW-btnOrnaW
@@ -1313,9 +1331,9 @@ Gui_Trades_Do_Action_Func(CtrlHwnd, GuiEvent, EventInfo) {
 		}
 		Gui_Trades_Close_Tab()
 	}
-	else if btnAction in Clipboard,Whisper,Trade,Invite,Kick
+	else if btnAction in Clipboard_Item,Clipboard,Whisper,Trade,Invite,Kick
 	{
-		if (btnAction="Clipboard") {
+		if (btnAction="Clipboard" || btnAction="Clipboard_Item") {
 			Gui_Trades_Clipboard_Item_Func()
 		}
 		else {
@@ -1422,15 +1440,20 @@ Gui_Trades_Check_Duplicate(currentActiveTab) {
 Gui_Trades_Get_Tab_Height() {
 /*			Returns a number based on the lowest custom button to determine the GUI height
 */
-	global ProgramSettings
+	global ProgramSettings, TradesGUI_Values
 
 	activeSkin := ProgramSettings.Active_Skin
 	isSkinSystem := (activeSkin="System")?(true):(false)
 
-	tabHeight := tabHeightNoRown := (isSkinSystem)?(134):(134)
-	tabHeightOneRow := (isSkinSystem)?(172):(174)
-	tabHeightTwoRow := (isSkinSystem)?(210):(214)
-	tabHeightThreeRow := (isSkinSystem)?(248):(254)
+	useSmallerButtons := TradesGUI_Values.Use_Smaller_Buttons
+	sbHeightDiff := (useSmallerButtons)?(25):(0)
+
+	tabHeightNoRow := (isSkinSystem)?(109):(109), tabHeightNoRow += sbHeightDiff
+	tabHeightOneRow := (isSkinSystem)?(147):(149), tabHeightOneRow += sbHeightDiff
+	tabHeightTwoRow := (isSkinSystem)?(185):(189), tabHeightTwoRow += sbHeightDiff
+	tabHeightThreeRow := (isSkinSystem)?(223):(228), tabHeightThreeRow += sbHeightDiff
+	tabHeight := tabHeightNoRow
+
 	Loop 9 {
 		index := A_Index
 		btnSize := ProgramSettings["Button" index "_SIZE"]
@@ -1447,10 +1470,11 @@ Gui_Trades_Get_Tab_Height() {
 			}
 		}
 	}
+
 	tabHeight := (isRowTop)?(tabHeightOneRow)
 				:(isRowMiddle)?(tabHeightTwoRow)
 				:(isRowBottom)?(tabHeightThreeRow)
-				:(tabHeightNoRown)
+				:(tabHeightNoRow)
 	return tabHeight
 }
 
@@ -2109,9 +2133,9 @@ Gui_Settings() {
 		xpos := (Mod(A_Index,2)!=0)?(guiXWorkarea)
 			   :(370)
 		ypos := (A_Index=1)?(GuiYWorkArea+55)
-			   :(Mod(A_Index,2)!=0 && A_Index!=1)?(ypos+60)
+			   :(Mod(A_Index,2)!=0 && A_Index!=1)?(ypos+80)
 			   :(ypos)
-		width := 210, height := 60
+		width := 210, height := 80
 
 		Gui, Font,% "S" 20,% "TC-Symbols"
 		Gui, Add, GroupBox,% "x" xpos " y" ypos " w" width " h" height . " c000000 hwndUnicodeBtn" A_Index "Handler",% ""
@@ -2120,9 +2144,10 @@ Gui_Settings() {
 		   	SetUnicodeText(nString, %handler%) ; Replace the control's content with the unicode character
 		   	Gui, Font
 		   	Gui, Add, Text,% "xp+50 yp+7",% "(" ctrlActions[key] ")"
-		   	Gui, Add, CheckBox,% "x" xpos+10 " yp+22 w15 h15" . " vUnicodeBtn" A_Index "HotkeyToggle" " hwndUnicodeBtn" A_Index "HotkeyToggleHandler"
-		   	Gui, Add, Text,% "x" xpos+27 " yp+1",Hotkey:
-		   	Gui, Add, Hotkey,% "xp+45" " yp-3" " w" width-80 . " vUnicodeBtn" A_Index "Hotkey" " hwndUnicodeBtn" A_Index "HotkeyHandler"
+		   	Gui, Add, Text,% "x" xpos+10 " yp+22",Position: 
+		   	Gui, Add, DropDownList,% "xp+60" " yp-2" " w" width-80 " R6" " vUnicodeBtn" A_Index "Position" " hwndUnicodeBtn" A_Index "PositionHandler" " gGui_Settings_Trades_Preview",% "Disabled|1|2|3|4|5"
+		   	Gui, Add, CheckBox,% "x" xpos+10 " yp+27" . " vUnicodeBtn" A_Index "HotkeyToggle" " hwndUnicodeBtn" A_Index "HotkeyToggleHandler", Hotkey:
+		   	Gui, Add, Hotkey,% "xp+60" " yp-3" " w" width-80 . " vUnicodeBtn" A_Index "Hotkey" " hwndUnicodeBtn" A_Index "HotkeyHandler"
 		   	index := A_Index
 	}
 	key := "", element := "", hexCodes := "", xpos := "", ypos := "", handler := "", ConvertesChars := "", nString := ""
@@ -2547,6 +2572,10 @@ return
 			index := A_Index
 			SECT := "CUSTOMIZATION_BUTTONS_UNICODE"
 
+			KEY := "Button_Unicode_" A_Index "_Position"
+			CONTENT := (index=1)?(UnicodeBtn1Position):(index=2)?(UnicodeBtn2Position):(index=3)?(UnicodeBtn3Position):(index=4)?(UnicodeBtn4Position):(index=5)?(UnicodeBtn5Position):(index=6)?(UnicodeBtn6Position):("ERROR")
+			IniWrite,% CONTENT,% iniFilePath,% SECT,% KEY
+
 			KEY := "Button_Unicode_" A_Index "_Hotkey"
 			CONTENT := (index=1)?(UnicodeBtn1Hotkey):(index=2)?(UnicodeBtn2Hotkey):(index=3)?(UnicodeBtn3Hotkey):(index=4)?(UnicodeBtn4Hotkey):(index=5)?(UnicodeBtn5Hotkey):(index=6)?(UnicodeBtn6Hotkey):("ERROR")
 			IniWrite,% CONTENT,% iniFilePath,% SECT,% KEY
@@ -2636,7 +2665,7 @@ return
 				else if ( sectionName = "CUSTOMIZATION_BUTTONS_ACTIONS" ) {
 					if RegExMatch(keyName, "_(H|V|SIZE|Action)$") ; Ends with either
 					{
-						GuiControl, Settings:Choose,% %handler%Handler,% var
+						GuiControl, Settings:ChooseString,% %handler%Handler,% var
 					}
 					else {
 						GuiControl, Settings:,% %handler%Handler,% var
@@ -2662,7 +2691,7 @@ return
 								GuiControl, Settings:%state%,% ButtonsColorHandler
 								GuiControl, Settings:%state%,% TabsColorHandler
 							}
-							GuiControl, Settings:Choose,% %handler%Handler,% var
+							GuiControl, Settings:ChooseString,% %handler%Handler,% var
 							if ( keyName = "Font_Size_Mode" ) {
 								state := (var="Custom")?("Enable"):("Disable")
 								GuiControl, Settings:%state%,% FontSizeCustomHandler
@@ -2677,8 +2706,15 @@ return
 					{
 						var := var*100
 						var := Round(var, 0)
-						GuiControl, Settings:Choose,% %handler%Handler,% var "%"
+						GuiControl, Settings:ChooseString,% %handler%Handler,% var "%"
 					}
+				}
+				else if ( sectionName = "CUSTOMIZATION_BUTTONS_UNICODE" ) {
+					; msgbox % keyName "`n" handler " - " %handler%Handler "`n" var
+					if keyName contains _Position
+						GuiControl, Settings:ChooseString,% %handler%Handler,% var
+					else
+						GuiControl, Settings:,% %handler%Handler,% var
 				}
 				else if ( var != "ERROR" && var != "" ) { ; Everything else
 					GuiControl, Settings:,% %handler%Handler,% var
@@ -2929,18 +2965,22 @@ Gui_Settings_Get_Settings_Arrays() {
 	Loop 5 {
 		index := A_Index
 		returnArray.CUSTOMIZATION_BUTTONS_UNICODE_HandlersArray.Insert(keyID
+		,"UnicodeBtn" index "Position"
 		,"UnicodeBtn" index "HotkeyToggle"
 		,"UnicodeBtn" index "Hotkey")
 
 		returnArray.CUSTOMIZATION_BUTTONS_UNICODE_HandlersKeysArray.Insert(keyID
+		, "Button_Unicode_" index "_Position"
 		, "Button_Unicode_" index "_Hotkey_Toggle"
 		, "Button_Unicode_" index "_Hotkey")
 
 		returnArray.CUSTOMIZATION_BUTTONS_UNICODE_KeysArray.Insert(keyID
+		, "Button_Unicode_" index "_Position"
 		, "Button_Unicode_" index "_Hotkey_Toggle"
 		, "Button_Unicode_" index "_Hotkey")
 
 		returnArray.CUSTOMIZATION_BUTTONS_UNICODE_DefaultValues.Insert(keyID
+		, index
 		, 0
 		, "")
 
@@ -3120,7 +3160,7 @@ Check_Update() {
 	whr.WaitForResponse(10) ; 10 seconds
 	changelogText := whr.ResponseText
 	changelogText = %changelogText%
-	if ( changelogText != "" ) && !(RegExMatch(changelogText, "NotFound")) && !(RegExMatch(changelogText, "404: Not Found")) {
+	if ( changelogText ) && !( RegExMatch(changelogText, "Not(Found| Found)") ){
 		FileRead, changelogLocal,% programChangelogsFilePath
 		if ( changelogLocal != changelogText ) {
 			FileDelete, % programChangelogsFilePath
@@ -3136,16 +3176,15 @@ Check_Update() {
 	; Using 'true' above and the call below allows the script to remain responsive.
 	whr.WaitForResponse(10) ; 10 seconds
 	versionNumber := whr.ResponseText
-	if ( versionNumber != "" ) && !(RegExMatch(versionNumber, "NotFound")) && !(RegExMatch(versionNumber, "404: Not Found")) {
-		newVersion := versionNumber
-		StringReplace, newVersion, newVersion, `n,,1 ; remove the 2nd white line
-		newVersion = %newVersion% ; remove any whitespace
+	versionNumber = %versionNumber%
+	if ( versionNumber ) && !( RegExMatch(versionNumber, "Not(Found| Found)") ) { ; couldn't reach the file, cancel update
+		StringReplace, versionNumber, versionNumber, `n,,1 ; remove the 2nd white line
+		versionNumber = %versionNumber% ; remove any whitespace
 	}
-	else
-		newVersion := programVersion ; couldn't reach the file, cancel update
+	newVersion := (versionNumber)?(versionNumber):(programVersion)
 
 	ProgramValues.Insert("Version_Latest", newVersion)
-	if ( newVersion != 	programVersion )
+	if ( newVersion != programVersion )
 		Gui_About()
 }
 
@@ -3164,7 +3203,13 @@ Gui_About() {
 	programVersion := ProgramValues.Version, latest := ProgramValues.Version_Latest
 	updaterLink := ProgramValues.Updater_Link, updaterFile := ProgramValues.Updater_File
 
-	isUpdateAvailable := (programVersion != latest)?(1):(0)
+	isUpdateAvailable := (latest && programVersion != latest)?(1):(0)
+
+	IniRead, autoUpdate,% iniFile, PROGRAM, AutoUpdate
+	if (autoUpdate) {
+		GoSub Gui_About_Update
+		Return
+	}
 
 	Gui, About:Destroy
 	Gui, About:New, +HwndaboutGuiHandler +AlwaysOnTop +SysMenu -MinimizeBox -MaximizeBox +OwnDialogs +LabelGui_About_,% programName " by lemasato v" programVersion
@@ -3236,8 +3281,6 @@ Gui_About() {
 
 	Gui_About_Update:
 ;		Download the updater that will handle the updating process
-		Gui, About:Submit
-		IniWrite,% A_ScriptName,% iniFilePath,PROGRAM,FileName
 		UrlDownloadToFile,% updaterLink,% updaterFile
 		FileSetAttrib, +H,% updaterFile
 		sleep 1000
@@ -3250,57 +3293,6 @@ Gui_About() {
 		Gui, About:Submit
 		IniWrite,% autoUpdate,% iniFilePath,PROGRAM,AutoUpdate
 	Return
-}
-
-Gui_Update(newVersion, updaterPath, updaterDL) {
-	static
-	global ProgramValues
-
-	iniFilePath := ProgramValues.Ini_File, programName := ProgramValues.Name, programPID := ProgramValues.PID
-
-	IniRead, auto,% iniFilePath,PROGRAM,AutoUpdate
-	if ( auto = 1 ) {
-		GoSub Gui_Update_Accept
-		return
-	}
-	Gui, Update:Destroy
-	Gui, Update:New, +AlwaysOnTop +SysMenu -MinimizeBox -MaximizeBox +OwnDialogs +HwndUpdateGuiHwnd,% "Update! v" newVersion " - " programName
-	Gui, Update:Default
-	Gui, Add, Text, x70 y10 ,Would you like to update now?
-	Gui, Add, Text, x10 y30,The process is automatic, only your permission is required.
-	Gui, Add, Button, x10 y55 w135 h35 gGui_Update_Accept,Accept
-	Gui, Add, Button, x145 y55 w135 h35 gGui_Update_Refuse,Refuse
-	Gui, Add, Button, x10 y95 w270 h40 gGui_Update_Open_Page,Open the download page ; Open download page
-	Gui, Add, CheckBox, x10 y150 vautoUpdate,Update automatically from now ; Update automatically...
-	Gui, Show
-	WinWait, ahk_id %UpdateGuiHwnd%
-	WinWaitClose, ahk_id %UpdateGuiHwnd%
-	return
-	
-	Gui_Update_Accept:
-;		Downlaod the updater that will handle the updating process
-		Gui, Submit
-		if ( autoUpdate )
-			IniWrite, 1,% iniFilePath,PROGRAM,AutoUpdate
-		IniWrite,% A_ScriptName,% iniFilePath,PROGRAM,FileName
-		UrlDownloadToFile,% updaterDL,% updaterPath
-		FileSetAttrib, +H,% updaterPath
-		sleep 1000
-		Run, % updaterPath
-		Process, Close, %programPID%
-		ExitApp
-	return
-	
-	Gui_Update_Refuse:
-		Gui, Submit
-		if ( autoUpdate )
-			IniWrite, 1,% iniFilePath,PROGRAM,AutoUpdate
-	return
-
-	Gui_Update_Open_Page:
-		Gui, Submit
-		Run, % "https://github.com/lemasato/POE-Trades-Companion/releases"
-	return
 }
 
 ;==================================================================================================================
@@ -4686,7 +4678,7 @@ Extract_Font_Files() {
 	programFontFolderPath := ProgramValues.Fonts_Folder
 
 	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\Fonts\Fontin-SmallCaps.ttf,% programFontFolderPath "\Fontin-SmallCaps.ttf", 1
-	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\Fonts\Consolas.ttf,% paogramFontFolderPath "\Consolas.ttf", 1
+	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\Fonts\Consolas.ttf,% programFontFolderPath "\Consolas.ttf", 1
 	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\Fonts\TC-Symbols.otf,% programFontFolderPath "\TC-Symbols.otf", 1
 	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\Fonts\Settings.ini,% programFontFolderPath "\Settings.ini", 1
 }
