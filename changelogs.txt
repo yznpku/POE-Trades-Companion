@@ -1,4 +1,8 @@
 \\
+--1.10.3--
+- Fix: An issue with the "Update automatically" setting.
+//
+\\
 --1.10.2--
 Features:
 - Smaller Buttons can now be moved, or disabled.

@@ -60,7 +60,7 @@ Start_Script() {
 	MyDocuments := (RunParameters.MyDocuments)?(RunParameters.MyDocuments):(A_MyDocuments)
 
 	ProgramValues.Insert("Name", "POE Trades Companion")
-	ProgramValues.Insert("Version", "1.10.2")
+	ProgramValues.Insert("Version", "1.10.3")
 	ProgramValues.Insert("Debug", 0)
 	ProgramValues.Debug := (A_IsCompiled)?(0):(ProgramValues.Debug) ; Prevent from enabling debug on compiled executable
 
@@ -3193,7 +3193,7 @@ Check_Update() {
 
 	ProgramValues.Insert("Version_Latest", newVersion)
 	if ( newVersion != programVersion )
-		Gui_About()
+		Gui_About({Update_Available:1})
 }
 
 ;==================================================================================================================
@@ -3202,7 +3202,7 @@ Check_Update() {
 ;
 ;==================================================================================================================
 
-Gui_About() {
+Gui_About(params="") {
 	static
 	global ProgramValues
 
@@ -3214,7 +3214,7 @@ Gui_About() {
 	isUpdateAvailable := (latest && programVersion != latest)?(1):(0)
 
 	IniRead, autoUpdate,% iniFilePath, PROGRAM, AutoUpdate
-	if (autoUpdate = 1) {
+	if (autoUpdate = 1 && params.Update_Available=1 && programVersion != latest) {
 		GoSub Gui_About_Update
 		Return
 	}
