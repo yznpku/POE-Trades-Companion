@@ -60,7 +60,7 @@ Start_Script() {
 	MyDocuments := (RunParameters.MyDocuments)?(RunParameters.MyDocuments):(A_MyDocuments)
 
 	ProgramValues.Insert("Name", "POE Trades Companion")
-	ProgramValues.Insert("Version", "1.10.4")
+	ProgramValues.Insert("Version", "1.10.5")
 	ProgramValues.Insert("Debug", 0)
 	ProgramValues.Debug := (A_IsCompiled)?(0):(ProgramValues.Debug) ; Prevent from enabling debug on compiled executable
 
@@ -5233,10 +5233,10 @@ Reload_Func() {
 		params .= A_Space . param
 	}
 	if !(A_IsAdmin) {
-		params .= A_Space . "/MyDocuments=" A_MyDocuments
+		params .= A_Space . "/MyDocuments=" """" A_MyDocuments """"
 	}
 	else {
-		params .= A_Space . "/MyDocuments=" RunParameters.MyDocuments
+		params .= A_Space . "/MyDocuments=" """" RunParameters.MyDocuments """"
 	}
 
 	Exit_Func("Reload","")

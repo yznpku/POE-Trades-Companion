@@ -1,4 +1,8 @@
 \\
+--1.10.5--
+- Fix: An issue that would prevent from accessing the "My Documents" folder on systems where the "My Documents" location was changed, and the folder name contained a space.
+//
+\\
 --1.10.4--
 - Fix: The "Enable automatic updates" setting would always appear ticked upon opening the About? tray menu.
 //
