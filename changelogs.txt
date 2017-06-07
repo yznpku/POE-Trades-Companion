@@ -1,6 +1,10 @@
 \\
+--1.10.4--
+- Fix: The "Enable automatic updates" setting would always appear ticked upon opening the About? tray menu.
+//
+\\
 --1.10.3--
-- Fix: An issue with the "Update automatically" setting.
+- Fix: An issue with the "Enable automatic updates" setting that would fail the updating process.
 //
 \\
 --1.10.2--

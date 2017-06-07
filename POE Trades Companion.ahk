@@ -60,7 +60,7 @@ Start_Script() {
 	MyDocuments := (RunParameters.MyDocuments)?(RunParameters.MyDocuments):(A_MyDocuments)
 
 	ProgramValues.Insert("Name", "POE Trades Companion")
-	ProgramValues.Insert("Version", "1.10.3")
+	ProgramValues.Insert("Version", "1.10.4")
 	ProgramValues.Insert("Debug", 0)
 	ProgramValues.Debug := (A_IsCompiled)?(0):(ProgramValues.Debug) ; Prevent from enabling debug on compiled executable
 
@@ -3233,9 +3233,9 @@ Gui_About(params="") {
 		GuiControl, About:+cGreen +Redraw,% LastestVersionTextHandler
 		Gui, Add, Button,x+25 ys-5 w80 h20 gGui_About_Update,Update
 	}
-	Gui, Add, CheckBox,ys vautoUpdate,Enable automatic updates
-	IniRead, val,% iniFilePath,PROGRAM,AutoUpdate
-	GuiControl,,autoUpdate,1
+	Gui, Add, CheckBox,ys vUpdateAutomatically,Enable automatic updates
+	if ( autoUpdate = 1 )
+		GuiControl, About:,UpdateAutomatically,1
 
 	FileRead, changelogText,% programChangelogsFilePath
 	allChanges := Object()
@@ -3299,7 +3299,7 @@ Gui_About(params="") {
 
 	Gui_About_Close:
 		Gui, About:Submit
-		IniWrite,% autoUpdate,% iniFilePath,PROGRAM,AutoUpdate
+		IniWrite,% UpdateAutomatically,% iniFilePath,PROGRAM,AutoUpdate
 	Return
 }
 
