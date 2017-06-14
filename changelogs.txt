@@ -1,4 +1,14 @@
 \\
+--1.10.6--
+Changes:
+- The buyer's guild tag has been removed from the main interface. Also, it will now be added to the Trades_History.ini file.
+- The "(Hover to see all messages)" message from the "Other:" slot will no longer be saved to the Trades_History.ini file.
+
+Fixes:
+- The %lastWhisper% trade variable would include the guild tag.
+- Auto (un)minimizing features would not work while being tabbed out of the game and having the "Only show while in game" setting enabled.
+//
+\\
 --1.10.5--
 - Fix: An issue that would prevent from accessing the "My Documents" folder on systems where the "My Documents" location was changed, and the folder name contained a space.
 //

@@ -60,7 +60,7 @@ Start_Script() {
 	MyDocuments := (RunParameters.MyDocuments)?(RunParameters.MyDocuments):(A_MyDocuments)
 
 	ProgramValues.Insert("Name", "POE Trades Companion")
-	ProgramValues.Insert("Version", "1.10.5")
+	ProgramValues.Insert("Version", "1.10.6")
 	ProgramValues.Insert("Debug", 0)
 	ProgramValues.Debug := (A_IsCompiled)?(0):(ProgramValues.Debug) ; Prevent from enabling debug on compiled executable
 
@@ -227,7 +227,9 @@ Monitor_Game_Logs(mode="") {
 				; New RegEx pattern matches the trading message, but only from whispers and local chat (for debugging), and specifically ignores global/trade/guild/party chats
 				if ( RegExMatch( A_LoopField, "^(?:[^ ]+ ){6}(\d+)\] (?=[^#$&%]).*@(?:From|De|От кого) (.*?): (.*)", subPat ) )
 				{
-					gamePID := subPat1, whispName := subPat2, whispMsg := subPat3
+					gamePID := subPat1, whispNameFull := subPat2, whispMsg := subPat3
+					whispNameFull := Gui_Trades_RemoveGuildPrefix(whispNameFull)
+					whispName := whispNameFull.Name, whispGuild := whispNameFull.Guild
 					TradesGUI_Values.Last_Whisper := whispName
 
 					; Append the new whisper to the buyer's Other slots
@@ -322,7 +324,7 @@ Monitor_Game_Logs(mode="") {
 						; Trade does not already exist
 						if (tradesExists = 0) {
 							newTradesInfos := Object()
-							newTradesInfos.Insert(0, whispName, tradeItem, tradePrice, tradeStash, gamePID, A_Hour ":" A_Min, tradeOther, A_YYYY "-" A_MM "-" A_DD)
+							newTradesInfos.Insert(0, whispName, tradeItem, tradePrice, tradeStash, gamePID, A_Hour ":" A_Min, tradeOther, A_YYYY "-" A_MM "-" A_DD, whispGuild)
 							messagesArray := Gui_Trades_Manage_Trades("ADD_NEW", newTradesInfos)
 							Gui_Trades(messagesArray, "UPDATE")
 
@@ -501,6 +503,7 @@ Gui_Trades(infosArray="", errorMsg="") {
 				Gui, Add, Text,% "xp" . " yp+" 15*guiScale . " wp hp" . " vOtherSlot" index . " hwndOtherSlot" index "Handler" . " +BackgroundTrans +0x100 R1" . " c" colorTradesInfos2,% ""
 				Gui, Add, Text,% "xp" . " yp" . " w0" . " h0" . " vPIDSlot" index . " hwndPIDSlot" index "Handler +BackgroundTrans" . " c" colorTradesInfos2,% ""
 				Gui, Add, Text,% "xp" . " yp" . " w0" . " h0" . " vDateSlot" index . " hwndDateSlot" index "Handler +BackgroundTrans" . " c" colorTradesInfos2,% ""
+				Gui, Add, Text,% "xp" . " yp" . " w0" . " h0" . " vGuildSlot" index . " hwndGuildSlot" index "Handler +BackgroundTrans" . " c" colorTradesInfos2,% ""
 
 				TradesGUI_Controls.Insert("Buyer_Slot_" index,BuyerSlot%index%Handler)
 				TradesGUI_Controls.Insert("Item_Slot_" index,ItemSlot%index%Handler)
@@ -510,6 +513,7 @@ Gui_Trades(infosArray="", errorMsg="") {
 				TradesGUI_Controls.Insert("Time_Slot_" index,TimeSlot%index%Handler)
 				TradesGUI_Controls.Insert("PID_Slot_" index,PIDSlot%index%Handler)
 				TradesGUI_Controls.Insert("Date_Slot_" index,DateSlot%index%Handler)
+				TradesGUI_Controls.Insert("Guild_Slot_" index,GuildSlot%index%Handler)
 
 				hexCodes := ["41", "42", "45", "43", "44"] ; 41:Clip/42:Whis/43:Trade/44:Kick/45:Inv
 				ctrlActions := ["Clipboard" , "Whisper", "Invite", "Trade", "Kick"]
@@ -629,6 +633,7 @@ Gui_Trades(infosArray="", errorMsg="") {
 				Gui, Add, Text,% "x" (378*guiScale)-timeSlotWidth . " y" 57*guiScale " w" timeSlotWidth . " h" 15*guiScale . " vTimeSlot" index . " hwndTimeSlot" index "Handler" . " +BackgroundTrans R1 c" colorTradesInfos2,% ""
 				Gui, Add, Text,% "xp" . " yp" . " w0" . " h0" . " vPIDSlot" index . " hwndPIDSlot" index "Handler",% ""
 				Gui, Add, Text,% "xp" . " yp" . " w0" . " h0" . " vDateSlot" index . " hwndDateSlot" index "Handler",% ""
+				Gui, Add, Text,% "xp" . " yp" . " w0" . " h0" . " vGuildSlot" index . " hwndGuildSlot" index "Handler",% ""
 
 ;				Hide the controls. They will be re-enabled later, based on the current amount of trade requests.
 				GuiControl, Trades:Hide,% TabIMG%index%Handler
@@ -650,6 +655,7 @@ Gui_Trades(infosArray="", errorMsg="") {
 				TradesGUI_Controls.Insert("Time_Slot_" index,TimeSlot%index%Handler)
 				TradesGUI_Controls.Insert("PID_Slot_" index,PIDSlot%index%Handler)
 				TradesGUI_Controls.Insert("Date_Slot_" index,DateSlot%index%Handler)
+				TradesGUI_Controls.Insert("Guild_Slot_" index,GuildSlot%index%Handler)
 			}
 
 			hexCodes := ["41", "42", "45", "43", "44"] ; 41:Clip/42:Whis/43:Trade/44:Kick/45:Inv
@@ -807,6 +813,7 @@ Gui_Trades(infosArray="", errorMsg="") {
 			GuiControl, Trades:,% TimeSlot%key%Handler,% infosArray.TIME[key]
 			GuiControl, Trades:,% OtherSlot%key%Handler,% infosArray.OTHER[key]
 			GuiControl, Trades:,% DateSlot%key%Handler,% infosArray.DATES[key]
+			GuiControl, Trades:,% GuildSlot%key%Handler,% infosArray.GUILDS[key]
 			if ( key <= maxTabsRow && activeSkin != "System" ) {
 				GuiControl, Trades:Show,% TabIMG%key%Handler
 				GuiControl, Trades:Show,% TabTXT%key%Handler
@@ -935,14 +942,15 @@ Gui_Trades(infosArray="", errorMsg="") {
 			Gui_Trades_Clipboard_Item_Func()
 	}
 	if ( errorMsg = "CREATE" ) {
-		showWidth := guiWidth
-		showHeight := (TradesGUI_Values.Is_Minimized)?(guiHeightMin):(guiHeight)
+		showWidth := guiWidth, showHeight := guiHeight
 		IniRead, showX,% iniFilePath,PROGRAM,X_POS
 		IniRead, showY,% iniFilePath,PROGRAM,Y_POS
 		showXDefault := A_ScreenWidth-(showWidth), showYDefault := 0 ; Top right
 		showX := (IsNum(showX))?(showX):(showXDefault) ; Prevent unassigned or incorrect value
 		showY := (IsNum(showY))?(showY):(showYDefault) ; Prevent unassigned or incorrect value
 		Gui, Trades:Show,% "NoActivate w" showWidth " h" showHeight " x" showX " y" showY,% programName " - Queued Trades"
+		if (TradesGUI_Values.Is_Minimized)
+			Gui_Trades_Minimize_Func()
 		OnMessage(0x200, "WM_MOUSEMOVE")
 		OnMessage(0x201, "WM_LBUTTONDOWN")
 		OnMessage(0x203, "WM_LBUTTONDBLCLK")
@@ -1022,6 +1030,9 @@ Gui_Trades(infosArray="", errorMsg="") {
 Gui_Trades_Minimize_Func() {
 	global TradesGUI_Values
 
+	detectHiddenWin := A_DetectHiddenWindows
+	DetectHiddenWindows, On
+
 	guiHeight := TradesGUI_Values.Height_Full
 	guiHeightMin := TradesGUI_Values.Height_Minimized
 
@@ -1052,6 +1063,7 @@ Gui_Trades_Minimize_Func() {
 		}
 	}
 	sleep 10
+	DetectHiddenWindows, %detectHiddenWin%
 }
 
 Gui_Trades_Skinned_Adjust_Tab_Range() {
@@ -1121,7 +1133,7 @@ Gui_Trades_Select_Tab(params="") {
 }
 
 
-Gui_Trades_Set_Height(derisedHeight) {
+Gui_Trades_Set_Height(desiredHeight) {
 /*		Move the bottom border and set the GUI height
 */
 	global TradesGUI_Controls, TradesGUI_Values, ProgramSettings
@@ -1133,10 +1145,10 @@ Gui_Trades_Set_Height(derisedHeight) {
 	
 	GuiControlGet, borderSize, Trades:Pos,% TradesGUI_Controls.Border_Top
 	; GuiControl, Trades:Move,% TradesGUI_Controls.Tab,h%tabHeight%
-	; GuiControl, Trades:Move,% TradesGUI_Controls.Border_Left,h%derisedHeight%
-	; GuiControl, Trades:Move,% TradesGUI_Controls.Border_Right,h%derisedHeight%
-	GuiControl, Trades:Move,% TradesGUI_Controls.Border_Bottom,% "y" derisedHeight-borderSizeH
-	Gui, Trades:Show,h%derisedHeight% NoActivate
+	; GuiControl, Trades:Move,% TradesGUI_Controls.Border_Left,h%desiredHeight%
+	; GuiControl, Trades:Move,% TradesGUI_Controls.Border_Right,h%desiredHeight%
+	GuiControl, Trades:Move,% TradesGUI_Controls.Border_Bottom,% "y" desiredHeight-borderSizeH
+	WinMove,% "ahk_id " TradesGUI_Values.Handler, , , , , %desiredHeight%
 }
 
 Gui_Trades_Skinned_Arrow_Left(CtrlHwnd="", GuiEvent="", EventInfo="") {
@@ -1401,6 +1413,7 @@ Gui_Trades_Redraw(msg, params="") {
 			allTrades.TIME.Push(A_Hour ":" A_Min)
 			allTrades.PID.Push(0)
 			allTrades.DATES.Push(A_YYYY "-" A_MM "-" A_DD)
+			allTrades.GUILDS.Push("")
 		}
 	}
 	Gui_Trades(, msg)
@@ -1518,7 +1531,6 @@ Gui_Trades_Get_Trades_Infos(tabID){
 	global TradesGUI_Controls
 
 	GuiControlGet, tabBuyer, Trades:,% TradesGUI_Controls["Buyer_Slot_" tabID]
-	tabBuyer := Gui_Trades_RemoveGuildPrefix(tabBuyer) ; Removing guild prefix so we can use the actual player name
 	GuiControlGet, tabItem, Trades:,% TradesGUI_Controls["Item_Slot_" tabID]
 	GuiControlGet, tabPrice, Trades:,% TradesGUI_Controls["Price_Slot_" tabID]
 	GuiControlGet, tabLocation,Trades:,% TradesGUI_Controls["Location_Slot_" tabID]
@@ -1526,6 +1538,7 @@ Gui_Trades_Get_Trades_Infos(tabID){
 	GuiControlGet, tabPID, Trades:,% TradesGUI_Controls["PID_Slot_" tabID]
 	GuiControlGet, tabTime, Trades:,% TradesGUI_Controls["Time_Slot_" tabID]
 	GuiControlGet, tabDate, Trades:,% TradesGUI_Controls["Date_Slot_" tabID]
+	GuiControlGet, tabGuild, Trades:,% TradesGUI_Controls["Guild_Slot_" tabID]
 
 	if RegExMatch(tabLocation, "(.*)\(Tab:(.*) / Pos:(.*)\)", tabLocationPat) 
 		leagueName := tabLocationPat1, stashName := tabLocationPat2, stashPos := tabLocationPat3
@@ -1538,6 +1551,7 @@ Gui_Trades_Get_Trades_Infos(tabID){
 		itemName := tabItem
 
 	TabInfos := {Buyer:tabBuyer
+				,Guild:tabGuild
 				,Item:tabItem
 				,Item_Name:itemName
 				,Item_Level:itemLevel
@@ -1572,14 +1586,19 @@ Gui_Trades_Statistics(mode, tabInfos) {
 		for key, element in tabInfos {
 			element = %element% ; Blank spaces removal
 			if ( element && element != "-" ) {
-				if key in Buyer,Date_YYYYMMDD,Item,Item_Level,Item_Name,Item_Quality,Location,Location_League,Location_Position,Location_Tab,Price,Time
+				if key in Buyer,Guild,Date_YYYYMMDD,Item,Item_Level,Item_Name,Item_Quality,Location,Location_League,Location_Position,Location_Tab,Price,Time
 				{
 					IniWrite,% element,% historyFile,% index,% key
 				}
 				else if (key="OTHER") {
 					if (element && element!="-" && element !="`n") {
 						Loop, Parse, element,`n
-							IniWrite,% A_LoopField,% historyFile,% index,% key "_" A_Index
+						{
+							if (A_LoopField != "(Hover to see all messages)") {
+								otherIndex++
+								IniWrite,% A_LoopField,% historyFile,% index,% key "_" otherIndex
+							}
+						}
 					}
 				}
 			}
@@ -1626,6 +1645,7 @@ Gui_Trades_Manage_Trades(mode, newItemInfos="", activeTabID=""){
 	returnArray.TIME := Object()
 	returnArray.OTHER := Object()
 	returnArray.DATES := Object()
+	returnArray.GUILDS := Object()
 	btnID := activeTabID
 
 	if ( mode = "GET_ALL" || mode = "ADD_NEW") {
@@ -1706,10 +1726,19 @@ Gui_Trades_Manage_Trades(mode, newItemInfos="", activeTabID=""){
 			}
 			else break
 		}
+	;	__GUILD__
+		Loop {
+			guildsCount := A_Index
+			GuiControlGet, content, Trades:,% TradesGUI_Controls["Guild_Slot_" A_Index]
+			if ( content ) {
+				returnArray.GUILDS.Insert(A_Index, content)
+			}
+			else break
+		}
 	}
 
 	if ( mode = "ADD_NEW") {
-		name := newItemInfos[0], item := newItemInfos[1], price := newItemInfos[2], location := newItemInfos[3], gamePID := newItemInfos[4], time := newItemInfos[5], other := newItemInfos[6], date := newItemInfos[7]
+		name := newItemInfos[0], item := newItemInfos[1], price := newItemInfos[2], location := newItemInfos[3], gamePID := newItemInfos[4], time := newItemInfos[5], other := newItemInfos[6], date := newItemInfos[7], guild := newItemInfos[8]
 		returnArray.COUNT.Insert(0, bCount)
 		returnArray.BUYERS.Insert(bCount, name)
 		returnArray.ITEMS.Insert(iCount, item)
@@ -1719,6 +1748,7 @@ Gui_Trades_Manage_Trades(mode, newItemInfos="", activeTabID=""){
 		returnArray.TIME.Insert(timeCount, time)
 		returnArray.OTHER.Insert(otherCount, other)
 		returnArray.DATES.Insert(datesCount, date)
+		returnArray.GUILDS.Insert(guildsCount, guild)
 	}
 
 	if ( mode = "REMOVE_CURRENT") {
@@ -1850,6 +1880,22 @@ Gui_Trades_Manage_Trades(mode, newItemInfos="", activeTabID=""){
 		counter--
 		GuiControl,Trades:,% TradesGUI_Controls["Date_Slot_" counter],% ""
 
+;	___GUILDS___
+		Loop {
+			if ( A_Index < btnID )
+				counter := A_Index
+			else if ( A_Index >= btnID )
+				counter := A_Index+1
+			GuiControlGet, content, Trades:,% TradesGUI_Controls["Guild_Slot_" counter]
+			if ( content ) {
+				index := A_Index
+				returnArray.GUILDS.Insert(index, content)
+			}
+			else break
+		}
+		counter--
+		GuiControl,Trades:,% TradesGUI_Controls["Guild_Slot_" counter],% ""
+
 	}
 
 	return returnArray
@@ -1858,12 +1904,12 @@ Gui_Trades_Manage_Trades(mode, newItemInfos="", activeTabID=""){
 Gui_Trades_RemoveGuildPrefix(name) {
 /*			Remvove the guild prefix from the name, is there is one
 */
-	AutoTrim, On
-	RegExMatch(name, "<.*>(.*)", namePat)
-	if ( namePat1 )
-		name := namePat1
+	if RegExMatch(name, "<(.*)>(.*)", namePat)
+		guild := namePat1, name := namePat2
 	name = %name% ; Removes whitespaces
-	return name
+	guild = %guild%
+
+	return {Name:name, Guild:guild}
 }
 
 Gui_Trades_Set_Position(xpos="UNSPECIFIED", ypos="UNSPECIFIED"){
@@ -2080,7 +2126,7 @@ Gui_Settings() {
 
 			Gui, Add, Text,% "xp-270" . " yp+33" . " hwndTradesAction" index "TextHandler",Action:
 			Gui, Add, DropDownList, xp+50 yp-3 w160 vTradesAction%index% hwndTradesAction%index%Handler gGui_Settings_Custom_Label,% "Clipboard Item|Send Message|Send Message + Close Tab|Write Message"
-			Gui, Add, CheckBox,xp+170 yp+3 vTradesMarkCompleted%index% hwndTradesMarkCompleted%index%Handler,Save the trade infos into a file?
+			Gui, Add, CheckBox,xp+170 yp vTradesMarkCompleted%index% hwndTradesMarkCompleted%index%Handler Center,Save the trade infos locally?`n(for personnal statistics purposes)
 
 			Gui, Add, Edit,% "x" guiXWorkarea+10 . " yp+30 w50" . " hwndTradesMsgEditID" index "Handler" . " ReadOnly Limit1",1|2|3
 			Gui, Add, UpDown,% " vTradesMsgID" index " hwndTradesMsgID" index "Handler" . " Range1-3 gGui_Settings_Cycle_Messages"
