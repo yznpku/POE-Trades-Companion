@@ -932,10 +932,12 @@ Gui_Trades(infosArray="", errorMsg="") {
 		}
 
 		if ( ProgramSettings.Trades_Auto_Minimize && !isGuiActive && !TradesGUI_Values.Is_Minimized && errorMsg != "EXE_NOT_FOUND" ) {
+			Msgbox AUTO MINIMIZE
 			GoSub, Gui_Trades_Minimize
 		}
 		if ( ProgramSettings.Trades_Auto_UnMinimize && isGuiActive && TradesGUI_Values.Is_Minimized ) {
 			GoSub, Gui_Trades_Minimize
+			Msgbox AUTO UN_MINIMIZE
 		}
 
 		if ( ProgramSettings.Clip_On_Tab_Switch )
