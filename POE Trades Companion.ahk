@@ -60,9 +60,11 @@ Start_Script() {
 	MyDocuments := (RunParameters.MyDocuments)?(RunParameters.MyDocuments):(A_MyDocuments)
 
 	ProgramValues.Insert("Name", "POE Trades Companion")
-	ProgramValues.Insert("Version", "1.10.6")
+	ProgramValues.Insert("Version", "1.10.7")
 	ProgramValues.Insert("Debug", 0)
 	ProgramValues.Debug := (A_IsCompiled)?(0):(ProgramValues.Debug) ; Prevent from enabling debug on compiled executable
+	if FileExist(A_ScriptDir "/ENABLE_DEBUG.txt")
+		ProgramValues.Debug := 1
 
 	ProgramValues.Insert("Updater_File", "POE-TC-Updater.exe")
 	ProgramValues.Insert("Updater_Link", "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/Updater.exe")
@@ -435,7 +437,7 @@ Gui_Trades(infosArray="", errorMsg="") {
 
 		tabHeight := Gui_Trades_Get_Tab_Height(), tabWidth := 390*guiScale
 		guiWidth := 401*guiScale, guiHeight := Floor((tabHeight+31)*guiScale), guiHeightMin := 34*guiScale ; 30 = banner size, 1 = tab bottom line
-		borderSize := 2*Round(guiScale)
+		borderSize := 2
 		TradesGUI_Values.Insert("Height_Full", guiHeight)
 		TradesGUI_Values.Insert("Height_Minimized", guiHeightMin)
 
@@ -944,7 +946,8 @@ Gui_Trades(infosArray="", errorMsg="") {
 			Gui_Trades_Clipboard_Item_Func()
 	}
 	if ( errorMsg = "CREATE" ) {
-		showWidth := guiWidth, showHeight := guiHeight
+		showWidth := guiWidth
+		showHeight := guiHeight
 		IniRead, showX,% iniFilePath,PROGRAM,X_POS
 		IniRead, showY,% iniFilePath,PROGRAM,Y_POS
 		showXDefault := A_ScreenWidth-(showWidth), showYDefault := 0 ; Top right
@@ -1140,6 +1143,7 @@ Gui_Trades_Set_Height(desiredHeight) {
 */
 	global TradesGUI_Controls, TradesGUI_Values, ProgramSettings
 
+	dpiFactor := ProgramSettings.Screen_DPI
 	; tabHeight := Gui_Trades_Get_Tab_Height()
 	guiHeightMin := TradesGUI_Values.Height_Minimized
 	guiHeightFull := TradesGUI_Values.Height_Full
@@ -1150,7 +1154,7 @@ Gui_Trades_Set_Height(desiredHeight) {
 	; GuiControl, Trades:Move,% TradesGUI_Controls.Border_Left,h%desiredHeight%
 	; GuiControl, Trades:Move,% TradesGUI_Controls.Border_Right,h%desiredHeight%
 	GuiControl, Trades:Move,% TradesGUI_Controls.Border_Bottom,% "y" desiredHeight-borderSizeH
-	WinMove,% "ahk_id " TradesGUI_Values.Handler, , , , , %desiredHeight%
+	WinMove,% "ahk_id " TradesGUI_Values.Handler, , , , ,% desiredHeight*dpiFactor
 }
 
 Gui_Trades_Skinned_Arrow_Left(CtrlHwnd="", GuiEvent="", EventInfo="") {
@@ -1574,6 +1578,9 @@ Gui_Trades_Get_Trades_Infos(tabID){
 
 Gui_Trades_Statistics(mode, tabInfos) {
 	global ProgramValues
+
+	if (ProgramValues.Debug)
+		Return
 
 	historyFile := ProgramValues.Trades_History_File
 
@@ -5162,7 +5169,7 @@ Gui_AdminWarn() {
 
 Handle_CommandLine_Parameters() {
 	global 0
-	global RunParameters, ProgramValues
+	global RunParameters, ProgramValues, ProgramSettings
 
 	programName := ProgramValues.Name
 
@@ -5207,6 +5214,9 @@ Handle_CommandLine_Parameters() {
 		}
 		else if (param="/NoAdmin") {
 			RunParameters.Insert("NoAdmin", 1)
+		}
+		else if RegExMatch(param, "/Screen_DPI=(.*)", found) {
+			ProgramSettings.Insert("Screen_DPI", found1)
 		}
 	}
 }
@@ -5271,20 +5281,27 @@ Reload_Func() {
  *		https://autohotkey.com/board/topic/46526-run-as-administrator-xpvista7-a-isadmin-params-lib/?p=600596
 */
 	global 0
-	global RunParameters
+	global RunParameters, ProgramSettings
+
 
 	Sleep 10
-
 	Loop, %0%
 	{
 		param := RegExReplace(%A_Index%, "(.*)=(.*)", "$1=""$2""") ; Add quotation mark to the parameter. Missing quotation marks would incorectly parse the run parameters on next load.
 		params .= A_Space . param
 	}
-	if !(A_IsAdmin) {
-		params .= A_Space . "/MyDocuments=" """" A_MyDocuments """"
+
+	if !(A_IsAdmin) { ; Not running as admin
+		dpiFactor := Get_DPI_Factor()
+		params .= A_Space . "/MyDocuments=" """" A_MyDocuments """" ; Pass the current user MyDocuments as parameter
+		params .= A_Space . "/Screen_DPI=" """" dpiFactor """" ; Pass the current user Win DPI as parameter
 	}
-	else {
-		params .= A_Space . "/MyDocuments=" """" RunParameters.MyDocuments """"
+
+	else { ; We are admin
+		if (RunParameters.MyDocuments)
+			params .= A_Space . "/MyDocuments=" """" RunParameters.MyDocuments """"
+		if (ProgramSettings.Screen_DPI)
+			params .= A_Space . "/Screen_DPI=" """" ProgramSettings.Screen_DPI """" ; Pass the current user Win DPI as parameter
 	}
 
 	Exit_Func("Reload","")
