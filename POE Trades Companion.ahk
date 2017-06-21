@@ -20,6 +20,7 @@ FileEncoding, UTF-8 ; Required for cyrillic characters
 #KeyHistory 0
 SetWinDelay, 0
 DetectHiddenWindows, Off
+ListLines, Off
 
 Menu,Tray,Tip,POE Trades Companion
 Menu,Tray,NoStandard
@@ -180,38 +181,179 @@ Gui_Stats() {
 
 	ProgramValues.Trades_History_File
 
+	guiWidth := 800
+	guiHeight := 500
+
+	allStats := Gui_Trades_Statistics("GET")
+
 	defaultGUI := A_DefaultGui
 	Gui, Stats:Destroy
 	Gui, Stats:New, +HwndGuiStatsHandler +AlwaysOnTop +SysMenu -MinimizeBox -MaximizeBox +Resize +OwnDialogs +LabelGui_Stats_,% ProgramValues.Name " - Trading Stats"
 	Gui, Stats:Default
+	Gui, Margin, 0, 0
 	Gui, Font,,Segoe UI
-	Gui, Add, ListView, x0 y0 w800 hwndListV R20,Date (YYYY-MM-DD)|Time|Buyer|Item|Price|League|Tab|Guild
+	Gui, Add, GroupBox,% "x10 y10 w" guiWidth-20 " h100 c000000 Section", Filtering Options
+	Gui, Add, Text,xs+15 ys+25,Buyer:
+	Gui, Add, DropDownList,xp+50 yp-2 w150 vBuyersFilter hwndBuyersFilterHandler gGui_Stats_Filter
+	Gui, Add, Text,xs+15 ys+55,Guild:
+	Gui, Add, DropDownList,xp+50 yp-2 w150 vGuildsFilter hwndGuildsFilterHandler gGui_Stats_Filter
+	Gui, Add, Text,xs+225 ys+25,Item:
+	Gui, Add, DropDownList,xp+50 yp-2 w150 vItemsFilter hwndItemsFilterHandler gGui_Stats_Filter
+	Gui, Add, Text,xs+225 ys+55,Currency:
+	Gui, Add, DropDownList,xp+50 yp-2 w150 vCurrenciesFilter hwndCurrenciesFilterHandler gGui_Stats_Filter
+	Gui, Add, Text,xs+430 ys+25,League:
+	Gui, Add, DropDownList,xp+50 yp-2 w150 vLeaguesFilter hwndLeaguesFilterHandler gGui_Stats_Filter
+	Gui, Add, Text,xs+430 ys+55,Tab:
+	Gui, Add, DropDownList,xp+50 yp-2 w150 vTabsFilter hwndTabsFilterHandler gGui_Stats_Filter
+	Gui, Add, ListView, x0 y140 w%guiWidth% hwndListV h300,#|Date (YYYY-MM-DD)|Time|Buyer|Item|Price|League|Tab|Guild
 
-	allStats := Gui_Trades_Statistics("GET")
 ;	keys := ["Buyer","Guild","Date_YYYYMMDD","Item","Item_Level","Item_Name","Item_Quality","Location","Location_League","Location_Position","Location_Tab","Other","Price","Time"]
 
 	Loop % allStats.Max_Index
 	{
-		LV_Add("", allStats[A_Index "_Date_YYYYMMDD"]
-				 ,allStats[A_Index "_Time"]
-				 ,allStats[A_Index "_Buyer"]
-				 ,allStats[A_Index "_Item"]
-				 ,allStats[A_Index "_Price"]
-				 ,allStats[A_Index "_Location_League"]
-				 ,allStats[A_Index "_Location_Tab"]
-				 ,allStats[A_Index "_Guild"])
+		LV_Add("", A_Index
+				 , allStats[A_Index "_Date_YYYYMMDD"]
+				 , allStats[A_Index "_Time"]
+				 , allStats[A_Index "_Buyer"]
+				 , allStats[A_Index "_Item"]
+				 , allStats[A_Index "_Price"]
+				 , allStats[A_Index "_Location_League"]
+				 , allStats[A_Index "_Location_Tab"]
+				 , allStats[A_Index "_Guild"])
 	}
-	LV_ModifyCol(1,70)
+	LV_ModifyCol(1,"Auto")
 	LV_ModifyCol(2,"Auto")
 	LV_ModifyCol(3,"Auto")
 	LV_ModifyCol(4,"Auto")
 	LV_ModifyCol(5,"Auto")
 	LV_ModifyCol(6,"Auto")
 	LV_ModifyCol(7,"Auto")
-	LV_ModifyCol(8,"AutoHdr")
+	LV_ModifyCol(8,"Auto")
+	LV_ModifyCol(9,"AutoHdr")
+
+	Gosub, Gui_Stats_Parse
 
 	Gui, Show, NoActivate
     Gui, %defaultGUI%:Default
+    Return
+
+    Gui_Stats_Filter:
+    	Gui, Stats:Submit, NoHide
+    	Gui Stats:+OwnDialogs
+
+
+	    LV_Delete()
+	    Loop % allStats.Max_Index
+		{
+			filteredBuyer 			:= (BuyersFilter="All")?(BuyersFilter)
+									  :(allStats[A_Index "_Buyer"])
+			filteredGuild			:= (GuildsFilter="All")?(GuildsFilter)
+									  :(allStats[A_Index "_Guild"])
+
+			filteredItem 			:= (ItemsFilter="All")?(ItemsFilter)
+									  :(ItemsFilter="Gems" 	&& allStats[A_Index "_Item_Level"])?(ItemsFilter)
+									  :(allStats[A_Index "_Item_Name"])
+			filteredCurrency		:= (CurrenciesFilter="All")?(CurrenciesFilter)
+									  :(allStats[A_Index "_Price"])
+
+			filteredLeague 			:= (LeaguesFilter="All")?(LeaguesFilter)
+									  :(allStats[A_Index "_Location_League"])
+			filteredTab				:= (TabsFilter="All")?(TabsFilter)
+									  :(allStats[A_Index "_Location_Tab"])
+
+			if (BuyersFilter = filteredBuyer
+				&& GuildsFilter = filteredGuild
+				&& ItemsFilter = filteredItem
+				&& CurrenciesFilter = filteredCurrency
+				&& LeaguesFilter = filteredLeague
+				&& TabsFilter = filteredTab) {
+
+				LV_Add("", A_Index
+						 , allStats[A_Index "_Date_YYYYMMDD"]
+						 , allStats[A_Index "_Time"]
+						 , allStats[A_Index "_Buyer"]
+						 , allStats[A_Index "_Item"]
+						 , allStats[A_Index "_Price"]
+						 , allStats[A_Index "_Location_League"]
+						 , allStats[A_Index "_Location_Tab"]
+						 , allStats[A_Index "_Guild"])
+			}
+		}
+    Return
+
+    Gui_Stats_Parse:
+    	onlyBuyers := "All", onlyGuilds := "All"
+    	onlyItems := "All|Gems", onlyCurrency := "All"
+    	onlyLeagues := "All", onlyTabs := "All"
+    	Loop % allStats.Max_Index
+    	{
+    		buyer := allStats[A_Index "_Buyer"]
+    		if (buyer) {
+	    		if buyer not in %onlyBuyers%
+	    		{
+	    			onlyBuyers .= "," buyer
+	    		}
+	    	}
+
+    		guild := allStats [A_Index "_Guild"]
+    		if (guild) {
+	    		if guild not in %onlyGuilds%
+	    		{
+	    			onlyGuilds .= "," guild
+	    		}
+	    	}
+
+    		item := allStats[A_Index "_Item_Name"]
+    		if (item) {
+	    		if item not in %onlyItems%
+	    		{
+	    			onlyItems .= "," item
+	    		}
+	    	}
+
+    		currency := allStats[A_Index "_Price"]
+    		if (currency) {
+    			if currency not in %onlyCurrency%
+    			{
+	    			onlyCurrency .= "," currency
+    			}
+    		}
+
+    		league := allStats[A_Index "_Location_League"]
+    		if (league) {
+    			if league not in %onlyLeagues%
+    			{
+	    			onlyLeagues .= "," league
+    			}
+    		}
+
+    		tab := allStats[A_Index "_Location_Tab"]
+    		if (tab) {
+    			if tab not in %onlyTabs%
+    			{
+	    			onlyTabs .= "," tab
+    			}
+    		}
+    	}
+    	onlyBuyers := StrReplace(onlyBuyers, ",", "|")
+    	onlyGuilds := StrReplace(onlyGuilds, ",", "|")
+    	onlyItems := StrReplace(onlyItems, ",", "|")
+    	onlyCurrency := StrReplace(onlyCurrency, ",", "|")
+    	onlyLeagues := StrReplace(onlyLeagues, ",", "|")
+    	onlyTabs := StrReplace(onlyTabs, ",", "|")
+    	GuiControl, Stats:,% BuyersFilterHandler,% onlyBuyers
+    	GuiControl, Stats:,% GuildsFilterHandler,% onlyGuilds
+    	GuiControl, Stats:,% ItemsFilterHandler,% onlyItems
+    	GuiControl, Stats:,% CurrenciesFilterHandler,% onlyCurrency
+    	GuiControl, Stats:,% LeaguesFilterHandler,% onlyLeagues
+    	GuiControl, Stats:,% TabsFilterHandler,% onlyTabs
+
+	    GuiControl, Stats:ChooseString,% BuyersFilterHandler, All
+	    GuiControl, Stats:ChooseString,% GuildsFilterHandler, All
+		GuiControl, Stats:ChooseString,% ItemsFilterHandler, All
+		GuiControl, Stats:ChooseString,% CurrenciesFilterHandler, All
+		GuiControl, Stats:ChooseString,% LeaguesFilterHandler, All
+		GuiControl, Stats:ChooseString,% TabsFilterHandler, All
     Return
 
     Gui_Stats_Size:
@@ -3467,9 +3609,7 @@ Gui_About(params="") {
 }
 
 ;==================================================================================================================
-;
 ;											INI SETTINGS
-;
 ;==================================================================================================================
 
 Get_Game_Settings() {
