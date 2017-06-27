@@ -39,20 +39,20 @@ Return
 Start_Script() {
 /*
 */
-	global ProgramValues, ProgramFonts, RunParameters, GameSettings, ProgramSettings
-	global TradesGUI_Controls, TradesGUI_Values
-	global POEGameArray, POEGameList
-
 ;	Global objects declaration
-	ProgramValues := Object() ; Specific to the program's informations
-	ProgramFonts := Object() ; Fonts private to the program
-	ProgramSettings := Object() ; Settings from the local .ini
-	RunParameters := Object() ; Run-time parameters
+	global ProgramValues := Object() ; Specific to the program's informations
+	global ProgramFonts := Object() ; Fonts private to the program
+	global ProgramSettings := Object() ; Settings from the local .ini
+	global RunParameters := Object() ; Run-time parameters
 
-	GameSettings := Object() ; Settings from the game .ini
+	global GameSettings := Object() ; Settings from the game .ini
 
-	TradesGUI_Values := Object() ; TradesGUI various infos
-	TradesGUI_Controls := Object() ; TradesGUI controls handlers
+	global TradesGUI_Values := Object() ; TradesGUI various infos
+	global TradesGUI_Controls := Object() ; TradesGUI controls handlers
+
+	global Stats_TradeCurrencyNames := Object()
+	global Stats_RealCurrencyNames := Object()
+
 ;	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	
 	ProgramSettings.Insert("Screen_DPI", Get_DPI_Factor())
@@ -88,6 +88,7 @@ Start_Script() {
 	ProgramValues.Insert("Skins_Folder", ProgramValues.Local_Folder "\Skins")
 	ProgramValues.Insert("Fonts_Folder", ProgramValues.Local_Folder "\Fonts")
 	ProgramValues.Insert("Fonts_Settings_File", ProgramValues.Fonts_Folder "\Settings.ini")
+	ProgramValues.Insert("Data_Folder", ProgramValues.Local_Folder "\Data")
 	ProgramValues.Insert("Others_Folder", ProgramValues.Local_Folder "\Others")
 
 	ProgramValues.Insert("Ini_File", ProgramValues.Local_Folder "\Preferences.ini")
@@ -101,12 +102,29 @@ Start_Script() {
 
 	ProgramSettings.Insert("Support_Message", "@%buyerName% " ProgramValues.Name ": view-thread/1755148") 
 
+;	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
 	GroupAdd, POEGame, ahk_exe PathOfExile.exe
 	GroupAdd, POEGame, ahk_exe PathOfExile_x64.exe
 	GroupAdd, POEGame, ahk_exe PathOfExileSteam.exe
 	GroupAdd, POEGame, ahk_exe PathOfExile_x64Steam.exe
-	POEGameArray := ["PathOfExile.exe", "PathOfExile_x64.exe", "PathOfExileSteam.exe", "PathOfExile_x64Steam.exe"]
-	POEGameList := "PathOfExile.exe,PathOfExile_x64.exe,PathOfExileSteam.exe,PathOfExile_x64Steam.exe"
+	global POEGameArray := ["PathOfExile.exe", "PathOfExile_x64.exe", "PathOfExileSteam.exe", "PathOfExile_x64Steam.exe"]
+	global POEGameList := "PathOfExile.exe,PathOfExile_x64.exe,PathOfExileSteam.exe,PathOfExile_x64Steam.exe"
+
+;	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+	FileRead, allCurrency,% A_ScriptDir "\Resources\Data\Currency_All.txt" ; __TO_BE_CHANGED__ to local dir, also extract
+	Loop, Parse, allCurrency, `n`r
+	{
+		if ( A_LoopField ) {
+			Stats_RealCurrencyNames .= A_LoopField ","
+		}
+	}
+	StringTrimRight, Stats_RealCurrencyNames, Stats_RealCurrencyNames, 1 ; Remove last comma
+
+	FileRead, JSONFile,% A_ScriptDir "\Resources\Data\currencyTradeNames.json" ; __TO_BE_CHANGED__ to local dir, also extract
+	parsedJSON := JSON.Load(JSONFile)
+	Stats_TradeCurrencyNames := parsedJSON.currencyNames.eng
 
 ;	Directories Creation
 	Loop {
@@ -142,6 +160,7 @@ Start_Script() {
 	Extract_Sound_Files()
 	Extract_Skin_Files()
 	Extract_Font_Files()
+	Extract_Data_Files()
 	Extract_Others_Files()
 	Manage_Font_Resources("LOAD")
 	Check_Update()
@@ -191,11 +210,11 @@ Gui_Stats() {
 
 	defaultGUI := A_DefaultGui
 	Gui, Stats:Destroy
-	Gui, Stats:New, +HwndGuiStatsHandler +AlwaysOnTop +SysMenu -MinimizeBox -MaximizeBox +Resize +OwnDialogs +LabelGui_Stats_,% ProgramValues.Name " - Trading Stats"
+	Gui, Stats:New, +HwndGuiStatsHandler +AlwaysOnTop +SysMenu -MinimizeBox -MaximizeBox +Resize +OwnDialogs +MinSize670x360 +LabelGui_Stats_,% ProgramValues.Name " - Trading Stats"
 	Gui, Stats:Default
 	Gui, Margin, 0, 0
 	Gui, Font,,Segoe UI
-	Gui, Add, GroupBox,% "x10 y10 w" guiWidth-20 " h100 c000000 Section", Filtering Options
+	Gui, Add, GroupBox,% "x10 y10 w" guiWidth-20 " h100 hwndFilteringGroupBoxHandler c000000 Section", Filtering Options
 	Gui, Add, Text,xs+15 ys+25,Buyer:
 	Gui, Add, DropDownList,xp+50 yp-2 w150 vBuyersFilter hwndBuyersFilterHandler gGui_Stats_Filter
 	Gui, Add, Text,xs+15 ys+55,Guild:
@@ -236,7 +255,7 @@ Gui_Stats() {
 
 	Gosub, Gui_Stats_Parse
 
-	Gui, Show, NoActivate
+	Gui, Show, AutoSize NoActivate
     Gui, %defaultGUI%:Default
     Return
 
@@ -258,6 +277,7 @@ Gui_Stats() {
 									  :(allStats[A_Index "_Item_Name"])
 			filteredCurrency		:= (CurrenciesFilter="All")?(CurrenciesFilter)
 									  :(allStats[A_Index "_Price"])
+			filteredCurrency := Gui_Stats_Get_Currency_Name(filteredCurrency) ; Convert to real currency name
 
 			filteredLeague 			:= (LeaguesFilter="All")?(LeaguesFilter)
 									  :(allStats[A_Index "_Location_League"])
@@ -316,6 +336,7 @@ Gui_Stats() {
 
     		currency := allStats[A_Index "_Price"]
     		if (currency) {
+    			currency := Gui_Stats_Get_Currency_Name(currency)
     			if currency not in %onlyCurrency%
     			{
 	    			onlyCurrency .= "," currency
@@ -360,8 +381,38 @@ Gui_Stats() {
     Return
 
     Gui_Stats_Size:
-    	GuiControl, Stats:Move,% ListV,% "w" A_GuiWidth " h" A_GuiHeight*0.8
+    	GuiControl, Stats:Move,% ListV,% "w" A_GuiWidth " h" A_GuiHeight-140
+    	GuiControl, Stats:Move,% FilteringGroupBoxHandler,% "w" A_GuiWidth-20
     Return
+}
+
+Gui_Stats_Get_Currency_Name(currency) {
+/*		Compare the specified currency with poe.trade abridged currency names to retrieve the real currency name.
+		When the string is plural, check if the full list of currencies contains its non-plural counterpart.
+ */
+	global Stats_RealCurrencyNames, Stats_TradeCurrencyNames
+
+	currency := RegExReplace(currency, "\d")
+	currency = %currency% ; Remove whitespaces
+	lastChar := SubStr(currency, 0) ; Get last char
+	if (lastChar = "s") ; poeapp adds an "s" for >1 currencies
+		StringTrimRight, currencyWithoutS, currency, 1
+
+	if currency not in %Stats_RealCurrencyNames%
+	{
+		currencyFullName := Stats_TradeCurrencyNames[currency]
+		currencyFullName := StrReplace(currencyFullName, "_", " ")
+	}
+	if (!currencyFullName && currencyWithoutS) { ; Couldn't retrieve full name, and currency is possibly plural
+		if currencyWithoutS in %Stats_RealCurrencyNames% ; Currency is in list, was most likely plural
+			currencyFullName := currencyWithoutS
+	}
+	else { ; Unknown currency name
+		Logs_Append(A_ThisFunc, {Currency:currency})
+	}
+
+	currencyFullName := (currencyFullName)?(currencyFullName):(currency)
+	return currencyFullName
 }
 
 ;==================================================================================================================
@@ -4753,60 +4804,68 @@ Logs_Append(funcName, params) {
 		FileAppend,% "`n",% programLogsFilePath
 	}
 
-	if ( funcName = "DEBUG" ) {
+	else {
 		FileAppend,% "[" A_YYYY "-" A_MM "-" A_DD "_" A_Hour ":" A_Min ":" A_Sec "] ",% programLogsFilePath
-		FileAppend,% params.String,% programLogsFilePath
-	}
 
-	if ( funcName = "GUI_Multiple_Instances" ) {
-		FileAppend,% "[" A_YYYY "-" A_MM "-" A_DD "_" A_Hour ":" A_Min ":" A_Sec "] ",% programLogsFilePath
-		FileAppend,% "Found multiple instances. Handler: " params.Handler " - Path: " params.Path,% programLogsFilePath
-	}
-	if ( funcName = "GUI_Multiple_Instances_Return" ) {
-		FileAppend,% "[" A_YYYY "-" A_MM "-" A_DD "_" A_Hour ":" A_Min ":" A_Sec "] ",% programLogsFilePath
-		FileAppend,% "Found multiple instances (Return). Handler: " params.Handler,% programLogsFilePath
-	}
+		if ( funcName = "DEBUG" ) {
+			FileAppend,% params.String,% programLogsFilePath
+		}
 
-	if ( funcName = "Monitor_Game_Logs" ) {
-		FileAppend,% "[" A_YYYY "-" A_MM "-" A_DD "_" A_Hour ":" A_Min ":" A_Sec "] ",% programLogsFilePath
-		FileAppend,% "Monitoring logs: " params.File,% programLogsFilePath
-	}
-	if ( funcName = "Monitor_Game_Logs_Break" ) {
-		FileAppend,% "[" A_YYYY "-" A_MM "-" A_DD "_" A_Hour ":" A_Min ":" A_Sec "] ",% programLogsFilePath
-		FileAppend,% "Monitoring logs (Break). Obj.pos: " params.objPos " - Obj.length: " params.objLength,% programLogsFilePath
-	}
+		else if ( funcName = "GUI_Multiple_Instances" ) {
+			FileAppend,% "[" A_YYYY "-" A_MM "-" A_DD "_" A_Hour ":" A_Min ":" A_Sec "] ",% programLogsFilePath
+			FileAppend,% "Found multiple instances. Handler: " params.Handler " - Path: " params.Path,% programLogsFilePath
+		}
+		else if ( funcName = "GUI_Multiple_Instances_Return" ) {
+			FileAppend,% "[" A_YYYY "-" A_MM "-" A_DD "_" A_Hour ":" A_Min ":" A_Sec "] ",% programLogsFilePath
+			FileAppend,% "Found multiple instances (Return). Handler: " params.Handler,% programLogsFilePath
+		}
 
-	if ( funcName = "Gui_Trades_Set_Position" ) {
-		FileAppend,% "[" A_YYYY "-" A_MM "-" A_DD "_" A_Hour ":" A_Min ":" A_Sec "] ",% programLogsFilePath
-		FileAppend,% "Trades GUI Position: x" params.xpos " y" params.ypos ".",% programLogsFilePath
-	}
+		else if ( funcName = "Monitor_Game_Logs" ) {
+			FileAppend,% "[" A_YYYY "-" A_MM "-" A_DD "_" A_Hour ":" A_Min ":" A_Sec "] ",% programLogsFilePath
+			FileAppend,% "Monitoring logs: " params.File,% programLogsFilePath
+		}
+		else if ( funcName = "Monitor_Game_Logs_Break" ) {
+			FileAppend,% "[" A_YYYY "-" A_MM "-" A_DD "_" A_Hour ":" A_Min ":" A_Sec "] ",% programLogsFilePath
+			FileAppend,% "Monitoring logs (Break). Obj.pos: " params.objPos " - Obj.length: " params.objLength,% programLogsFilePath
+		}
 
-	if (funcName = "ShellMessage" ) {
-		FileAppend,% "[" A_YYYY "-" A_MM "-" A_DD "_" A_Hour ":" A_Min ":" A_Sec "] ",% programLogsFilePath
-		FileAppend,% "Trades GUI Hidden: Show_Mode: " params.Show_Mode " - Dock_Window ID: " params.Dock_Window " - Current Win ID: " params.Current_Win_ID "."
-	}
+		else if ( funcName = "Gui_Trades_Set_Position" ) {
+			FileAppend,% "[" A_YYYY "-" A_MM "-" A_DD "_" A_Hour ":" A_Min ":" A_Sec "] ",% programLogsFilePath
+			FileAppend,% "Trades GUI Position: x" params.xpos " y" params.ypos ".",% programLogsFilePath
+		}
 
-	if ( funcName = "Send_InGame_Message" ) {
-		FileAppend,% "[" A_YYYY "-" A_MM "-" A_DD "_" A_Hour ":" A_Min ":" A_Sec "] ",% programLogsFilePath
-		FileAppend,% "Sending IG Message to PID """ params.PID """ with content: """ params.Message,% programLogsFilePath
-		matchsArray := Get_Matching_Windows_Infos("PID")
-		for key, element in matchsArray
-			FileAppend,% " | Instance" key " PID: " element,% programLogsFilePath
-	}
+		else if (funcName = "ShellMessage" ) {
+			FileAppend,% "[" A_YYYY "-" A_MM "-" A_DD "_" A_Hour ":" A_Min ":" A_Sec "] ",% programLogsFilePath
+			FileAppend,% "Trades GUI Hidden: Show_Mode: " params.Show_Mode " - Dock_Window ID: " params.Dock_Window " - Current Win ID: " params.Current_Win_ID "."
+		}
 
-	if ( funcName = "Gui_Trades_Cycle_Func" ) {
-		FileAppend,% "[" A_YYYY "-" A_MM "-" A_DD "_" A_Hour ":" A_Min ":" A_Sec "] ",% programLogsFilePath
-		FileAppend,% "Docking the GUI to ID: " params.Dock_Window " - Total matchs found: " params.Total_Matchs + 1,% programLogsFilePath
-	}
+		else if ( funcName = "Send_InGame_Message" ) {
+			FileAppend,% "[" A_YYYY "-" A_MM "-" A_DD "_" A_Hour ":" A_Min ":" A_Sec "] ",% programLogsFilePath
+			FileAppend,% "Sending IG Message to PID """ params.PID """ with content: """ params.Message,% programLogsFilePath
+			matchsArray := Get_Matching_Windows_Infos("PID")
+			for key, element in matchsArray
+				FileAppend,% " | Instance" key " PID: " element,% programLogsFilePath
+		}
 
-	if ( funcName = "GUI_Replace_PID_Return") {
-		FileAppend,% "[" A_YYYY "-" A_MM "-" A_DD "_" A_Hour ":" A_Min ":" A_Sec "] ",% programLogsFilePath
-		FileAppend,% "Replacing linked PID (Return). PID: " params.PID,% programLogsFilePath
-	}
+		else if ( funcName = "Gui_Trades_Cycle_Func" ) {
+			FileAppend,% "[" A_YYYY "-" A_MM "-" A_DD "_" A_Hour ":" A_Min ":" A_Sec "] ",% programLogsFilePath
+			FileAppend,% "Docking the GUI to ID: " params.Dock_Window " - Total matchs found: " params.Total_Matchs + 1,% programLogsFilePath
+		}
 
-	if ( funcName = "Gui_Trades_Do_Action_Func") {
-		FileAppend,% "[" A_YYYY "-" A_MM "-" A_DD "_" A_Hour ":" A_Min ":" A_Sec "] ",% programLogsFilePath
-		FileAppend,% "Could not find a matching action for button: Name:" params.btnName ", Alpha:" params.btnAlpha ", Action:" params.btnAction,% programLogsFilePath
+		else if ( funcName = "GUI_Replace_PID_Return" ) {
+			FileAppend,% "[" A_YYYY "-" A_MM "-" A_DD "_" A_Hour ":" A_Min ":" A_Sec "] ",% programLogsFilePath
+			FileAppend,% "Replacing linked PID (Return). PID: " params.PID,% programLogsFilePath
+		}
+
+		else if ( funcName = "Gui_Trades_Do_Action_Func" ) {
+			FileAppend,% "[" A_YYYY "-" A_MM "-" A_DD "_" A_Hour ":" A_Min ":" A_Sec "] ",% programLogsFilePath
+			FileAppend,% "Could not find a matching action for button: Name:" params.btnName ", Alpha:" params.btnAlpha ", Action:" params.btnAction,% programLogsFilePath
+		}
+
+		else if ( funcName = "Gui_Stats_Get_Currency_Name" ) {
+			FileAppend,% "[" A_YYYY "-" A_MM "-" A_DD "_" A_Hour ":" A_Min ":" A_Sec "] ",% programLogsFilePath
+			FileAppend,% "Unknown currency type: """ params.Currency """"
+		}
 	}
 
 	FileAppend,% "`n",% programLogsFilePath
@@ -4983,7 +5042,7 @@ Extract_Font_Files() {
 }
 
 Extract_Skin_Files() {
-/*			Include the default skins into the compilled executable
+/*			Include the default skins into the compiled executable
  *			Extracts the included skins into the skins Folder
 */
 	global ProgramValues
@@ -5026,7 +5085,7 @@ Extract_Skin_Files() {
 }
 
 Extract_Sound_Files() {
-/*			Include the SFX into the compilled executable
+/*			Include the SFX into the compiled executable
  *			Extracts the included SFX into the SFX Folder
 */
 	global ProgramValues
@@ -5037,6 +5096,14 @@ Extract_Sound_Files() {
 	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\SFX\MM_Tatl_Hey.wav,% programSFXFolderPath "\MM_Tatl_Hey.wav", 0
 	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\SFX\WW_MainMenu_CopyErase_Start.wav,% programSFXFolderPath "\WW_MainMenu_CopyErase_Start.wav", 0
 	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\SFX\WW_MainMenu_Letter.wav,% programSFXFolderPath "\WW_MainMenu_Letter.wav", 0
+}
+
+Extract_Data_Files() {
+	global ProgramValues
+	dataFolder := ProgramValues.Data_Folder
+
+	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\Data\Currency_All.txt,% dataFolder "\Currency_All.txt", 1
+	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\Data\currencyTradeNames.json,% dataFolder "\currencyTradeNames.json", 1
 }
 
 Extract_Others_Files() {
@@ -5710,5 +5777,7 @@ Fade_Tray_Notification() {
 }
 
 
-#Include %A_ScriptDir%/Resources/AHK/BinaryEncodingDecoding.ahk
+#Include %A_ScriptDir%/Resources/AHK/
+#Include BinaryEncodingDecoding.ahk
+#Include JSON.ahk
 ; #Include %A_ScriptDir%/Resources/AHK/BetaFuncs.ahk
