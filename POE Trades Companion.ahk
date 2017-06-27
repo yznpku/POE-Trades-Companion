@@ -123,8 +123,8 @@ Start_Script() {
 	}
 
 ;	Function Calls
-	Close_Previous_Program_Instance()
 	Run_As_Admin()
+	Close_Previous_Program_Instance()
 	Tray_Refresh()
 
 	Update_Local_Settings()
@@ -408,9 +408,7 @@ Filter_Logs_Message(message) {
 
 			if !WinActive("ahk_pid " gamePID) {
 				if ( ProgramSettings.Whisper_Tray ) {
-					Loop 2
-						TrayTip, Whisper Received:,%whispName%: %whispMsg%
-					SetTimer, Remove_TrayTip, -10000
+					Show_Tray_Notification("Whisper from " whispName, whispMsg)
 				}
 
 				if ( ProgramSettings.Whisper_Flash ) {
@@ -558,14 +556,11 @@ Monitor_Game_Logs(mode="") {
 		timeSinceLastTrade += 1*(sleepTime/1000)
 		Sleep %sleepTime%
 	}
-	Loop 2 {
-		TrayTip,% "Issue with the logs file!",% "It could be one of the following reasons: "
+	Show_Tray_Notification("An issue with the logs file occured!", "It could be one of the following reasons: "
 		. "`n- The file doesn't exist anymore."
 		. "`n- Content from the file was deleted."
 		. "`n- The file object used by the program was closed."
-		. "`n`nThe logs monitoring function will be restarting in 5 seconds."
-	}
-	SetTimer, Remove_TrayTip, -5000
+		. "`n`nThe logs monitoring function will be restarting in 5 seconds.")
 	sleep 5000
 	Restart_Monitor_Game_Logs()
 }
@@ -653,17 +648,11 @@ Gui_Trades(mode="", tradeInfos="") {
 		maxTabsRendered := (!maxTabsRendered)?(maxTabsStage1):(maxTabsRendered)
 
 		if ( maxTabsRendered > maxTabsStage2 ) { 
-			Loop 2 { ; Skip the tray-tip fade-in animation
-				TrayTip,% programName,% "Current tabs limit reached." . "`nRendering more tabs",3
-			}
-			SetTimer, Remove_TrayTip,-3000
+			Show_Tray_Notification(programName, "Current tabs limit reached." . "`nRendering more tabs")
 		}
 
-		Gui, GetSize:Font, S%fontSize%,% fontName
-		Gui, GetSize:Add, Text,x0 y0 hwndTxtHandler,88:88
-		coords := Get_Control_Coords("GetSize", TxtHandler)
-		timeSlotWidth := coords.W+(2*guiScale)*guiScale, coords := ""
-		Gui, GetSize:Destroy
+		txtCtrlSize := Get_Text_Control_Size("88:88", fontName, fontSize)
+		timeSlotWidth := txtCtrlSize.W, txtCtrlSize := ""
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *									System TradesGUI													*
@@ -1557,7 +1546,7 @@ Gui_Trades_Do_Action_Func(CtrlHwnd, GuiEvent, EventInfo) {
 	messages := Object()
 	tabInfos := Gui_Trades_Get_Trades_Infos(TradesGUI_Values.Active_Tab)
 	if !(tabInfos.Buyer) {
-		TrayTip,% ProgramValues.Name,% "No buyer found for tab """ TradesGUI_Values.Active_Tab """`nOperation cancelled. Please report this issue."
+		Show_Tray_Notification(ProgramValues.Name, "No buyer found for tab """ TradesGUI_Values.Active_Tab """`nOperation cancelled. Please report this issue.")
 		Return
 	}
 
@@ -4659,10 +4648,6 @@ FGP_Value(FilePath, Property) {
 ;
 ;==================================================================================================================
 
-Remove_TrayTip:
-	TrayTip
-Return
-
 Get_All_Games_Instances() {
 	global TradesGUI_Values
 
@@ -4908,8 +4893,7 @@ Send_InGame_Message(allMessages, tabInfos="", specialEvent="") {
 			PIDArray := Get_Matching_Windows_Infos("PID")
 			handlersArray := Get_Matching_Windows_Infos("ID")
 			if ( handlersArray.MaxIndex() = "" ) {
-				Loop 2
-					TrayTip,% programName,% "The PID assigned to the tab does not belong to a POE instance, and no POE instance was found!`n`nPlease click the button again after restarting the game."
+				Show_Tray_Notification(programName, "The PID assigned to the tab does not belong to a POE instance, and no POE instance was found!`n`nPlease click the button again after restarting the game.")
 				Return 1
 			}
 			else {
@@ -5136,8 +5120,7 @@ Gui_Trades_Cycle_Func() {
 		Return
 
 	if !Trades_GUI_Exists() {
-		Loop 2
-			TrayTip,% programName,% "Couldn't find the Trades GUI!`nOperation Canceled."
+		Show_Tray_Notification(programName, "Couldn't find the Trades GUI!`nOperation Canceled.")
 		Return
 	}
 	matchHandlers := Get_Matching_Windows_Infos("ID")
@@ -5280,16 +5263,18 @@ Run_As_Admin() {
 		Gui_AdminWarn()
 		ExitApp
 	}
-	funcParams := {  Width:350
-					,Height:50
-					,Background:"Green"
-					,BorderColor:"White"
-					,TitleColor:"White"
-					,Text:"Reloading to request admin privilieges in %count%..."
-					,TextColor:"White"
-					,Condition:"Reload_Timer"
-					,ConditionCount:3}
-	GUI_Beautiful_Warning(funcParams)
+	if !ProgramValues.Debug {
+		funcParams := {  Width:350
+						,Height:50
+						,Background:"Green"
+						,BorderColor:"White"
+						,TitleColor:"White"
+						,Text:"Reloading to request admin privilieges in %count%..."
+						,TextColor:"White"
+						,Condition:"Reload_Timer"
+						,ConditionCount:3}
+		GUI_Beautiful_Warning(funcParams)
+	}
 	Reload_Func()
 }
 
@@ -5640,4 +5625,97 @@ SetUnicodeText(ByRef ptrUnicodeText,hWnd) {
    DllCall("SendMessageW", "UInt",hWnd, "UInt",WM_SETTEXT, "UInt",0, "Uint",&ptrUnicodeText)
 }
 
+Get_Text_Control_Size(txt, fontName, fontSize, maxWidth="") {
+/*		Create a control with the specified text to retrieve
+ *		the space (width/height) it would normally take
+*/
+
+	Gui, GetTextSize:Font, S%fontSize%,% fontName
+	if (maxWidth)
+		Gui, GetTextSize:Add, Text,x0 y0 +Wrap w%maxWidth% hwndTxtHandler,% txt
+	else 
+		Gui, GetTextSize:Add, Text,x0 y0 hwndTxtHandler,% txt
+	coords := Get_Control_Coords("GetTextSize", TxtHandler)
+	Gui, GetTextSize:Destroy
+
+	return coords
+}
+
+Show_Tray_Notification(title, msg) {
+/*		Show a notification.
+ *		Look based on w10 traytip.
+*/
+	static
+	global ProgramValues, ProgramSettings
+
+	local defaultGUI := A_DefaultGUI
+
+	guiWidthMax := 350, guiHeightMax := 150
+	textSize := Get_Text_Control_Size(msg, "Segoe UI", 9, guiWidthMax)
+
+	guiWidth := (textSize.W > 40guiWidthMax0)?(guiWidthMax):(textSize.W)
+	guiHeight := (textSize.H > guiHeightMax)?(guiHeightMax):(textSize.H)
+	guiHeight += 40, guiWidth += 20 ; Fitting size
+	borderSize := 1
+
+	showX := A_ScreenWidth, showY := A_ScreenHeight-guiHeight-60
+	showW := 0, showH := guiHeight
+
+	Gui, TrayNotification:Destroy
+	Gui, TrayNotification:New, +ToolWindow +AlwaysOnTop -Border +LastFound -SysMenu -Caption +LabelGui_TrayNotification_
+	Gui, TrayNotification:Default
+	Gui, Margin, 0, 0
+	Gui, Color, 1f1f1f
+	Gui, Font, S9 Q5, Segoe UI
+
+	Gui, Add, Progress, x0 y0 w%guiWidth% h%borderSize% Background484848 ; Top
+	Gui, Add, Progress, x0 y0 w%borderSize% h%guiHeight% Background484848 ; Left
+	; Gui, Add, Progress,% "x" guiWidth-borderSize " y0" " w" borderSize " h" guiHeight " Background484848" ; Right
+	Gui, Add, Progress,% "x" 0 " y" guiHeight-borderSize " w" guiWidth " h" borderSize " Background484848" ; Bottom
+
+	Gui, Add, Picture, x5 y5 w16 h16,% ProgramValues.Skins_Folder "\" ProgramSettings.Active_Skin "\icon.png"
+	Gui, Font, Bold, Segoe UI
+	Gui, Add, Text,% "xp+20" " y5" " w" guiWidth-20 " BackgroundTrans cFFFFFF gGui_TrayNotification_OnLeftClick",% title
+	Gui, Font, Norm, Segoe UI
+	Gui, Add, Text,% "x10" " yp+25" " w" guiWidth-25 " R3 BackgroundTrans ca5a5a5 gGui_TrayNotification_OnLeftClick",% msg
+	Gui, Show,% "x" showX " y" showY " w" showW " h" showH " NoActivate"
+	Loop {
+		showW := (showW > guiWidth)?(guiWidth):(showW+25)
+		showX := A_ScreenWidth-showW
+		if (showW = guiWidth)
+			Break
+		Sleep 1
+		Gui, Show,% "x" showX " w" showW " NoActivate"
+	}
+
+	SetTimer, Fade_Tray_Notification, -5000
+	Gui, %defaultGUI%:Default
+	Return
+
+	Gui_TrayNotification_ContextMenu: ; Launched whenever the user right-clicks anywhere in the window except the title bar and menu bar.
+		Gui, TrayNotification:Destroy
+	Return
+
+	Gui_TrayNotification_OnLeftClick:
+		Gui, TrayNotification:Destroy
+	Return
+}
+
+Fade_Tray_Notification() {
+	transparency := 255
+
+	Gui, TrayNotification:+LastFound
+
+	Loop {
+		transparency -= 5
+		WinSet, Transparent,% transparency
+		if !(transparency)
+			Break
+		Sleep 1
+	}
+	Gui, TrayNotification:Destroy
+}
+
+
 #Include %A_ScriptDir%/Resources/AHK/BinaryEncodingDecoding.ahk
+; #Include %A_ScriptDir%/Resources/AHK/BetaFuncs.ahk
