@@ -199,18 +199,18 @@ Start_Script() {
 
 Gui_Stats() {
 	static
-	global ProgramValues
+	global ProgramValues, Remove_ToolTip_OnMouseMove_Values
 
 	ProgramValues.Trades_History_File
 
-	guiWidth := 800
+	guiWidth := 820
 	guiHeight := 500
 
 	allStats := Gui_Trades_Statistics("GET")
 
 	defaultGUI := A_DefaultGui
 	Gui, Stats:Destroy
-	Gui, Stats:New, +HwndGuiStatsHandler +AlwaysOnTop +SysMenu -MinimizeBox -MaximizeBox +Resize +OwnDialogs +MinSize670x360 +LabelGui_Stats_,% ProgramValues.Name " - Trading Stats"
+	Gui, Stats:New, +HwndGuiStatsHandler +SysMenu -MinimizeBox -MaximizeBox +Resize +OwnDialogs +MinSize670x360 +LabelGui_Stats_,% ProgramValues.Name " - Trading Stats"
 	Gui, Stats:Default
 	Gui, Margin, 0, 0
 	Gui, Font,,Segoe UI
@@ -227,21 +227,38 @@ Gui_Stats() {
 	Gui, Add, DropDownList,xp+50 yp-2 w150 vLeaguesFilter hwndLeaguesFilterHandler gGui_Stats_Filter
 	Gui, Add, Text,xs+430 ys+55,Tab:
 	Gui, Add, DropDownList,xp+50 yp-2 w150 vTabsFilter hwndTabsFilterHandler gGui_Stats_Filter
-	Gui, Add, ListView, x0 y140 w%guiWidth% hwndListV h300,#|Date (YYYY-MM-DD)|Time|Buyer|Item|Price|League|Tab|Guild
-
+	Gui, Add, ListView, x0 y120 w%guiWidth% hwndListV h300 gGui_Stats_OnListViewClick AltSubmit,#|Date (YYYY-MM-DD)|Time|Guild|Buyer|Item|Price|League|Tab|Other
 ;	keys := ["Buyer","Guild","Date_YYYYMMDD","Item","Item_Level","Item_Name","Item_Quality","Location","Location_League","Location_Position","Location_Tab","Other","Price","Time"]
 
+	otherMsgs := {}
 	Loop % allStats.Max_Index
 	{
+		outterIndex := A_Index
+		otherMaxIndex := 0
+		if (allStats[outterIndex "_Other_1"]) {
+			Loop {
+				if (allStats[outterIndex "_Other_" A_Index]) {
+					otherStr .= allStats[outterIndex "_Other_" A_Index] "`n"
+					otherMaxIndex++
+				}
+				Else
+					Break
+			}
+		}
+		otherMsgs.Insert(outterIndex "_Other_MaxIndex", otherMaxIndex)
+		otherMsgs.Insert(outterIndex "_Other", otherStr)
+		otherStr := ""
+
 		LV_Add("", A_Index
 				 , allStats[A_Index "_Date_YYYYMMDD"]
 				 , allStats[A_Index "_Time"]
+				 , allStats[A_Index "_Guild"]
 				 , allStats[A_Index "_Buyer"]
 				 , allStats[A_Index "_Item"]
 				 , allStats[A_Index "_Price"]
 				 , allStats[A_Index "_Location_League"]
 				 , allStats[A_Index "_Location_Tab"]
-				 , allStats[A_Index "_Guild"])
+				 , otherMsgs[A_Index "_Other_MaxIndex"] " Messages")
 	}
 	LV_ModifyCol(1,"Auto")
 	LV_ModifyCol(2,"Auto")
@@ -252,6 +269,7 @@ Gui_Stats() {
 	LV_ModifyCol(7,"Auto")
 	LV_ModifyCol(8,"Auto")
 	LV_ModifyCol(9,"AutoHdr")
+	LV_ModifyCol(10,"AutoHdr")
 
 	Gosub, Gui_Stats_Parse
 
@@ -259,10 +277,25 @@ Gui_Stats() {
     Gui, %defaultGUI%:Default
     Return
 
+    Gui_Stats_OnListViewClick:
+;	Credits to just me for the function
+		If (A_GuiEvent = "Normal") {
+			Row := A_EventInfo
+			Column := LV_SubItemHitTest(ListV)
+			LV_GetText(columnTitle, 0 ,Column)
+			if (columnTitle = "Other") {
+				LV_GetText(rowID, Row)
+				MouseGetPos, mouseX, mouseY
+				Remove_ToolTip_OnMouseMove_Values := {X:mouseX, Y:mouseY, Treshold_X:30, Treshold_Y:10}
+				ToolTip,% otherMsgs[rowID "_Other"]
+				SetTimer, Remove_Tooltip_OnMouseMove, 100
+			}
+   		}
+    return
+
     Gui_Stats_Filter:
     	Gui, Stats:Submit, NoHide
     	Gui Stats:+OwnDialogs
-
 
 	    LV_Delete()
 	    Loop % allStats.Max_Index
@@ -277,7 +310,9 @@ Gui_Stats() {
 									  :(allStats[A_Index "_Item_Name"])
 			filteredCurrency		:= (CurrenciesFilter="All")?(CurrenciesFilter)
 									  :(allStats[A_Index "_Price"])
-			filteredCurrency := Gui_Stats_Get_Currency_Name(filteredCurrency) ; Convert to real currency name
+			currencyInfos := Gui_Stats_Get_Currency_Name(filteredCurrency) ; Convert to real currency name
+			filteredCurrency := currencyInfos.Name
+
 
 			filteredLeague 			:= (LeaguesFilter="All")?(LeaguesFilter)
 									  :(allStats[A_Index "_Location_League"])
@@ -294,20 +329,18 @@ Gui_Stats() {
 				LV_Add("", A_Index
 						 , allStats[A_Index "_Date_YYYYMMDD"]
 						 , allStats[A_Index "_Time"]
+						 , allStats[A_Index "_Guild"]
 						 , allStats[A_Index "_Buyer"]
 						 , allStats[A_Index "_Item"]
 						 , allStats[A_Index "_Price"]
 						 , allStats[A_Index "_Location_League"]
 						 , allStats[A_Index "_Location_Tab"]
-						 , allStats[A_Index "_Guild"])
+						 , otherMsgs[A_Index "_Other_MaxIndex"] " Messages")
 			}
 		}
     Return
 
     Gui_Stats_Parse:
-    	onlyBuyers := "All", onlyGuilds := "All"
-    	onlyItems := "All|Gems", onlyCurrency := "All"
-    	onlyLeagues := "All", onlyTabs := "All"
     	Loop % allStats.Max_Index
     	{
     		buyer := allStats[A_Index "_Buyer"]
@@ -336,10 +369,18 @@ Gui_Stats() {
 
     		currency := allStats[A_Index "_Price"]
     		if (currency) {
-    			currency := Gui_Stats_Get_Currency_Name(currency)
-    			if currency not in %onlyCurrency%
-    			{
-	    			onlyCurrency .= "," currency
+    			currencyInfos := Gui_Stats_Get_Currency_Name(currency)
+    			currency := currencyInfos.Name
+    			if (currencyInfos.Is_Listed) {
+	    			if currency not in %onlyCurrency%
+	    			{
+	    				if (currencyInfos.Is_Listed)
+		    				onlyCurrency .= "," currency
+		    		}
+		    	}
+		    	else if !(currencyInfos.Is_Listed) {
+		    		if currency not in %unlistedCurrency%
+	    				unlistedCurrency .= "," currency
     			}
     		}
 
@@ -359,6 +400,24 @@ Gui_Stats() {
     			}
     		}
     	}
+
+    	listToSort := "onlyCurrency,unlistedCurrency,onlyBuyers,onlyGuilds,onlyItems,onlyLeagues,onlyTabs"
+    	Loop, Parse, listToSort,% ","
+    	{
+ 			Sort, %A_LoopField%, Z D,
+ 			if (A_LoopField = "unlistedCurrency") {
+ 				%A_LoopField% := "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
+ 							  . ",      Unknown Currencies      "
+ 							  . ",- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
+ 							  . "," %A_LoopField%
+ 			}
+ 			else {
+ 				%A_LoopField% := "All," %A_LoopField%
+ 			}
+    	}    	
+    	listToSort := ""
+
+    	onlyCurrency .= "," unlistedCurrency
     	onlyBuyers := StrReplace(onlyBuyers, ",", "|")
     	onlyGuilds := StrReplace(onlyGuilds, ",", "|")
     	onlyItems := StrReplace(onlyItems, ",", "|")
@@ -381,9 +440,45 @@ Gui_Stats() {
     Return
 
     Gui_Stats_Size:
-    	GuiControl, Stats:Move,% ListV,% "w" A_GuiWidth " h" A_GuiHeight-140
+    	GuiControl, Stats:Move,% ListV,% "w" A_GuiWidth " h" A_GuiHeight-120
     	GuiControl, Stats:Move,% FilteringGroupBoxHandler,% "w" A_GuiWidth-20
     Return
+
+    Gui_Stats_Close:
+    	Gui, Stats:Destroy
+    Return
+    Gui_Stats_Cancel:
+    	Gosub, Gui_Stats_Close
+    Return
+}
+
+LV_SubitemHitTest(HLV) {
+/*		Credits to just me
+		autohotkey.com/board/topic/80265-solved-which-column-is-clicked-in-listview/?p=510061
+
+		Allows to retrieve which column was clicked.
+*/
+   ; To run this with AHK_Basic change all DllCall types "Ptr" to "UInt", please.
+   ; HLV - ListView's HWND
+   Static LVM_SUBITEMHITTEST := 0x1039
+   VarSetCapacity(POINT, 8, 0)
+   ; Get the current cursor position in screen coordinates
+   DllCall("User32.dll\GetCursorPos", "Ptr", &POINT)
+   ; Convert them to client coordinates related to the ListView
+   DllCall("User32.dll\ScreenToClient", "Ptr", HLV, "Ptr", &POINT)
+   ; Create a LVHITTESTINFO structure (see below)
+   VarSetCapacity(LVHITTESTINFO, 24, 0)
+   ; Store the relative mouse coordinates
+   NumPut(NumGet(POINT, 0, "Int"), LVHITTESTINFO, 0, "Int")
+   NumPut(NumGet(POINT, 4, "Int"), LVHITTESTINFO, 4, "Int")
+   ; Send a LVM_SUBITEMHITTEST to the ListView
+   SendMessage, LVM_SUBITEMHITTEST, 0, &LVHITTESTINFO, , ahk_id %HLV%
+   ; If no item was found on this position, the return value is -1
+   If (ErrorLevel = -1)
+      Return 0
+   ; Get the corresponding subitem (column)
+   Subitem := NumGet(LVHITTESTINFO, 16, "Int") + 1
+   Return Subitem
 }
 
 Gui_Stats_Get_Currency_Name(currency) {
@@ -392,8 +487,10 @@ Gui_Stats_Get_Currency_Name(currency) {
  */
 	global Stats_RealCurrencyNames, Stats_TradeCurrencyNames
 
-	if RegExMatch(currency, "See Offer")
-		Return currency
+	if RegExMatch(currency, "See Offer") {
+		isCurrencyListed := False
+		Return {Name:currency, Is_Listed:isCurrencyListed}
+	}
 
 	currency := RegExReplace(currency, "\d")
 	currency = %currency% ; Remove whitespaces
@@ -405,17 +502,26 @@ Gui_Stats_Get_Currency_Name(currency) {
 	{
 		currencyFullName := Stats_TradeCurrencyNames[currency]
 		currencyFullName := StrReplace(currencyFullName, "_", " ")
+		if (currencyFullName)
+			isCurrencyListed := true
+	}
+	else { ; Currency is in list
+		currencyFullName := currency
+		isCurrencyListed := true
 	}
 	if (!currencyFullName && currencyWithoutS) { ; Couldn't retrieve full name, and currency is possibly plural
 		if currencyWithoutS in %Stats_RealCurrencyNames% ; Currency is in list, was most likely plural
+		{ 
 			currencyFullName := currencyWithoutS
+			isCurrencyListed := true
+		}
 	}
 	else if !(currencyFullName) { ; Unknown currency name
 		Logs_Append(A_ThisFunc, {Currency:currency})
 	}
 
 	currencyFullName := (currencyFullName)?(currencyFullName):(currency)
-	return currencyFullName
+	Return {Name:currencyFullName, Is_Listed:isCurrencyListed}
 }
 
 ;==================================================================================================================
@@ -1899,7 +2005,7 @@ Gui_Trades_Statistics(mode, tabInfos="") {
 		allStats := Object()
 		IniRead, index,% historyFile,% "GENERAL",% "Index"
 		allStats.Max_Index := index
-		keys := ["Buyer","Guild","Date_YYYYMMDD","Item","Item_Level","Item_Name","Item_Quality","Location","Location_League","Location_Position","Location_Tab","Other","Price","Time"]
+		keys := ["Buyer","Guild","Date_YYYYMMDD","Item","Item_Level","Item_Name","Item_Quality","Location","Location_League","Location_Position","Location_Tab","Price","Time"]
 		Loop %index% {
 			outterIndex := A_Index
 			for id, keyName in keys
@@ -1908,6 +2014,15 @@ Gui_Trades_Statistics(mode, tabInfos="") {
 				if ( value && value != "ERROR" ) {
 					allStats.Insert(outterIndex "_" keyName, value)
 				}
+			}
+			Loop {
+				keyName := "Other_" A_Index
+				IniRead, value,% historyFile,% outterIndex,% keyName
+				if ( value && value != "ERROR" ) {
+					allStats.Insert(outterIndex "_" keyName, value)
+				}
+				else
+					Break
 			}
 		}
 		return allStats
@@ -4465,7 +4580,8 @@ WM_MOUSEMOVE(wParam, lParam, msg, hwnd) {
 			WinGetPos, tradesXPOS, tradesYPOS
 			ToolTip, % content,% tradesXPOS+ctrlPOS.X,% tradesYPOS+ctrlPOS.Y
 			MouseGetPos, mouseX, mouseY
-			SetTimer, ToolTipTimer, 100
+			global Remove_ToolTip_OnMouseMove_Values := {X:mouseX, Y:mouseY, Treshold_X:100, Treshold_Y:10}
+			SetTimer, Remove_Tooltip_OnMouseMove, 100
 		}
 		if !A_GuiControl ; No control hovered, reset the value
 			TradesGUI_Values.Last_Hovered_Button := ""
@@ -4498,16 +4614,6 @@ WM_MOUSEMOVE(wParam, lParam, msg, hwnd) {
 		
 		Remove_ToolTip:
 			ToolTip
-		return
-
-		ToolTipTimer:
-;			Credits to POE-TradeMacro: https://github.com/PoE-TradeMacro/POE-TradeMacro
-			MouseGetPos, ,CurrY
-			MouseMoved := (CurrY - mouseY) ** 2 > 10 ** 2
-			if (MouseMoved)	{
-				SetTimer, ToolTipTimer, Off
-				ToolTip 
-			}
 		return
 	}
 
@@ -4705,6 +4811,25 @@ FGP_Value(FilePath, Property) {
 ;												MISC STUFF
 ;
 ;==================================================================================================================
+
+Remove_Tooltip_OnMouseMove() {
+/*		Credits to POE-TradeMacro for the original function
+		https://github.com/PoE-TradeMacro/POE-TradeMacro
+*/
+	global Remove_ToolTip_OnMouseMove_Values
+	RemoveTT := Remove_ToolTip_OnMouseMove_Values
+
+	MouseGetPos, currentX, currentY
+
+	mouseMovedH := (currentX - RemoveTT.X) ** 2 > RemoveTT.Treshold_X ** 2
+	mouseMovedV := (currentY - RemoveTT.Y) ** 2 > RemoveTT.Treshold_Y ** 2
+	if (mouseMovedV || mouseMovedH)	{
+		SetTimer, Remove_Tooltip_OnMouseMove, Off
+		Remove_ToolTip_OnMouseMove_Values := ""
+		ToolTip
+	}
+	return
+}
 
 Get_All_Games_Instances() {
 	global TradesGUI_Values
