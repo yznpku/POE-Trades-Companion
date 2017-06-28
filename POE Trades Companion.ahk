@@ -392,6 +392,9 @@ Gui_Stats_Get_Currency_Name(currency) {
  */
 	global Stats_RealCurrencyNames, Stats_TradeCurrencyNames
 
+	if RegExMatch(currency, "See Offer")
+		Return currency
+
 	currency := RegExReplace(currency, "\d")
 	currency = %currency% ; Remove whitespaces
 	lastChar := SubStr(currency, 0) ; Get last char
@@ -407,7 +410,7 @@ Gui_Stats_Get_Currency_Name(currency) {
 		if currencyWithoutS in %Stats_RealCurrencyNames% ; Currency is in list, was most likely plural
 			currencyFullName := currencyWithoutS
 	}
-	else { ; Unknown currency name
+	else if !(currencyFullName) { ; Unknown currency name
 		Logs_Append(A_ThisFunc, {Currency:currency})
 	}
 
@@ -599,7 +602,7 @@ Monitor_Game_Logs(mode="") {
 	fileObj.pos := fileObj.length
 	Loop {
 		if !FileExist(logsFile) || ( fileObj.pos > fileObj.length ) || ( fileObj.pos = -1 ) {
-			Logs_Append("Monitor_Game_Logs_Break", {objPos:fileObj.pos, objLength:fileObj.length})
+			Logs_Append("Monitor_Game_Logs_Break", {Pos:fileObj.pos, Length:fileObj.length})
 			Break
 		}
 		if ( fileObj.pos < fileObj.length ) {
@@ -1395,10 +1398,12 @@ Gui_Trades_Select_Tab(params="") {
 				  :("ERROR")
 
 	if !(IsNum(selectTabID)) {
+		selectAction := (chooseNext)?("Choose_Next")
+					   :(choosePrev)?("Choose_Prev")
+					   :(chooseID)?("Choose_ID")
+					   :("UNKNOWN")
 		Logs_Append(A_ThisFunc, {Tab_ID:selectTabID
-								,Choose_Next:chooseNext
-								,Choose_Prev:choosePrev
-								,Choose_ID:chooseID})
+								,Action:selectAction})
 		Return
 	}
 	if (selectTabID >= 1 && selectTabID <= tabsCount) {
@@ -1647,7 +1652,7 @@ Gui_Trades_Do_Action_Func(CtrlHwnd, GuiEvent, EventInfo) {
 			doNotSend := (btnAction="Whisper")?(true):(false)
 
 			if (msg="ERROR") {
-				Logs_Append(A_ThisFunc, {btnVar:varName, btnAction:btnAction, btnAlpha:varAlpha})
+				Logs_Append(A_ThisFunc, {Var_Name:varName, Action:btnAction, Var_Alpha:varAlpha})
 				Return
 			}
 			Send_InGame_Message({1:msg}, tabInfos, {doNotSend:doNotSend})
@@ -2241,7 +2246,7 @@ Gui_Trades_Set_Position(xpos="UNSPECIFIED", ypos="UNSPECIFIED"){
 		xpos := ( ( (A_ScreenWidth/dpiFactor) - TradesGUI_Values.Width ) * dpiFactor )
 		Gui, Trades:Show, % "x" xpos " y0" " NoActivate"
 	}
-	Logs_Append(A_ThisFunc, {xpos:xpos, ypos:ypos})
+	Logs_Append(A_ThisFunc, {X:xpos, Y:ypos})
 }
 
 
@@ -3066,7 +3071,6 @@ return
 					}
 				}
 				else if ( sectionName = "CUSTOMIZATION_BUTTONS_UNICODE" ) {
-					; msgbox % keyName "`n" handler " - " %handler%Handler "`n" var
 					if keyName contains _Position
 						GuiControl, Settings:ChooseString,% %handler%Handler,% var
 					else
@@ -3668,14 +3672,14 @@ Get_Game_Settings() {
 
 	FileRead, fileContent,% gameFile
 	if !(fileContent || ErrorLevel) {
-		String := "Unable to retrieve content: """ gameFile """"
+		String := "Unable to retrieve content from file: """ gameFile """"
 		Logs_Append("DEBUG", {String:String})
 	}
 
 	File := FileOpen(gameFileCopy, "w", "UTF-16")
 	File.Write(fileContent)
 	if (ErrorLevel) {
-		String := "Could not Write in File: " gameFileCopy
+		String := "Could not Write in file: " gameFileCopy
 		Logs_Append("DEBUG", {String:String})
 		doAlternative := 1
 	}
@@ -4765,138 +4769,130 @@ Get_DPI_Factor() {
 	return dpiFactor
 }
 
+
 Logs_Append(funcName, params) {
 	global ProgramValues, GameSettings, ProgramSettings
 
 	programName := ProgramValues.Name
 	programVersion := ProgramValues.Version
 	iniFilePath := ProgramValues.Ini_File
-	programLogsFilePath := ProgramValues.Logs_File
+	logsFile := ProgramValues.Logs_File
 
 	if ( funcName = "DUMP" ) {
 		dpiFactor := ProgramSettings.Screen_DPI
+
+		FileAppend,% ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>`n",% logsFile
+		FileAppend,% ">>> OS SECTION `n",% logsFile
+		FileAppend,% ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>`n",% logsFile	
 		OSbits := (A_Is64bitOS)?("64bits"):("32bits")
-		FileAppend,% "OS: Type:" A_OSType " - Version:" A_OSVersion " - " OSbits "`n",% programLogsFilePath
-		FileAppend,% "DPI: " dpiFactor "`n",% programLogsFilePath
-		FileAppend,% ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>`n",% programLogsFilePath
-		FileAppend,% ">>> PROGRAM SECTION `n",% programLogsFilePath
-		FileAppend,% ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>`n",% programLogsFilePath
+		FileAppend,% "Type: " A_OSType "`n",% logsFile
+		FileAppend,% "Version: " A_OSVersion "(" OSbits ")`n",% logsFile
+		FileAppend,% "DPI: " dpiFactor "`n",% logsFile
+		FileAppend,% "`n",% logsFile
+
+		FileAppend,% ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>`n",% logsFile
+		FileAppend,% ">>> TOOL SECTION `n",% logsFile
+		FileAppend,% ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>`n",% logsFile
+		FileAppend,% "Version: " ProgramValues.Version "`n",% logsFile
+		FileAppend,% "Local_Folder: " ProgramValues.Local_Folder "`n",% logsFile
+		FileAppend,% "Game_Folder: " ProgramValues.Game_Folder "`n",% logsFile
+		FileAppend,% "`n",% logsFile
+
+		FileAppend,% ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>`n",% logsFile
+		FileAppend,% ">>> PROGRAM SECTION `n",% logsFile
+		FileAppend,% ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>`n",% logsFile
 		IniRead, content,% iniFilePath,PROGRAM
-		FileAppend,% content "`n",% programLogsFilePath
-		FileAppend,% "`n",% programLogsFilePath
+		FileAppend,% content "`n",% logsFile
+		FileAppend,% "`n",% logsFile
 
-		FileAppend,% ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>`n",% programLogsFilePath
-		FileAppend,% ">>> GAME SETTINGS `n",% programLogsFilePath
-		FileAppend,% ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>`n",% programLogsFilePath
+		FileAppend,% ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>`n",% logsFile
+		FileAppend,% ">>> GAME SETTINGS `n",% logsFile
+		FileAppend,% ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>`n",% logsFile
 		for key, element in GameSettings {
-			FileAppend,% key ": """ element """`n",% programLogsFilePath
+			FileAppend,% key ": """ element """`n",% logsFile
 		}
-		FileAppend,% "`n",% programLogsFilePath
+		FileAppend,% "`n",% logsFile
 
-		FileAppend,% ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>`n",% programLogsFilePath
-		FileAppend,% ">>> LOCAL SETTINGS `n",% programLogsFilePath
-		FileAppend,% ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>`n",% programLogsFilePath
+		FileAppend,% ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>`n",% logsFile
+		FileAppend,% ">>> LOCAL SETTINGS `n",% logsFile
+		FileAppend,% ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>`n",% logsFile
 		for key, element in params.KEYS {
-			FileAppend,% params.KEYS[A_Index] ": """ params.VALUES[A_Index] """`n",% programLogsFilePath
+			FileAppend,% params.KEYS[A_Index] ": """ params.VALUES[A_Index] """`n",% logsFile
 		}
-		FileAppend,% "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<`n",% programLogsFilePath
-		FileAppend,% "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<`n",% programLogsFilePath
-		FileAppend,% "`n",% programLogsFilePath
+		FileAppend,% "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<`n",% logsFile
+		FileAppend,% "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<`n",% logsFile
+		FileAppend,% "`n",% logsFile
 	}
 
 	else {
-		FileAppend,% "[" A_YYYY "-" A_MM "-" A_DD "_" A_Hour ":" A_Min ":" A_Sec "] ",% programLogsFilePath
+		FileAppend,% "[" A_YYYY "-" A_MM "-" A_DD "_" A_Hour ":" A_Min ":" A_Sec "] ",% logsFile
 
 		if ( funcName = "DEBUG" ) {
-			FileAppend,% params.String,% programLogsFilePath
+			FileAppend,% params.String,% logsFile
 		}
 
-		else if ( funcName = "GUI_Multiple_Instances" ) {
-			FileAppend,% "[" A_YYYY "-" A_MM "-" A_DD "_" A_Hour ":" A_Min ":" A_Sec "] ",% programLogsFilePath
-			FileAppend,% "Found multiple instances. Handler: " params.Handler " - Path: " params.Path,% programLogsFilePath
+		else if ( funcName = "GUI_Multiple_Instances" ) {			
+			FileAppend,% "Multiple instances found. Handler: " params.Handler " - Path: " params.Path,% logsFile
 		}
 		else if ( funcName = "GUI_Multiple_Instances_Return" ) {
-			FileAppend,% "[" A_YYYY "-" A_MM "-" A_DD "_" A_Hour ":" A_Min ":" A_Sec "] ",% programLogsFilePath
-			FileAppend,% "Found multiple instances (Return). Handler: " params.Handler,% programLogsFilePath
+			FileAppend,% "Multiple instances found (Return). Handler: " params.Handler,% logsFile
 		}
 
 		else if ( funcName = "Monitor_Game_Logs" ) {
-			FileAppend,% "[" A_YYYY "-" A_MM "-" A_DD "_" A_Hour ":" A_Min ":" A_Sec "] ",% programLogsFilePath
-			FileAppend,% "Monitoring logs: " params.File,% programLogsFilePath
+			FileAppend,% "Monitoring game logs file: " params.File,% logsFile
 		}
 		else if ( funcName = "Monitor_Game_Logs_Break" ) {
-			FileAppend,% "[" A_YYYY "-" A_MM "-" A_DD "_" A_Hour ":" A_Min ":" A_Sec "] ",% programLogsFilePath
-			FileAppend,% "Monitoring logs (Break). Obj.pos: " params.objPos " - Obj.length: " params.objLength,% programLogsFilePath
+			FileAppend,% "ERROR: Restarting logs monitoring. Pointer Position: " params.Pos " - File Length: " params.Length,% logsFile
 		}
 
 		else if ( funcName = "Gui_Trades_Set_Position" ) {
-			FileAppend,% "[" A_YYYY "-" A_MM "-" A_DD "_" A_Hour ":" A_Min ":" A_Sec "] ",% programLogsFilePath
-			FileAppend,% "Trades GUI Position: x" params.xpos " y" params.ypos ".",% programLogsFilePath
+			FileAppend,% "Setting Trades GUI Position: x" params.X " y" params.Y,% logsFile
 		}
 
 		else if (funcName = "ShellMessage" ) {
-			FileAppend,% "[" A_YYYY "-" A_MM "-" A_DD "_" A_Hour ":" A_Min ":" A_Sec "] ",% programLogsFilePath
 			FileAppend,% "Trades GUI Hidden: Show_Mode: " params.Show_Mode " - Dock_Window ID: " params.Dock_Window " - Current Win ID: " params.Current_Win_ID "."
 		}
 
-		else if ( funcName = "Send_InGame_Message" ) {
-			FileAppend,% "[" A_YYYY "-" A_MM "-" A_DD "_" A_Hour ":" A_Min ":" A_Sec "] ",% programLogsFilePath
-			FileAppend,% "Sending IG Message to PID """ params.PID """ with content: """ params.Message,% programLogsFilePath
-			matchsArray := Get_Matching_Windows_Infos("PID")
-			for key, element in matchsArray
-				FileAppend,% " | Instance" key " PID: " element,% programLogsFilePath
-		}
-
 		else if ( funcName = "Gui_Trades_Cycle_Func" ) {
-			FileAppend,% "[" A_YYYY "-" A_MM "-" A_DD "_" A_Hour ":" A_Min ":" A_Sec "] ",% programLogsFilePath
-			FileAppend,% "Docking the GUI to ID: " params.Dock_Window " - Total matchs found: " params.Total_Matchs + 1,% programLogsFilePath
+			FileAppend,% "Docking Trades GUI to ID: " params.Dock_Window " - Total matchs found: " params.Total_Matchs,% logsFile
 		}
 
 		else if ( funcName = "GUI_Replace_PID_Return" ) {
-			FileAppend,% "[" A_YYYY "-" A_MM "-" A_DD "_" A_Hour ":" A_Min ":" A_Sec "] ",% programLogsFilePath
-			FileAppend,% "Replacing linked PID (Return). PID: " params.PID,% programLogsFilePath
+			FileAppend,% "Replacing Trades GUI tab PID with: " params.PID,% logsFile
 		}
 
 		else if ( funcName = "Gui_Trades_Do_Action_Func" ) {
-			FileAppend,% "[" A_YYYY "-" A_MM "-" A_DD "_" A_Hour ":" A_Min ":" A_Sec "] ",% programLogsFilePath
-			FileAppend,% "Could not find a matching action for button: Name:" params.btnName ", Alpha:" params.btnAlpha ", Action:" params.btnAction,% programLogsFilePath
+			FileAppend,% "ERROR: Matching aciton not found for button: Name: " params.Var_Name ", Alpha: " params.Var_Alpha ", Action: " params.Action,% logsFile
 		}
 
 		else if ( funcName = "Gui_Stats_Get_Currency_Name" ) {
-			FileAppend,% "[" A_YYYY "-" A_MM "-" A_DD "_" A_Hour ":" A_Min ":" A_Sec "] ",% programLogsFilePath
-			FileAppend,% "Unknown currency type: """ params.Currency """"
+			FileAppend,% "ERROR: Unknown currency type: """ params.Currency """"
+		}
+
+		else if ( funcName = "Gui_Trades_Select_Tab" ) {
+			FileAppend,% "ERROR: Could not select tab """ params.Tab_ID """. Action occured: " params.Action ""
 		}
 	}
 
-	FileAppend,% "`n",% programLogsFilePath
+	FileAppend,% "`n",% logsFile
 }
 
-Delete_Old_Logs_Files(filesToKeep) {
+Delete_Old_Logs_Files(daysOld) {
 /*
  *			Delete logs files
  *			Keeps only the ammount specified
 */
 	global ProgramValues
+	logsPath := ProgramValues.Logs_Folder
+	daysOld *= 1000000 ; Convert to YYYYMMDDHH24MISS
+	nowTime := A_Now
 
-	programLogsPath := ProgramValues.Logs_Folder
-
-	loop, %programLogsPath%\*.txt
+	Loop, %logsPath%\*.txt
 	{
-		filesNum := A_Index
 		if ( A_LoopFileName != "changelog.txt" ) {
-			allFiles .= A_LoopFileName "|"
-		}
-	}
-	Sort, allFiles, D|
-	split := StrSplit(allFiles, "|")
-	if ( filesNum >= filesToKeep ) {
-		Loop {
-			index := A_Index
-			fileLocation := programLogsPath "\" split[A_Index]
-			FileDelete,% fileLocation
-			filesNum -= 1
-			if ( filesNum <= filesToKeep )
-				break
+			FileGetTime, lastMod,% A_LoopFileFullPath, M
+			if ( (nowTime-lastMod) >= daysOld)
+				FileDelete,% A_LoopFileFullPath
 		}
 	}
 }
@@ -4999,7 +4995,6 @@ Send_InGame_Message(allMessages, tabInfos="", specialEvent="") {
 			}
 		}
 
-		Logs_Append(A_ThisFunc, {PID:gamePID, Message:messageToSend})
 		BlockInput, Off
 	}
 }
@@ -5200,7 +5195,7 @@ Gui_Trades_Cycle_Func() {
 	}
 	TradesGUI_Values.Insert("Dock_Window", matchHandlers[TradesGUI_Values["Dock_Window_Num"]])
 	Gui_Trades_Set_Position()
-	Logs_Append(A_ThisFunc, {Dock_Window:TradesGUI_Values.Dock_Window, Total_Matchs:matchHandlers.MaxIndex()})
+	Logs_Append(A_ThisFunc, {Dock_Window:TradesGUI_Values.Dock_Window, Total_Matchs:matchHandlers.MaxIndex() + 1})
 }
 
 Get_Matching_Windows_Infos(mode) {
