@@ -57,13 +57,13 @@ Handle_CommandLine_Parameters() {
 		else if RegExMatch(param, "/File_Name=(.*)", found) {
 			ProgramValues.File_Name := found1, found1 := ""
 		}
-		else if RegExMatch(param, "/Local_Folder=(.*)", found1) {
+		else if RegExMatch(param, "/Local_Folder=(.*)", found) {
 			ProgramValues.Local_Folder := found1, found1 := ""
 		}
-		else if RegExMatch(param, "/Ini_File=(.*)", found1) {
+		else if RegExMatch(param, "/Ini_File=(.*)", found) {
 			ProgramValues.Ini_File := found1, found1 := ""
 		}
-		else if RegExMatch(param, "/NewVersion_Link=(.*)", found1) {
+		else if RegExMatch(param, "/NewVersion_Link=(.*)", found) {
 			ProgramValues.NewVersion_Link := found1, found1 := ""
 		}
 	}
@@ -108,6 +108,7 @@ Download_New_Version() {
 						. "`nor try downloading the new version manually"
 						,Text_Color:"White"}
 		GUI_Beautiful_Warning(funcParams)
+		ExitApp
 	}
 	Sleep 10
 	FileSetAttrib, -H,% ProgramValues.File_Name
@@ -147,9 +148,9 @@ GUI_Beautiful_Warning(params) {
 	Gui, Color,% backgroundCol
 	Gui, Font,% "S" guiFontSize,% guiFontName
 	Gui, Add, Progress,% "x0" . " y0" . " h" borderSize . " w" guiWidth . " Background" borderColor ; Top
-	Gui, Add, Text,% "x" xOffset "ym+5 w" guiWidth-(xOffset*2) " c" warnTitleColor " Center BackgroundTrans Section",% ProgramValues.Name
+	Gui, Add, Text,% "x" xOffset " ym+5 w" guiWidth-(xOffset*2) " c" warnTitleColor " Center BackgroundTrans Section",% ProgramValues.Name
 	if (warnTitle) {
-		Gui, Add, Text, xs Center w%guiWidth% c%warnTitleColor% BackgroundTrans Section,% warnTitle
+		Gui, Add, Text,% "x" xOffset " w" guiWidth-(xOffset*2) " c" warnTitleColor "  Center BackgroundTrans Section",% warnTitle
 		Gui, Add, Progress,% "x" xOffset . " y+5 h" borderSize . " w" guiWidth-(xOffset*2) . " Background" borderColor " Section" ; Underline
 	}
 	Gui, Add, Progress,% "x" guiWidth-borderSize . " y0" . " h" guiHeight . " w" borderSize . " Background" borderColor ; Right

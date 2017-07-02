@@ -61,7 +61,7 @@ Start_Script() {
 	MyDocuments := (RunParameters.MyDocuments)?(RunParameters.MyDocuments):(A_MyDocuments)
 
 	ProgramValues.Insert("Name", "POE Trades Companion")
-	ProgramValues.Insert("Version", "1.10.8")
+	ProgramValues.Insert("Version", "1.10.7")
 	ProgramValues.Insert("Debug", 0)
 	ProgramValues.Debug := (A_IsCompiled)?(0):(ProgramValues.Debug) ; Prevent from enabling debug on compiled executable
 	if FileExist(A_ScriptDir "/ENABLE_DEBUG.txt") {
@@ -79,8 +79,8 @@ Start_Script() {
 	ProgramValues.Insert("Version_Link_Beta", "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/dev/version.txt")
 
 	ProgramValues.Insert("NewVersion_File", "POE-TC-NewVersion.exe")	
-	ProgrmaValues.Insert("NewVersion_Link", "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/POE Trades Companion.exe")
-	ProgrmaValues.Insert("NewVersion_Link_Beta", "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/dev/POE Trades Companion.exe")
+	ProgramValues.Insert("NewVersion_Link", "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/POE Trades Companion.exe")
+	ProgramValues.Insert("NewVersion_Link_Beta", "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/dev/POE Trades Companion.exe")
 
 	ProgramValues.Insert("Changelogs_Link", "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/changelogs.txt")
 	ProgramValues.Insert("Changelogs_Link_Beta", "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/changelogs.txt")
@@ -5506,9 +5506,9 @@ GUI_Beautiful_Warning(params) {
 	Gui, Color,% backgroundCol
 	Gui, Font,% "S" guiFontSize,% guiFontName
 	Gui, Add, Progress,% "x0" . " y0" . " h" borderSize . " w" guiWidth . " Background" borderColor ; Top
-	Gui, Add, Text,% "x" xOffset "ym+5 w" guiWidth-(xOffset*2) " c" warnTitleColor " Center BackgroundTrans Section",% ProgramValues.Name
+	Gui, Add, Text,% "x" xOffset " ym+5 w" guiWidth-(xOffset*2) " c" warnTitleColor " Center BackgroundTrans Section",% ProgramValues.Name
 	if (warnTitle) {
-		Gui, Add, Text, xs Center w%guiWidth% c%warnTitleColor% BackgroundTrans Section,% warnTitle
+		Gui, Add, Text,% "x" xOffset " w" guiWidth-(xOffset*2) " c" warnTitleColor "  Center BackgroundTrans Section",% warnTitle
 		Gui, Add, Progress,% "x" xOffset . " y+5 h" borderSize . " w" guiWidth-(xOffset*2) . " Background" borderColor " Section" ; Underline
 	}
 	Gui, Add, Progress,% "x" guiWidth-borderSize . " y0" . " h" guiHeight . " w" borderSize . " Background" borderColor ; Right
@@ -5899,7 +5899,7 @@ Download_Updater() {
 	global ProgramValues
 
 	updaterLink := (ProgramValues.Beta)?(ProgramValues.Updater_Link_Beta):(ProgramValues.Updater_Link)
-	newVersionLink := (ProgramValues.Beta)?(ProgramValues.NewVersion_Link_Beta):(ProgramValues.ProgramValues.NewVersion_Link)
+	newVersionLink := (ProgramValues.Beta)?(ProgramValues.NewVersion_Link_Beta):(ProgramValues.NewVersion_Link)
 	fileName := (ProgramValues.Beta)?(ProgramValues.Name " BETA.exe"):(ProgramValues.Name ".exe")
 
 	UrlDownloadToFile,% updaterLink,% ProgramValues.Updater_File
