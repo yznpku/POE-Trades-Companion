@@ -5274,17 +5274,15 @@ Close_Previous_Program_Instance() {
 				Process, WaitClose, %existingPID%
 			}
 			else { ; Unable to close process due to lack of admin 
-				funcParams := {	 Width:350
-								,Height:125
-								,BorderColor:"White"
-								,Background:"Red"
+				funcParams := {	 Border_Color:"White"
+								,Background_Color:"Red"
 								,Title:"Missing admin rights, unable to close instance."
-								,TitleColor:"White"
+								,Title_Color:"White"
 								,Text:"Previous instance detected."
 								. "`nUnable to close it due to missing admin rights."
 								. "`nPlease close it before continuing."
 								. "`n`nThis window will be closed automatically."
-								,TextColor:"White"
+								,Text_Color:"White"
 								,Condition:"Previous_Instance_Close"}
 				GUI_Beautiful_Warning(funcParams)
 			}
@@ -5459,15 +5457,13 @@ Run_As_Admin() {
 		ExitApp
 	}
 	if !ProgramValues.Debug {
-		funcParams := {  Width:350
-						,Height:50
-						,Background:"Green"
-						,BorderColor:"White"
-						,TitleColor:"White"
-						,Text:"Reloading to request admin privilieges in %count%..."
-						,TextColor:"White"
+		funcParams := {  Background_Color:"Green"
+						,Border_Color:"White"
+						,Title_Color:"White"
+						,Text:"Reloading to request admin privilieges in XX..."
+						,Text_Color:"White"
 						,Condition:"Reload_Timer"
-						,ConditionCount:3}
+						,Condition_Count:3}
 		GUI_Beautiful_Warning(funcParams)
 	}
 	Reload_Func()
@@ -5476,19 +5472,24 @@ Run_As_Admin() {
 GUI_Beautiful_Warning(params) {
 	global ProgramValues
 
-	guiWidth := params.Width
-	guiHeight := params.Height
-	guiBackground := params.Background
-	borderSize := (params.Border)?(params.Border):(2)
-	borderColor := params.BorderColor
+	guiWidthBase := 350, guiHeightBase := 50, guiHeightNoUnderline := 30
+	guiFontName := "Consolas", guiFontSize := "10 Bold"
 
-	warnTitle := params.Title
-	warnTitleColor := params.TitleColor
-	warnText := params.Text
-	warnTextColor := params.TextColor
+	borderSize := 2, borderColor := params.Border_Color
+	backgroundCol := params.Background_Color
+	warnTitle := params.Title, warnTitleColor := params.Title_Color
+	warnText := params.Text,warnTextColor := params.Text_Color
 
-	condition := params.Condition
-	count := params.ConditionCount
+	condition := params.Condition, count := params.Condition_Count
+
+	underlineExists := (warnTitle)?(true):(false)
+	xOffset := 10, yOffset := (underlineExists)?(5):(20)
+
+	txtSize := Get_Text_Control_Size(warnText, guiFontName, guiFontSize, guiWidthBase+xOffset)
+	guiWidth := (txtSize.W > guiWidthBase)?(txtSize.W+xOffset):(guiWidthBase)
+	guiHeight := (underlineExists)?(guiHeightBase + txtSize.H):(guiHeightNoUnderline + txtSize.H)
+
+	defaultGui := A_DefaultGUI
 
 	if (condition = "Previous_Instance_Close") {
 		SetTimer, GUI_Beautiful_Warning_Instance_WaitClose, 1000
@@ -5500,31 +5501,31 @@ GUI_Beautiful_Warning(params) {
 	Gui, BeautifulWarn:New, +AlwaysOnTop +ToolWindow -Caption -Border +LabelGui_Beautiful_Warning_ hwndGuiBeautifulWarningHandler,% ProgramValues.Name
 	Gui, BeautifulWarn:Default
 	Gui, Margin, 0, 0
-	Gui, Color,% guiBackground
-	Gui, Font, S10 Bold, Consolas
+	Gui, Color,% backgroundCol
+	Gui, Font,% "S" guiFontSize,% guiFontName
 	Gui, Add, Progress,% "x0" . " y0" . " h" borderSize . " w" guiWidth . " Background" borderColor ; Top
-	Gui, Add, Text, xm ym+5 Center w%guiWidth% c%warnTitleColor% BackgroundTrans Section,% ProgramValues.Name
+	Gui, Add, Text,% "x" xOffset "ym+5 w" guiWidth-(xOffset*2) " c" warnTitleColor " Center BackgroundTrans Section",% ProgramValues.Name
 	if (warnTitle) {
 		Gui, Add, Text, xs Center w%guiWidth% c%warnTitleColor% BackgroundTrans Section,% warnTitle
-		Gui, Add, Progress,% "xs" . " y+5 h" borderSize . " w" guiWidth . " Background" borderColor " Section" ; Underline
-		underlineExists := true
+		Gui, Add, Progress,% "x" xOffset . " y+5 h" borderSize . " w" guiWidth-(xOffset*2) . " Background" borderColor " Section" ; Underline
 	}
 	Gui, Add, Progress,% "x" guiWidth-borderSize . " y0" . " h" guiHeight . " w" borderSize . " Background" borderColor ; Right
 	Gui, Add, Progress,% "x0" . " y" guiHeight-borderSize . " h" borderSize . " w" guiWidth . " Background" borderColor ; Bot
 	Gui, Add, Progress,% "x0" . " y0" . " h" guiHeight . " w" borderSize . " Background" borderColor ; Left
-	yOffset := (underlineExists)?(5):(20)
-	Gui, Add, Text, xs ys+%yOffset% Center w%guiWidth% c%warnTextColor% BackgroundTrans hwndWarnTextHandler,% warnText
+	Gui, Add, Text,% "x" xOffset " ys+" yOffset " w" guiWidth-(xOffset*2) " hwndWarnTextHandler c" warnTextColor " Center BackgroundTrans",% warnText
 	if (condition = "Reload_Timer") {
 		GoSub GUI_Beautiful_Warning_Reload_Timer
 		SetTimer, GUI_Beautiful_Warning_Reload_Timer, 1000
 	}
 	Gui, Show, w%guiWidth% h%guiHeight%
+	Gui, %defaultGUI%:Default
+
 	WinWait,% "ahk_id " GuiBeautifulWarningHandler
 	WinWaitClose,% "ahk_id " GuiBeautifulWarningHandler
 	Return
 
 	GUI_Beautiful_Warning_Reload_Timer:
-		StringReplace,warnTextEdit, warnText,`%count`%,%count%
+		StringReplace,warnTextEdit, warnText,XX,%count%
 		GuiControl, BeautifulWarn:,% WarnTextHandler,% warnTextEdit
 		if (!count)
 			Gui, BeautifulWarn:Destroy
@@ -5551,10 +5552,11 @@ GUI_Beautiful_Warning(params) {
 	Return
 
 	GUI_Beautiful_Warning_Close:
+		Gui, BeautifulWarn:Destroy
 	Return
 	GUI_Beautiful_Warning_Escape:
+		GoSub GUI_Beautiful_Warning_Close
 	Return
-
 }
 
 Gui_AdminWarn() {
