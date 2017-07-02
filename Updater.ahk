@@ -27,7 +27,6 @@ Start_Script() {
 
 	ProgramValues.Local_Folder_Old_1 		:= userprofile "\Documents\AutoHotKey\POE Trades Helper\"
 	ProgramValues.Local_Folder_Old_2 		:= userprofile "\Documents\AutoHotKey\" ProgramValues.Name
-	ProgramValues.Temporary_File			:= A_ScriptDir "\NewVersionTemp.exe"
 
 	Close_Program_Instancies()
 
@@ -99,7 +98,7 @@ Download_New_Version() {
 */
 	global ProgramValues
 	UrlDownloadToFile,% programDL,% ProgramValues.File_Name
-	if ( ErrorLevel = 1 ) {
+	if ( ErrorLevel ) {
 		funcParams := { Border_Color:"White"
 						,Background_Color:"Blue"
 						,Title:"Download timed out"
@@ -156,7 +155,7 @@ GUI_Beautiful_Warning(params) {
 	Gui, Add, Progress,% "x0" . " y" guiHeight-borderSize . " h" borderSize . " w" guiWidth . " Background" borderColor ; Bot
 	Gui, Add, Progress,% "x0" . " y0" . " h" guiHeight . " w" borderSize . " Background" borderColor ; Left
 	Gui, Add, Text,% "x" xOffset " ys+" yOffset " w" guiWidth-(xOffset*2) " hwndWarnTextHandler c" warnTextColor " Center BackgroundTrans",% warnText
-	
+
 	Gui, Show, w%guiWidth% h%guiHeight%
 	Gui, %defaultGUI%:Default
 
