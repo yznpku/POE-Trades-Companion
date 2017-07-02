@@ -97,7 +97,8 @@ Download_New_Version() {
 /*		Download the new version. Rename. Run.
 */
 	global ProgramValues
-	UrlDownloadToFile,% programDL,% ProgramValues.File_Name
+	UrlDownloadToFile,% ProgramValues.NewVersion_Link,% ProgramValues.File_Name
+
 	if ( ErrorLevel ) {
 		funcParams := { Border_Color:"White"
 						,Background_Color:"Blue"
