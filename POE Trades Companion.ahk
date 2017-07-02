@@ -5906,10 +5906,10 @@ Download_Updater() {
 	Sleep 10
 	Run,% ProgramValues.Updater_File 
 	. " /Name=""" ProgramValues.Name  """"
-	. " /File_Name""" fileName """"
-	. """ /Local_Folder=""" ProgramValues.Local_Folder """"
-	. """ /Ini_File=""" ProgramValues.Ini_File """"
-	. """ /NewVersion_Link=""" newVersionLink """"
+	. " /File_Name=""" fileName """"
+	. " /Local_Folder=""" ProgramValues.Local_Folder """"
+	. " /Ini_File=""" ProgramValues.Ini_File """"
+	. " /NewVersion_Link=""" newVersionLink """"
 	ExitApp
 }
 
