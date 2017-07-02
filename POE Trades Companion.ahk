@@ -69,13 +69,21 @@ Start_Script() {
 		fileContent := StrReplace(fileContent, "`n", "")
 		ProgramValues.Debug := fileContent
 	}
+	ProgramValues.Insert("Beta", 1)
 
 	ProgramValues.Insert("Updater_File", "POE-TC-Updater.exe")
 	ProgramValues.Insert("Updater_Link", "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/Updater.exe")
-	ProgramValues.Insert("Version_Link", "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/version.txt")
-	ProgramValues.Insert("Changelogs_Link", "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/changelogs.txt")
+	ProgramValues.Insert("Updater_Link_Beta", "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/dev/Updater.exe")
 
-	ProgramValues.Insert("PID", DllCall("GetCurrentProcessId"))
+	ProgramValues.Insert("Version_Link", "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/version.txt")
+	ProgramValues.Insert("Version_Link_Beta", "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/dev/version.txt")
+
+	ProgramValues.Insert("NewVersion_File", "POE-TC-NewVersion.exe")	
+	ProgrmaValues.Insert("NewVersion_Link", "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/POE Trades Companion.exe")
+	ProgrmaValues.Insert("NewVersion_Link_Beta", "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/dev/POE Trades Companion.exe")
+
+	ProgramValues.Insert("Changelogs_Link", "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/changelogs.txt")
+	ProgramValues.Insert("Changelogs_Link_Beta", "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/changelogs.txt")
 
 	ProgramValues.Insert("Reddit", "https://redd.it/57oo3h")
 	ProgramValues.Insert("GGG", "https://www.pathofexile.com/forum/view-thread/1755148/")
@@ -102,6 +110,7 @@ Start_Script() {
 
 	ProgramSettings.Insert("Support_Message", "@%buyerName% " ProgramValues.Name ": view-thread/1755148") 
 
+	ProgramValues.Insert("PID", DllCall("GetCurrentProcessId"))
 ;	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 	GroupAdd, POEGame, ahk_exe PathOfExile.exe
@@ -190,7 +199,7 @@ Start_Script() {
 		Filter_Logs_Message(str)
 	}
 
-	Gui_Stats()
+	; Gui_Stats()
 	; Gui_Settings()
 	; Gui_About()
 	Logs_Append("DUMP", localSettings)
@@ -3616,51 +3625,59 @@ Check_Update() {
 	static
 	global ProgramValues
 
-	programVersion := ProgramValues.Version, programFolder := ProgramValues.Local_Folder, programChangelogsFilePath := ProgramValues.Changelogs_File
-	updaterPath := ProgramValues.Updater_File, updaterDL := ProgramValues.Updater_Link
-	versionDL := ProgramValues.Version_Link, changelogsDL := ProgramValues.Changelogs_Link
+	IniRead, autoUpdate,% ProgramValues.Ini_File,PROGRAM,AutoUpdate, 0
+	IniRead, prevUpdateTime,% ProgramValues.Ini_File,PROGRAM,LastUpdate,% A_Now
 	
 ;	Delete files remaining from updating
-	if (FileExist(updaterPath))
-		FileDelete,% updaterPath
-	if (FileExist("POE-TC-NewVersion.exe"))
-		FileDelete,% "POE-TC-NewVersion.exe"
-	
-;	Retrieve the changelog file and update the local file if required
+	if FileExist(ProgramValues.Updater_File)
+		FileDelete,% ProgramValues.Updater_File
+	if FileExist(ProgramValues.NewVersion_File)
+		FileDelete,% ProgramValues.NewVersion_File
+
 	ComObjError(0)
+
+;	Changelogs file
 	whr := ComObjCreate("WinHttp.WinHttpRequest.5.1")
-	whr.Open("GET", changelogsDL, true)
+	whr.Open("GET", ProgramValues.Changelogs_Link, true) ; Using true above and WaitForResponse allows the script to r'emain responsive.
 	whr.Send()
-	; Using 'true' above and the call below allows the script to r'emain responsive.
 	whr.WaitForResponse(10) ; 10 seconds
-	changelogText := whr.ResponseText
-	changelogText = %changelogText%
-	if ( changelogText ) && !( RegExMatch(changelogText, "Not(Found| Found)") ){
-		FileRead, changelogLocal,% programChangelogsFilePath
-		if ( changelogLocal != changelogText ) {
-			FileDelete, % programChangelogsFilePath
-			UrlDownloadToFile, % changelogsDL,% programChangelogsFilePath
+	changelogsOnline := whr.ResponseText
+	changelogsOnline = %changelogsOnline%
+	if ( changelogsOnline ) && !( RegExMatch(changelogsOnline, "Not(Found| Found)") ){
+		FileRead, changelogsLocal,% ProgramValues.Changelogs_File
+		if ( changelogsLocal != changelogsOnline ) {
+			FileDelete, % ProgramValues.Changelogs_File
+			UrlDownloadToFile, % ProgramValues.Changelogs_Link,% ProgramValues.Changelogs_File
 		}
 	}
 	
-;	Retrieve the version number
-	ComObjError(0)
+;	Version number file
 	whr := ComObjCreate("WinHttp.WinHttpRequest.5.1")
-	whr.Open("GET", versionDL, true)
+	whr.Open("GET", ProgramValues.Version_Link, true)
 	whr.Send()
-	; Using 'true' above and the call below allows the script to remain responsive.
-	whr.WaitForResponse(10) ; 10 seconds
-	versionNumber := whr.ResponseText
-	versionNumber = %versionNumber%
-	if ( versionNumber ) && !( RegExMatch(versionNumber, "Not(Found| Found)") ) { ; couldn't reach the file, cancel update
-		StringReplace, versionNumber, versionNumber, `n,,1 ; remove the 2nd white line
-		versionNumber = %versionNumber% ; remove any whitespace
+	whr.WaitForResponse(10)
+	versionOnline := whr.ResponseText
+	versionOnline = %versionOnline%
+	if ( versionOnline ) && !( RegExMatch(versionOnline, "Not(Found| Found)") ) { ; couldn't reach the file, cancel update
+		StringReplace, versionOnline, versionOnline, `n,,1 ; remove the 2nd white line
+		versionOnline = %versionOnline% ; remove any whitespace
 	}
-	newVersion := (versionNumber)?(versionNumber):(programVersion)
+	newVersion := (versionOnline)?(versionOnline):(ProgramValues.Version)
 
 	ProgramValues.Insert("Version_Latest", newVersion)
-	if ( newVersion != programVersion )
-		Gui_About({Update_Available:1})
+	if ( newVersion != ProgramValues.Version ) {
+		ProgramValues.Update_Available := 1
+		if (autoUpdate=1) {
+			timeDif := A_Now
+			EnvSub, timeDif, %prevUpdateTime%, Seconds
+			if (timeDif > 61) {
+				Download_Updater()
+			}
+		}
+		else {
+			Show_Tray_Notification(newVersion " is available!", "Left click on this notification to run the automatic download.`nRight click to dismiss it.", {Is_Update:1})
+		}
+	}
 }
 
 ;==================================================================================================================
@@ -3673,28 +3690,22 @@ Gui_About(params="") {
 	static
 	global ProgramValues
 
-	programChangelogsFilePath := ProgramValues.Changelogs_File
 	iniFilePath := ProgramValues.Ini_File, programName := ProgramValues.Name
-	programVersion := ProgramValues.Version, latest := ProgramValues.Version_Latest
-	updaterLink := ProgramValues.Updater_Link, updaterFile := ProgramValues.Updater_File
+	verCurrent := ProgramValues.Version, verLatest := ProgramValues.Version_Latest
 
-	isUpdateAvailable := (latest && programVersion != latest)?(1):(0)
+	isUpdateAvailable := (verLatest && verCurrent != verLatest)?(1):(0)
 
 	IniRead, autoUpdate,% iniFilePath, PROGRAM, AutoUpdate
-	if (autoUpdate = 1 && params.Update_Available=1 && programVersion != latest) {
-		GoSub Gui_About_Update
-		Return
-	}
 
 	Gui, About:Destroy
-	Gui, About:New, +HwndaboutGuiHandler +AlwaysOnTop +SysMenu -MinimizeBox -MaximizeBox +OwnDialogs +LabelGui_About_,% programName " by lemasato v" programVersion
+	Gui, About:New, +HwndaboutGuiHandler +AlwaysOnTop +SysMenu -MinimizeBox -MaximizeBox +OwnDialogs +LabelGui_About_,% programName " by lemasato v" verCurrent
 	Gui, About:Default
 	Gui, Font, ,Consolas
 
-	groupText := (isUpdateAvailable)?("Update v" latest " available."):("No update available.")
+	groupText := (isUpdateAvailable)?("Update v" verLatest " available."):("No update available.")
 	Gui, Add, GroupBox, w500 h60 xm Section c000000 hwndUpdateAvailableTextHandler,% groupText
-	Gui, Add, Text, xs+20 ys+20,% "Current version: " A_Tab programVersion
-	Gui, Add, Text, xs+20 ys+35 Section hwndLastestVersionTextHandler,% "Latest version: " A_Tab latest
+	Gui, Add, Text, xs+20 ys+20,% "Current version: " A_Tab verCurrent
+	Gui, Add, Text, xs+20 ys+35 Section hwndLastestVersionTextHandler,% "Latest version: " A_Tab verLatest
 	if ( isUpdateAvailable ) {
 		GuiControl, About:+cGreen +Redraw,% UpdateAvailableTextHandler
 		GuiControl, About:+cGreen +Redraw,% LastestVersionTextHandler
@@ -3704,7 +3715,7 @@ Gui_About(params="") {
 	if ( autoUpdate = 1 )
 		GuiControl, About:,UpdateAutomatically,1
 
-	FileRead, changelogText,% programChangelogsFilePath
+	FileRead, changelogText,% ProgramValues.Changelogs_File
 	allChanges := Object()
 	allVersions := ""
 	Loop {
@@ -3755,13 +3766,7 @@ Gui_About(params="") {
 	Return
 
 	Gui_About_Update:
-;		Download the updater that will handle the updating process
-		UrlDownloadToFile,% updaterLink,% updaterFile
-		FileSetAttrib, +H,% updaterFile
-		sleep 1000
-		Run, % updaterFile
-		Process, Close, %programPID%
-		ExitApp
+		Download_Updater()
 	Return
 
 	Gui_About_Close:
@@ -5821,7 +5826,7 @@ Get_Text_Control_Size(txt, fontName, fontSize, maxWidth="") {
 	return coords
 }
 
-Show_Tray_Notification(title, msg) {
+Show_Tray_Notification(title, msg, params="") {
 /*		Show a notification.
  *		Look based on w10 traytip.
 */
@@ -5829,6 +5834,8 @@ Show_Tray_Notification(title, msg) {
 	global ProgramValues, ProgramSettings
 
 	local defaultGUI := A_DefaultGUI
+
+	Is_Update := params.Is_Update
 
 	guiWidthMax := 350, guiHeightMax := 150
 	textSize := Get_Text_Control_Size(msg, "Segoe UI", 9, guiWidthMax)
@@ -5878,7 +5885,24 @@ Show_Tray_Notification(title, msg) {
 
 	Gui_TrayNotification_OnLeftClick:
 		Gui, TrayNotification:Destroy
+		if (Is_Update) {
+			Download_Updater()
+		}
 	Return
+}
+
+Download_Updater() {
+	global ProgramValues
+
+	UrlDownloadToFile,% ProgramValues.Updater_Link,% ProgramValues.Updater_File
+	Sleep 10
+	Run,% ProgramValues.Updater_File 
+	. " /Name=""" ProgramValues.Name  """"
+	. " /File_Name""" ProgramValues.Name ".exe" """"
+	. """ /Local_Folder=""" ProgramValues.Local_Folder """"
+	. """ /Ini_File=""" ProgramValues.Ini_File """"
+	. """ /NewVersion_Link=""" ProgramValues.NewVersion_Link """"
+	ExitApp
 }
 
 Fade_Tray_Notification() {

@@ -1,154 +1,172 @@
+#NoEnv
+#Persistent
 #SingleInstance Force
-SetWorkingDir, A_ScriptDir
-EnvGet, userprofile, userprofile
+#Warn LocalSameAsGlobal
+OnExit("Exit_Func")
 
-global programName := "POE Trades Companion" 
+DetectHiddenWindows, Off
+FileEncoding, UTF-8
+ListLines, Off
+SetWorkingDir, %A_ScriptDir%
 
-global previousLocalFolder := userprofile "\Documents\AutoHotKey\" programName
-global localFolder := A_MyDocuments "\AutoHotKey\" programName
+Menu,Tray,Tip,Updater
+Menu,Tray,NoStandard
+Menu,Tray,Add,Close,Exit_Func
 
-global iniFilePath := localFolder "\Preferences.ini"
-global newVersionPath := "POE-TC-NewVersion.exe"
-global programDL := "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/" programName ".exe"
-
-;		Retrieving the current date and time, then separating into their own vars
-FormatTime, currentDateTime,,dd/MM/yy-HH:mm:ss
-currentDateTimeArray := Split_DateTime(currentDateTime)
-currentDay := currentDateTimeArray[1], currentMonth := currentDateTimeArray[2], currentYear := currentDateTimeArray[3]
-currentHour := currentDateTimeArray[4], currentMin := currentDateTimeArray[5], currentSec := currentDateTimeArray[6]
-
-;		Same thing, but for the last update attempt
-IniRead,previousDateTime,% iniFilePath,PROGRAM,LastUpdate
-previousDateTime := Split_DateTime(previousDateTime)
-previousDay := previousDateTime[1], previousMonth := previousDateTime[2], previousYear := previousDateTime[3]
-previousHour := previousDateTime[4], previousMin := previousDateTime[5], previousSec := previousDateTime[6]
-
-;		We can now write the current date and time to the ini
-IniWrite,% currentDateTime,% iniFilePath,PROGRAM,LastUpdate
-
-;		We make sure it's not stuck in a loop, if auto-update is activated
-IniRead,autoUpdate,% iniFilePath,PROGRAM,AutoUpdate
-if ( autoUpdate = 1 )
-	Compare_Both_DateTime(autoUpdate, currentDay, currentMonth, currentYear, currentHour, currentMin, currentSec, previousDay, previousMonth, previousYear, previousHour, previousMin, previousSec)
-
-;		Manage cross-releases files
-FileRemoveDir,% userprofile "\Documents\AutoHotKey\POE Trades Helper\", 1 ; Pre-1.9 local folder
-if ( InStr(FileExist(previousLocalFolder), "D") && localFolder != previousLocalFolder ) { ; Import pre-1.9.1 settings (Moved from \userprofile\Documents to A_MyDocuments)
-	FileRemoveDir,% localFolder, 1
-	FileMoveDir,% previousLocalFolder,% localFolder, 2
-}
-
-;		Random comment line to make things look pretty
-Close_Program_Instancies()
-Download_New_Version()
+Start_Script()
 ExitApp
+Return
 
-;======================================
-;										FUNCTIONS
-;======================================
+Start_Script() {
+/*
+*/
+	EnvGet, userprofile, userprofile
+	global ProgramValues := {}
 
-Split_DateTime(dateAndTime) {
-;			Split the date and time into their own variables
-	Loop, Parse, dateAndTime
-	{
-		if ( A_Index = 1 || A_Index = 2 )
-			day := day A_LoopField
-		if ( A_Index = 4 || A_Index = 5 )
-			month := month A_LoopField
-		if ( A_Index = 7 || A_Index = 8 )
-			year := year A_LoopField
-		if ( A_Index = 10 || A_Index = 11 )
-			hour := hour A_LoopField
-		if ( A_Index = 13 || A_Index = 14 )
-			min := min A_LoopField
-		if ( A_Index = 16 || A_Index = 17 )
-			sec := sec A_LoopField
+	Handle_CommandLine_Parameters()
+
+	ProgramValues.Local_Folder_Old_1 		:= userprofile "\Documents\AutoHotKey\POE Trades Helper\"
+	ProgramValues.Local_Folder_Old_2 		:= userprofile "\Documents\AutoHotKey\" ProgramValues.Name
+	ProgramValues.Temporary_File			:= A_ScriptDir "\NewVersionTemp.exe"
+
+	Close_Program_Instancies()
+
+;	Deleting old POE Trades Helper folder is it exists
+	if InStr(FileExist(ProgramValues.Local_Folder_Old_1), "D") {
+		FileRemoveDir,% ProgramValues.Local_Folder_Old_1, 1
 	}
-	return [day, month, year, hour, min, sec]
+
+;	Comparing userprofile\Documents and A_MyDocuments location. Move old location to new one.
+	if InStr(FileExist(ProgramValues.Local_Folder_Old_2), "D") && (ProgramValues.Local_Folder_Old_2 != ProgramValues.Local_Folder) {
+		FileMoveDir,% ProgramValues.Local_Folder_Old_2,% ProgramValues.Local_Folder, 2
+	}
+
+;	Downloading the new version.
+	Download_New_Version()
 }
 
-Compare_Both_DateTime(auto, cDay, cMonth, cYear, cHour, cMin, cSec, pDay, pMonth, pYear, pHour, pMin, pSec) {
-;		Check if there was an update attempt in the last minute
-;		If so, make sure to disable the auto update as it was probably stuck in an update loop
-	if ( auto = 1 ) && ( cYear = pYear ) && ( cMonth = pMonth ) && ( cDay = pDay ) && ( cHour = pHour ) && ( cMin = pMin ) {
-		IniWrite,0,% iniFilePath,SETTINGS,AutoUpdate
-		issue := "The updater has ran too many times in a short amount of time."
-		solution := "Auto-update has been disabled. Please update manually."
-		Create_Warning_Gui(issue, solution, "Loop")
-		ExitApp
+
+Handle_CommandLine_Parameters() {
+	global 0
+	global ProgramValues
+
+	Loop, %0% {
+		param := %A_Index%
+		if RegExMatch(param, "/Name=(.*)", found) {
+			ProgramValues.Name := found1, found1 := ""
+		}
+		else if RegExMatch(param, "/File_Name=(.*)", found) {
+			ProgramValues.File_Name := found1, found1 := ""
+		}
+		else if RegExMatch(param, "/Local_Folder=(.*)", found1) {
+			ProgramValues.Local_Folder := found1, found1 := ""
+		}
+		else if RegExMatch(param, "/Ini_File=(.*)", found1) {
+			ProgramValues.Ini_File := found1, found1 := ""
+		}
+		else if RegExMatch(param, "/NewVersion_Link=(.*)", found1) {
+			ProgramValues.NewVersion_Link := found1, found1 := ""
+		}
 	}
 }
+
 
 Close_Program_Instancies() {
-;			Retrieve the PID and file name stored in the ini file
-;			Close all possible instancie of the program
-;			Also delete all possible file name
-	IniRead, programPID,% iniFilePath,PROGRAM,PID
-	IniRead, fileName,% iniFilePath,PROGRAM,FileName
+/*		Close running instances of the program.
+		Delete the file, unless it's .ahk.
+ */
+ 	global ProgramValues
+
+	IniRead, programPID,% ProgramValues.Ini_File,PROGRAM,PID
+	IniRead, fileName,% ProgramValues.Ini_File,PROGRAM,FileName
 
 	executables := programPID "|" fileName "|POE Trades Helper.exe|POE-Trades-Helper.exe"
 	Loop, Parse, executables, D|
 	{
 		Process, Close,% A_LoopField
 		Process, WaitClose,% A_LoopField
-		Sleep 10
-		FileDelete,% A_LoopField
-		Sleep 10
+		Sleep 1
+
+		SplitPath, A_LoopField, fileExt, , fileExt
+		if (fileExt != ".ahk")
+			FileDelete,% A_LoopField
+		Sleep 1
 	}
 }
 
 Download_New_Version() {
-;			Download the new version, rename and runs it
-;			Warns the user if it couldn't be retrieved
-	UrlDownloadToFile,% programDL,% newVersionPath
+/*		Download the new version. Rename. Run.
+*/
+	global ProgramValues
+	UrlDownloadToFile,% programDL,% ProgramValues.File_Name
 	if ( ErrorLevel = 1 ) {
-		issue := "The program timed out while trying to retrieve the new version."
-		solution := "Auto-update was disabled. Please make sure your network is working correctly.`nOr try downloading the new version manually."
-		Create_Warning_Gui(issue, solution, "TimedOut")
-		ExitApp
+		funcParams := {	 Width:350
+						,Height:125
+						,BorderColor:"White"
+						,Background:"Blue"
+						,Title:"Download timed out."
+						,TitleColor:"White"
+						,Text:"Please make sure your network is working correctly,`nor try downloading the new version manually."
+						,TextColor:"White"
+						,Condition:"Previous_Instance_Close"}
+		GUI_Beautiful_Warning(funcParams)
 	}
-	FileSetAttrib, +H,% newVersionPath
-	sleep 1000
-	FileMove,% newVersionPath,% programName ".exe", 1
-	FileSetAttrib, -H,% programName ".exe"
-	IniWrite, 1,% iniFilePath,PROGRAM,Show_Changelogs
-	sleep 1000
-	Run, % programName ".exe"
+	Sleep 10
+	FileSetAttrib, -H,% ProgramValues.File_Name
+	IniWrite, 1,% ProgramValues.Ini_File,PROGRAM,Show_Changelogs
+	Sleep 10
+	Run, % ProgramValues.File_Name
 }
 
-Create_Warning_Gui(issue, solution, code) {
-;			Create a gui to warn the user about what happened and how to fix it
-;			Places the element correctly based on the code (incase of linefeed)
-	if ( code = "Loop" )
-		y1 := 10, y2 := 25, y3 := 50, y4 := 65, y5 := 80, y6 := 110
-	else if ( code = "TimedOut" )
-		y1 := 10, y2 := 25, y3 := 50, y4 := 65, y5 := 95, y6 := 125
-	Gui, Warning:Destroy
-	Gui, Warning:New, +AlwaysOnTop +SysMenu -MinimizeBox -MaximizeBox +OwnDialogs +HwndWarningGuiHwnd,% "WARNING!"
-	Gui, Warning:Default
-	Gui, Add, text, x10 y%y1% cRed,Issue : 
-	Gui, Add, text, x25 y%y2%,%issue%
-	Gui, Add, text, x10 y%y3% cGreen,Solution:
-	Gui, Add, text, x25 y%y4%,%solution%
-	Gui, Add, text, x25 y%y5% cblue gDownload_Link,Click here to open the download page
-	Gui, Add, text, x150 y%y6% cgreen gThread_Link,Thread
-	Gui, Add, text, x250 y%y6%, / 
-	Gui, Add, text, x262 y%y6% cgreen gRepo_Link,Github
-	Gui, Show
-	WinWait, ahk_id %WarningGuiHwnd%
-	WinWaitClose, ahk_id %WarningGuiHwnd%
+GUI_Beautiful_Warning(params) {
+	global ProgramValues
+
+	guiWidth := params.Width
+	guiHeight := params.Height
+	guiBackground := params.Background
+	borderSize := (params.Border)?(params.Border):(2)
+	borderColor := params.BorderColor
+
+	warnTitle := params.Title
+	warnTitleColor := params.TitleColor
+	warnText := params.Text
+	warnTextColor := params.TextColor
+
+	condition := params.Condition
+	count := params.ConditionCount
+
+	static WarnTextHandler
+
+	Gui, BeautifulWarn:Destroy
+	Gui, BeautifulWarn:New, +AlwaysOnTop +ToolWindow -Caption -Border +LabelGui_Beautiful_Warning_ hwndGuiBeautifulWarningHandler,% ProgramValues.Name
+	Gui, BeautifulWarn:Default
+	Gui, Margin, 0, 0
+	Gui, Color,% guiBackground
+	Gui, Font, S10 Bold, Consolas
+	Gui, Add, Progress,% "x0" . " y0" . " h" borderSize . " w" guiWidth . " Background" borderColor ; Top
+	Gui, Add, Text, xm ym+5 Center w%guiWidth% c%warnTitleColor% BackgroundTrans Section,% ProgramValues.Name
+	if (warnTitle) {
+		Gui, Add, Text, xs Center w%guiWidth% c%warnTitleColor% BackgroundTrans Section,% warnTitle
+		Gui, Add, Progress,% "xs" . " y+5 h" borderSize . " w" guiWidth . " Background" borderColor " Section" ; Underline
+		underlineExists := true
+	}
+	Gui, Add, Progress,% "x" guiWidth-borderSize . " y0" . " h" guiHeight . " w" borderSize . " Background" borderColor ; Right
+	Gui, Add, Progress,% "x0" . " y" guiHeight-borderSize . " h" borderSize . " w" guiWidth . " Background" borderColor ; Bot
+	Gui, Add, Progress,% "x0" . " y0" . " h" guiHeight . " w" borderSize . " Background" borderColor ; Left
+	yOffset := (underlineExists)?(5):(20)
+	Gui, Add, Text, xs ys+%yOffset% Center w%guiWidth% c%warnTextColor% BackgroundTrans hwndWarnTextHandler,% warnText
+	Gui, Show, w%guiWidth% h%guiHeight%
+	WinWait,% "ahk_id " GuiBeautifulWarningHandler
+	WinWaitClose,% "ahk_id " GuiBeautifulWarningHandler
+	Return
+
+	GUI_Beautiful_Warning_Close:
+	Return
+	GUI_Beautiful_Warning_Escape:
+	Return
 }
 
-;======================================
-;											LABELS
-;======================================
-
-Download_Link:
-	Run, % programDL
-return
-Thread_Link:
-	Run, "https://github.com/lemasato/POE-Trades-Companion/releases"
-return
-Repo_Link:
-	Run, "https://github.com/lemasato/POE-Trades-Companion/"
-return
+Exit_Func(ExitReason, ExitCode) {
+	if ExitReason not in Reload
+		ExitApp
+}
