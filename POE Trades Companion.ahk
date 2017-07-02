@@ -61,7 +61,7 @@ Start_Script() {
 	MyDocuments := (RunParameters.MyDocuments)?(RunParameters.MyDocuments):(A_MyDocuments)
 
 	ProgramValues.Insert("Name", "POE Trades Companion")
-	ProgramValues.Insert("Version", "1.10.7")
+	ProgramValues.Insert("Version", "1.11.BETA_1")
 	ProgramValues.Insert("Debug", 0)
 	ProgramValues.Debug := (A_IsCompiled)?(0):(ProgramValues.Debug) ; Prevent from enabling debug on compiled executable
 	if FileExist(A_ScriptDir "/ENABLE_DEBUG.txt") {
@@ -83,7 +83,7 @@ Start_Script() {
 	ProgramValues.Insert("NewVersion_Link_Beta", "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/dev/POE Trades Companion.exe")
 
 	ProgramValues.Insert("Changelogs_Link", "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/changelogs.txt")
-	ProgramValues.Insert("Changelogs_Link_Beta", "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/changelogs.txt")
+	ProgramValues.Insert("Changelogs_Link_Beta", "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/dev/changelogs.txt")
 
 	ProgramValues.Insert("Reddit", "https://redd.it/57oo3h")
 	ProgramValues.Insert("GGG", "https://www.pathofexile.com/forum/view-thread/1755148/")
@@ -3630,7 +3630,7 @@ Check_Update() {
 
 	IniRead, autoUpdate,% ProgramValues.Ini_File,PROGRAM,AutoUpdate, 0
 	IniRead, prevUpdateTime,% ProgramValues.Ini_File,PROGRAM,LastUpdate,% A_Now
-	
+
 ;	Delete files remaining from updating
 	if FileExist(ProgramValues.Updater_File)
 		FileDelete,% ProgramValues.Updater_File
@@ -3673,12 +3673,12 @@ Check_Update() {
 		if (autoUpdate=1) {
 			timeDif := A_Now
 			EnvSub, timeDif, %prevUpdateTime%, Seconds
-			if (timeDif > 61) {
+			if (timeDif > 61 || !timeDif) { ; !timeDif means prevUpdateTime was not in YYYYMMDDHH24MISS format 
 				Download_Updater()
 			}
 		}
 		else {
-			Show_Tray_Notification(newVersion " is available!", "Left click on this notification to run the automatic download.`nRight click to dismiss it.", {Is_Update:1})
+			Show_Tray_Notification(newVersion " is available!", "Left click on this notification to run the automatic download.`nRight click to dismiss it.", {Is_Update:1, Fade_Timer:10000})
 		}
 	}
 }
@@ -5848,6 +5848,7 @@ Show_Tray_Notification(title, msg, params="") {
 	guiHeight := (textSize.H > guiHeightMax)?(guiHeightMax):(textSize.H)
 	guiHeight += 40, guiWidth += 20 ; Fitting size
 	borderSize := 1
+	fadeTimer := (params.Fade_Timer)?(params.Fade_Timer):(5000)
 
 	showX := A_ScreenWidth, showY := A_ScreenHeight-guiHeight-60
 	showW := 0, showH := guiHeight
@@ -5879,7 +5880,7 @@ Show_Tray_Notification(title, msg, params="") {
 		Gui, Show,% "x" showX " w" showW " NoActivate"
 	}
 
-	SetTimer, Fade_Tray_Notification, -5000
+	SetTimer, Fade_Tray_Notification, -%fadeTimer%
 	Gui, %defaultGUI%:Default
 	Return
 
@@ -5900,8 +5901,9 @@ Download_Updater() {
 
 	updaterLink := (ProgramValues.Beta)?(ProgramValues.Updater_Link_Beta):(ProgramValues.Updater_Link)
 	newVersionLink := (ProgramValues.Beta)?(ProgramValues.NewVersion_Link_Beta):(ProgramValues.NewVersion_Link)
-	fileName := (ProgramValues.Beta)?(ProgramValues.Name " BETA.exe"):(ProgramValues.Name ".exe")
+	fileName := (ProgramValues.Beta)?(ProgramValues.Name " (Beta).exe"):(ProgramValues.Name ".exe")
 
+	IniWrite,% A_Now,% ProgramValues.Ini_File,PROGRAM,LastUpdate
 	UrlDownloadToFile,% updaterLink,% ProgramValues.Updater_File
 	Sleep 10
 	Run,% ProgramValues.Updater_File 

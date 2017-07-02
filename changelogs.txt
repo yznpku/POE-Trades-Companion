@@ -1,4 +1,18 @@
 \\
+--1.11.BETA_1--
+What's new:
+	- Stats! The interface can be accessed by right clicking the tray icon, and choosing "Trading Stats". Trade stats are only saved upon closing a tab with a Custom Button that has the "Save the trade infos locally?" setting enabled.
+	- Tray notifications now have their own interface (based on W10 Tray Notifications).
+	
+What's changed:
+	- Huge tweaks to the updater.
+	- The clipboard will no longer be emptied upon closing a tab.
+
+What's fixed:
+	- The function used to remove the tray dead icons would not work under W10.
+	- The "Other" slot would be filled with an empty line for whispers from poeapp.
+//
+\\
 --1.10.7--
 Fixes: 
 - The main interface height would be incorrect when using a non-default screen dpi.
