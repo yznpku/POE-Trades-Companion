@@ -1,4 +1,4 @@
-![Banner](https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/Resources/Others/ForumBanner.png)
+![Banner](https://raw.githubusercontent.com/lemasato/POE-Trades-Helper/dev/Resources/Others/ForumBanner_NoBackground.png)
 **Enhance your trading experience by managing your poe.trade whispers in a convenient interface.**  
 **Up to nine custom buttons can be used to communicate with your buyer in a single click.**  
 
