@@ -40,77 +40,77 @@ Start_Script() {
 /*
 */
 ;	Global objects declaration
-	global ProgramValues := Object() ; Specific to the program's informations
-	global ProgramFonts := Object() ; Fonts private to the program
-	global ProgramSettings := Object() ; Settings from the local .ini
-	global RunParameters := Object() ; Run-time parameters
+	global ProgramValues 				:= Object() ; Specific to the program's informations
+	global ProgramFonts 				:= Object() ; Fonts private to the program
+	global ProgramSettings 				:= Object() ; Settings from the local .ini
+	global RunParameters 				:= Object() ; Run-time parameters
 
-	global GameSettings := Object() ; Settings from the game .ini
+	global GameSettings 				:= Object() ; Settings from the game .ini
 
-	global TradesGUI_Values := Object() ; TradesGUI various infos
-	global TradesGUI_Controls := Object() ; TradesGUI controls handlers
+	global TradesGUI_Values 			:= Object() ; TradesGUI various infos
+	global TradesGUI_Controls 			:= Object() ; TradesGUI controls handlers
 
-	global Stats_TradeCurrencyNames := Object()
-	global Stats_RealCurrencyNames := Object()
+	global Stats_TradeCurrencyNames 	:= Object() ; Abridged currency names from poe.trade
+	global Stats_RealCurrencyNames 		:= Object() ; All currency full names
 
 ;	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	
-	ProgramSettings.Insert("Screen_DPI", Get_DPI_Factor())
+	ProgramSettings.Screen_DPI 			:= Get_DPI_Factor() 
 
 	Handle_CommandLine_Parameters()
-	MyDocuments := (RunParameters.MyDocuments)?(RunParameters.MyDocuments):(A_MyDocuments)
+	MyDocuments 						:= (RunParameters.MyDocuments)?(RunParameters.MyDocuments):(A_MyDocuments)
 
-	ProgramValues.Insert("Name", "POE Trades Companion")
-	ProgramValues.Insert("Version", "1.11.BETA_1")
-	ProgramValues.Insert("Debug", 0)
+	ProgramValues.Name 					:= "POE Trades Companion"
+	ProgramValues.Version 				:= "1.11.BETA_1"
+	ProgramValues.Debug 				:= "0"
+
+	ProgramValues.Updater_File 			:= "POE-TC-Updater.exe"
+	ProgramValues.Updater_Link 			:= "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/Updater.exe"
+	ProgramValues.Updater_Link_Beta 	:= "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/dev/Updater.exe"
+
+	ProgramValues.Version_Link 			:= "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/version.txt"
+	ProgramValues.Version_Link_Beta  	:= "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/dev/version.txt"
+
+	ProgramValues.NewVersion_File		:= "POE-TC-NewVersion.exe"
+	ProgramValues.NewVersion_Link 		:= "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/POE Trades Companion.exe"
+	ProgramValues.NewVersion_Link_Beta	:= "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/dev/POE Trades Companion.exe"
+
+	ProgramValues.Changelogs_Link 		:= "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/changelogs.txt"
+	ProgramValues.Changelogs_Link_Beta	:= "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/dev/changelogs.txt"
+
+	ProgramValues.Reddit 				:= "https://redd.it/57oo3h"
+	ProgramValues.GGG 					:= "https://www.pathofexile.com/forum/view-thread/1755148/"
+	ProgramValues.GitHub 				:= "https://github.com/lemasato/POE-Trades-Companion"
+	ProgramValues.Paypal 				:= "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=BSWU76BLQBMCU"
+
+	ProgramValues.Local_Folder 			:= MyDocuments "\AutoHotkey\" ProgramValues.Name
+	ProgramValues.SFX_Folder 			:= ProgramValues.Local_Folder "\SFX"
+	ProgramValues.Logs_Folder 			:= ProgramValues.Local_Folder "\Logs"
+	ProgramValues.Skins_Folder 			:= ProgramValues.Local_Folder "\Skins"
+	ProgramValues.Fonts_Folder 			:= ProgramValues.Local_Folder "\Fonts"
+	ProgramValues.Fonts_Settings_File	:= ProgramValues.Fonts_Folder "\Settings.ini"
+	ProgramValues.Data_Folder			:= ProgramValues.Local_Folder "\Data"
+	ProgramValues.Others_Folder 		:= ProgramValues.Local_Folder "\Others"
+
+	ProgramValues.Ini_File 				:= ProgramValues.Local_Folder "\Preferences.ini"
+	ProgramValues.Logs_File 			:= ProgramValues.Logs_Folder "\" A_YYYY "-" A_MM "-" A_DD "_" A_Hour "-" A_Min "-" A_Sec ".txt"
+	ProgramValues.Changelogs_File 		:= ProgramValues.Logs_Folder "\changelogs.txt"
+	ProgramValues.Trades_History_File 	:= ProgramValues.Local_Folder "\Trades_History.ini" 
+
+	ProgramValues.Game_Folder 			:= MyDocuments "\my games\Path of Exile"
+	ProgramValues.Game_Ini_File 		:= ProgramValues.Game_Folder "\production_Config.ini"
+	ProgramValues.Game_Ini_File_Copy 	:= ProgramValues.Local_Folder "\production_Config.ini"
+
+	ProgramSettings.Support_Message 	:= "@%buyerName% " ProgramValues.Name ": view-thread/1755148"
+
+	ProgramValues.PID 					:= DllCall("GetCurrentProcessId")
+
 	ProgramValues.Debug := (A_IsCompiled)?(0):(ProgramValues.Debug) ; Prevent from enabling debug on compiled executable
 	if FileExist(A_ScriptDir "/ENABLE_DEBUG.txt") {
 		FileRead, fileContent,% A_ScriptDir "/ENABLE_DEBUG.txt"
 		fileContent := StrReplace(fileContent, "`n", "")
 		ProgramValues.Debug := fileContent
 	}
-	ProgramValues.Insert("Beta", 1)
-
-	ProgramValues.Insert("Updater_File", "POE-TC-Updater.exe")
-	ProgramValues.Insert("Updater_Link", "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/Updater.exe")
-	ProgramValues.Insert("Updater_Link_Beta", "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/dev/Updater.exe")
-
-	ProgramValues.Insert("Version_Link", "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/version.txt")
-	ProgramValues.Insert("Version_Link_Beta", "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/dev/version.txt")
-
-	ProgramValues.Insert("NewVersion_File", "POE-TC-NewVersion.exe")	
-	ProgramValues.Insert("NewVersion_Link", "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/POE Trades Companion.exe")
-	ProgramValues.Insert("NewVersion_Link_Beta", "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/dev/POE Trades Companion.exe")
-
-	ProgramValues.Insert("Changelogs_Link", "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/changelogs.txt")
-	ProgramValues.Insert("Changelogs_Link_Beta", "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/dev/changelogs.txt")
-
-	ProgramValues.Insert("Reddit", "https://redd.it/57oo3h")
-	ProgramValues.Insert("GGG", "https://www.pathofexile.com/forum/view-thread/1755148/")
-	ProgramValues.Insert("GitHub", "https://github.com/lemasato/POE-Trades-Companion")
-	ProgramValues.Insert("Paypal", "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=BSWU76BLQBMCU")
-
-	ProgramValues.Insert("Local_Folder", MyDocuments "\AutoHotkey\" ProgramValues.Name)
-	ProgramValues.Insert("SFX_Folder", ProgramValues.Local_Folder "\SFX")
-	ProgramValues.Insert("Logs_Folder", ProgramValues.Local_Folder "\Logs")
-	ProgramValues.Insert("Skins_Folder", ProgramValues.Local_Folder "\Skins")
-	ProgramValues.Insert("Fonts_Folder", ProgramValues.Local_Folder "\Fonts")
-	ProgramValues.Insert("Fonts_Settings_File", ProgramValues.Fonts_Folder "\Settings.ini")
-	ProgramValues.Insert("Data_Folder", ProgramValues.Local_Folder "\Data")
-	ProgramValues.Insert("Others_Folder", ProgramValues.Local_Folder "\Others")
-
-	ProgramValues.Insert("Ini_File", ProgramValues.Local_Folder "\Preferences.ini")
-	ProgramValues.Insert("Logs_File", ProgramValues.Logs_Folder "\" A_YYYY "-" A_MM "-" A_DD "_" A_Hour "-" A_Min "-" A_Sec ".txt")
-	ProgramValues.Insert("Changelogs_File", ProgramValues.Logs_Folder "\changelogs.txt")
-	ProgramValues.Insert("Trades_History_File", ProgramValues.Local_Folder "\Trades_History.ini" )
-
-	ProgramValues.Insert("Game_Folder", MyDocuments "\my games\Path of Exile")
-	ProgramValues.Insert("Game_Ini_File", ProgramValues.Game_Folder "\production_Config.ini")
-	ProgramValues.Insert("Game_Ini_File_Copy", ProgramValues.Local_Folder "\production_Config.ini")
-
-	ProgramSettings.Insert("Support_Message", "@%buyerName% " ProgramValues.Name ": view-thread/1755148") 
-
-	ProgramValues.Insert("PID", DllCall("GetCurrentProcessId"))
 ;	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 	GroupAdd, POEGame, ahk_exe PathOfExile.exe
