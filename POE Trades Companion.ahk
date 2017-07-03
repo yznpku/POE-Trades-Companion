@@ -3625,11 +3625,12 @@ Check_Update() {
 	static
 	global ProgramValues
 
-	changeslogsLink := (ProgramValues.Beta)?(ProgramValues.Changelogs_Link_Beta):(ProgramValues.Changelogs_Link)
-	versionLink := (ProgramValues.Beta)?(ProgramValues.Version_Link_Beta):(ProgramValues.Version_Link)
-
+	IniRead, updateBeta,% ProgramValues.Ini_File,PROGRAM,Update_Beta, 0
 	IniRead, autoUpdate,% ProgramValues.Ini_File,PROGRAM,AutoUpdate, 0
 	IniRead, prevUpdateTime,% ProgramValues.Ini_File,PROGRAM,LastUpdate,% A_Now
+
+	changeslogsLink := (updateBeta)?(ProgramValues.Changelogs_Link_Beta):(ProgramValues.Changelogs_Link)
+	versionLink := (updateBeta)?(ProgramValues.Version_Link_Beta):(ProgramValues.Version_Link)
 
 ;	Delete files remaining from updating
 	if FileExist(ProgramValues.Updater_File)
@@ -3674,6 +3675,7 @@ Check_Update() {
 			timeDif := A_Now
 			EnvSub, timeDif, %prevUpdateTime%, Seconds
 			if (timeDif > 61 || !timeDif) { ; !timeDif means prevUpdateTime was not in YYYYMMDDHH24MISS format 
+				Show_Tray_Notification(newVersion " is available!", "Auto-updating is enabled. Downloading the updater...")
 				Download_Updater()
 			}
 		}
@@ -3698,7 +3700,8 @@ Gui_About(params="") {
 
 	isUpdateAvailable := (verLatest && verCurrent != verLatest)?(1):(0)
 
-	IniRead, autoUpdate,% iniFilePath, PROGRAM, AutoUpdate
+	IniRead, updateBeta,% iniFilePath,PROGRAM,Update_Beta
+	IniRead, autoUpdate,% iniFilePath,PROGRAM,AutoUpdate
 
 	Gui, About:Destroy
 	Gui, About:New, +HwndaboutGuiHandler +AlwaysOnTop +SysMenu -MinimizeBox -MaximizeBox +OwnDialogs +LabelGui_About_,% programName " by lemasato v" verCurrent
@@ -3706,17 +3709,20 @@ Gui_About(params="") {
 	Gui, Font, ,Consolas
 
 	groupText := (isUpdateAvailable)?("Update v" verLatest " available."):("No update available.")
-	Gui, Add, GroupBox, w500 h60 xm Section c000000 hwndUpdateAvailableTextHandler,% groupText
+	Gui, Add, GroupBox, w500 h80 xm Section c000000 hwndUpdateAvailableTextHandler,% groupText
 	Gui, Add, Text, xs+20 ys+20,% "Current version: " A_Tab verCurrent
-	Gui, Add, Text, xs+20 ys+35 Section hwndLastestVersionTextHandler,% "Latest version: " A_Tab verLatest
+	Gui, Add, Text, xs+20 ys+35 hwndLastestVersionTextHandler,% "Latest version: " A_Tab verLatest
 	if ( isUpdateAvailable ) {
 		GuiControl, About:+cGreen +Redraw,% UpdateAvailableTextHandler
 		GuiControl, About:+cGreen +Redraw,% LastestVersionTextHandler
-		Gui, Add, Button,x+25 ys-5 w80 h20 gGui_About_Update,Update
+		Gui, Add, Button,x+25 yp-5 w80 h20 gGui_About_Update,Update
 	}
-	Gui, Add, CheckBox,ys vUpdateAutomatically,Enable automatic updates
+	Gui, Add, CheckBox,xs+20 ys+55 vUpdateAutomatically,Enable automatic updates
+	Gui, Add, CheckBox,xp+200 yp vUpdateBeta,Enable BETA (Requires reloading)
 	if ( autoUpdate = 1 )
 		GuiControl, About:,UpdateAutomatically,1
+	if ( updateBeta = 1 )
+		GuiControl, About:,UpdateBeta,1
 
 	FileRead, changelogText,% ProgramValues.Changelogs_File
 	allChanges := Object()
@@ -3775,6 +3781,7 @@ Gui_About(params="") {
 	Gui_About_Close:
 		Gui, About:Submit
 		IniWrite,% UpdateAutomatically,% iniFilePath,PROGRAM,AutoUpdate
+		IniWrite,% UpdateBeta,% iniFilePath,PROGRAM,Update_Beta
 	Return
 }
 
@@ -5388,8 +5395,8 @@ Create_Tray_Menu() {
 		Menu, Debug, Add,Delete local settings (+Reload),Delete_Local_Folder
 		Menu, Tray, Add, Debug,:Debug
 	}
-	Menu, Tray, Add,Settings, Gui_Settings
 	Menu, Tray, Add,Trading Stats, Gui_Stats
+	Menu, Tray, Add,Settings, Gui_Settings
 	Menu, Tray, Add,About?, Gui_About
 	Menu, Tray, Add, 
 	Menu, Tray, Add,Cycle Overlay,GUI_Trades_Cycle
@@ -5462,10 +5469,11 @@ Run_As_Admin() {
 		funcParams := {  Background_Color:"Green"
 						,Border_Color:"White"
 						,Title_Color:"White"
-						,Text:"Reloading to request admin privilieges in XX..."
+						,Text:"Reloading to request admin privilieges in XX...`nClick on this window to reload now."
 						,Text_Color:"White"
 						,Condition:"Reload_Timer"
-						,Condition_Count:3}
+						,Condition_Count:3
+						,Close_On_Click:true}
 		GUI_Beautiful_Warning(funcParams)
 	}
 	Reload_Func()
@@ -5490,6 +5498,8 @@ GUI_Beautiful_Warning(params) {
 	txtSize := Get_Text_Control_Size(warnText, guiFontName, guiFontSize, guiWidthBase+xOffset)
 	guiWidth := (txtSize.W > guiWidthBase)?(txtSize.W+xOffset):(guiWidthBase)
 	guiHeight := (underlineExists)?(guiHeightBase + txtSize.H):(guiHeightNoUnderline + txtSize.H)
+
+	closeOnClick := params.Close_On_Click
 
 	defaultGui := A_DefaultGUI
 
@@ -5519,11 +5529,24 @@ GUI_Beautiful_Warning(params) {
 		GoSub GUI_Beautiful_Warning_Reload_Timer
 		SetTimer, GUI_Beautiful_Warning_Reload_Timer, 1000
 	}
+
+	Gui, Add, Text,x0 y0 w%guiWidth% h%guiHeight% BackgroundTrans gGUI_Beautiful_Warning_OnLeftClick,% ""
 	Gui, Show, w%guiWidth% h%guiHeight%
 	Gui, %defaultGUI%:Default
 
 	WinWait,% "ahk_id " GuiBeautifulWarningHandler
 	WinWaitClose,% "ahk_id " GuiBeautifulWarningHandler
+	Return
+
+	GUI_Beautiful_Warning_ContextMenu:
+		GoSub GUI_Beautiful_Warning_OnLeftClick
+	Return
+
+	GUI_Beautiful_Warning_OnLeftClick:
+		if (closeOnClick) {
+			SetTimer, GUI_Beautiful_Warning_Reload_Timer, Off
+			Gui, BeautifulWarn:Destroy
+		}
 	Return
 
 	GUI_Beautiful_Warning_Reload_Timer:
@@ -5818,9 +5841,8 @@ Get_Text_Control_Size(txt, fontName, fontSize, maxWidth="") {
 /*		Create a control with the specified text to retrieve
  *		the space (width/height) it would normally take
 */
-
 	Gui, GetTextSize:Font, S%fontSize%,% fontName
-	if (maxWidth)
+	if (maxWidth) 
 		Gui, GetTextSize:Add, Text,x0 y0 +Wrap w%maxWidth% hwndTxtHandler,% txt
 	else 
 		Gui, GetTextSize:Add, Text,x0 y0 hwndTxtHandler,% txt
@@ -5828,6 +5850,25 @@ Get_Text_Control_Size(txt, fontName, fontSize, maxWidth="") {
 	Gui, GetTextSize:Destroy
 
 	return coords
+
+/*	Alternative version, with auto sizing
+
+	Gui, GetTextSize:Font, S%fontSize%,% fontName
+	Gui, GetTextsize:Add, Text,x0 y0 hwndTxtHandlerAutoSize,% txt
+	coordsAuto := Get_Control_Coords("GetTextSize", TxtHandlerAutoSize)
+	if (maxWidth) {
+		Gui, GetTextSize:Add, Text,x0 y0 +Wrap w%maxWidth% hwndTxtHandlerFixedSize,% txt
+		coordsFixed := Get_Control_Coords("GetTextSize", TxtHandlerFixedSize)
+	}
+	Gui, GetTextSize:Destroy
+
+	if (maxWidth > coords.Auto)
+		coords := coordsAuto
+	else
+		coords := coordsFixed
+
+	return coords
+*/
 }
 
 Show_Tray_Notification(title, msg, params="") {
@@ -5844,7 +5885,7 @@ Show_Tray_Notification(title, msg, params="") {
 	guiWidthMax := 350, guiHeightMax := 150
 	textSize := Get_Text_Control_Size(msg, "Segoe UI", 9, guiWidthMax)
 
-	guiWidth := (textSize.W > 40guiWidthMax0)?(guiWidthMax):(textSize.W)
+	guiWidth := (textSize.W > guiWidthMax)?(guiWidthMax):(textSize.W)
 	guiHeight := (textSize.H > guiHeightMax)?(guiHeightMax):(textSize.H)
 	guiHeight += 40, guiWidth += 20 ; Fitting size
 	borderSize := 1
@@ -5867,6 +5908,7 @@ Show_Tray_Notification(title, msg, params="") {
 
 	Gui, Add, Picture, x5 y5 w16 h16,% ProgramValues.Others_Folder "\icon.png"
 	Gui, Font, Bold, Segoe UI
+	Gui, Add, Text,% "x0 y0 w" guiWidth " h" guiHeight " BackgroundTrans gGui_TrayNotification_OnLeftClick",% ""
 	Gui, Add, Text,% "xp+20" " y5" " w" guiWidth-20 " BackgroundTrans cFFFFFF gGui_TrayNotification_OnLeftClick",% title
 	Gui, Font, Norm, Segoe UI
 	Gui, Add, Text,% "x10" " yp+25" " w" guiWidth-25 " R3 BackgroundTrans ca5a5a5 gGui_TrayNotification_OnLeftClick",% msg
@@ -5899,9 +5941,11 @@ Show_Tray_Notification(title, msg, params="") {
 Download_Updater() {
 	global ProgramValues
 
-	updaterLink := (ProgramValues.Beta)?(ProgramValues.Updater_Link_Beta):(ProgramValues.Updater_Link)
-	newVersionLink := (ProgramValues.Beta)?(ProgramValues.NewVersion_Link_Beta):(ProgramValues.NewVersion_Link)
-	fileName := (ProgramValues.Beta)?(ProgramValues.Name " (Beta).exe"):(ProgramValues.Name ".exe")
+	IniRead,updateBeta,% ProgramValues.Ini_File,PROGRAM,Update_Beta
+
+	updaterLink := (updateBeta)?(ProgramValues.Updater_Link_Beta):(ProgramValues.Updater_Link)
+	newVersionLink := (updateBeta)?(ProgramValues.NewVersion_Link_Beta):(ProgramValues.NewVersion_Link)
+	fileName := (updateBeta)?(ProgramValues.Name " (Beta).exe"):(ProgramValues.Name ".exe")
 
 	IniWrite,% A_Now,% ProgramValues.Ini_File,PROGRAM,LastUpdate
 	UrlDownloadToFile,% updaterLink,% ProgramValues.Updater_File
