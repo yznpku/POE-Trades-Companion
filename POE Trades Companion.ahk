@@ -183,7 +183,7 @@ Start_Script() {
 	if ( ProgramValues["Debug"] ) {
 		; trade / No qual / Level
 		str := "2016/10/09 21:30:32 105384166 355 [INFO Client 6416] "
-			str .= "@From iSellStuff: Hi, I would like to buy your level 19 0% Faster Attacks Support listed for 5 alteration in Beta Standard (stash tab """"Shop: poetrade 1""""; position: left 10, top 11)"
+			str .= "@From iSellStuff: Hi, I would like to buy your level 1 0% Faster Attacks Support listed for 5 alteration in Legacy (stash tab """"Shop: Gems""""; position: left 10, top 11) Offering 1alch?"
 
 		; trade / No qual / Level / Unpriced
 		str .= "`n" "2016/10/09 21:30:32 105384166 355 [INFO Client 6416] "
@@ -219,7 +219,7 @@ Gui_Stats() {
 
 	defaultGUI := A_DefaultGui
 	Gui, Stats:Destroy
-	Gui, Stats:New, +HwndGuiStatsHandler +SysMenu -MinimizeBox -MaximizeBox +Resize +OwnDialogs +MinSize670x360 +LabelGui_Stats_,% ProgramValues.Name " - Trading Stats"
+	Gui, Stats:New, +HwndGuiStatsHandler +SysMenu -MinimizeBox -MaximizeBox +Resize +OwnDialogs +MinSize670x360 +LabelGui_Stats_,% ProgramValues.Name " - My Stats"
 	Gui, Stats:Default
 	Gui, Margin, 0, 0
 	Gui, Font,,Segoe UI
@@ -5395,9 +5395,10 @@ Create_Tray_Menu() {
 		Menu, Debug, Add,Delete local settings (+Reload),Delete_Local_Folder
 		Menu, Tray, Add, Debug,:Debug
 	}
-	Menu, Tray, Add,Trading Stats, Gui_Stats
 	Menu, Tray, Add,Settings, Gui_Settings
 	Menu, Tray, Add,About?, Gui_About
+	Menu, Tray, Add,
+	Menu, Tray, Add,My Stats, Gui_Stats
 	Menu, Tray, Add, 
 	Menu, Tray, Add,Cycle Overlay,GUI_Trades_Cycle
 	Menu, Tray, Add, 
@@ -5883,11 +5884,12 @@ Show_Tray_Notification(title, msg, params="") {
 	Is_Update := params.Is_Update
 
 	guiWidthMax := 350, guiHeightMax := 150
-	textSize := Get_Text_Control_Size(msg, "Segoe UI", 9, guiWidthMax)
+	guiFontName := "Segoe UI", guiFontSize := "9", guiTitleFontSize := "10"
+	textSize := Get_Text_Control_Size(msg, guiFontName, guiFontSize, guiWidthMax)
 
 	guiWidth := (textSize.W > guiWidthMax)?(guiWidthMax):(textSize.W)
 	guiHeight := (textSize.H > guiHeightMax)?(guiHeightMax):(textSize.H)
-	guiHeight += 40, guiWidth += 20 ; Fitting size
+	guiHeight += 50, guiWidth += 20 ; Fitting size
 	borderSize := 1
 	fadeTimer := (params.Fade_Timer)?(params.Fade_Timer):(5000)
 
@@ -5899,27 +5901,27 @@ Show_Tray_Notification(title, msg, params="") {
 	Gui, TrayNotification:Default
 	Gui, Margin, 0, 0
 	Gui, Color, 1f1f1f
-	Gui, Font, S9 Q5, Segoe UI
 
 	Gui, Add, Progress, x0 y0 w%guiWidth% h%borderSize% Background484848 ; Top
 	Gui, Add, Progress, x0 y0 w%borderSize% h%guiHeight% Background484848 ; Left
 	; Gui, Add, Progress,% "x" guiWidth-borderSize " y0" " w" borderSize " h" guiHeight " Background484848" ; Right
 	Gui, Add, Progress,% "x" 0 " y" guiHeight-borderSize " w" guiWidth " h" borderSize " Background484848" ; Bottom
-
-	Gui, Add, Picture, x5 y5 w16 h16,% ProgramValues.Others_Folder "\icon.png"
-	Gui, Font, Bold, Segoe UI
 	Gui, Add, Text,% "x0 y0 w" guiWidth " h" guiHeight " BackgroundTrans gGui_TrayNotification_OnLeftClick",% ""
-	Gui, Add, Text,% "xp+20" " y5" " w" guiWidth-20 " BackgroundTrans cFFFFFF gGui_TrayNotification_OnLeftClick",% title
-	Gui, Font, Norm, Segoe UI
+
+	Gui, Add, Picture, x5 y5 w32 h32,% ProgramValues.Others_Folder "\icon.png"
+	Gui, Font, S%guiTitleFontSize% Bold,% guiFontName
+	Gui, Add, Text,% "xp+35" " yp+10" " w" guiWidth-20 " BackgroundTrans cFFFFFF gGui_TrayNotification_OnLeftClick",% title
+	Gui, Font, S%guiFontSize% Norm,% guiFontName
 	Gui, Add, Text,% "x10" " yp+25" " w" guiWidth-25 " R3 BackgroundTrans ca5a5a5 gGui_TrayNotification_OnLeftClick",% msg
 	Gui, Show,% "x" showX " y" showY " w" showW " h" showH " NoActivate"
 	Loop {
-		showW := (showW > guiWidth)?(guiWidth):(showW+25)
+		showW += 25
+		showW := (showW > guiWidth)?(guiWidth):(showW)
 		showX := A_ScreenWidth-showW
+		Gui, Show,% "x" showX " w" showW " NoActivate"
+		Sleep 1
 		if (showW = guiWidth)
 			Break
-		Sleep 1
-		Gui, Show,% "x" showX " w" showW " NoActivate"
 	}
 
 	SetTimer, Fade_Tray_Notification, -%fadeTimer%
