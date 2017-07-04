@@ -4,11 +4,16 @@
 
 - You receive a trade request while casually mapping?  
 - Or right in the middle of an uber lab run?  
-- Or even while you were AFK, a few minutes ago?  
+- Maybe while you were AFK, a few minutes ago?  
 
 **It all takes just a single click to give your buyer some attention.**
 
-Two skins are available. The regular system interface, or a POE-themed interface:  
+Features:
+- Highly customizable.
+- Custom Buttons. Up to 9 buttons that can be repositioned, renamed, hotkeyed.
+- Hotkeys. Up to 8 basic and 16 advanded hotkeys.
+- Skins. Two skins are available. The regular system interface, or a POE-themed interface.
+- Stats. Keep track of your past trades in a convenient interface.
 
 |System|Path of Exile|
 |---|---|
