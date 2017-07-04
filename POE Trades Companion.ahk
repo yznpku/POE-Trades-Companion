@@ -96,6 +96,7 @@ Start_Script() {
 	ProgramValues.Logs_File 			:= ProgramValues.Logs_Folder "\" A_YYYY "-" A_MM "-" A_DD "_" A_Hour "-" A_Min "-" A_Sec ".txt"
 	ProgramValues.Changelogs_File 		:= ProgramValues.Logs_Folder "\changelogs.txt"
 	ProgramValues.Trades_History_File 	:= ProgramValues.Local_Folder "\Trades_History.ini" 
+	ProgramValues.Trades_Backup_File	:= ProgramValues.Local_Folder "\Trades_Backup.ini"
 
 	ProgramValues.Game_Folder 			:= MyDocuments "\my games\Path of Exile"
 	ProgramValues.Game_Ini_File 		:= ProgramValues.Game_Folder "\production_Config.ini"
@@ -199,12 +200,71 @@ Start_Script() {
 		Filter_Logs_Message(str)
 	}
 
+	Gui_Trades_Load_Pending_Backup()
+
 	; Gui_Stats()
 	; Gui_Settings()
 	; Gui_About()
 	Logs_Append("DUMP", localSettings)
 	Monitor_Game_Logs()
 }
+
+Gui_Trades_Load_Pending_Backup() {
+/*		Read the backup file, and send those trades requests to the Trades GUI
+ */
+	global ProgramValues
+
+	tempTrades := {}
+	IniRead, allKeys,% ProgramValues.Trades_Backup_File,GENERAL
+	IniRead, maxIndex,% ProgramValues.Trades_Backup_File,GENERAL,Max_Index
+	Loop, Parse, allKeys,% "`n`r"
+	{
+		keyAndValue := A_LoopField
+		if RegExMatch(keyAndValue, "(.*)=(.*)", found) {
+			keyName := found1, value := found2
+			tempTrades.Insert(found1, found2)
+			found1 := "", found2 := ""
+		}
+	}
+
+	Loop % maxIndex {
+		outterIndex := A_Index
+		thisTrade := {}
+		for key, value in tempTrades {
+			if RegExMatch(key, outterIndex "_(.*)", found) {
+				thisTrade.Insert(found1, value)
+				found1 := ""
+			}
+		}
+		messagesArray := Gui_Trades_Manage_Trades("ADD_NEW", thisTrade)
+		Gui_Trades("UPDATE", messagesArray)
+	}
+
+	FileDelete,% ProgramValues.Trades_Backup_File
+}
+
+/*
+
+			allTrades.BUYERS.Push("iSellStuff")
+			allTrades.ITEMS.Push("level 1 Faster Attacks Support")
+			allTrades.PRICES.Push("5 alteration")
+			allTrades.LOCATIONS.Push("Breach (stash tab ""Gems""; position: left 6, top 8)")
+			allTrades.OTHER.Push("Offering 1 alch?")
+			allTrades.TIME.Push(A_Hour ":" A_Min)
+			allTrades.PID.Push(0)
+			allTrades.DATES.Push(A_YYYY "-" A_MM "-" A_DD)
+			allTrades.GUILDS.Push("")
+
+Name:whispName
+									  ,Item:tradeItem
+									  ,Price:tradePrice
+									  ,Location:tradeStash
+									  ,PID:gamePID
+									  ,Time:A_Hour ":" A_Min
+									  ,Other:tradeOther
+									  ,Date:A_YYYY "-" A_MM "-" A_DD
+									  ,Guild:whispGuild}
+*/
 
 Gui_Stats() {
 	static
@@ -558,14 +618,14 @@ Filter_Logs_Message(message) {
 
 			; Check existing tabs for same buyer, and add to the "Other:" slot
 			tradesInfos := Gui_Trades_Manage_Trades("GET_ALL")
-			for key, element in tradesInfos.BUYERS {
-				if (whispName = element) {
-					otherContent := tradesInfos.OTHER[key]
+			Loop % tradesInfos.Max_Index {
+				if (whispName = tradeInfos[A_Index "_Buyer"]) {
+					otherContent := tradesInfos[A_Index "_Other"]
 					if (otherContent != "-" && otherContent != "`n") { ; Already contains text, include previous text
 						if otherContent not contains (Hover to see all messages) ; Only one message in the Other slot.
 						{
 							StringReplace, otherContent, otherContent,% "`n",% "",1 ; Remove blank lines
-							otherContent := "[" tradesInfos.TIME[key] "] " otherContent ; Add timestamp
+							otherContent := "[" tradesInfos[A_Index "_Time"] "] " otherContent ; Add timestamp
 						}
 						StringReplace, otherContent, otherContent,% "(Hover to see all messages)`n",% "",1
 						otherText := "(Hover to see all messages)`n" otherContent "`n[" A_Hour ":" A_Min "] " whispMsg
@@ -639,8 +699,8 @@ Filter_Logs_Message(message) {
 				; Do not add the trade if the same is already in queue
 				tradesExists := 0
 				tradesInfos := Gui_Trades_Manage_Trades("GET_ALL")
-				for key, element in tradesInfos.BUYERS {
-					buyerContent := tradesInfos.BUYERS[key], itemContent := tradesInfos.ITEMS[key], priceContent := tradesInfos.PRICES[key], locationContent := tradesInfos.LOCATIONS[key], otherContent = tradesInfos.OTHER[key]
+				Loop % tradeInfos.Max_Index {
+					buyerContent := tradesInfos[A_Index "_Buyer"], itemContent := tradesInfos[A_Index "_Item"], priceContent := tradesInfos[A_Index "_Price"], locationContent := tradesInfos[A_Index "_Location"], otherContent = tradesInfos[A_Index "_Other"]
 					if (buyerContent=whispName && itemContent=tradeItem && priceContent=tradePrice && locationContent=tradeStash) {
 						tradesExists := 1
 					}
@@ -648,7 +708,7 @@ Filter_Logs_Message(message) {
 
 				; Trade does not already exist
 				if (tradesExists = 0) {
-					newTradesInfos := {Name:whispName
+					newTradesInfos := {Buyer:whispName
 									  ,Item:tradeItem
 									  ,Price:tradePrice
 									  ,Location:tradeStash
@@ -743,7 +803,6 @@ Monitor_Game_Logs(mode="") {
 ;
 ;==================================================================================================================
 
-;Gui_Trades(infosArray="", errorMsg="") { DEPRECATED
 Gui_Trades(mode="", tradeInfos="") {
 ;			Trades GUI. Each new item will be added in a new tab
 ;			Clicking on a button will do its corresponding action
@@ -1161,7 +1220,7 @@ Gui_Trades(mode="", tradeInfos="") {
 
 	if ( mode = "UPDATE" || mode = "CREATE" ) {
 
-		tabsCount := tradeInfos.BUYERS.Length()
+		tabsCount := tradeInfos.Max_Index
 		tabsCount := (!tabsCount)?(0):(tabsCount)
 		TradesGUI_Values.Tabs_Count := tabsCount
 
@@ -1181,21 +1240,21 @@ Gui_Trades(mode="", tradeInfos="") {
 
 ;		Update the fields with the trade infos
 		tabsList := "", isGuiActive := false
-		for key, element in tradeInfos.BUYERS {
+		Loop % tradeInfos.Max_Index {
 			isGuiActive := true
-			tabsList .= "|" key
-			GuiControl, Trades:,% buyerSlot%key%Handler,% tradeInfos.BUYERS[key]
-			GuiControl, Trades:,% itemSlot%key%Handler,% tradeInfos.ITEMS[key]
-			GuiControl, Trades:,% priceSlot%key%Handler,% tradeInfos.PRICES[key]
-			GuiControl, Trades:,% locationSlot%key%Handler,% tradeInfos.LOCATIONS[key]
-			GuiControl, Trades:,% PIDSlot%key%Handler,% tradeInfos.GAMEPID[key]
-			GuiControl, Trades:,% TimeSlot%key%Handler,% tradeInfos.TIME[key]
-			GuiControl, Trades:,% OtherSlot%key%Handler,% tradeInfos.OTHER[key]
-			GuiControl, Trades:,% DateSlot%key%Handler,% tradeInfos.DATES[key]
-			GuiControl, Trades:,% GuildSlot%key%Handler,% tradeInfos.GUILDS[key]
-			if ( key <= maxTabsRow && activeSkin != "System" ) {
-				GuiControl, Trades:Show,% TabIMG%key%Handler
-				GuiControl, Trades:Show,% TabTXT%key%Handler
+			tabsList .= "|" A_Index
+			GuiControl, Trades:,% buyerSlot%A_Index%Handler,% tradeInfos[A_Index "_Buyer"]
+			GuiControl, Trades:,% itemSlot%A_Index%Handler,% tradeInfos[A_Index "_Item"]
+			GuiControl, Trades:,% priceSlot%A_Index%Handler,% tradeInfos[A_Index "_Price"]
+			GuiControl, Trades:,% locationSlot%A_Index%Handler,% tradeInfos[A_Index "_Location"]
+			GuiControl, Trades:,% PIDSlot%A_Index%Handler,% tradeInfos[A_Index "_PID"]
+			GuiControl, Trades:,% TimeSlot%A_Index%Handler,% tradeInfos[A_Index "_Time"]
+			GuiControl, Trades:,% OtherSlot%A_Index%Handler,% tradeInfos[A_Index "_Other"]
+			GuiControl, Trades:,% DateSlot%A_Index%Handler,% tradeInfos[A_Index "_Date"]
+			GuiControl, Trades:,% GuildSlot%A_Index%Handler,% tradeInfos[A_Index "_Guild"]
+			if ( A_Index <= maxTabsRow && activeSkin != "System" ) {
+				GuiControl, Trades:Show,% TabIMG%A_Index%Handler
+				GuiControl, Trades:Show,% TabTXT%A_Index%Handler
 			}
 		}
 
@@ -1807,16 +1866,16 @@ Gui_Trades_Redraw(msg, params="") {
 		SplashTextOn, 250, 40,% ProgramValues.Name,Please wait...`nCurrently re-creating the interface.
 	allTrades := Gui_Trades_Manage_Trades("GET_ALL")
 	if ( params.preview ) {
-		if !(allTrades.BUYERS.MaxIndex()) {
-			allTrades.BUYERS.Push("iSellStuff")
-			allTrades.ITEMS.Push("level 1 Faster Attacks Support")
-			allTrades.PRICES.Push("5 alteration")
-			allTrades.LOCATIONS.Push("Breach (stash tab ""Gems""; position: left 6, top 8)")
-			allTrades.OTHER.Push("Offering 1 alch?")
-			allTrades.TIME.Push(A_Hour ":" A_Min)
-			allTrades.PID.Push(0)
-			allTrades.DATES.Push(A_YYYY "-" A_MM "-" A_DD)
-			allTrades.GUILDS.Push("")
+		if !(allTrades.Max_Index) {
+			allTrades.1_Buyer := "iSellStuff"
+			allTrades.1_Item		:= "level 1 Faster Attacks Support"
+			allTrades.1_Price		:= "5 alteration"
+			allTrades.1_Location	:= "Breach (stash tab ""Gems""; position: left 6, top 8)"
+			allTrades.1_Other		:= "Offering 1 alch?"
+			allTrades.1_Time		:= A_Hour ":" A_Min
+			allTrades.1_PID			:= 0
+			allTrades.1_Date		:= A_YYYY "-" A_MM "-" A_DD
+			allTrades.1_Guild		:= ""
 		}
 	}
 	Gui_Trades(msg)
@@ -1840,7 +1899,7 @@ Gui_Trades_Check_Duplicate(currentActiveTab) {
 */
 	duplicates := currentActiveTab
 	messagesArray := Gui_Trades_Manage_Trades("GET_ALL")
-	maxIndex := messagesArray.BUYERS.MaxIndex()
+	maxIndex := messagesArray.MaxIndex
 	currentTabInfos := Gui_Trades_Get_Trades_Infos(currentActiveTab)
 	arrayKey := 1
 	Loop %maxIndex% {
@@ -2048,8 +2107,8 @@ Gui_Trades_Set_Trades_Infos(setInfos){
 	if ( newPID ) {
 		; Replace the PID for all trades matching the same PID
 		allTrades := Gui_Trades_Manage_Trades("GET_ALL")
-		for key, element in allTrades.BUYERS {
-			if ( allTrades.GAMEPID[key] = oldPID ) {
+		Loop % allTrades.Max_Index {
+			if ( allTrades[A_Index "_PID"] = oldPID ) {
 				GuiControl,Trades:,% TradesGUI_Controls["PID_Slot_" key],% newPID
 			}
 		}
@@ -2068,16 +2127,6 @@ Gui_Trades_Manage_Trades(mode, newItemInfos="", activeTabID=""){
 	global TradesGUI_Controls
 
 	returnArray := Object()
-	returnArray.COUNT := Object()
-	returnArray.BUYERS := Object()
-	returnArray.ITEMS := Object()
-	returnArray.PRICES := Object()
-	returnArray.LOCATIONS := Object()
-	returnArray.GAMEPID := Object()
-	returnArray.TIME := Object()
-	returnArray.OTHER := Object()
-	returnArray.DATES := Object()
-	returnArray.GUILDS := Object()
 	btnID := activeTabID
 
 	if ( mode = "GET_ALL" || mode = "ADD_NEW") {
@@ -2086,7 +2135,7 @@ Gui_Trades_Manage_Trades(mode, newItemInfos="", activeTabID=""){
 			bcount := A_Index
 			GuiControlGet, content, Trades:,% TradesGUI_Controls["Buyer_Slot_" A_Index]
 			if ( content ) {
-				returnArray.BUYERS.Insert(A_Index, content)
+				returnArray.Insert(A_Index "_Buyer", content)
 			}
 			else break
 		}
@@ -2096,7 +2145,7 @@ Gui_Trades_Manage_Trades(mode, newItemInfos="", activeTabID=""){
 			icount := A_Index
 			GuiControlGet, content, Trades:,% TradesGUI_Controls["Item_Slot_" A_Index]
 			if ( content ) {
-				returnArray.ITEMS.Insert(A_Index, content)
+				returnArray.Insert(A_Index "_Item", content)
 			}
 			else break
 		}
@@ -2106,7 +2155,7 @@ Gui_Trades_Manage_Trades(mode, newItemInfos="", activeTabID=""){
 			pcount := A_Index
 			GuiControlGet, content, Trades:,% TradesGUI_Controls["Price_Slot_" A_Index]
 			if ( content ) {
-				returnArray.PRICES.Insert(A_Index, content)
+				returnArray.Insert(A_Index "_Price", content)
 			}
 			else break
 		}
@@ -2116,7 +2165,7 @@ Gui_Trades_Manage_Trades(mode, newItemInfos="", activeTabID=""){
 			lcount := A_Index
 			GuiControlGet, content, Trades:,% TradesGUI_Controls["Location_Slot_" A_Index]
 			if ( content ) {
-				returnArray.LOCATIONS.Insert(A_Index, content)
+				returnArray.Insert(A_Index "_Location", content)
 			}
 			else break
 		}
@@ -2126,7 +2175,7 @@ Gui_Trades_Manage_Trades(mode, newItemInfos="", activeTabID=""){
 			PIDCount := A_Index
 			GuiControlGet, content, Trades:,% TradesGUI_Controls["PID_Slot_" A_Index]
 			if ( content ) {
-				returnArray.GAMEPID.Insert(A_Index, content)
+				returnArray.Insert(A_Index "_PID", content)
 			}
 			else break
 		}
@@ -2136,7 +2185,7 @@ Gui_Trades_Manage_Trades(mode, newItemInfos="", activeTabID=""){
 			timeCount := A_Index
 			GuiControlGet, content, Trades:,% TradesGUI_Controls["Time_Slot_" A_Index]
 			if ( content ) {
-				returnArray.TIME.Insert(A_Index, content)
+				returnArray.Insert(A_Index "_Time", content)
 			}
 			else break
 		}
@@ -2145,7 +2194,7 @@ Gui_Trades_Manage_Trades(mode, newItemInfos="", activeTabID=""){
 			otherCount := A_Index
 			GuiControlGet, content, Trades:,% TradesGUI_Controls["Other_Slot_" A_Index]
 			if ( content ) {
-				returnArray.OTHER.Insert(A_Index, content)
+				returnArray.Insert(A_Index "_Other", content)
 			}
 			else break
 		}
@@ -2154,7 +2203,7 @@ Gui_Trades_Manage_Trades(mode, newItemInfos="", activeTabID=""){
 			datesCount := A_Index
 			GuiControlGet, content, Trades:,% TradesGUI_Controls["Date_Slot_" A_Index]
 			if ( content ) {
-				returnArray.DATES.Insert(A_Index, content)
+				returnArray.Insert(A_Index "_Date", content)
 			}
 			else break
 		}
@@ -2163,23 +2212,24 @@ Gui_Trades_Manage_Trades(mode, newItemInfos="", activeTabID=""){
 			guildsCount := A_Index
 			GuiControlGet, content, Trades:,% TradesGUI_Controls["Guild_Slot_" A_Index]
 			if ( content ) {
-				returnArray.GUILDS.Insert(A_Index, content)
+				returnArray.Insert(A_Index "_Guild", content)
 			}
 			else break
 		}
+
+		returnArray.Insert("Max_Index", bCount)
 	}
 
 	if ( mode = "ADD_NEW") {
-		returnArray.COUNT.Insert(0, bCount)
-		returnArray.BUYERS.Insert(bCount, newItemInfos.Name)
-		returnArray.ITEMS.Insert(iCount, newItemInfos.Item)
-		returnArray.PRICES.Insert(pCount, newItemInfos.Price)
-		returnArray.LOCATIONS.Insert(lCount, newItemInfos.Location)
-		returnArray.GAMEPID.Insert(PIDCount, newItemInfos.PID)
-		returnArray.TIME.Insert(timeCount, newItemInfos.Time)
-		returnArray.OTHER.Insert(otherCount, newItemInfos.Other)
-		returnArray.DATES.Insert(datesCount, newItemInfos.Date)
-		returnArray.GUILDS.Insert(guildsCount, newItemInfos.Guild)
+		returnArray.Insert(bCount "_Buyer", newItemInfos.Buyer)
+		returnArray.Insert(iCount "_Item", newItemInfos.Item)
+		returnArray.Insert(pCount "_Price", newItemInfos.Price)
+		returnArray.Insert(lCount "_Location", newItemInfos.Location)
+		returnArray.Insert(PIDCount "_PID", newItemInfos.PID)
+		returnArray.Insert(timeCount "_Time", newItemInfos.Time)
+		returnArray.Insert(otherCount "_Other", newItemInfos.Other)
+		returnArray.Insert(datesCount "_Date", newItemInfos.Date)
+		returnArray.Insert(guildsCount "_Guild", newItemInfos.Guild)
 	}
 
 	if ( mode = "REMOVE_CURRENT") {
@@ -2192,7 +2242,8 @@ Gui_Trades_Manage_Trades(mode, newItemInfos="", activeTabID=""){
 			GuiControlGet, content, Trades:,% TradesGUI_Controls["Buyer_Slot_" counter]
 			if ( content ) {
 				index := A_Index
-				returnArray.BUYERS.Insert(index, content)
+				returnArray.Insert(index "_Buyer", content)
+				returnArray.Insert("Max_Index", index)
 			}
 			else break
 		}
@@ -2208,7 +2259,7 @@ Gui_Trades_Manage_Trades(mode, newItemInfos="", activeTabID=""){
 			GuiControlGet, content, Trades:,% TradesGUI_Controls["Item_Slot_" counter]
 			if ( content ) {
 				index := A_Index
-				returnArray.ITEMS.Insert(index, content)
+				returnArray.Insert(index "_Item", content)
 			}
 			else break
 		}
@@ -2224,7 +2275,7 @@ Gui_Trades_Manage_Trades(mode, newItemInfos="", activeTabID=""){
 			GuiControlGet, content, Trades:,% TradesGUI_Controls["Price_Slot_" counter]
 			if ( content ) {
 				index := A_Index
-				returnArray.PRICES.Insert(index, content)
+				returnArray.Insert(index "_Price", content)
 			}
 			else break
 		}
@@ -2240,7 +2291,7 @@ Gui_Trades_Manage_Trades(mode, newItemInfos="", activeTabID=""){
 			GuiControlGet, content, Trades:,% TradesGUI_Controls["Location_Slot_" counter]
 			if ( content ) {
 				index := A_Index
-				returnArray.LOCATIONS.Insert(index, content)
+				returnArray.Insert(index "_Location", content)
 			}
 			else break
 		}
@@ -2256,7 +2307,7 @@ Gui_Trades_Manage_Trades(mode, newItemInfos="", activeTabID=""){
 			GuiControlGet, content, Trades:,% TradesGUI_Controls["PID_Slot_" counter]
 			if ( content ) {
 				index := A_Index
-				returnArray.GAMEPID.Insert(index, content)
+				returnArray.Insert(index "_PID", content)
 			}
 			else break
 		}
@@ -2272,7 +2323,7 @@ Gui_Trades_Manage_Trades(mode, newItemInfos="", activeTabID=""){
 			GuiControlGet, content, Trades:,% TradesGUI_Controls["Time_Slot_" counter]
 			if ( content ) {
 				index := A_Index
-				returnArray.TIME.Insert(index, content)
+				returnArray.Insert(index "_Time", content)
 			}
 			else break
 		}
@@ -2288,7 +2339,7 @@ Gui_Trades_Manage_Trades(mode, newItemInfos="", activeTabID=""){
 			GuiControlGet, content, Trades:,% TradesGUI_Controls["Other_Slot_" counter]
 			if ( content ) {
 				index := A_Index
-				returnArray.Other.Insert(index, content)
+				returnArray.Insert(index "_Other", content)
 			}
 			else break
 		}
@@ -2304,7 +2355,7 @@ Gui_Trades_Manage_Trades(mode, newItemInfos="", activeTabID=""){
 			GuiControlGet, content, Trades:,% TradesGUI_Controls["Date_Slot_" counter]
 			if ( content ) {
 				index := A_Index
-				returnArray.Dates.Insert(index, content)
+				returnArray.Insert(index "_Date", content)
 			}
 			else break
 		}
@@ -2320,7 +2371,7 @@ Gui_Trades_Manage_Trades(mode, newItemInfos="", activeTabID=""){
 			GuiControlGet, content, Trades:,% TradesGUI_Controls["Guild_Slot_" counter]
 			if ( content ) {
 				index := A_Index
-				returnArray.GUILDS.Insert(index, content)
+				returnArray.Insert(index "_Guild", content)
 			}
 			else break
 		}
@@ -3683,6 +3734,7 @@ Check_Update() {
 			Show_Tray_Notification(newVersion " is available!", "Left click on this notification to run the automatic download.`nRight click to dismiss it.", {Is_Update:1, Fade_Timer:10000})
 		}
 	}
+	SetTimer, Check_Update, -1800000
 }
 
 ;==================================================================================================================
@@ -5728,7 +5780,7 @@ Reload_Func() {
  *		https://autohotkey.com/board/topic/46526-run-as-administrator-xpvista7-a-isadmin-params-lib/?p=600596
 */
 	global 0
-	global RunParameters, ProgramSettings
+	global RunParameters, ProgramSettings, ProgramValues
 
 
 	Sleep 10
@@ -5751,6 +5803,10 @@ Reload_Func() {
 			params .= A_Space . "/Screen_DPI=" """" ProgramSettings.Screen_DPI """" ; Pass the current user Win DPI as parameter
 	}
 
+	if ( A_IsAdmin || RunParameters.NoAdmin ) {
+		Gui_Trades_Save_Pending_Backup()
+	}
+
 	Exit_Func("Reload","")
 	DllCall("shell32\ShellExecute" (A_IsUnicode ? "":"A"),uint,0,str,"RunAs",str,(A_IsCompiled ? A_ScriptFullPath
 	: A_AhkPath),str,(A_IsCompiled ? "": """" . A_ScriptFullPath . """" . A_Space) params,str,A_WorkingDir,int,1)
@@ -5758,6 +5814,19 @@ Reload_Func() {
 	ExitApp
 
 	Sleep 10000
+}
+
+Gui_Trades_Save_Pending_Backup() {
+/*		Save all pending trades in a file.
+ */
+	global ProgramValues
+	allTrades := Gui_Trades_Manage_Trades("GET_ALL")
+	FileDelete,% ProgramValues.Trades_Backup_File
+	for key, element in allTrades {
+		if (key = "Max_Index")
+			element--
+		IniWrite,% element,% ProgramValues.Trades_Backup_File,GENERAL,% key
+	}
 }
 
 Gui_Trades_Save_Position(X="FALSE", Y="FALSE") {
@@ -5942,6 +6011,8 @@ Show_Tray_Notification(title, msg, params="") {
 
 Download_Updater() {
 	global ProgramValues
+
+	Gui_Trades_Save_Pending_Backup()
 
 	IniRead,updateBeta,% ProgramValues.Ini_File,PROGRAM,Update_Beta
 
