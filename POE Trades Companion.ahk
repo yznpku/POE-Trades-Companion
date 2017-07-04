@@ -123,7 +123,7 @@ Start_Script() {
 
 ;	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-	FileRead, allCurrency,% A_ScriptDir "\Resources\Data\Currency_All.txt" ; __TO_BE_CHANGED__ to local dir, also extract
+	FileRead, allCurrency,% ProgramValues.Data_Folder "\Resources\Data\Currency_All.txt" ; __TO_BE_CHANGED__ to local dir, also extract
 	Loop, Parse, allCurrency, `n`r
 	{
 		if ( A_LoopField ) {
@@ -132,24 +132,22 @@ Start_Script() {
 	}
 	StringTrimRight, Stats_RealCurrencyNames, Stats_RealCurrencyNames, 1 ; Remove last comma
 
-	FileRead, JSONFile,% A_ScriptDir "\Resources\Data\currencyTradeNames.json" ; __TO_BE_CHANGED__ to local dir, also extract
+	FileRead, JSONFile,% ProgramValues.Data_Folder "\Resources\Data\currencyTradeNames.json" ; __TO_BE_CHANGED__ to local dir, also extract
 	parsedJSON := JSON.Load(JSONFile)
 	Stats_TradeCurrencyNames := parsedJSON.currencyNames.eng
 
 ;	Directories Creation
-	Loop {
-		directory := (A_Index=1)?(ProgramValues.Local_Folder)
-					:(A_Index=2)?(ProgramValues.SFX_Folder)
-					:(A_Index=3)?(ProgramValues.Logs_Folder)
-					:(A_Index=4)?(ProgramValues.Skins_Folder)
-					:(A_Index=5)?(ProgramValues.Fonts_Folder)
-					:(A_Index=6)?(ProgramValues.Others_Folder)
-					:("ERROR")
-		if ( directory = "ERROR" )
-			Break
-
-		else if (!InStr(FileExist(directory), "D")) {
-			FileCreateDir, % directory
+	directories := ProgramValues.Local_Folder
+			. "`n" ProgramValues.SFX_Folder
+			. "`n" ProgramValues.Logs_Folder
+			. "`n" ProgramValues.Skins_Folder
+			. "`n" ProgramValues.Fonts_Folder
+			. "`n" ProgramValues.Others_Folder
+			. "`n" ProgramValues.Data_Folder
+	Loop, Parse, directories,% "`r`n"
+	{
+		if (!InStr(FileExist(A_LoopField), "D")) {
+			FileCreateDir, % A_LoopField
 		}
 	}
 
