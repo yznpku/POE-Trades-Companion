@@ -1,4 +1,21 @@
 \\
+--1.11.BETA_2--
+Features:
+- Beta updates can enabled in the "About?" tray menu.
+- Reloading through the tray menu option or updating to a new version now saves all pending trades. They are then re-loaded on next launch.
+
+Changes:
+- A notification will be be shown when a new version is available, and auto-updating is enabled.
+- Clicking on the "Reloading to request admin privilieges in XX..." warning will successfully bypass the wait time.
+- "Trading Stats" becomes "My Stats".
+- The tray notifications have a bigger icon (from 16x to 32x) and a bigger fotn size for the title (from 9 to 10).
+
+Fixes:
+- Some resources related to the new Stats interface would fail to extract. These resources allow to see the "full" currency name in the filtering options.
+- Clicking on a tray notification to close it would only work on parts with text. You can now click anywhere in the notification to close it.
+- "jeweller" and "chromatic" currencies from poe.trade would not be recognized. This is because poe.trade and currency.poe.trade uses different names for these currencies.
+//
+\\
 --1.11.BETA_1--
 What's new:
 - Stats! The interface can be accessed by right clicking the tray icon, and choosing "Trading Stats". Trade stats are only saved upon closing a tab with a Custom Button that has the "Save the trade infos locally?" setting enabled.
