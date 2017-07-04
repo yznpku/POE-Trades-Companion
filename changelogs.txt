@@ -3,6 +3,7 @@
 Features:
 - Beta updates can enabled in the "About?" tray menu.
 - Reloading through the tray menu option or updating to a new version now saves all pending trades. They are then re-loaded on next launch.
+- You will automatically be notified if a new update is released while the tool is running.
 
 Changes:
 - A notification will be be shown when a new version is available, and auto-updating is enabled.
