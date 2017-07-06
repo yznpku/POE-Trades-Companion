@@ -61,7 +61,7 @@ Start_Script() {
 	MyDocuments 						:= (RunParameters.MyDocuments)?(RunParameters.MyDocuments):(A_MyDocuments)
 
 	ProgramValues.Name 					:= "POE Trades Companion"
-	ProgramValues.Version 				:= "1.11.BETA_2"
+	ProgramValues.Version 				:= "1.11"
 	ProgramValues.Debug 				:= "0"
 
 	ProgramValues.Updater_File 			:= "POE-TC-Updater.exe"
@@ -123,7 +123,7 @@ Start_Script() {
 
 ;	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-	FileRead, allCurrency,% ProgramValues.Data_Folder "\Resources\Data\Currency_All.txt" ; __TO_BE_CHANGED__ to local dir, also extract
+	FileRead, allCurrency,% ProgramValues.Data_Folder "\Resources\Data\Currency_All.txt"
 	Loop, Parse, allCurrency, `n`r
 	{
 		if ( A_LoopField ) {
@@ -132,7 +132,7 @@ Start_Script() {
 	}
 	StringTrimRight, Stats_RealCurrencyNames, Stats_RealCurrencyNames, 1 ; Remove last comma
 
-	FileRead, JSONFile,% ProgramValues.Data_Folder "\Resources\Data\currencyTradeNames.json" ; __TO_BE_CHANGED__ to local dir, also extract
+	FileRead, JSONFile,% ProgramValues.Data_Folder "\Resources\Data\currencyTradeNames.json"
 	parsedJSON := JSON.Load(JSONFile)
 	Stats_TradeCurrencyNames := parsedJSON.currencyNames.eng
 

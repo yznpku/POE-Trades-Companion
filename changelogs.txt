@@ -1,4 +1,24 @@
 \\
+--1.11--
+What's new:
+- Stats! Can be accessed by right clicking the tray icon, and choosing "My Stats".
+A trade's stats are only saved upon closing a tab with a "Custom Button" that has the "Save the trade infos locally?" setting enabled.
+- Upon reloading (through the tray menu option or updating to a new version), all your pending trades are saved locally.
+On next launch, they will be loaded so you never lose a potential sale!
+- New tray notifications, based on W10 Tray Notifications.
+- You can choose to enroll in Beta Updates in the "About?" tray menu.
+- You will automatically be notified if a new update is released while the tool is running. 
+	
+What's changed:
+- You can click on the "Reloading to request admin privilieges in XX..." warning to skip the wait time.
+- Huge tweaks to the updater.
+- The clipboard will no longer be emptied upon closing a tab.
+
+What's fixed:
+- Upon launch, any dead icon from the tray menu is remvoved. This would not work on W10.
+- Whispers from poeapp would leave a blank line in the "Other" slot.
+//
+\\
 --1.11.BETA_2--
 Features:
 - Beta updates can enabled in the "About?" tray menu.
