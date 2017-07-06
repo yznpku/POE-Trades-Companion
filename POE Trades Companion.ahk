@@ -10,7 +10,7 @@
 *	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
 */
 
-; #Warn LocalSameAsGlobal
+#Warn LocalSameAsGlobal
 OnExit("Exit_Func")
 #SingleInstance Off
 #Persistent
@@ -20,6 +20,7 @@ FileEncoding, UTF-8 ; Required for cyrillic characters
 #KeyHistory 0
 SetWinDelay, 0
 DetectHiddenWindows, Off
+ListLines, Off
 
 Menu,Tray,Tip,POE Trades Companion
 Menu,Tray,NoStandard
@@ -38,92 +39,121 @@ Return
 Start_Script() {
 /*
 */
-	global ProgramValues, ProgramFonts, RunParameters, GameSettings, ProgramSettings
-	global TradesGUI_Controls, TradesGUI_Values
-	global POEGameArray, POEGameList
-
 ;	Global objects declaration
-	ProgramValues := Object() ; Specific to the program's informations
-	ProgramFonts := Object() ; Fonts private to the program
-	ProgramSettings := Object() ; Settings from the local .ini
-	RunParameters := Object() ; Run-time parameters
+	global ProgramValues 				:= Object() ; Specific to the program's informations
+	global ProgramFonts 				:= Object() ; Fonts private to the program
+	global ProgramSettings 				:= Object() ; Settings from the local .ini
+	global RunParameters 				:= Object() ; Run-time parameters
 
-	GameSettings := Object() ; Settings from the game .ini
+	global GameSettings 				:= Object() ; Settings from the game .ini
 
-	TradesGUI_Values := Object() ; TradesGUI various infos
-	TradesGUI_Controls := Object() ; TradesGUI controls handlers
+	global TradesGUI_Values 			:= Object() ; TradesGUI various infos
+	global TradesGUI_Controls 			:= Object() ; TradesGUI controls handlers
+
+	global Stats_TradeCurrencyNames 	:= Object() ; Abridged currency names from poe.trade
+	global Stats_RealCurrencyNames 		:= Object() ; All currency full names
+
 ;	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	
-	ProgramSettings.Insert("Screen_DPI", Get_DPI_Factor())
+	ProgramSettings.Screen_DPI 			:= Get_DPI_Factor() 
 
 	Handle_CommandLine_Parameters()
-	MyDocuments := (RunParameters.MyDocuments)?(RunParameters.MyDocuments):(A_MyDocuments)
+	MyDocuments 						:= (RunParameters.MyDocuments)?(RunParameters.MyDocuments):(A_MyDocuments)
 
-	ProgramValues.Insert("Name", "POE Trades Companion")
-	ProgramValues.Insert("Version", "1.10.7")
-	ProgramValues.Insert("Debug", 0)
+	ProgramValues.Name 					:= "POE Trades Companion"
+	ProgramValues.Version 				:= "1.11"
+	ProgramValues.Debug 				:= "0"
+
+	ProgramValues.Updater_File 			:= "POE-TC-Updater.exe"
+	ProgramValues.Updater_Link 			:= "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/Updater.exe"
+	ProgramValues.Updater_Link_Beta 	:= "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/dev/Updater.exe"
+
+	ProgramValues.Version_Link 			:= "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/version.txt"
+	ProgramValues.Version_Link_Beta  	:= "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/dev/version.txt"
+
+	ProgramValues.NewVersion_File		:= "POE-TC-NewVersion.exe"
+	ProgramValues.NewVersion_Link 		:= "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/POE Trades Companion.exe"
+	ProgramValues.NewVersion_Link_Beta	:= "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/dev/POE Trades Companion.exe"
+
+	ProgramValues.Changelogs_Link 		:= "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/changelogs.txt"
+	ProgramValues.Changelogs_Link_Beta	:= "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/dev/changelogs.txt"
+
+	ProgramValues.Reddit 				:= "https://redd.it/57oo3h"
+	ProgramValues.GGG 					:= "https://www.pathofexile.com/forum/view-thread/1755148/"
+	ProgramValues.GitHub 				:= "https://github.com/lemasato/POE-Trades-Companion"
+	ProgramValues.Paypal 				:= "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=BSWU76BLQBMCU"
+
+	ProgramValues.Local_Folder 			:= MyDocuments "\AutoHotkey\" ProgramValues.Name
+	ProgramValues.SFX_Folder 			:= ProgramValues.Local_Folder "\SFX"
+	ProgramValues.Logs_Folder 			:= ProgramValues.Local_Folder "\Logs"
+	ProgramValues.Skins_Folder 			:= ProgramValues.Local_Folder "\Skins"
+	ProgramValues.Fonts_Folder 			:= ProgramValues.Local_Folder "\Fonts"
+	ProgramValues.Fonts_Settings_File	:= ProgramValues.Fonts_Folder "\Settings.ini"
+	ProgramValues.Data_Folder			:= ProgramValues.Local_Folder "\Data"
+	ProgramValues.Others_Folder 		:= ProgramValues.Local_Folder "\Others"
+
+	ProgramValues.Ini_File 				:= ProgramValues.Local_Folder "\Preferences.ini"
+	ProgramValues.Logs_File 			:= ProgramValues.Logs_Folder "\" A_YYYY "-" A_MM "-" A_DD "_" A_Hour "-" A_Min "-" A_Sec ".txt"
+	ProgramValues.Changelogs_File 		:= ProgramValues.Logs_Folder "\changelogs.txt"
+	ProgramValues.Trades_History_File 	:= ProgramValues.Local_Folder "\Trades_History.ini" 
+	ProgramValues.Trades_Backup_File	:= ProgramValues.Local_Folder "\Trades_Backup.ini"
+
+	ProgramValues.Game_Folder 			:= MyDocuments "\my games\Path of Exile"
+	ProgramValues.Game_Ini_File 		:= ProgramValues.Game_Folder "\production_Config.ini"
+	ProgramValues.Game_Ini_File_Copy 	:= ProgramValues.Local_Folder "\production_Config.ini"
+
+	ProgramSettings.Support_Message 	:= "@%buyerName% " ProgramValues.Name ": view-thread/1755148"
+
+	ProgramValues.PID 					:= DllCall("GetCurrentProcessId")
+
 	ProgramValues.Debug := (A_IsCompiled)?(0):(ProgramValues.Debug) ; Prevent from enabling debug on compiled executable
-	if FileExist(A_ScriptDir "/ENABLE_DEBUG.txt")
-		ProgramValues.Debug := 1
-
-	ProgramValues.Insert("Updater_File", "POE-TC-Updater.exe")
-	ProgramValues.Insert("Updater_Link", "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/Updater.exe")
-	ProgramValues.Insert("Version_Link", "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/version.txt")
-	ProgramValues.Insert("Changelogs_Link", "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/changelogs.txt")
-
-	ProgramValues.Insert("PID", DllCall("GetCurrentProcessId"))
-
-	ProgramValues.Insert("Reddit", "https://redd.it/57oo3h")
-	ProgramValues.Insert("GGG", "https://www.pathofexile.com/forum/view-thread/1755148/")
-	ProgramValues.Insert("GitHub", "https://github.com/lemasato/POE-Trades-Companion")
-	ProgramValues.Insert("Paypal", "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=BSWU76BLQBMCU")
-
-	ProgramValues.Insert("Local_Folder", MyDocuments "\AutoHotkey\" ProgramValues.Name)
-	ProgramValues.Insert("SFX_Folder", ProgramValues.Local_Folder "\SFX")
-	ProgramValues.Insert("Logs_Folder", ProgramValues.Local_Folder "\Logs")
-	ProgramValues.Insert("Skins_Folder", ProgramValues.Local_Folder "\Skins")
-	ProgramValues.Insert("Fonts_Folder", ProgramValues.Local_Folder "\Fonts")
-	ProgramValues.Insert("Fonts_Settings_File", ProgramValues.Fonts_Folder "\Settings.ini")
-	ProgramValues.Insert("Others_Folder", ProgramValues.Local_Folder "\Others")
-
-	ProgramValues.Insert("Ini_File", ProgramValues.Local_Folder "\Preferences.ini")
-	ProgramValues.Insert("Logs_File", ProgramValues.Logs_Folder "\" A_YYYY "-" A_MM "-" A_DD "_" A_Hour "-" A_Min "-" A_Sec ".txt")
-	ProgramValues.Insert("Changelogs_File", ProgramValues.Logs_Folder "\changelogs.txt")
-	ProgramValues.Insert("Trades_History_File", ProgramValues.Local_Folder "\Trades_History.ini" )
-
-	ProgramValues.Insert("Game_Folder", MyDocuments "\my games\Path of Exile")
-	ProgramValues.Insert("Game_Ini_File", ProgramValues.Game_Folder "\production_Config.ini")
-	ProgramValues.Insert("Game_Ini_File_Copy", ProgramValues.Local_Folder "\production_Config.ini")
-
-	ProgramSettings.Insert("Support_Message", "@%buyerName% " ProgramValues.Name ": view-thread/1755148") 
+	if FileExist(A_ScriptDir "/ENABLE_DEBUG.txt") {
+		FileRead, fileContent,% A_ScriptDir "/ENABLE_DEBUG.txt"
+		fileContent := StrReplace(fileContent, "`n", "")
+		ProgramValues.Debug := fileContent
+	}
+;	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 	GroupAdd, POEGame, ahk_exe PathOfExile.exe
 	GroupAdd, POEGame, ahk_exe PathOfExile_x64.exe
 	GroupAdd, POEGame, ahk_exe PathOfExileSteam.exe
 	GroupAdd, POEGame, ahk_exe PathOfExile_x64Steam.exe
-	POEGameArray := ["PathOfExile.exe", "PathOfExile_x64.exe", "PathOfExileSteam.exe", "PathOfExile_x64Steam.exe"]
-	POEGameList := "PathOfExile.exe,PathOfExile_x64.exe,PathOfExileSteam.exe,PathOfExile_x64Steam.exe"
+	global POEGameArray := ["PathOfExile.exe", "PathOfExile_x64.exe", "PathOfExileSteam.exe", "PathOfExile_x64Steam.exe"]
+	global POEGameList := "PathOfExile.exe,PathOfExile_x64.exe,PathOfExileSteam.exe,PathOfExile_x64Steam.exe"
+
+;	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+	FileRead, allCurrency,% ProgramValues.Data_Folder "\Resources\Data\Currency_All.txt"
+	Loop, Parse, allCurrency, `n`r
+	{
+		if ( A_LoopField ) {
+			Stats_RealCurrencyNames .= A_LoopField ","
+		}
+	}
+	StringTrimRight, Stats_RealCurrencyNames, Stats_RealCurrencyNames, 1 ; Remove last comma
+
+	FileRead, JSONFile,% ProgramValues.Data_Folder "\Resources\Data\currencyTradeNames.json"
+	parsedJSON := JSON.Load(JSONFile)
+	Stats_TradeCurrencyNames := parsedJSON.currencyNames.eng
 
 ;	Directories Creation
-	Loop {
-		directory := (A_Index=1)?(ProgramValues.Local_Folder)
-					:(A_Index=2)?(ProgramValues.SFX_Folder)
-					:(A_Index=3)?(ProgramValues.Logs_Folder)
-					:(A_Index=4)?(ProgramValues.Skins_Folder)
-					:(A_Index=5)?(ProgramValues.Fonts_Folder)
-					:(A_Index=6)?(ProgramValues.Others_Folder)
-					:("ERROR")
-		if ( directory = "ERROR" )
-			Break
-
-		else if (!InStr(FileExist(directory), "D")) {
-			FileCreateDir, % directory
+	directories := ProgramValues.Local_Folder
+			. "`n" ProgramValues.SFX_Folder
+			. "`n" ProgramValues.Logs_Folder
+			. "`n" ProgramValues.Skins_Folder
+			. "`n" ProgramValues.Fonts_Folder
+			. "`n" ProgramValues.Others_Folder
+			. "`n" ProgramValues.Data_Folder
+	Loop, Parse, directories,% "`r`n"
+	{
+		if (!InStr(FileExist(A_LoopField), "D")) {
+			FileCreateDir, % A_LoopField
 		}
 	}
 
 ;	Function Calls
-	Close_Previous_Program_Instance()
 	Run_As_Admin()
+	Close_Previous_Program_Instance()
 	Tray_Refresh()
 
 	Update_Local_Settings()
@@ -138,6 +168,7 @@ Start_Script() {
 	Extract_Sound_Files()
 	Extract_Skin_Files()
 	Extract_Font_Files()
+	Extract_Data_Files()
 	Extract_Others_Files()
 	Manage_Font_Resources("LOAD")
 	Check_Update()
@@ -145,27 +176,31 @@ Start_Script() {
 	Enable_Hotkeys()
 
 	; Pre-rendering Trades-GUI
-	Gui_Trades(,"CREATE")
+	Gui_Trades("CREATE")
 	Create_Tray_Menu()
 
 	if ( ProgramValues["Debug"] ) {
-		newItemInfos := Object()
-		Loop 3 {
-			newItemInfos.Insert(0, "iSellStuff", "Faster Attacks Support (Lvl: 1 / Qual: 0%)", "5 alteration", "Breach (Tab: ""Gems"" / Posn: 6;8)", "1",A_Hour ":" A_Min, "Offering 1alch?")
-			newItemArray := Gui_Trades_Manage_Trades("ADD_NEW", newItemInfos)
-			Gui_Trades(newItemArray, "UPDATE")
-			newItemInfos.Insert(0, "aktai0", "Kaom's Heart Glorious Plate", "10 exalted", "Hardcore Legacy", "2",A_Hour ":" A_Min, "-")
-			newItemArray := Gui_Trades_Manage_Trades("ADD_NEW", newItemInfos)
-			Gui_Trades(newItemArray, "UPDATE")
-			newItemInfos.Insert(0, "MindDOTA2pl", "Voll's Devotion Agate Amulet ", "4 exalted", "Standard", "3",A_Hour ":" A_Min, "-")
-			newItemArray := Gui_Trades_Manage_Trades("ADD_NEW", newItemInfos)
-			Gui_Trades(newItemArray, "UPDATE")
-			newItemInfos.Insert(0, "Krillson", "Rainbowstride Conjurer Boots", "3 mirror", "Hadcore", "4",A_Hour ":" A_Min, "-")
-			newItemArray := Gui_Trades_Manage_Trades("ADD_NEW", newItemInfos)
-			Gui_Trades(newItemArray, "UPDATE")
-		}
+		; trade / No qual / Level
+		str := "2016/10/09 21:30:32 105384166 355 [INFO Client 6416] "
+			str .= "@From iSellStuff: Hi, I would like to buy your level 1 0% Faster Attacks Support listed for 5 alteration in Legacy (stash tab """"Shop: Gems""""; position: left 10, top 11) Offering 1alch?"
+
+		; trade / No qual / Level / Unpriced
+		str .= "`n" "2016/10/09 21:30:32 105384166 355 [INFO Client 6416] "
+			str .= "@From 22: Hi, I would like to buy your level 19 0% Faster Attacks Support in Beta Standard (stash tab """"Shop: poetrade 1""""; position: left 20, top 11)"
+
+		; app / No qual / Level
+		str .= "`n" "2016/10/09 21:30:32 105384166 355 [INFO Client 6416] "
+			str .= " @From 33: wtb Faster Attacks Support (21/20%) listed for 1 Orb of Alteration in standard (stash """"Shop: poeapp 1""""; left 30, top 21)"
+
+		; app / No qual / Level / Unpriced
+		str .= "`n" "2016/10/09 21:30:32 105384166 355 [INFO Client 6416] "
+			str .= " @From 44: wtb Faster Attacks Support (21/20%) in standard (stash """"Shop: poeapp 1""""; left 40, top 21)"
+		Filter_Logs_Message(str)
 	}
 
+	Gui_Trades_Load_Pending_Backup()
+
+	; Gui_Stats()
 	; Gui_Settings()
 	; Gui_About()
 	Logs_Append("DUMP", localSettings)
@@ -178,6 +213,144 @@ Start_Script() {
 ;
 ;==================================================================================================================
 
+Filter_Logs_Message(message) {
+/*		Filter the logs message to retrieve the required informations we need
+			and send them to the Trades GUI if it is a trade whisper.
+ */
+	global ProgramSettings, TradesGUI_Values
+
+	Loop, Parse, message, `n ; For each new individual line since last check
+	{
+		; New RegEx pattern matches the trading message, but only from whispers and local chat (for debugging), and specifically ignores global/trade/guild/party chats
+		if ( RegExMatch( A_LoopField, "^(?:[^ ]+ ){6}(\d+)\] (?=[^#$&%]).*@(?:From|De|От кого) (.*?): (.*)", subPat ) )
+		{
+			; Assigning the sub pattern variables
+			gamePID := subPat1, whispNameFull := subPat2, whispMsg := subPat3
+			whispNameFull := Gui_Trades_RemoveGuildPrefix(whispNameFull)
+			whispName := whispNameFull.Name, whispGuild := whispNameFull.Guild
+			TradesGUI_Values.Last_Whisper := whispName
+
+			; Check existing tabs for same buyer, and add to the "Other:" slot
+			tradesInfos := Gui_Trades_Manage_Trades("GET_ALL")
+			Loop % tradesInfos.Max_Index {
+				if (whispName = tradeInfos[A_Index "_Buyer"]) {
+					otherContent := tradesInfos[A_Index "_Other"]
+					if (otherContent != "-" && otherContent != "`n") { ; Already contains text, include previous text
+						if otherContent not contains (Hover to see all messages) ; Only one message in the Other slot.
+						{
+							StringReplace, otherContent, otherContent,% "`n",% "",1 ; Remove blank lines
+							otherContent := "[" tradesInfos[A_Index "_Time"] "] " otherContent ; Add timestamp
+						}
+						StringReplace, otherContent, otherContent,% "(Hover to see all messages)`n",% "",1
+						otherText := "(Hover to see all messages)`n" otherContent "`n[" A_Hour ":" A_Min "] " whispMsg
+					}
+					else { ; Does not contains text, do not include previous text
+						otherText := "(Hover to see all messages)`n" "[" A_Hour ":" A_Min "] " whispMsg
+					}
+					setInfos := { OTHER:otherText, TabID:key }
+					Gui_Trades_Set_Trades_Infos(setInfos)
+				}
+			}
+
+			if !WinActive("ahk_pid " gamePID) {
+				if ( ProgramSettings.Whisper_Tray ) {
+					Show_Tray_Notification("Whisper from " whispName, whispMsg)
+				}
+
+				if ( ProgramSettings.Whisper_Flash ) {
+					gameHwnd := WinExist("ahk_pid " gamePID)
+					DllCall("FlashWindow", UInt, gameHwnd, Int, 1)
+				}
+			}
+
+			; poeappRegExStr := "(.*)wtb (.*) listed for (.*) in (?:(.*)\(stash ""(.*)""; left (.*), top (.*)\)|Hardcore (.*?)\W|(.*?)\W)(.*)"
+			; poetradeRegExStr := "(.*)Hi, I(?: would|'d) like to buy your (?:(.*) |(.*))(?:listed for (.*)|for my (.*)|)(?!:listed for|for my) in (?:(.*)\(stash tab ""(.*)""; position: left (.*), top (.*)\)|Hardcore (.*?)\W|(.*?)\W)(.*)"
+
+			whisp := whispName ": " whispMsg "`n"
+			poeappRegExStr := "(.*)wtb (.*) listed for (.*) in (?:(.*)\(stash ""(.*)""; left (.*), top (.*)\)|Hardcore (.*?)\W|(.*?)\W)(.*)" ; poeapp
+			poetradeRegExStr := "(.*)Hi, I(?: would|'d) like to buy your (?:(.*) |(.*))(?:listed for (.*)|for my (.*)|) in (?:(.*)\(stash tab ""(.*)""; position: left (.*), top (.*)\)|Hardcore (.*?)\W|(.*?)\W)(.*)" ; poe.trade
+			allRegExStr := {poeapp:poeappRegExStr, poetrade:poetradeRegExStr}
+			for regExName, regExStr in allRegExStr {
+				if RegExMatch(whisp, "i).*: " regExStr) {
+					Break
+				}
+			}
+			if RegExMatch(whisp, "i).*: " regExStr, subPat ) ; Matching pattern found
+			{
+				timeSinceLastTrade := 0
+
+				if ( regExName = "poetrade" ) {
+					tradeItem := (subPat2)?(subPat2):(subPat3)?(subPat3):("ERROR RETRIEVING ITEM")
+					if RegExMatch(tradeItem, "level (.*) (.*)% (.*)", itemPat) {
+						tradeItem := itemPat3 " (Lvl:" itemPat1 " / Qual:" itemPat2 "%)"
+						itemPat1 := "", itemPat2 := "", itemPat3 := ""
+					}
+					tradePrice := (subPat4)?(subPat4):(subPat5)?(subPat5):("Unpriced Item (See Offer)")
+					tradeStash := (subPat6)?(subPat6 " (Tab:" subPat7 " / Pos:" subPat8 ";" subPat9 ")"):(subPat10)?("Hardcore " subPat10):(subPat11)?(subPat11):("ERROR RETRIEVING LOCATION")
+					tradeOther := (subPat11!=subPat6 && subPat11!=subPat10 && subPat11!=tradeStash)?(subPat1 subPat11):(subPat12 && subPat12!="`n")?(subPat12):("-")
+
+					tradeItem = %tradeItem% ; Remove blank spaces
+					tradePrice = %tradePrice%
+					tradeStash = %tradeStash%
+					tradeOther = %tradeOther%
+				}
+				else if ( regExName = "poeapp" ) {
+					tradeItem := subPat2
+					if RegExMatch(tradeItem, "(.*) \((.*)/(.*)%\)", itemPat) {
+						tradeItem := itemPat1 " (Lvl:" itemPat2 " / Qual:" itemPat3 "%)"
+						itemPat1 := "", itemPat2 := "", itemPat3 := ""
+					}
+					tradePrice := (subPat3)?(subPat3):("Unpriced Item (See Offer)")
+					tradeStash := (subPat4)?(subPat4 " (Tab:" subpat5 " / Pos:" subPat6 ";" subPat7 ")"):(subPat8)?("Hardcore " subPat8):(subPat9)?(subPat9):("ERROR RETRIEVING LOCATION")								
+					tradeOther := (subPat1 || subPat10 && subPat10 != "`n")?(subPat1 . subPat10):("-")
+
+					tradeItem = %tradeItem% ; Remove blank spaces
+					tradePrice = %tradePrice%
+					tradeStash = %tradeStash%
+					tradeOther = %tradeOther%
+				}
+
+				; Do not add the trade if the same is already in queue
+				tradesExists := 0
+				tradesInfos := Gui_Trades_Manage_Trades("GET_ALL")
+				Loop % tradeInfos.Max_Index {
+					buyerContent := tradesInfos[A_Index "_Buyer"], itemContent := tradesInfos[A_Index "_Item"], priceContent := tradesInfos[A_Index "_Price"], locationContent := tradesInfos[A_Index "_Location"], otherContent = tradesInfos[A_Index "_Other"]
+					if (buyerContent=whispName && itemContent=tradeItem && priceContent=tradePrice && locationContent=tradeStash) {
+						tradesExists := 1
+					}
+				}
+
+				; Trade does not already exist
+				if (tradesExists = 0) {
+					newTradesInfos := {Buyer:whispName
+									  ,Item:tradeItem
+									  ,Price:tradePrice
+									  ,Location:tradeStash
+									  ,PID:gamePID
+									  ,Time:A_Hour ":" A_Min
+									  ,Other:tradeOther
+									  ,Date:A_YYYY "-" A_MM "-" A_DD
+									  ,Guild:whispGuild}
+					messagesArray := Gui_Trades_Manage_Trades("ADD_NEW", newTradesInfos)
+					Gui_Trades("UPDATE", messagesArray)
+
+					if ( ProgramSettings.Trade_Toggle = 1 ) && FileExist(ProgramSettings.Trade_Sound_Path) { ; Play the sound set for trades
+						SoundPlay,% ProgramSettings.Trade_Sound_Path
+					}
+					else if ( ProgramSettings.Whisper_Toggle = 1 ) && FileExist(ProgramSettings.Whisper_Sound_Path) { ; Play the sound set for whispers{
+						SoundPlay,% ProgramSettings.Whisper_Sound_Path
+					}
+				}
+			}
+			else {
+				if ( ProgramSettings.Whisper_Toggle = 1 ) && FileExist(ProgramSettings.Whisper_Sound_Path) { ; Play the sound set for whispers
+					SoundPlay,% ProgramSettings.Whisper_Sound_Path
+				}
+			}
+		}
+	}
+}
+
 Restart_Monitor_Game_Logs() {
 	Gui_Trades_Save_Position()
 	Monitor_Game_Logs("CLOSE")
@@ -189,7 +362,7 @@ Monitor_Game_Logs(mode="") {
 ;			Monitor the logs file, waiting for new whispers
 ;			Upon receiving a poe.trade whisper, pass the trades infos to Gui_Trades()
 	static
-	global TradesGUI_Values, RunParameters, ProgramSettings
+	global RunParameters
 	global POEGameArray
 
 	if (mode = "CLOSE") {
@@ -209,7 +382,6 @@ Monitor_Game_Logs(mode="") {
 		}
 		else {
 			logsFile := r
-			Gui_Trades_Redraw("UPDATE", {noSplash:1}) ; Prevent the interface from staying on "exe not found"
 			Gui_Trades_Set_Position()
 		}
 	}
@@ -219,145 +391,22 @@ Monitor_Game_Logs(mode="") {
 	fileObj.pos := fileObj.length
 	Loop {
 		if !FileExist(logsFile) || ( fileObj.pos > fileObj.length ) || ( fileObj.pos = -1 ) {
-			Logs_Append("Monitor_Game_Logs_Break", {objPos:fileObj.pos, objLength:fileObj.length})
+			Logs_Append("Monitor_Game_Logs_Break", {Pos:fileObj.pos, Length:fileObj.length})
 			Break
 		}
 		if ( fileObj.pos < fileObj.length ) {
 			lastMessage := fileObj.Read() ; Stores the last message into a variable
-			Loop, Parse, lastMessage, `n, `r ; For each new individual line since last check
-			{
-				; New RegEx pattern matches the trading message, but only from whispers and local chat (for debugging), and specifically ignores global/trade/guild/party chats
-				if ( RegExMatch( A_LoopField, "^(?:[^ ]+ ){6}(\d+)\] (?=[^#$&%]).*@(?:From|De|От кого) (.*?): (.*)", subPat ) )
-				{
-					gamePID := subPat1, whispNameFull := subPat2, whispMsg := subPat3
-					whispNameFull := Gui_Trades_RemoveGuildPrefix(whispNameFull)
-					whispName := whispNameFull.Name, whispGuild := whispNameFull.Guild
-					TradesGUI_Values.Last_Whisper := whispName
-
-					; Append the new whisper to the buyer's Other slots
-					tradesInfos := Gui_Trades_Manage_Trades("GET_ALL")
-					for key, element in tradesInfos.BUYERS {
-						if (whispName = element) {
-							otherContent := tradesInfos.OTHER[key]
-							if (otherContent != "-" && otherContent != "`n") { ; Already contains text, include previous text
-								if otherContent not contains (Hover to see all messages) ; Only one message in the Other slot.
-								{
-									StringReplace, otherContent, otherContent,% "`n",% "",1 ; Remove blank lines
-									otherContent := "[" tradesInfos.TIME[key] "] " otherContent ; Add timestamp
-								}
-								StringReplace, otherContent, otherContent,% "(Hover to see all messages)`n",% "",1
-								otherText := "(Hover to see all messages)`n" otherContent "`n[" A_Hour ":" A_Min "] " whispMsg
-							}
-							else { ; Does not contains text, do not include previous text
-								otherText := "(Hover to see all messages)`n" "[" A_Hour ":" A_Min "] " whispMsg
-							}
-							setInfos := { OTHER:otherText, TabID:key }
-							Gui_Trades_Set_Trades_Infos(setInfos)
-						}
-					}
-
-					if !WinActive("ahk_pid " gamePID) {
-						if ( ProgramSettings.Whisper_Tray ) {
-							Loop 2
-								TrayTip, Whisper Received:,%whispName%: %whispMsg%
-							SetTimer, Remove_TrayTip, -10000
-						}
-
-						if ( ProgramSettings.Whisper_Flash ) {
-							gameHwnd := WinExist("ahk_pid " gamePID)
-							DllCall("FlashWindow", UInt, gameHwnd, Int, 1)
-						}
-					}
-
-					whisp := whispName ": " whispMsg "`n"
-					poeappRegExStr := "(.*)wtb (.*) listed for (.*) in (?:(.*)\(stash ""(.*)""; left (.*), top (.*)\)|Hardcore (.*?)\W|(.*?)\W)(.*)"
-					poetradeRegExStr := "(.*)Hi, I(?: would|'d) like to buy your (?:(.*) |(.*))(?:listed for (.*)|for my (.*)|)(?!:listed for|for my) in (?:(.*)\(stash tab ""(.*)""; position: left (.*), top (.*)\)|Hardcore (.*?)\W|(.*?)\W)(.*)"
-					allRegExStr := {poeapp:poeappRegExStr, poetrade:poetradeRegExStr}
-					for regExName, regExStr in allRegExStr {
-						if RegExMatch(whisp, "i).*: " regExStr) {
-							Break
-						}
-					}
-					if RegExMatch(whisp, "i).*: " regExStr, subPat ) ; poe.trade whisper found
-					{
-						timeSinceLastTrade := 0
-
-						if ( regExName = "poetrade" ) {
-							tradeItem := (subPat2)?(subPat2):(subPat3)?(subPat3):("ERROR RETRIEVING ITEM")
-							if RegExMatch(tradeItem, "level (.*) (.*)% (.*)", itemPat) {
-								tradeItem := itemPat3 " (Lvl:" itemPat1 " / Qual:" itemPat2 "%)"
-								itemPat1 := "", itemPat2 := "", itemPat3 := ""
-							}
-							tradePrice := (subPat4)?(subPat4):(subPat5)?(subPat5):("See Offer")
-							tradeStash := (subPat6)?(subPat6 " (Tab:" subPat7 " / Pos:" subPat8 ";" subPat9 ")"):(subPat10)?("Hardcore " subPat10):(subPat11)?(subPat11):("ERROR RETRIEVING LOCATION")
-							tradeOther := (subPat11!=subPat6 && subPat11!=subPat10 && subPat11!=tradeStash)?(subPat1 subPat11):(subPat12 && subPat12!="`n")?(subPat12):("-")
-
-							tradeItem = %tradeItem% ; Remove blank spaces
-							tradePrice = %tradePrice%
-							tradeStash = %tradeStash%
-							tradeOther = %tradeOther%
-						}
-						else if ( regExName = "poeapp" ) {
-							tradeItem := subPat2
-							if RegExMatch(tradeItem, "(.*) \((.*)/(.*)%\)", itemPat) {
-								tradeItem := itemPat1 " (Lvl:" itemPat2 " / Qual:" itemPat3 "%)"
-								itemPat1 := "", itemPat2 := "", itemPat3 := ""
-							}
-							tradePrice := subPat3
-							tradeStash := (subPat4)?(subPat4 " (Tab:" subpat5 " / Pos:" subPat6 ";" subPat7 ")"):(subPat8)?("Hardcore " subPat8):(subPat9)?(subPat9):("ERROR RETRIEVING LOCATION")								
-							tradeOther := (subPat1 || subPat10)?(subPat1 . subPat10):("-")
-
-							tradeItem = %tradeItem% ; Remove blank spaces
-							tradePrice = %tradePrice%
-							tradeStash = %tradeStash%
-							tradeOther = %tradeOther%
-						}
-
-						; Do not add the trade if the same is already in queue
-						tradesExists := 0
-						tradesInfos := Gui_Trades_Manage_Trades("GET_ALL")
-						for key, element in tradesInfos.BUYERS {
-							buyerContent := tradesInfos.BUYERS[key], itemContent := tradesInfos.ITEMS[key], priceContent := tradesInfos.PRICES[key], locationContent := tradesInfos.LOCATIONS[key], otherContent = tradesInfos.OTHER[key]
-							if (buyerContent=whispName && itemContent=tradeItem && priceContent=tradePrice && locationContent=tradeStash) {
-								tradesExists := 1
-							}
-						}
-
-						; Trade does not already exist
-						if (tradesExists = 0) {
-							newTradesInfos := Object()
-							newTradesInfos.Insert(0, whispName, tradeItem, tradePrice, tradeStash, gamePID, A_Hour ":" A_Min, tradeOther, A_YYYY "-" A_MM "-" A_DD, whispGuild)
-							messagesArray := Gui_Trades_Manage_Trades("ADD_NEW", newTradesInfos)
-							Gui_Trades(messagesArray, "UPDATE")
-
-							if ( ProgramSettings.Trade_Toggle = 1 ) && FileExist(ProgramSettings.Trade_Sound_Path) { ; Play the sound set for trades
-								SoundPlay,% ProgramSettings.Trade_Sound_Path
-							}
-							else if ( ProgramSettings.Whisper_Toggle = 1 ) && FileExist(ProgramSettings.Whisper_Sound_Path) { ; Play the sound set for whispers{
-								SoundPlay,% ProgramSettings.Whisper_Sound_Path
-							}
-						}
-					}
-					else {
-						if ( ProgramSettings.Whisper_Toggle = 1 ) && FileExist(ProgramSettings.Whisper_Sound_Path) { ; Play the sound set for whispers
-							SoundPlay,% ProgramSettings.Whisper_Sound_Path
-						}
-					}
-				}
-			}
+			Filter_Logs_Message(lastMessage)
 		}
 		sleepTime := (timeSinceLastTrade>300)?(500):(100)
 		timeSinceLastTrade += 1*(sleepTime/1000)
 		Sleep %sleepTime%
 	}
-	Loop 2 {
-		TrayTip,% "Issue with the logs file!",% "It could be one of the following reasons: "
+	Show_Tray_Notification("An issue with the logs file occured!", "It could be one of the following reasons: "
 		. "`n- The file doesn't exist anymore."
 		. "`n- Content from the file was deleted."
 		. "`n- The file object used by the program was closed."
-		. "`n`nThe logs monitoring function will be restarting in 5 seconds."
-	}
-	SetTimer, Remove_TrayTip, -5000
+		. "`n`nThe logs monitoring function will be restarting in 5 seconds.")
 	sleep 5000
 	Restart_Monitor_Game_Logs()
 }
@@ -368,7 +417,7 @@ Monitor_Game_Logs(mode="") {
 ;
 ;==================================================================================================================
 
-Gui_Trades(infosArray="", errorMsg="") {
+Gui_Trades(mode="", tradeInfos="") {
 ;			Trades GUI. Each new item will be added in a new tab
 ;			Clicking on a button will do its corresponding action
 ;			Switching tab will clipboard the item's infos if the user enabled
@@ -423,10 +472,10 @@ Gui_Trades(infosArray="", errorMsg="") {
 	TradesGUI_Values.Use_Smaller_Buttons := useSmallerButtons
 	btnUnicodePos := "", useSmallerButtons := ""
 
-	errorTxt := (errorMsg="EXE_NOT_FOUND")?("Process not found, retrying in 10 seconds...`n`nRight click on the tray icon,`nthen [Settings] to set your preferences.")
-				:("No trade on queue!`n`nRight click on the tray icon,`nthen [Settings] to set your preferences.")
+	exeNotFoundMsg := "Process not found, retrying in XX seconds...`n`nRight click on the tray icon,`nthen [Settings] to set your preferences."
+	noTradeMsg := "No trade on queue!`n`nRight click on the tray icon,`nthen [Settings] to set your preferences."
 
-	if ( errorMsg = "CREATE" ) {
+	if ( mode = "CREATE" ) {
 
 		Gui, Trades:Destroy
 		Gui, Trades:New, +ToolWindow +AlwaysOnTop -Border +hwndGuiTradesHandler +LabelGui_Trades_ +LastFound -SysMenu -Caption
@@ -444,17 +493,11 @@ Gui_Trades(infosArray="", errorMsg="") {
 		maxTabsRendered := (!maxTabsRendered)?(maxTabsStage1):(maxTabsRendered)
 
 		if ( maxTabsRendered > maxTabsStage2 ) { 
-			Loop 2 { ; Skip the tray-tip fade-in animation
-				TrayTip,% programName,% "Current tabs limit reached." . "`nRendering more tabs",3
-			}
-			SetTimer, Remove_TrayTip,-3000
+			Show_Tray_Notification(programName, "Current tabs limit reached." . "`nRendering more tabs")
 		}
 
-		Gui, GetSize:Font, S%fontSize%,% fontName
-		Gui, GetSize:Add, Text,x0 y0 hwndTxtHandler,88:88
-		coords := Get_Control_Coords("GetSize", TxtHandler)
-		timeSlotWidth := coords.W+(2*guiScale)*guiScale, coords := ""
-		Gui, GetSize:Destroy
+		txtCtrlSize := Get_Text_Control_Size("88:88", fontName, fontSize)
+		timeSlotWidth := txtCtrlSize.W, txtCtrlSize := ""
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *									System TradesGUI													*
@@ -465,8 +508,12 @@ Gui_Trades(infosArray="", errorMsg="") {
 			Gui, Font,S%fontSize% Q%fontQual%,% fontName
 			Gui, Add, Picture,% "x" borderSize . " y" borderSize . " w" guiWidth-borderSize . " h" 30*guiScale . " +BackgroundTrans",% programSkinFolderPath "\" activeSkin "\Header.png"
 			Gui, Add, Picture,% "x" borderSize+(10*guiScale) . " y" borderSize+(5*guiScale) . " w" 22*guiScale . " h" 22*guiScale . " +BackgroundTrans",% programSkinFolderPath "\" activeSkin "\icon.png"
-			Gui, Add, Text,% "x" borderSize+(35*guiScale) . " y" borderSize+(2*guiScale) . " w" guiWidth-(100*guiScale) . " h" 28*guiScale+(2*guiScale) " hwndguiTradesTitleHandler gGui_Trades_Move c" colorTitleInactive . " +BackgroundTrans +0x200 ",% programName " - Queued Trades: 0"
+			Gui, Add, Text,% "x" borderSize+(35*guiScale) . " y" borderSize+(2*guiScale) . " w" guiWidth-(100*guiScale) . " h" 28*guiScale+(2*guiScale) " hwndguiTradesTitleHandler gGui_Trades_Move c" colorTitleInactive . " BackgroundTrans +0x200",% programName " - Queued Trades: 0"
 			Gui, Add, Text,% "x" guiWidth-(65*guiScale) . " yp" . " w" 65*guiScale . " hp" . " hwndguiTradesMinimizeHandler gGui_Trades_Minimize c" colorTitleInactive . " +BackgroundTrans +0x200",% "MINIMIZE"
+			TradesGUI_Controls.Insert("Header", guiTradesHeader)
+			TradesGUI_Controls.Insert("Header_Icon", guiTradesHeaderIcon)
+			TradesGUI_Controls.Insert("Header_Title", guiTradesTitleHandler)
+			TradesGUI_Controls.Insert("Header_Minimize", guiTradesMinimizeHandler)
 
 ;			Borders
 			Gui, Add, Picture,% "x" 0 . " y" 0 . " w" guiWidth . " h" borderSize . " hwndguiTradesBorderTop",% programSkinFolderPath "\" activeSkin "\Border.png" ; Top
@@ -478,7 +525,7 @@ Gui_Trades(infosArray="", errorMsg="") {
 			TradesGUI_Controls.Insert("Border_Right", guiTradesBorderRight)
 			TradesGUI_Controls.Insert("Border_Bottom", guiTradesBorderBottom)
 
-			Gui, Add, Text,% "x" borderSize . " y" 70*guiScale . " w" guiWidth-borderSize . " hwndErrorMsgTextHandler" . " Center +BackgroundTrans c" colorTradesInfos1,% errorTxt
+			Gui, Add, Text,% "x" borderSize . " y" 70*guiScale . " w" guiWidth-borderSize . " hwndErrorMsgTextHandler" . " Center +BackgroundTrans c" colorTradesInfos1,% noTradeMsg
 			Gui, Add, Tab3,% "x" borderSize . " y" 30*guiScale . " w" . guiWidth-borderSize " h" (tabHeight)*guiScale . "  vTab hwndTabHandler gGui_Trades_OnTabSwitch Section -Wrap",% "1"
 			TradesGUI_Controls.Insert("Tab", TabHandler)
 
@@ -605,7 +652,7 @@ Gui_Trades(infosArray="", errorMsg="") {
 			TradesGUI_Controls.Insert("Border_Bottom", guiTradesBorderBottom)
 
 ;			Error message
-			Gui, Add, Text,% "x" borderSize . " y" 70*guiScale . " w" guiWidth-borderSize . " hwndErrorMsgTextHandler" . " Center +BackgroundTrans c" colorTradesInfos1,% errorTxt
+			Gui, Add, Text,% "x" borderSize . " y" 70*guiScale . " w" guiWidth-borderSize . " hwndErrorMsgTextHandler" . " Center +BackgroundTrans c" colorTradesInfos1,% noTradeMsg
 
 			Loop %maxTabsRendered% {
 				index := A_Index, tabPos := A_Index, xposMult := 49
@@ -753,38 +800,41 @@ Gui_Trades(infosArray="", errorMsg="") {
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 */
 
-	if ( errorMsg = "EXE_NOT_FOUND" ) {
+	if ( mode = "EXE_NOT_FOUND" ) {
 		Loop {
-			countdown := 10
-			Loop 11 {
-				GuiControl, Trades:,% ErrorMsgTextHandler,% "Process not found, retrying in " countdown " seconds...`n`nRight click on the tray icon,`nthen [Settings] to set your preferences."
+			countDown := 10
+			Loop % countDown+1 {
+				exeNotFoundMsgReplaced := RegExReplace(exeNotFoundMsg, "XX", countDown)
+				GuiControl, Trades:,% ErrorMsgTextHandler,% exeNotFoundMsgReplaced
 				countDown--
 				Sleep 1000
 			}
 			gameInstances := Get_All_Games_Instances()
-			if ( gameInstances != "EXE_NOT_FOUND" )
+			if ( gameInstances != "EXE_NOT_FOUND" ) {
+				GuiControl, Trades:,% ErrorMsgTextHandler,% noTradeMsg
 				Break
+			}
 		}
 		gameInstances := ""
 		Monitor_Game_Logs()
 	}
 
-	else if ( errorMsg = "REMOVE_DUPLICATES" ) {
-		tabToDel := infosArray[0]
-		for key, element in infosArray {
+	else if ( mode = "REMOVE_DUPLICATES" ) {
+		tabToDel := tradeInfos[0]
+		for key, element in tradeInfos {
 			messagesArray := Gui_Trades_Manage_Trades("REMOVE_CURRENT", ,element)
 			if ( tabToDel >= element ) ; our tabToDel moved to the left due to a lesser tab being deleted
 				tabToDel--
-			Gui_Trades(messagesArray, "UPDATE")
+			Gui_Trades("UPDATE", messagesArray)
 			if ( activeSkin != "System" ) {
 				GoSub Gui_Trades_Skinned_OnTabSwitch
 			}
 		}
 	}
 
-	if ( errorMsg = "UPDATE" || errorMsg = "CREATE" ) {
+	if ( mode = "UPDATE" || mode = "CREATE" ) {
 
-		tabsCount := infosArray.BUYERS.Length()
+		tabsCount := tradeInfos.Max_Index
 		tabsCount := (!tabsCount)?(0):(tabsCount)
 		TradesGUI_Values.Tabs_Count := tabsCount
 
@@ -804,21 +854,21 @@ Gui_Trades(infosArray="", errorMsg="") {
 
 ;		Update the fields with the trade infos
 		tabsList := "", isGuiActive := false
-		for key, element in infosArray.BUYERS {
+		Loop % tradeInfos.Max_Index {
 			isGuiActive := true
-			tabsList .= "|" key
-			GuiControl, Trades:,% buyerSlot%key%Handler,% infosArray.BUYERS[key]
-			GuiControl, Trades:,% itemSlot%key%Handler,% infosArray.ITEMS[key]
-			GuiControl, Trades:,% priceSlot%key%Handler,% infosArray.PRICES[key]
-			GuiControl, Trades:,% locationSlot%key%Handler,% infosArray.LOCATIONS[key]
-			GuiControl, Trades:,% PIDSlot%key%Handler,% infosArray.GAMEPID[key]
-			GuiControl, Trades:,% TimeSlot%key%Handler,% infosArray.TIME[key]
-			GuiControl, Trades:,% OtherSlot%key%Handler,% infosArray.OTHER[key]
-			GuiControl, Trades:,% DateSlot%key%Handler,% infosArray.DATES[key]
-			GuiControl, Trades:,% GuildSlot%key%Handler,% infosArray.GUILDS[key]
-			if ( key <= maxTabsRow && activeSkin != "System" ) {
-				GuiControl, Trades:Show,% TabIMG%key%Handler
-				GuiControl, Trades:Show,% TabTXT%key%Handler
+			tabsList .= "|" A_Index
+			GuiControl, Trades:,% buyerSlot%A_Index%Handler,% tradeInfos[A_Index "_Buyer"]
+			GuiControl, Trades:,% itemSlot%A_Index%Handler,% tradeInfos[A_Index "_Item"]
+			GuiControl, Trades:,% priceSlot%A_Index%Handler,% tradeInfos[A_Index "_Price"]
+			GuiControl, Trades:,% locationSlot%A_Index%Handler,% tradeInfos[A_Index "_Location"]
+			GuiControl, Trades:,% PIDSlot%A_Index%Handler,% tradeInfos[A_Index "_PID"]
+			GuiControl, Trades:,% TimeSlot%A_Index%Handler,% tradeInfos[A_Index "_Time"]
+			GuiControl, Trades:,% OtherSlot%A_Index%Handler,% tradeInfos[A_Index "_Other"]
+			GuiControl, Trades:,% DateSlot%A_Index%Handler,% tradeInfos[A_Index "_Date"]
+			GuiControl, Trades:,% GuildSlot%A_Index%Handler,% tradeInfos[A_Index "_Guild"]
+			if ( A_Index <= maxTabsRow && activeSkin != "System" ) {
+				GuiControl, Trades:Show,% TabIMG%A_Index%Handler
+				GuiControl, Trades:Show,% TabTXT%A_Index%Handler
 			}
 		}
 
@@ -831,7 +881,7 @@ Gui_Trades(infosArray="", errorMsg="") {
 		}
 		else {
 			showState := "Hide"
-			GuiControl, Trades:,% ErrorMsgTextHandler,% errorTxt
+			GuiControl, Trades:,% ErrorMsgTextHandler,% noTradeMsg
 			GuiControl, Trades:Show,% ErrorMsgTextHandler
 			GuiControl, Trades: +c%colorTitleInactive%,% guiTradesTitleHandler
 			GuiControl, Trades: +c%colorTitleInactive%,% guiTradesMinimizeHandler
@@ -921,7 +971,7 @@ Gui_Trades(infosArray="", errorMsg="") {
 				GuiControl, Trades:Choose,Tab,% TradesGUI_Values.Active_Tab
 			}
 		}
-		if (tabsCount=0 && maxTabsRendered>maxTabsStage1) && (errorMsg!="CREATE") { ; Tabs limit higher than default, and no tab on queue. We can reset to default limit.
+		if (tabsCount=0 && maxTabsRendered>maxTabsStage1) && (mode!="CREATE") { ; Tabs limit higher than default, and no tab on queue. We can reset to default limit.
 			maxTabsRendered := maxTabsStage1
 			Gui_Trades_Redraw("CREATE", {noSplash:1})
 			TradesGUI_Values.Active_Tab := 0, TradesGUI_Values.Previous_Active_Tab := 0
@@ -933,7 +983,7 @@ Gui_Trades(infosArray="", errorMsg="") {
 			}
 		}
 
-		if ( ProgramSettings.Trades_Auto_Minimize && !isGuiActive && !TradesGUI_Values.Is_Minimized && errorMsg != "EXE_NOT_FOUND" ) {
+		if ( ProgramSettings.Trades_Auto_Minimize && !isGuiActive && !TradesGUI_Values.Is_Minimized && mode != "EXE_NOT_FOUND" ) {
 			GoSub, Gui_Trades_Minimize
 		}
 		if ( ProgramSettings.Trades_Auto_UnMinimize && isGuiActive && TradesGUI_Values.Is_Minimized ) {
@@ -943,7 +993,7 @@ Gui_Trades(infosArray="", errorMsg="") {
 		if ( ProgramSettings.Clip_On_Tab_Switch )
 			Gui_Trades_Clipboard_Item_Func()
 	}
-	if ( errorMsg = "CREATE" ) {
+	if ( mode = "CREATE" ) {
 		showWidth := guiWidth
 		showHeight := guiHeight
 		IniRead, showX,% iniFilePath,PROGRAM,X_POS
@@ -952,8 +1002,8 @@ Gui_Trades(infosArray="", errorMsg="") {
 		showX := (IsNum(showX))?(showX):(showXDefault) ; Prevent unassigned or incorrect value
 		showY := (IsNum(showY))?(showY):(showYDefault) ; Prevent unassigned or incorrect value
 		Gui, Trades:Show,% "NoActivate w" showWidth " h" showHeight " x" showX " y" showY,% programName " - Queued Trades"
-		if (TradesGUI_Values.Is_Minimized)
-			Gui_Trades_Minimize_Func()
+		if (ProgramSettings.Trades_Auto_Minimize)
+			Gui_Trades_Minimize_Func("MIN", 1)
 		OnMessage(0x200, "WM_MOUSEMOVE")
 		OnMessage(0x201, "WM_LBUTTONDOWN")
 		OnMessage(0x203, "WM_LBUTTONDBLCLK")
@@ -973,7 +1023,6 @@ Gui_Trades(infosArray="", errorMsg="") {
 	IniWrite,% tabsCount,% iniFilePath,PROGRAM,Tabs_Number
 
 	previousTabsCount := tabsCount
-
 	sleep 10
 	return
 
@@ -1030,7 +1079,48 @@ Gui_Trades(infosArray="", errorMsg="") {
 	Return
 }
 
-Gui_Trades_Minimize_Func() {
+Gui_Trades_Load_Pending_Backup() {
+/*		Read the backup file, and send those trades requests to the Trades GUI
+ */
+	global ProgramValues
+
+	tempTrades := {}
+	IniRead, allKeys,% ProgramValues.Trades_Backup_File,GENERAL
+	IniRead, maxIndex,% ProgramValues.Trades_Backup_File,GENERAL,Max_Index
+	Loop, Parse, allKeys,% "`n`r"
+	{
+		keyAndValue := A_LoopField
+		if RegExMatch(keyAndValue, "(.*)=(.*)", found) {
+			keyName := found1, value := found2
+			tempTrades.Insert(found1, found2)
+			found1 := "", found2 := ""
+		}
+	}
+
+	Loop % maxIndex {
+		outterIndex := A_Index
+		thisTrade := {}
+		for key, value in tempTrades {
+			if RegExMatch(key, outterIndex "_(.*)", found) {
+				thisTrade.Insert(found1, value)
+				found1 := ""
+			}
+		}
+		messagesArray := Gui_Trades_Manage_Trades("ADD_NEW", thisTrade)
+		Gui_Trades("UPDATE", messagesArray)
+	}
+
+	FileDelete,% ProgramValues.Trades_Backup_File
+}
+
+Trades_GUI_Exists() {
+/*		Returns the handler of the Trades GUI if a match is found.
+ */
+	global TradesGUI_Values
+	return WinExist("ahk_id " TradesGUI_Values.Handler)
+}
+
+Gui_Trades_Minimize_Func(state="", skipAnimation="") {
 	global TradesGUI_Values
 
 	detectHiddenWin := A_DetectHiddenWindows
@@ -1039,30 +1129,43 @@ Gui_Trades_Minimize_Func() {
 	guiHeight := TradesGUI_Values.Height_Full
 	guiHeightMin := TradesGUI_Values.Height_Minimized
 
-	if !WinExist("ahk_id " TradesGUI_Values.Handler)
-			Return
+	if !Trades_GUI_Exists()
+		Return
 
-	TradesGUI_Values.Is_Minimized := !TradesGUI_Values.Is_Minimized
-	if ( TradesGUI_Values.Is_Minimized ) {
-		tHeight := guiHeight
-		Loop { ; Create the illusion of an animation
-			if ( tHeight = guiHeightMin )
-				Break
-			tHeight := (guiHeightMin<tHeight)?(tHeight-30):(guiHeightMin)
-			tHeight := (tHeight-30<guiHeightMin)?(guiHeightMin):(tHeight)
-			Gui_Trades_Set_Height(tHeight)
-			sleep 1 ; Smoothen up the animation
-		}
+	if (skipAnimation) {
+		height := (state="FULL")?(guiHeight)
+				 :(state="MIN")?(guiHeightMin)
+				 :("ERROR")
+		if (height="ERROR")
+			Return
+		TradesGUI_Values.Is_Minimized := (state="FULL")?(0)
+										:(state="MIN")?(1)
+										:("ERROR")
+		Gui_Trades_Set_Height(height)
 	}
-	else  {
-		tHeight := guiHeightMin
-		Loop {
-			if ( tHeight = guiHeight )
-				Break
-			tHeight := (guiHeight>tHeight)?(tHeight+30):(guiHeight)
-			tHeight := (tHeight+30>guiHeight)?(guiHeight):(tHeight)
-			Gui_Trades_Set_Height(tHeight)
-			sleep 1
+	else {
+		TradesGUI_Values.Is_Minimized := !TradesGUI_Values.Is_Minimized
+		if ( TradesGUI_Values.Is_Minimized ) {
+			tHeight := guiHeight
+			Loop { ; Create the illusion of an animation
+				if ( tHeight = guiHeightMin )
+					Break
+				tHeight := (guiHeightMin<tHeight)?(tHeight-30):(guiHeightMin)
+				tHeight := (tHeight-30<guiHeightMin)?(guiHeightMin):(tHeight)
+				Gui_Trades_Set_Height(tHeight)
+				sleep 1 ; Smoothen up the animation
+			}
+		}
+		else  {
+			tHeight := guiHeightMin
+			Loop {
+				if ( tHeight = guiHeight )
+					Break
+				tHeight := (guiHeight>tHeight)?(tHeight+30):(guiHeight)
+				tHeight := (tHeight+30>guiHeight)?(guiHeight):(tHeight)
+				Gui_Trades_Set_Height(tHeight)
+				sleep 1
+			}
 		}
 	}
 	sleep 10
@@ -1117,10 +1220,12 @@ Gui_Trades_Select_Tab(params="") {
 				  :("ERROR")
 
 	if !(IsNum(selectTabID)) {
+		selectAction := (chooseNext)?("Choose_Next")
+					   :(choosePrev)?("Choose_Prev")
+					   :(chooseID)?("Choose_ID")
+					   :("UNKNOWN")
 		Logs_Append(A_ThisFunc, {Tab_ID:selectTabID
-								,Choose_Next:chooseNext
-								,Choose_Prev:choosePrev
-								,Choose_ID:chooseID})
+								,Action:selectAction})
 		Return
 	}
 	if (selectTabID >= 1 && selectTabID <= tabsCount) {
@@ -1294,7 +1399,7 @@ Gui_Trades_Close_Tab() {
 
 	countBeforeDeletion := TradesGUI_Values.Tabs_Count
 	tradesMessages := Gui_Trades_Manage_Trades("REMOVE_CURRENT", ,TradesGUI_Values.Active_Tab)
-	Gui_Trades(tradesMessages, "UPDATE")
+	Gui_Trades("UPDATE", tradesMessages)
 	if (ProgramSettings.Active_Skin != "System") {
 		if (countBeforeDeletion = TradesGUI_Values.Active_Tab) {
 			TradesGUI_Values.Active_Tab--
@@ -1322,7 +1427,7 @@ Gui_Trades_Do_Action_Func(CtrlHwnd, GuiEvent, EventInfo) {
 	messages := Object()
 	tabInfos := Gui_Trades_Get_Trades_Infos(TradesGUI_Values.Active_Tab)
 	if !(tabInfos.Buyer) {
-		TrayTip,% ProgramValues.Name,% "No buyer found for tab """ TradesGUI_Values.Active_Tab """`nOperation cancelled. Please report this issue."
+		Show_Tray_Notification(ProgramValues.Name, "No buyer found for tab """ TradesGUI_Values.Active_Tab """`nOperation cancelled. Please report this issue.")
 		Return
 	}
 
@@ -1369,7 +1474,7 @@ Gui_Trades_Do_Action_Func(CtrlHwnd, GuiEvent, EventInfo) {
 			doNotSend := (btnAction="Whisper")?(true):(false)
 
 			if (msg="ERROR") {
-				Logs_Append(A_ThisFunc, {btnVar:varName, btnAction:btnAction, btnAlpha:varAlpha})
+				Logs_Append(A_ThisFunc, {Var_Name:varName, Action:btnAction, Var_Alpha:varAlpha})
 				Return
 			}
 			Send_InGame_Message({1:msg}, tabInfos, {doNotSend:doNotSend})
@@ -1393,7 +1498,8 @@ Gui_Trades_Clipboard_Item_Func(tabID="NONE") {
 				  :(itemPat1 && itemPat2 && !itemPat3)?("""" itemPat1 """" . A_Space . """Level: " itemPat2 """")
 				  :(itemPat4)?(itemPat4)
 				  :(item)
-	Clipboard := clipContent
+	if (clipContent)
+		Clipboard := clipContent
 }
 
 Gui_Trades_Redraw(msg, params="") {
@@ -1408,20 +1514,20 @@ Gui_Trades_Redraw(msg, params="") {
 		SplashTextOn, 250, 40,% ProgramValues.Name,Please wait...`nCurrently re-creating the interface.
 	allTrades := Gui_Trades_Manage_Trades("GET_ALL")
 	if ( params.preview ) {
-		if !(allTrades.BUYERS.MaxIndex()) {
-			allTrades.BUYERS.Push("iSellStuff")
-			allTrades.ITEMS.Push("level 1 Faster Attacks Support")
-			allTrades.PRICES.Push("5 alteration")
-			allTrades.LOCATIONS.Push("Breach (stash tab ""Gems""; position: left 6, top 8)")
-			allTrades.OTHER.Push("Offering 1 alch?")
-			allTrades.TIME.Push(A_Hour ":" A_Min)
-			allTrades.PID.Push(0)
-			allTrades.DATES.Push(A_YYYY "-" A_MM "-" A_DD)
-			allTrades.GUILDS.Push("")
+		if !(allTrades.Max_Index) {
+			allTrades.1_Buyer := "iSellStuff"
+			allTrades.1_Item		:= "level 1 Faster Attacks Support"
+			allTrades.1_Price		:= "5 alteration"
+			allTrades.1_Location	:= "Breach (stash tab ""Gems""; position: left 6, top 8)"
+			allTrades.1_Other		:= "Offering 1 alch?"
+			allTrades.1_Time		:= A_Hour ":" A_Min
+			allTrades.1_PID			:= 0
+			allTrades.1_Date		:= A_YYYY "-" A_MM "-" A_DD
+			allTrades.1_Guild		:= ""
 		}
 	}
-	Gui_Trades(, msg)
-	Gui_Trades(allTrades, "UPDATE")
+	Gui_Trades(msg)
+	Gui_Trades("UPDATE", allTrades)
 	SplashTextOff
 }
 
@@ -1441,7 +1547,7 @@ Gui_Trades_Check_Duplicate(currentActiveTab) {
 */
 	duplicates := currentActiveTab
 	messagesArray := Gui_Trades_Manage_Trades("GET_ALL")
-	maxIndex := messagesArray.BUYERS.MaxIndex()
+	maxIndex := messagesArray.MaxIndex
 	currentTabInfos := Gui_Trades_Get_Trades_Infos(currentActiveTab)
 	arrayKey := 1
 	Loop %maxIndex% {
@@ -1574,16 +1680,16 @@ Gui_Trades_Get_Trades_Infos(tabID){
 	return tabInfos
 }
 
-Gui_Trades_Statistics(mode, tabInfos) {
+Gui_Trades_Statistics(mode, tabInfos="") {
 	global ProgramValues
-
-	if (ProgramValues.Debug)
-		Return
 
 	historyFile := ProgramValues.Trades_History_File
 
 	if (mode="ADD") {
-		IniRead, index,% historyFile,% "GENERAL", % "Index"
+		if (ProgramValues.Debug)
+			Return
+
+		IniRead, index,% historyFile,% "GENERAL",% "Index"
 		if !isNum(index) {
 			index := 0
 		}
@@ -1611,6 +1717,32 @@ Gui_Trades_Statistics(mode, tabInfos) {
 			}
 		}
 	}
+	else if (mode="GET") {
+		allStats := Object()
+		IniRead, index,% historyFile,% "GENERAL",% "Index"
+		allStats.Max_Index := index
+		keys := ["Buyer","Guild","Date_YYYYMMDD","Item","Item_Level","Item_Name","Item_Quality","Location","Location_League","Location_Position","Location_Tab","Price","Time"]
+		Loop %index% {
+			outterIndex := A_Index
+			for id, keyName in keys
+			{
+				IniRead, value,% historyFile,% outterIndex,% keyName
+				if ( value && value != "ERROR" ) {
+					allStats.Insert(outterIndex "_" keyName, value)
+				}
+			}
+			Loop {
+				keyName := "Other_" A_Index
+				IniRead, value,% historyFile,% outterIndex,% keyName
+				if ( value && value != "ERROR" ) {
+					allStats.Insert(outterIndex "_" keyName, value)
+				}
+				else
+					Break
+			}
+		}
+		return allStats
+	}
 }
 
 Gui_Trades_Set_Trades_Infos(setInfos){
@@ -1623,8 +1755,8 @@ Gui_Trades_Set_Trades_Infos(setInfos){
 	if ( newPID ) {
 		; Replace the PID for all trades matching the same PID
 		allTrades := Gui_Trades_Manage_Trades("GET_ALL")
-		for key, element in allTrades.BUYERS {
-			if ( allTrades.GAMEPID[key] = oldPID ) {
+		Loop % allTrades.Max_Index {
+			if ( allTrades[A_Index "_PID"] = oldPID ) {
 				GuiControl,Trades:,% TradesGUI_Controls["PID_Slot_" key],% newPID
 			}
 		}
@@ -1643,16 +1775,6 @@ Gui_Trades_Manage_Trades(mode, newItemInfos="", activeTabID=""){
 	global TradesGUI_Controls
 
 	returnArray := Object()
-	returnArray.COUNT := Object()
-	returnArray.BUYERS := Object()
-	returnArray.ITEMS := Object()
-	returnArray.PRICES := Object()
-	returnArray.LOCATIONS := Object()
-	returnArray.GAMEPID := Object()
-	returnArray.TIME := Object()
-	returnArray.OTHER := Object()
-	returnArray.DATES := Object()
-	returnArray.GUILDS := Object()
 	btnID := activeTabID
 
 	if ( mode = "GET_ALL" || mode = "ADD_NEW") {
@@ -1661,7 +1783,7 @@ Gui_Trades_Manage_Trades(mode, newItemInfos="", activeTabID=""){
 			bcount := A_Index
 			GuiControlGet, content, Trades:,% TradesGUI_Controls["Buyer_Slot_" A_Index]
 			if ( content ) {
-				returnArray.BUYERS.Insert(A_Index, content)
+				returnArray.Insert(A_Index "_Buyer", content)
 			}
 			else break
 		}
@@ -1671,7 +1793,7 @@ Gui_Trades_Manage_Trades(mode, newItemInfos="", activeTabID=""){
 			icount := A_Index
 			GuiControlGet, content, Trades:,% TradesGUI_Controls["Item_Slot_" A_Index]
 			if ( content ) {
-				returnArray.ITEMS.Insert(A_Index, content)
+				returnArray.Insert(A_Index "_Item", content)
 			}
 			else break
 		}
@@ -1681,7 +1803,7 @@ Gui_Trades_Manage_Trades(mode, newItemInfos="", activeTabID=""){
 			pcount := A_Index
 			GuiControlGet, content, Trades:,% TradesGUI_Controls["Price_Slot_" A_Index]
 			if ( content ) {
-				returnArray.PRICES.Insert(A_Index, content)
+				returnArray.Insert(A_Index "_Price", content)
 			}
 			else break
 		}
@@ -1691,7 +1813,7 @@ Gui_Trades_Manage_Trades(mode, newItemInfos="", activeTabID=""){
 			lcount := A_Index
 			GuiControlGet, content, Trades:,% TradesGUI_Controls["Location_Slot_" A_Index]
 			if ( content ) {
-				returnArray.LOCATIONS.Insert(A_Index, content)
+				returnArray.Insert(A_Index "_Location", content)
 			}
 			else break
 		}
@@ -1701,7 +1823,7 @@ Gui_Trades_Manage_Trades(mode, newItemInfos="", activeTabID=""){
 			PIDCount := A_Index
 			GuiControlGet, content, Trades:,% TradesGUI_Controls["PID_Slot_" A_Index]
 			if ( content ) {
-				returnArray.GAMEPID.Insert(A_Index, content)
+				returnArray.Insert(A_Index "_PID", content)
 			}
 			else break
 		}
@@ -1711,7 +1833,7 @@ Gui_Trades_Manage_Trades(mode, newItemInfos="", activeTabID=""){
 			timeCount := A_Index
 			GuiControlGet, content, Trades:,% TradesGUI_Controls["Time_Slot_" A_Index]
 			if ( content ) {
-				returnArray.TIME.Insert(A_Index, content)
+				returnArray.Insert(A_Index "_Time", content)
 			}
 			else break
 		}
@@ -1720,7 +1842,7 @@ Gui_Trades_Manage_Trades(mode, newItemInfos="", activeTabID=""){
 			otherCount := A_Index
 			GuiControlGet, content, Trades:,% TradesGUI_Controls["Other_Slot_" A_Index]
 			if ( content ) {
-				returnArray.OTHER.Insert(A_Index, content)
+				returnArray.Insert(A_Index "_Other", content)
 			}
 			else break
 		}
@@ -1729,7 +1851,7 @@ Gui_Trades_Manage_Trades(mode, newItemInfos="", activeTabID=""){
 			datesCount := A_Index
 			GuiControlGet, content, Trades:,% TradesGUI_Controls["Date_Slot_" A_Index]
 			if ( content ) {
-				returnArray.DATES.Insert(A_Index, content)
+				returnArray.Insert(A_Index "_Date", content)
 			}
 			else break
 		}
@@ -1738,24 +1860,24 @@ Gui_Trades_Manage_Trades(mode, newItemInfos="", activeTabID=""){
 			guildsCount := A_Index
 			GuiControlGet, content, Trades:,% TradesGUI_Controls["Guild_Slot_" A_Index]
 			if ( content ) {
-				returnArray.GUILDS.Insert(A_Index, content)
+				returnArray.Insert(A_Index "_Guild", content)
 			}
 			else break
 		}
+
+		returnArray.Insert("Max_Index", bCount)
 	}
 
 	if ( mode = "ADD_NEW") {
-		name := newItemInfos[0], item := newItemInfos[1], price := newItemInfos[2], location := newItemInfos[3], gamePID := newItemInfos[4], time := newItemInfos[5], other := newItemInfos[6], date := newItemInfos[7], guild := newItemInfos[8]
-		returnArray.COUNT.Insert(0, bCount)
-		returnArray.BUYERS.Insert(bCount, name)
-		returnArray.ITEMS.Insert(iCount, item)
-		returnArray.PRICES.Insert(pCount, price)
-		returnArray.LOCATIONS.Insert(lCount, location)
-		returnArray.GAMEPID.Insert(PIDCount, gamePID)
-		returnArray.TIME.Insert(timeCount, time)
-		returnArray.OTHER.Insert(otherCount, other)
-		returnArray.DATES.Insert(datesCount, date)
-		returnArray.GUILDS.Insert(guildsCount, guild)
+		returnArray.Insert(bCount "_Buyer", newItemInfos.Buyer)
+		returnArray.Insert(iCount "_Item", newItemInfos.Item)
+		returnArray.Insert(pCount "_Price", newItemInfos.Price)
+		returnArray.Insert(lCount "_Location", newItemInfos.Location)
+		returnArray.Insert(PIDCount "_PID", newItemInfos.PID)
+		returnArray.Insert(timeCount "_Time", newItemInfos.Time)
+		returnArray.Insert(otherCount "_Other", newItemInfos.Other)
+		returnArray.Insert(datesCount "_Date", newItemInfos.Date)
+		returnArray.Insert(guildsCount "_Guild", newItemInfos.Guild)
 	}
 
 	if ( mode = "REMOVE_CURRENT") {
@@ -1768,7 +1890,8 @@ Gui_Trades_Manage_Trades(mode, newItemInfos="", activeTabID=""){
 			GuiControlGet, content, Trades:,% TradesGUI_Controls["Buyer_Slot_" counter]
 			if ( content ) {
 				index := A_Index
-				returnArray.BUYERS.Insert(index, content)
+				returnArray.Insert(index "_Buyer", content)
+				returnArray.Insert("Max_Index", index)
 			}
 			else break
 		}
@@ -1784,7 +1907,7 @@ Gui_Trades_Manage_Trades(mode, newItemInfos="", activeTabID=""){
 			GuiControlGet, content, Trades:,% TradesGUI_Controls["Item_Slot_" counter]
 			if ( content ) {
 				index := A_Index
-				returnArray.ITEMS.Insert(index, content)
+				returnArray.Insert(index "_Item", content)
 			}
 			else break
 		}
@@ -1800,7 +1923,7 @@ Gui_Trades_Manage_Trades(mode, newItemInfos="", activeTabID=""){
 			GuiControlGet, content, Trades:,% TradesGUI_Controls["Price_Slot_" counter]
 			if ( content ) {
 				index := A_Index
-				returnArray.PRICES.Insert(index, content)
+				returnArray.Insert(index "_Price", content)
 			}
 			else break
 		}
@@ -1816,7 +1939,7 @@ Gui_Trades_Manage_Trades(mode, newItemInfos="", activeTabID=""){
 			GuiControlGet, content, Trades:,% TradesGUI_Controls["Location_Slot_" counter]
 			if ( content ) {
 				index := A_Index
-				returnArray.LOCATIONS.Insert(index, content)
+				returnArray.Insert(index "_Location", content)
 			}
 			else break
 		}
@@ -1832,7 +1955,7 @@ Gui_Trades_Manage_Trades(mode, newItemInfos="", activeTabID=""){
 			GuiControlGet, content, Trades:,% TradesGUI_Controls["PID_Slot_" counter]
 			if ( content ) {
 				index := A_Index
-				returnArray.GAMEPID.Insert(index, content)
+				returnArray.Insert(index "_PID", content)
 			}
 			else break
 		}
@@ -1848,7 +1971,7 @@ Gui_Trades_Manage_Trades(mode, newItemInfos="", activeTabID=""){
 			GuiControlGet, content, Trades:,% TradesGUI_Controls["Time_Slot_" counter]
 			if ( content ) {
 				index := A_Index
-				returnArray.TIME.Insert(index, content)
+				returnArray.Insert(index "_Time", content)
 			}
 			else break
 		}
@@ -1864,7 +1987,7 @@ Gui_Trades_Manage_Trades(mode, newItemInfos="", activeTabID=""){
 			GuiControlGet, content, Trades:,% TradesGUI_Controls["Other_Slot_" counter]
 			if ( content ) {
 				index := A_Index
-				returnArray.Other.Insert(index, content)
+				returnArray.Insert(index "_Other", content)
 			}
 			else break
 		}
@@ -1880,7 +2003,7 @@ Gui_Trades_Manage_Trades(mode, newItemInfos="", activeTabID=""){
 			GuiControlGet, content, Trades:,% TradesGUI_Controls["Date_Slot_" counter]
 			if ( content ) {
 				index := A_Index
-				returnArray.Dates.Insert(index, content)
+				returnArray.Insert(index "_Date", content)
 			}
 			else break
 		}
@@ -1896,7 +2019,7 @@ Gui_Trades_Manage_Trades(mode, newItemInfos="", activeTabID=""){
 			GuiControlGet, content, Trades:,% TradesGUI_Controls["Guild_Slot_" counter]
 			if ( content ) {
 				index := A_Index
-				returnArray.GUILDS.Insert(index, content)
+				returnArray.Insert(index "_Guild", content)
 			}
 			else break
 		}
@@ -1946,7 +2069,7 @@ Gui_Trades_Set_Position(xpos="UNSPECIFIED", ypos="UNSPECIFIED"){
 		xpos := ( ( (A_ScreenWidth/dpiFactor) - TradesGUI_Values.Width ) * dpiFactor )
 		Gui, Trades:Show, % "x" xpos " y0" " NoActivate"
 	}
-	Logs_Append(A_ThisFunc, {xpos:xpos, ypos:ypos})
+	Logs_Append(A_ThisFunc, {X:xpos, Y:ypos})
 }
 
 
@@ -2771,7 +2894,6 @@ return
 					}
 				}
 				else if ( sectionName = "CUSTOMIZATION_BUTTONS_UNICODE" ) {
-					; msgbox % keyName "`n" handler " - " %handler%Handler "`n" var
 					if keyName contains _Position
 						GuiControl, Settings:ChooseString,% %handler%Handler,% var
 					else
@@ -3192,6 +3314,310 @@ Get_Control_ToolTip(controlName) {
 
 ;==================================================================================================================
 ;
+;												STATS GUI
+;
+;==================================================================================================================
+
+Gui_Stats() {
+	static
+	global ProgramValues, Remove_ToolTip_OnMouseMove_Values
+
+	ProgramValues.Trades_History_File
+
+	guiWidth := 820
+	guiHeight := 500
+
+	allStats := Gui_Trades_Statistics("GET")
+
+	defaultGUI := A_DefaultGui
+	Gui, Stats:Destroy
+	Gui, Stats:New, +HwndGuiStatsHandler +SysMenu -MinimizeBox -MaximizeBox +Resize +OwnDialogs +MinSize670x360 +LabelGui_Stats_,% ProgramValues.Name " - My Stats"
+	Gui, Stats:Default
+	Gui, Margin, 0, 0
+	Gui, Font,,Segoe UI
+	Gui, Add, GroupBox,% "x10 y10 w" guiWidth-20 " h100 hwndFilteringGroupBoxHandler c000000 Section", Filtering Options
+	Gui, Add, Text,xs+15 ys+25,Buyer:
+	Gui, Add, DropDownList,xp+50 yp-2 w150 vBuyersFilter hwndBuyersFilterHandler gGui_Stats_Filter
+	Gui, Add, Text,xs+15 ys+55,Guild:
+	Gui, Add, DropDownList,xp+50 yp-2 w150 vGuildsFilter hwndGuildsFilterHandler gGui_Stats_Filter
+	Gui, Add, Text,xs+225 ys+25,Item:
+	Gui, Add, DropDownList,xp+50 yp-2 w150 vItemsFilter hwndItemsFilterHandler gGui_Stats_Filter
+	Gui, Add, Text,xs+225 ys+55,Currency:
+	Gui, Add, DropDownList,xp+50 yp-2 w150 vCurrenciesFilter hwndCurrenciesFilterHandler gGui_Stats_Filter
+	Gui, Add, Text,xs+430 ys+25,League:
+	Gui, Add, DropDownList,xp+50 yp-2 w150 vLeaguesFilter hwndLeaguesFilterHandler gGui_Stats_Filter
+	Gui, Add, Text,xs+430 ys+55,Tab:
+	Gui, Add, DropDownList,xp+50 yp-2 w150 vTabsFilter hwndTabsFilterHandler gGui_Stats_Filter
+	Gui, Add, ListView, x0 y120 w%guiWidth% hwndListV h300 gGui_Stats_OnListViewClick AltSubmit,#|Date (YYYY-MM-DD)|Time|Guild|Buyer|Item|Price|League|Tab|Other
+;	keys := ["Buyer","Guild","Date_YYYYMMDD","Item","Item_Level","Item_Name","Item_Quality","Location","Location_League","Location_Position","Location_Tab","Other","Price","Time"]
+
+	otherMsgs := {}
+	Loop % allStats.Max_Index
+	{
+		outterIndex := A_Index
+		otherMaxIndex := 0
+		if (allStats[outterIndex "_Other_1"]) {
+			Loop {
+				if (allStats[outterIndex "_Other_" A_Index]) {
+					otherStr .= allStats[outterIndex "_Other_" A_Index] "`n"
+					otherMaxIndex++
+				}
+				Else
+					Break
+			}
+		}
+		otherMsgs.Insert(outterIndex "_Other_MaxIndex", otherMaxIndex)
+		otherMsgs.Insert(outterIndex "_Other", otherStr)
+		otherStr := ""
+
+		LV_Add("", A_Index
+				 , allStats[A_Index "_Date_YYYYMMDD"]
+				 , allStats[A_Index "_Time"]
+				 , allStats[A_Index "_Guild"]
+				 , allStats[A_Index "_Buyer"]
+				 , allStats[A_Index "_Item"]
+				 , allStats[A_Index "_Price"]
+				 , allStats[A_Index "_Location_League"]
+				 , allStats[A_Index "_Location_Tab"]
+				 , otherMsgs[A_Index "_Other_MaxIndex"] " Messages")
+	}
+	LV_ModifyCol(1,"Auto")
+	LV_ModifyCol(2,"Auto")
+	LV_ModifyCol(3,"Auto")
+	LV_ModifyCol(4,"Auto")
+	LV_ModifyCol(5,"Auto")
+	LV_ModifyCol(6,"Auto")
+	LV_ModifyCol(7,"Auto")
+	LV_ModifyCol(8,"Auto")
+	LV_ModifyCol(9,"AutoHdr")
+	LV_ModifyCol(10,"AutoHdr")
+
+	Gosub, Gui_Stats_Parse
+
+	Gui, Show, AutoSize NoActivate
+    Gui, %defaultGUI%:Default
+    Return
+
+    Gui_Stats_OnListViewClick:
+;	Credits to just me for the function
+		If (A_GuiEvent = "Normal") {
+			Row := A_EventInfo
+			Column := LV_SubItemHitTest(ListV)
+			LV_GetText(columnTitle, 0 ,Column)
+			if (columnTitle = "Other") {
+				LV_GetText(rowID, Row)
+				MouseGetPos, mouseX, mouseY
+				Remove_ToolTip_OnMouseMove_Values := {X:mouseX, Y:mouseY, Treshold_X:30, Treshold_Y:10}
+				ToolTip,% otherMsgs[rowID "_Other"]
+				SetTimer, Remove_Tooltip_OnMouseMove, 100
+			}
+   		}
+    return
+
+    Gui_Stats_Filter:
+    	Gui, Stats:Submit, NoHide
+    	Gui Stats:+OwnDialogs
+
+	    LV_Delete()
+	    Loop % allStats.Max_Index
+		{
+			filteredBuyer 			:= (BuyersFilter="All")?(BuyersFilter)
+									  :(allStats[A_Index "_Buyer"])
+			filteredGuild			:= (GuildsFilter="All")?(GuildsFilter)
+									  :(allStats[A_Index "_Guild"])
+
+			filteredItem 			:= (ItemsFilter="All")?(ItemsFilter)
+									  :(ItemsFilter="Gems" 	&& allStats[A_Index "_Item_Level"])?(ItemsFilter)
+									  :(allStats[A_Index "_Item_Name"])
+			filteredCurrency		:= (CurrenciesFilter="All")?(CurrenciesFilter)
+									  :(allStats[A_Index "_Price"])
+			currencyInfos := Gui_Stats_Get_Currency_Name(filteredCurrency) ; Convert to real currency name
+			filteredCurrency := currencyInfos.Name
+
+
+			filteredLeague 			:= (LeaguesFilter="All")?(LeaguesFilter)
+									  :(allStats[A_Index "_Location_League"])
+			filteredTab				:= (TabsFilter="All")?(TabsFilter)
+									  :(allStats[A_Index "_Location_Tab"])
+
+			if (BuyersFilter = filteredBuyer
+				&& GuildsFilter = filteredGuild
+				&& ItemsFilter = filteredItem
+				&& CurrenciesFilter = filteredCurrency
+				&& LeaguesFilter = filteredLeague
+				&& TabsFilter = filteredTab) {
+
+				LV_Add("", A_Index
+						 , allStats[A_Index "_Date_YYYYMMDD"]
+						 , allStats[A_Index "_Time"]
+						 , allStats[A_Index "_Guild"]
+						 , allStats[A_Index "_Buyer"]
+						 , allStats[A_Index "_Item"]
+						 , allStats[A_Index "_Price"]
+						 , allStats[A_Index "_Location_League"]
+						 , allStats[A_Index "_Location_Tab"]
+						 , otherMsgs[A_Index "_Other_MaxIndex"] " Messages")
+			}
+		}
+    Return
+
+    Gui_Stats_Parse:
+    	Loop % allStats.Max_Index
+    	{
+    		buyer := allStats[A_Index "_Buyer"]
+    		if (buyer) {
+	    		if buyer not in %onlyBuyers%
+	    		{
+	    			onlyBuyers .= "," buyer
+	    		}
+	    	}
+
+    		guild := allStats [A_Index "_Guild"]
+    		if (guild) {
+	    		if guild not in %onlyGuilds%
+	    		{
+	    			onlyGuilds .= "," guild
+	    		}
+	    	}
+
+    		item := allStats[A_Index "_Item_Name"]
+    		if (item) {
+	    		if item not in %onlyItems%
+	    		{
+	    			onlyItems .= "," item
+	    		}
+	    	}
+
+    		currency := allStats[A_Index "_Price"]
+    		if (currency) {
+    			currencyInfos := Gui_Stats_Get_Currency_Name(currency)
+    			currency := currencyInfos.Name
+    			if (currencyInfos.Is_Listed) {
+	    			if currency not in %onlyCurrency%
+	    			{
+	    				if (currencyInfos.Is_Listed)
+		    				onlyCurrency .= "," currency
+		    		}
+		    	}
+		    	else if !(currencyInfos.Is_Listed) {
+		    		if currency not in %unlistedCurrency%
+	    				unlistedCurrency .= "," currency
+    			}
+    		}
+
+    		league := allStats[A_Index "_Location_League"]
+    		if (league) {
+    			if league not in %onlyLeagues%
+    			{
+	    			onlyLeagues .= "," league
+    			}
+    		}
+
+    		tab := allStats[A_Index "_Location_Tab"]
+    		if (tab) {
+    			if tab not in %onlyTabs%
+    			{
+	    			onlyTabs .= "," tab
+    			}
+    		}
+    	}
+
+    	listToSort := "onlyCurrency,unlistedCurrency,onlyBuyers,onlyGuilds,onlyItems,onlyLeagues,onlyTabs"
+    	Loop, Parse, listToSort,% ","
+    	{
+ 			Sort, %A_LoopField%, Z D,
+ 			if (A_LoopField = "unlistedCurrency") {
+ 				%A_LoopField% := "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
+ 							  . ",      Unknown Currencies      "
+ 							  . ",- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
+ 							  . "," %A_LoopField%
+ 			}
+ 			else {
+ 				%A_LoopField% := "All," %A_LoopField%
+ 			}
+    	}    	
+    	listToSort := ""
+
+    	onlyCurrency .= "," unlistedCurrency
+    	onlyBuyers := StrReplace(onlyBuyers, ",", "|")
+    	onlyGuilds := StrReplace(onlyGuilds, ",", "|")
+    	onlyItems := StrReplace(onlyItems, ",", "|")
+    	onlyCurrency := StrReplace(onlyCurrency, ",", "|")
+    	onlyLeagues := StrReplace(onlyLeagues, ",", "|")
+    	onlyTabs := StrReplace(onlyTabs, ",", "|")
+    	GuiControl, Stats:,% BuyersFilterHandler,% onlyBuyers
+    	GuiControl, Stats:,% GuildsFilterHandler,% onlyGuilds
+    	GuiControl, Stats:,% ItemsFilterHandler,% onlyItems
+    	GuiControl, Stats:,% CurrenciesFilterHandler,% onlyCurrency
+    	GuiControl, Stats:,% LeaguesFilterHandler,% onlyLeagues
+    	GuiControl, Stats:,% TabsFilterHandler,% onlyTabs
+
+	    GuiControl, Stats:ChooseString,% BuyersFilterHandler, All
+	    GuiControl, Stats:ChooseString,% GuildsFilterHandler, All
+		GuiControl, Stats:ChooseString,% ItemsFilterHandler, All
+		GuiControl, Stats:ChooseString,% CurrenciesFilterHandler, All
+		GuiControl, Stats:ChooseString,% LeaguesFilterHandler, All
+		GuiControl, Stats:ChooseString,% TabsFilterHandler, All
+    Return
+
+    Gui_Stats_Size:
+    	GuiControl, Stats:Move,% ListV,% "w" A_GuiWidth " h" A_GuiHeight-120
+    	GuiControl, Stats:Move,% FilteringGroupBoxHandler,% "w" A_GuiWidth-20
+    Return
+
+    Gui_Stats_Close:
+    	Gui, Stats:Destroy
+    Return
+    Gui_Stats_Cancel:
+    	Gosub, Gui_Stats_Close
+    Return
+}
+
+Gui_Stats_Get_Currency_Name(currency) {
+/*		Compare the specified currency with poe.trade abridged currency names to retrieve the real currency name.
+		When the string is plural, check if the full list of currencies contains its non-plural counterpart.
+ */
+	global Stats_RealCurrencyNames, Stats_TradeCurrencyNames
+
+	if RegExMatch(currency, "See Offer") {
+		isCurrencyListed := False
+		Return {Name:currency, Is_Listed:isCurrencyListed}
+	}
+
+	currency := RegExReplace(currency, "\d")
+	currency = %currency% ; Remove whitespaces
+	lastChar := SubStr(currency, 0) ; Get last char
+	if (lastChar = "s") ; poeapp adds an "s" for >1 currencies
+		StringTrimRight, currencyWithoutS, currency, 1
+
+	if currency not in %Stats_RealCurrencyNames%
+	{
+		currencyFullName := Stats_TradeCurrencyNames[currency]
+		currencyFullName := StrReplace(currencyFullName, "_", " ")
+		if (currencyFullName)
+			isCurrencyListed := true
+	}
+	else { ; Currency is in list
+		currencyFullName := currency
+		isCurrencyListed := true
+	}
+	if (!currencyFullName && currencyWithoutS) { ; Couldn't retrieve full name, and currency is possibly plural
+		if currencyWithoutS in %Stats_RealCurrencyNames% ; Currency is in list, was most likely plural
+		{ 
+			currencyFullName := currencyWithoutS
+			isCurrencyListed := true
+		}
+	}
+	else if !(currencyFullName) { ; Unknown currency name
+		Logs_Append(A_ThisFunc, {Currency:currency})
+	}
+
+	currencyFullName := (currencyFullName)?(currencyFullName):(currency)
+	Return {Name:currencyFullName, Is_Listed:isCurrencyListed}
+}
+
+;==================================================================================================================
+;
 ;												UPDATE GUI
 ;
 ;==================================================================================================================
@@ -3202,51 +3628,65 @@ Check_Update() {
 	static
 	global ProgramValues
 
-	programVersion := ProgramValues.Version, programFolder := ProgramValues.Local_Folder, programChangelogsFilePath := ProgramValues.Changelogs_File
-	updaterPath := ProgramValues.Updater_File, updaterDL := ProgramValues.Updater_Link
-	versionDL := ProgramValues.Version_Link, changelogsDL := ProgramValues.Changelogs_Link
-	
+	IniRead, updateBeta,% ProgramValues.Ini_File,PROGRAM,Update_Beta, 0
+	IniRead, autoUpdate,% ProgramValues.Ini_File,PROGRAM,AutoUpdate, 0
+	IniRead, prevUpdateTime,% ProgramValues.Ini_File,PROGRAM,LastUpdate,% A_Now
+
+	changeslogsLink := (updateBeta)?(ProgramValues.Changelogs_Link_Beta):(ProgramValues.Changelogs_Link)
+	versionLink := (updateBeta)?(ProgramValues.Version_Link_Beta):(ProgramValues.Version_Link)
+
 ;	Delete files remaining from updating
-	if (FileExist(updaterPath))
-		FileDelete,% updaterPath
-	if (FileExist("POE-TC-NewVersion.exe"))
-		FileDelete,% "POE-TC-NewVersion.exe"
-	
-;	Retrieve the changelog file and update the local file if required
+	if FileExist(ProgramValues.Updater_File)
+		FileDelete,% ProgramValues.Updater_File
+	if FileExist(ProgramValues.NewVersion_File)
+		FileDelete,% ProgramValues.NewVersion_File
+
 	ComObjError(0)
+
+;	Changelogs file
 	whr := ComObjCreate("WinHttp.WinHttpRequest.5.1")
-	whr.Open("GET", changelogsDL, true)
+	whr.Open("GET", changeslogsLink, true) ; Using true above and WaitForResponse allows the script to r'emain responsive.
 	whr.Send()
-	; Using 'true' above and the call below allows the script to r'emain responsive.
 	whr.WaitForResponse(10) ; 10 seconds
-	changelogText := whr.ResponseText
-	changelogText = %changelogText%
-	if ( changelogText ) && !( RegExMatch(changelogText, "Not(Found| Found)") ){
-		FileRead, changelogLocal,% programChangelogsFilePath
-		if ( changelogLocal != changelogText ) {
-			FileDelete, % programChangelogsFilePath
-			UrlDownloadToFile, % changelogsDL,% programChangelogsFilePath
+	changelogsOnline := whr.ResponseText
+	changelogsOnline = %changelogsOnline%
+	if ( changelogsOnline ) && !( RegExMatch(changelogsOnline, "Not(Found| Found)") ){
+		FileRead, changelogsLocal,% ProgramValues.Changelogs_File
+		if ( changelogsLocal != changelogsOnline ) {
+			FileDelete, % ProgramValues.Changelogs_File
+			UrlDownloadToFile, % changeslogsLink,% ProgramValues.Changelogs_File
 		}
 	}
 	
-;	Retrieve the version number
-	ComObjError(0)
+;	Version number file
 	whr := ComObjCreate("WinHttp.WinHttpRequest.5.1")
-	whr.Open("GET", versionDL, true)
+	whr.Open("GET", versionLink, true)
 	whr.Send()
-	; Using 'true' above and the call below allows the script to remain responsive.
-	whr.WaitForResponse(10) ; 10 seconds
-	versionNumber := whr.ResponseText
-	versionNumber = %versionNumber%
-	if ( versionNumber ) && !( RegExMatch(versionNumber, "Not(Found| Found)") ) { ; couldn't reach the file, cancel update
-		StringReplace, versionNumber, versionNumber, `n,,1 ; remove the 2nd white line
-		versionNumber = %versionNumber% ; remove any whitespace
+	whr.WaitForResponse(10)
+	versionOnline := whr.ResponseText
+	versionOnline = %versionOnline%
+	if ( versionOnline ) && !( RegExMatch(versionOnline, "Not(Found| Found)") ) { ; couldn't reach the file, cancel update
+		StringReplace, versionOnline, versionOnline, `n,,1 ; remove the 2nd white line
+		versionOnline = %versionOnline% ; remove any whitespace
 	}
-	newVersion := (versionNumber)?(versionNumber):(programVersion)
+	newVersion := (versionOnline)?(versionOnline):(ProgramValues.Version)
 
 	ProgramValues.Insert("Version_Latest", newVersion)
-	if ( newVersion != programVersion )
-		Gui_About({Update_Available:1})
+	if ( newVersion != ProgramValues.Version ) {
+		ProgramValues.Update_Available := 1
+		if (autoUpdate=1) {
+			timeDif := A_Now
+			EnvSub, timeDif, %prevUpdateTime%, Seconds
+			if (timeDif > 61 || !timeDif) { ; !timeDif means prevUpdateTime was not in YYYYMMDDHH24MISS format 
+				Show_Tray_Notification(newVersion " is available!", "Auto-updating is enabled. Downloading the updater...")
+				Download_Updater()
+			}
+		}
+		else {
+			Show_Tray_Notification(newVersion " is available!", "Left click on this notification to run the automatic download.`nRight click to dismiss it.", {Is_Update:1, Fade_Timer:10000})
+		}
+	}
+	SetTimer, Check_Update, -1800000
 }
 
 ;==================================================================================================================
@@ -3259,38 +3699,36 @@ Gui_About(params="") {
 	static
 	global ProgramValues
 
-	programChangelogsFilePath := ProgramValues.Changelogs_File
 	iniFilePath := ProgramValues.Ini_File, programName := ProgramValues.Name
-	programVersion := ProgramValues.Version, latest := ProgramValues.Version_Latest
-	updaterLink := ProgramValues.Updater_Link, updaterFile := ProgramValues.Updater_File
+	verCurrent := ProgramValues.Version, verLatest := ProgramValues.Version_Latest
 
-	isUpdateAvailable := (latest && programVersion != latest)?(1):(0)
+	isUpdateAvailable := (verLatest && verCurrent != verLatest)?(1):(0)
 
-	IniRead, autoUpdate,% iniFilePath, PROGRAM, AutoUpdate
-	if (autoUpdate = 1 && params.Update_Available=1 && programVersion != latest) {
-		GoSub Gui_About_Update
-		Return
-	}
+	IniRead, updateBeta,% iniFilePath,PROGRAM,Update_Beta
+	IniRead, autoUpdate,% iniFilePath,PROGRAM,AutoUpdate
 
 	Gui, About:Destroy
-	Gui, About:New, +HwndaboutGuiHandler +AlwaysOnTop +SysMenu -MinimizeBox -MaximizeBox +OwnDialogs +LabelGui_About_,% programName " by lemasato v" programVersion
+	Gui, About:New, +HwndaboutGuiHandler +AlwaysOnTop +SysMenu -MinimizeBox -MaximizeBox +OwnDialogs +LabelGui_About_,% programName " by lemasato v" verCurrent
 	Gui, About:Default
 	Gui, Font, ,Consolas
 
-	groupText := (isUpdateAvailable)?("Update v" latest " available."):("No update available.")
-	Gui, Add, GroupBox, w500 h60 xm Section c000000 hwndUpdateAvailableTextHandler,% groupText
-	Gui, Add, Text, xs+20 ys+20,% "Current version: " A_Tab programVersion
-	Gui, Add, Text, xs+20 ys+35 Section hwndLastestVersionTextHandler,% "Latest version: " A_Tab latest
+	groupText := (isUpdateAvailable)?("Update v" verLatest " available."):("No update available.")
+	Gui, Add, GroupBox, w500 h80 xm Section c000000 hwndUpdateAvailableTextHandler,% groupText
+	Gui, Add, Text, xs+20 ys+20,% "Current version: " A_Tab verCurrent
+	Gui, Add, Text, xs+20 ys+35 hwndLastestVersionTextHandler,% "Latest version: " A_Tab verLatest
 	if ( isUpdateAvailable ) {
 		GuiControl, About:+cGreen +Redraw,% UpdateAvailableTextHandler
 		GuiControl, About:+cGreen +Redraw,% LastestVersionTextHandler
-		Gui, Add, Button,x+25 ys-5 w80 h20 gGui_About_Update,Update
+		Gui, Add, Button,x+25 yp-5 w80 h20 gGui_About_Update,Update
 	}
-	Gui, Add, CheckBox,ys vUpdateAutomatically,Enable automatic updates
+	Gui, Add, CheckBox,xs+20 ys+55 vUpdateAutomatically,Enable automatic updates
+	Gui, Add, CheckBox,xp+200 yp vUpdateBeta,Enable BETA (Requires reloading)
 	if ( autoUpdate = 1 )
 		GuiControl, About:,UpdateAutomatically,1
+	if ( updateBeta = 1 )
+		GuiControl, About:,UpdateBeta,1
 
-	FileRead, changelogText,% programChangelogsFilePath
+	FileRead, changelogText,% ProgramValues.Changelogs_File
 	allChanges := Object()
 	allVersions := ""
 	Loop {
@@ -3341,25 +3779,18 @@ Gui_About(params="") {
 	Return
 
 	Gui_About_Update:
-;		Download the updater that will handle the updating process
-		UrlDownloadToFile,% updaterLink,% updaterFile
-		FileSetAttrib, +H,% updaterFile
-		sleep 1000
-		Run, % updaterFile
-		Process, Close, %programPID%
-		ExitApp
+		Download_Updater()
 	Return
 
 	Gui_About_Close:
 		Gui, About:Submit
 		IniWrite,% UpdateAutomatically,% iniFilePath,PROGRAM,AutoUpdate
+		IniWrite,% UpdateBeta,% iniFilePath,PROGRAM,Update_Beta
 	Return
 }
 
 ;==================================================================================================================
-;
 ;											INI SETTINGS
-;
 ;==================================================================================================================
 
 Get_Game_Settings() {
@@ -3375,14 +3806,14 @@ Get_Game_Settings() {
 
 	FileRead, fileContent,% gameFile
 	if !(fileContent || ErrorLevel) {
-		String := "Unable to retrieve content: """ gameFile """"
+		String := "Unable to retrieve content from file: """ gameFile """"
 		Logs_Append("DEBUG", {String:String})
 	}
 
 	File := FileOpen(gameFileCopy, "w", "UTF-16")
 	File.Write(fileContent)
 	if (ErrorLevel) {
-		String := "Could not Write in File: " gameFileCopy
+		String := "Could not Write in file: " gameFileCopy
 		Logs_Append("DEBUG", {String:String})
 		doAlternative := 1
 	}
@@ -3740,7 +4171,7 @@ Hotkeys_Handler(thisLabel) {
 		tradesInfosArray := Object()
 		tabID := TradesGUI_Values.Active_Tab
 		if ( tabID ) {
-			tabInfos := Gui_Trades_Get_Trades_Infos(tabID) ; [0] buyerName - [1] itemName - [2] itemPrice
+			tabInfos := Gui_Trades_Get_Trades_Infos(tabID)
 		}
 
 		if ( hotkeyType = "Basic" ) {
@@ -4046,7 +4477,7 @@ WM_RBUTTONDOWN(wParam, lParam, msg, hwnd) {
  		duplicatesID := Gui_Trades_Check_Duplicate(tabToDel)
  		if ( duplicatesID.MaxIndex() ) {
  			duplicatesInfos := Gui_Trades_Get_Trades_Infos(duplicatesID[0])
-			Gui_Trades(duplicatesID, "REMOVE_DUPLICATES")	
+			Gui_Trades("REMOVE_DUPLICATES", duplicatesID)	
 		}
 	Return
 }
@@ -4168,7 +4599,8 @@ WM_MOUSEMOVE(wParam, lParam, msg, hwnd) {
 			WinGetPos, tradesXPOS, tradesYPOS
 			ToolTip, % content,% tradesXPOS+ctrlPOS.X,% tradesYPOS+ctrlPOS.Y
 			MouseGetPos, mouseX, mouseY
-			SetTimer, ToolTipTimer, 100
+			global Remove_ToolTip_OnMouseMove_Values := {X:mouseX, Y:mouseY, Treshold_X:100, Treshold_Y:10}
+			SetTimer, Remove_Tooltip_OnMouseMove, 100
 		}
 		if !A_GuiControl ; No control hovered, reset the value
 			TradesGUI_Values.Last_Hovered_Button := ""
@@ -4201,16 +4633,6 @@ WM_MOUSEMOVE(wParam, lParam, msg, hwnd) {
 		
 		Remove_ToolTip:
 			ToolTip
-		return
-
-		ToolTipTimer:
-;			Credits to POE-TradeMacro: https://github.com/PoE-TradeMacro/POE-TradeMacro
-			MouseGetPos, ,CurrY
-			MouseMoved := (CurrY - mouseY) ** 2 > 10 ** 2
-			if (MouseMoved)	{
-				SetTimer, ToolTipTimer, Off
-				ToolTip 
-			}
 		return
 	}
 
@@ -4409,9 +4831,53 @@ FGP_Value(FilePath, Property) {
 ;
 ;==================================================================================================================
 
-Remove_TrayTip:
-	TrayTip
-Return
+LV_SubitemHitTest(HLV) {
+/*		Credits to just me
+		autohotkey.com/board/topic/80265-solved-which-column-is-clicked-in-listview/?p=510061
+
+		Allows to retrieve which column was clicked.
+*/
+   ; To run this with AHK_Basic change all DllCall types "Ptr" to "UInt", please.
+   ; HLV - ListView's HWND
+   Static LVM_SUBITEMHITTEST := 0x1039
+   VarSetCapacity(POINT, 8, 0)
+   ; Get the current cursor position in screen coordinates
+   DllCall("User32.dll\GetCursorPos", "Ptr", &POINT)
+   ; Convert them to client coordinates related to the ListView
+   DllCall("User32.dll\ScreenToClient", "Ptr", HLV, "Ptr", &POINT)
+   ; Create a LVHITTESTINFO structure (see below)
+   VarSetCapacity(LVHITTESTINFO, 24, 0)
+   ; Store the relative mouse coordinates
+   NumPut(NumGet(POINT, 0, "Int"), LVHITTESTINFO, 0, "Int")
+   NumPut(NumGet(POINT, 4, "Int"), LVHITTESTINFO, 4, "Int")
+   ; Send a LVM_SUBITEMHITTEST to the ListView
+   SendMessage, LVM_SUBITEMHITTEST, 0, &LVHITTESTINFO, , ahk_id %HLV%
+   ; If no item was found on this position, the return value is -1
+   If (ErrorLevel = -1)
+      Return 0
+   ; Get the corresponding subitem (column)
+   Subitem := NumGet(LVHITTESTINFO, 16, "Int") + 1
+   Return Subitem
+}
+
+Remove_Tooltip_OnMouseMove() {
+/*		Credits to POE-TradeMacro for the original function
+		https://github.com/PoE-TradeMacro/POE-TradeMacro
+*/
+	global Remove_ToolTip_OnMouseMove_Values
+	RemoveTT := Remove_ToolTip_OnMouseMove_Values
+
+	MouseGetPos, currentX, currentY
+
+	mouseMovedH := (currentX - RemoveTT.X) ** 2 > RemoveTT.Treshold_X ** 2
+	mouseMovedV := (currentY - RemoveTT.Y) ** 2 > RemoveTT.Treshold_Y ** 2
+	if (mouseMovedV || mouseMovedH)	{
+		SetTimer, Remove_Tooltip_OnMouseMove, Off
+		Remove_ToolTip_OnMouseMove_Values := ""
+		ToolTip
+	}
+	return
+}
 
 Get_All_Games_Instances() {
 	global TradesGUI_Values
@@ -4476,130 +4942,130 @@ Get_DPI_Factor() {
 	return dpiFactor
 }
 
+
 Logs_Append(funcName, params) {
 	global ProgramValues, GameSettings, ProgramSettings
 
 	programName := ProgramValues.Name
 	programVersion := ProgramValues.Version
 	iniFilePath := ProgramValues.Ini_File
-	programLogsFilePath := ProgramValues.Logs_File
+	logsFile := ProgramValues.Logs_File
 
 	if ( funcName = "DUMP" ) {
 		dpiFactor := ProgramSettings.Screen_DPI
+
+		FileAppend,% ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>`n",% logsFile
+		FileAppend,% ">>> OS SECTION `n",% logsFile
+		FileAppend,% ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>`n",% logsFile	
 		OSbits := (A_Is64bitOS)?("64bits"):("32bits")
-		FileAppend,% "OS: Type:" A_OSType " - Version:" A_OSVersion " - " OSbits "`n",% programLogsFilePath
-		FileAppend,% "DPI: " dpiFactor "`n",% programLogsFilePath
-		FileAppend,% ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>`n",% programLogsFilePath
-		FileAppend,% ">>> PROGRAM SECTION `n",% programLogsFilePath
-		FileAppend,% ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>`n",% programLogsFilePath
+		FileAppend,% "Type: " A_OSType "`n",% logsFile
+		FileAppend,% "Version: " A_OSVersion "(" OSbits ")`n",% logsFile
+		FileAppend,% "DPI: " dpiFactor "`n",% logsFile
+		FileAppend,% "`n",% logsFile
+
+		FileAppend,% ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>`n",% logsFile
+		FileAppend,% ">>> TOOL SECTION `n",% logsFile
+		FileAppend,% ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>`n",% logsFile
+		FileAppend,% "Version: " ProgramValues.Version "`n",% logsFile
+		FileAppend,% "Local_Folder: " ProgramValues.Local_Folder "`n",% logsFile
+		FileAppend,% "Game_Folder: " ProgramValues.Game_Folder "`n",% logsFile
+		FileAppend,% "`n",% logsFile
+
+		FileAppend,% ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>`n",% logsFile
+		FileAppend,% ">>> PROGRAM SECTION `n",% logsFile
+		FileAppend,% ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>`n",% logsFile
 		IniRead, content,% iniFilePath,PROGRAM
-		FileAppend,% content "`n",% programLogsFilePath
-		FileAppend,% "`n",% programLogsFilePath
+		FileAppend,% content "`n",% logsFile
+		FileAppend,% "`n",% logsFile
 
-		FileAppend,% ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>`n",% programLogsFilePath
-		FileAppend,% ">>> GAME SETTINGS `n",% programLogsFilePath
-		FileAppend,% ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>`n",% programLogsFilePath
+		FileAppend,% ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>`n",% logsFile
+		FileAppend,% ">>> GAME SETTINGS `n",% logsFile
+		FileAppend,% ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>`n",% logsFile
 		for key, element in GameSettings {
-			FileAppend,% key ": """ element """`n",% programLogsFilePath
+			FileAppend,% key ": """ element """`n",% logsFile
 		}
-		FileAppend,% "`n",% programLogsFilePath
+		FileAppend,% "`n",% logsFile
 
-		FileAppend,% ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>`n",% programLogsFilePath
-		FileAppend,% ">>> LOCAL SETTINGS `n",% programLogsFilePath
-		FileAppend,% ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>`n",% programLogsFilePath
+		FileAppend,% ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>`n",% logsFile
+		FileAppend,% ">>> LOCAL SETTINGS `n",% logsFile
+		FileAppend,% ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>`n",% logsFile
 		for key, element in params.KEYS {
-			FileAppend,% params.KEYS[A_Index] ": """ params.VALUES[A_Index] """`n",% programLogsFilePath
+			FileAppend,% params.KEYS[A_Index] ": """ params.VALUES[A_Index] """`n",% logsFile
 		}
-		FileAppend,% "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<`n",% programLogsFilePath
-		FileAppend,% "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<`n",% programLogsFilePath
-		FileAppend,% "`n",% programLogsFilePath
+		FileAppend,% "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<`n",% logsFile
+		FileAppend,% "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<`n",% logsFile
+		FileAppend,% "`n",% logsFile
 	}
 
-	if ( funcName = "DEBUG" ) {
-		FileAppend,% "[" A_YYYY "-" A_MM "-" A_DD "_" A_Hour ":" A_Min ":" A_Sec "] ",% programLogsFilePath
-		FileAppend,% params.String,% programLogsFilePath
+	else {
+		FileAppend,% "[" A_YYYY "-" A_MM "-" A_DD "_" A_Hour ":" A_Min ":" A_Sec "] ",% logsFile
+
+		if ( funcName = "DEBUG" ) {
+			FileAppend,% params.String,% logsFile
+		}
+
+		else if ( funcName = "GUI_Multiple_Instances" ) {			
+			FileAppend,% "Multiple instances found. Handler: " params.Handler " - Path: " params.Path,% logsFile
+		}
+		else if ( funcName = "GUI_Multiple_Instances_Return" ) {
+			FileAppend,% "Multiple instances found (Return). Handler: " params.Handler,% logsFile
+		}
+
+		else if ( funcName = "Monitor_Game_Logs" ) {
+			FileAppend,% "Monitoring game logs file: " params.File,% logsFile
+		}
+		else if ( funcName = "Monitor_Game_Logs_Break" ) {
+			FileAppend,% "ERROR: Restarting logs monitoring. Pointer Position: " params.Pos " - File Length: " params.Length,% logsFile
+		}
+
+		else if ( funcName = "Gui_Trades_Set_Position" ) {
+			FileAppend,% "Setting Trades GUI Position: x" params.X " y" params.Y,% logsFile
+		}
+
+		else if (funcName = "ShellMessage" ) {
+			FileAppend,% "Trades GUI Hidden: Show_Mode: " params.Show_Mode " - Dock_Window ID: " params.Dock_Window " - Current Win ID: " params.Current_Win_ID "."
+		}
+
+		else if ( funcName = "Gui_Trades_Cycle_Func" ) {
+			FileAppend,% "Docking Trades GUI to ID: " params.Dock_Window " - Total matchs found: " params.Total_Matchs,% logsFile
+		}
+
+		else if ( funcName = "GUI_Replace_PID_Return" ) {
+			FileAppend,% "Replacing Trades GUI tab PID with: " params.PID,% logsFile
+		}
+
+		else if ( funcName = "Gui_Trades_Do_Action_Func" ) {
+			FileAppend,% "ERROR: Matching aciton not found for button: Name: " params.Var_Name ", Alpha: " params.Var_Alpha ", Action: " params.Action,% logsFile
+		}
+
+		else if ( funcName = "Gui_Stats_Get_Currency_Name" ) {
+			FileAppend,% "ERROR: Unknown currency type: """ params.Currency """"
+		}
+
+		else if ( funcName = "Gui_Trades_Select_Tab" ) {
+			FileAppend,% "ERROR: Could not select tab """ params.Tab_ID """. Action occured: " params.Action ""
+		}
 	}
 
-	if ( funcName = "GUI_Multiple_Instances" ) {
-		FileAppend,% "[" A_YYYY "-" A_MM "-" A_DD "_" A_Hour ":" A_Min ":" A_Sec "] ",% programLogsFilePath
-		FileAppend,% "Found multiple instances. Handler: " params.Handler " - Path: " params.Path,% programLogsFilePath
-	}
-	if ( funcName = "GUI_Multiple_Instances_Return" ) {
-		FileAppend,% "[" A_YYYY "-" A_MM "-" A_DD "_" A_Hour ":" A_Min ":" A_Sec "] ",% programLogsFilePath
-		FileAppend,% "Found multiple instances (Return). Handler: " params.Handler,% programLogsFilePath
-	}
-
-	if ( funcName = "Monitor_Game_Logs" ) {
-		FileAppend,% "[" A_YYYY "-" A_MM "-" A_DD "_" A_Hour ":" A_Min ":" A_Sec "] ",% programLogsFilePath
-		FileAppend,% "Monitoring logs: " params.File,% programLogsFilePath
-	}
-	if ( funcName = "Monitor_Game_Logs_Break" ) {
-		FileAppend,% "[" A_YYYY "-" A_MM "-" A_DD "_" A_Hour ":" A_Min ":" A_Sec "] ",% programLogsFilePath
-		FileAppend,% "Monitoring logs (Break). Obj.pos: " params.objPos " - Obj.length: " params.objLength,% programLogsFilePath
-	}
-
-	if ( funcName = "Gui_Trades_Set_Position" ) {
-		FileAppend,% "[" A_YYYY "-" A_MM "-" A_DD "_" A_Hour ":" A_Min ":" A_Sec "] ",% programLogsFilePath
-		FileAppend,% "Trades GUI Position: x" params.xpos " y" params.ypos ".",% programLogsFilePath
-	}
-
-	if (funcName = "ShellMessage" ) {
-		FileAppend,% "[" A_YYYY "-" A_MM "-" A_DD "_" A_Hour ":" A_Min ":" A_Sec "] ",% programLogsFilePath
-		FileAppend,% "Trades GUI Hidden: Show_Mode: " params.Show_Mode " - Dock_Window ID: " params.Dock_Window " - Current Win ID: " params.Current_Win_ID "."
-	}
-
-	if ( funcName = "Send_InGame_Message" ) {
-		FileAppend,% "[" A_YYYY "-" A_MM "-" A_DD "_" A_Hour ":" A_Min ":" A_Sec "] ",% programLogsFilePath
-		FileAppend,% "Sending IG Message to PID """ params.PID """ with content: """ params.Message,% programLogsFilePath
-		matchsArray := Get_Matching_Windows_Infos("PID")
-		for key, element in matchsArray
-			FileAppend,% " | Instance" key " PID: " element,% programLogsFilePath
-	}
-
-	if ( funcName = "Gui_Trades_Cycle_Func" ) {
-		FileAppend,% "[" A_YYYY "-" A_MM "-" A_DD "_" A_Hour ":" A_Min ":" A_Sec "] ",% programLogsFilePath
-		FileAppend,% "Docking the GUI to ID: " params.Dock_Window " - Total matchs found: " params.Total_Matchs + 1,% programLogsFilePath
-	}
-
-	if ( funcName = "GUI_Replace_PID_Return") {
-		FileAppend,% "[" A_YYYY "-" A_MM "-" A_DD "_" A_Hour ":" A_Min ":" A_Sec "] ",% programLogsFilePath
-		FileAppend,% "Replacing linked PID (Return). PID: " params.PID,% programLogsFilePath
-	}
-
-	if ( funcName = "Gui_Trades_Do_Action_Func") {
-		FileAppend,% "[" A_YYYY "-" A_MM "-" A_DD "_" A_Hour ":" A_Min ":" A_Sec "] ",% programLogsFilePath
-		FileAppend,% "Could not find a matching action for button: Name:" params.btnName ", Alpha:" params.btnAlpha ", Action:" params.btnAction,% programLogsFilePath
-	}
-
-	FileAppend,% "`n",% programLogsFilePath
+	FileAppend,% "`n",% logsFile
 }
 
-Delete_Old_Logs_Files(filesToKeep) {
+Delete_Old_Logs_Files(daysOld) {
 /*
  *			Delete logs files
  *			Keeps only the ammount specified
 */
 	global ProgramValues
+	logsPath := ProgramValues.Logs_Folder
+	daysOld *= 1000000 ; Convert to YYYYMMDDHH24MISS
+	nowTime := A_Now
 
-	programLogsPath := ProgramValues.Logs_Folder
-
-	loop, %programLogsPath%\*.txt
+	Loop, %logsPath%\*.txt
 	{
-		filesNum := A_Index
 		if ( A_LoopFileName != "changelog.txt" ) {
-			allFiles .= A_LoopFileName "|"
-		}
-	}
-	Sort, allFiles, D|
-	split := StrSplit(allFiles, "|")
-	if ( filesNum >= filesToKeep ) {
-		Loop {
-			index := A_Index
-			fileLocation := programLogsPath "\" split[A_Index]
-			FileDelete,% fileLocation
-			filesNum -= 1
-			if ( filesNum <= filesToKeep )
-				break
+			FileGetTime, lastMod,% A_LoopFileFullPath, M
+			if ( (nowTime-lastMod) >= daysOld)
+				FileDelete,% A_LoopFileFullPath
 		}
 	}
 }
@@ -4658,8 +5124,7 @@ Send_InGame_Message(allMessages, tabInfos="", specialEvent="") {
 			PIDArray := Get_Matching_Windows_Infos("PID")
 			handlersArray := Get_Matching_Windows_Infos("ID")
 			if ( handlersArray.MaxIndex() = "" ) {
-				Loop 2
-					TrayTip,% programName,% "The PID assigned to the tab does not belong to a POE instance, and no POE instance was found!`n`nPlease click the button again after restarting the game."
+				Show_Tray_Notification(programName, "The PID assigned to the tab does not belong to a POE instance, and no POE instance was found!`n`nPlease click the button again after restarting the game.")
 				Return 1
 			}
 			else {
@@ -4703,7 +5168,6 @@ Send_InGame_Message(allMessages, tabInfos="", specialEvent="") {
 			}
 		}
 
-		Logs_Append(A_ThisFunc, {PID:gamePID, Message:messageToSend})
 		BlockInput, Off
 	}
 }
@@ -4746,60 +5210,66 @@ Extract_Font_Files() {
 }
 
 Extract_Skin_Files() {
-/*			Include the default skins into the compilled executable
+/*			Include the default skins into the compiled executable
  *			Extracts the included skins into the skins Folder
 */
 	global ProgramValues
-
-	programSkinFolderPath := ProgramValues.Skins_Folder
+	skinFolder := ProgramValues.Skins_Folder
 
 ;	System Skin
-	if !( InStr(FileExist(programSkinFolderPath "\System"), "D") )
-		FileCreateDir, % programSkinFolderPath "\System"
-	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\Skins\System\Settings.ini,% programSkinFolderPath "\System\Settings.ini", 1
-	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\Skins\System\Header.png,% programSkinFolderPath "\System\Header.png", 1
-	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\Skins\System\Border.png,% programSkinFolderPath "\System\Border.png", 1
-	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\Skins\System\Icon.png,% programSkinFolderPath "\System\Icon.png", 1
+	if !( InStr(FileExist(skinFolder "\System"), "D") )
+		FileCreateDir, % skinFolder "\System"
+	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\Skins\System\Settings.ini,% skinFolder "\System\Settings.ini", 1
+	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\Skins\System\Header.png,% skinFolder "\System\Header.png", 1
+	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\Skins\System\Border.png,% skinFolder "\System\Border.png", 1
+	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\Skins\System\Icon.png,% skinFolder "\System\Icon.png", 1
 
 ;	Path of Exile Skin
-	if !( InStr(FileExist(programSkinFolderPath "\Path of Exile"), "D") )
-		FileCreateDir, % programSkinFolderPath "\Path of Exile"
-	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\Skins\Path Of Exile\Settings.ini,% programSkinFolderPath "\Path Of Exile\Settings.ini", 1
-	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\Skins\Path Of Exile\ArrowLeft.png,% programSkinFolderPath "\Path Of Exile\ArrowLeft.png", 1
-	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\Skins\Path Of Exile\ArrowLeftHover.png,% programSkinFolderPath "\Path Of Exile\ArrowLeftHover.png", 1
-	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\Skins\Path Of Exile\ArrowLeftPress.png,% programSkinFolderPath "\Path Of Exile\ArrowLeftPress.png", 1
-	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\Skins\Path Of Exile\ArrowRight.png,% programSkinFolderPath "\Path Of Exile\ArrowRight.png", 1
-	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\Skins\Path Of Exile\ArrowRightHover.png,% programSkinFolderPath "\Path Of Exile\ArrowRightHover.png", 1
-	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\Skins\Path Of Exile\ArrowRightPress.png,% programSkinFolderPath "\Path Of Exile\ArrowRightPress.png", 1
-	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\Skins\Path Of Exile\Background.png,% programSkinFolderPath "\Path Of Exile\Background.png", 1
-	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\Skins\Path Of Exile\ButtonBackground.png,% programSkinFolderPath "\Path Of Exile\ButtonBackground.png", 1
-	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\Skins\Path Of Exile\ButtonBackgroundHover.png,% programSkinFolderPath "\Path Of Exile\ButtonBackgroundHover.png", 1
-	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\Skins\Path Of Exile\ButtonBackgroundPress.png,% programSkinFolderPath "\Path Of Exile\ButtonBackgroundPress.png", 1
-	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\Skins\Path Of Exile\ButtonOrnamentLeft.png,% programSkinFolderPath "\Path Of Exile\ButtonOrnamentLeft.png", 1
-	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\Skins\Path Of Exile\ButtonOrnamentRight.png,% programSkinFolderPath "\Path Of Exile\ButtonOrnamentRight.png", 1
-	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\Skins\Path Of Exile\Close.png,% programSkinFolderPath "\Path Of Exile\Close.png", 1
-	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\Skins\Path Of Exile\CloseHover.png,% programSkinFolderPath "\Path Of Exile\CloseHover.png", 1
-	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\Skins\Path Of Exile\ClosePress.png,% programSkinFolderPath "\Path Of Exile\ClosePress.png", 1
-	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\Skins\Path Of Exile\TabActive.png,% programSkinFolderPath "\Path Of Exile\TabActive.png", 1
-	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\Skins\Path Of Exile\TabInactive.png,% programSkinFolderPath "\Path Of Exile\TabInactive.png", 1
-	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\Skins\Path Of Exile\TabUnderline.png,% programSkinFolderPath "\Path Of Exile\TabUnderline.png", 1
-	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\Skins\Path Of Exile\Header.png,% programSkinFolderPath "\Path Of Exile\Header.png", 1
-	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\Skins\Path Of Exile\Border.png,% programSkinFolderPath "\Path Of Exile\Border.png", 1
-	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\Skins\Path of Exile\Icon.png,% programSkinFolderPath "\Path of Exile\Icon.png", 1
+	if !( InStr(FileExist(skinFolder "\Path of Exile"), "D") )
+		FileCreateDir, % skinFolder "\Path of Exile"
+	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\Skins\Path Of Exile\Settings.ini,% skinFolder "\Path Of Exile\Settings.ini", 1
+	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\Skins\Path Of Exile\ArrowLeft.png,% skinFolder "\Path Of Exile\ArrowLeft.png", 1
+	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\Skins\Path Of Exile\ArrowLeftHover.png,% skinFolder "\Path Of Exile\ArrowLeftHover.png", 1
+	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\Skins\Path Of Exile\ArrowLeftPress.png,% skinFolder "\Path Of Exile\ArrowLeftPress.png", 1
+	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\Skins\Path Of Exile\ArrowRight.png,% skinFolder "\Path Of Exile\ArrowRight.png", 1
+	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\Skins\Path Of Exile\ArrowRightHover.png,% skinFolder "\Path Of Exile\ArrowRightHover.png", 1
+	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\Skins\Path Of Exile\ArrowRightPress.png,% skinFolder "\Path Of Exile\ArrowRightPress.png", 1
+	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\Skins\Path Of Exile\Background.png,% skinFolder "\Path Of Exile\Background.png", 1
+	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\Skins\Path Of Exile\ButtonBackground.png,% skinFolder "\Path Of Exile\ButtonBackground.png", 1
+	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\Skins\Path Of Exile\ButtonBackgroundHover.png,% skinFolder "\Path Of Exile\ButtonBackgroundHover.png", 1
+	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\Skins\Path Of Exile\ButtonBackgroundPress.png,% skinFolder "\Path Of Exile\ButtonBackgroundPress.png", 1
+	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\Skins\Path Of Exile\ButtonOrnamentLeft.png,% skinFolder "\Path Of Exile\ButtonOrnamentLeft.png", 1
+	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\Skins\Path Of Exile\ButtonOrnamentRight.png,% skinFolder "\Path Of Exile\ButtonOrnamentRight.png", 1
+	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\Skins\Path Of Exile\Close.png,% skinFolder "\Path Of Exile\Close.png", 1
+	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\Skins\Path Of Exile\CloseHover.png,% skinFolder "\Path Of Exile\CloseHover.png", 1
+	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\Skins\Path Of Exile\ClosePress.png,% skinFolder "\Path Of Exile\ClosePress.png", 1
+	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\Skins\Path Of Exile\TabActive.png,% skinFolder "\Path Of Exile\TabActive.png", 1
+	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\Skins\Path Of Exile\TabInactive.png,% skinFolder "\Path Of Exile\TabInactive.png", 1
+	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\Skins\Path Of Exile\TabUnderline.png,% skinFolder "\Path Of Exile\TabUnderline.png", 1
+	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\Skins\Path Of Exile\Header.png,% skinFolder "\Path Of Exile\Header.png", 1
+	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\Skins\Path Of Exile\Border.png,% skinFolder "\Path Of Exile\Border.png", 1
+	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\Skins\Path of Exile\Icon.png,% skinFolder "\Path of Exile\Icon.png", 1
 }
 
 Extract_Sound_Files() {
-/*			Include the SFX into the compilled executable
+/*			Include the SFX into the compiled executable
  *			Extracts the included SFX into the SFX Folder
 */
 	global ProgramValues
+	sfxFolder := ProgramValues.SFX_Folder
 
-	programSFXFolderPath := ProgramValues.SFX_Folder
+	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\SFX\MM_Tatl_Gleam.wav,% sfxFolder "\MM_Tatl_Gleam.wav", 0
+	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\SFX\MM_Tatl_Hey.wav,% sfxFolder "\MM_Tatl_Hey.wav", 0
+	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\SFX\WW_MainMenu_CopyErase_Start.wav,% sfxFolder "\WW_MainMenu_CopyErase_Start.wav", 0
+	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\SFX\WW_MainMenu_Letter.wav,% sfxFolder "\WW_MainMenu_Letter.wav", 0
+}
 
-	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\SFX\MM_Tatl_Gleam.wav,% programSFXFolderPath "\MM_Tatl_Gleam.wav", 0
-	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\SFX\MM_Tatl_Hey.wav,% programSFXFolderPath "\MM_Tatl_Hey.wav", 0
-	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\SFX\WW_MainMenu_CopyErase_Start.wav,% programSFXFolderPath "\WW_MainMenu_CopyErase_Start.wav", 0
-	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\SFX\WW_MainMenu_Letter.wav,% programSFXFolderPath "\WW_MainMenu_Letter.wav", 0
+Extract_Data_Files() {
+	global ProgramValues
+	dataFolder := ProgramValues.Data_Folder
+
+	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\Data\Currency_All.txt,% dataFolder "\Currency_All.txt", 1
+	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\Data\currencyTradeNames.json,% dataFolder "\currencyTradeNames.json", 1
 }
 
 Extract_Others_Files() {
@@ -4807,9 +5277,10 @@ Extract_Others_Files() {
 			Extracts the included files into the specified folder
 */
 	global ProgramValues
+	othersFolder := ProgramValues.Others_Folder
 
-	programOthersFolderPath := ProgramValues.Others_Folder
-	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\Others\DonatePaypal.png,% programOthersFolderPath "\DonatePaypal.png", 0
+	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\Others\DonatePaypal.png,% othersFolder "\DonatePaypal.png", 1
+	FileInstall, C:\Users\Masato\Documents\GitHub\POE-Trades-Companion\Resources\Others\icon.png,% othersFolder "\icon.png", 1
 }
 
 Close_Previous_Program_Instance() {
@@ -4845,17 +5316,15 @@ Close_Previous_Program_Instance() {
 				Process, WaitClose, %existingPID%
 			}
 			else { ; Unable to close process due to lack of admin 
-				funcParams := {	 Width:350
-								,Height:125
-								,BorderColor:"White"
-								,Background:"Red"
+				funcParams := {	 Border_Color:"White"
+								,Background_Color:"Red"
 								,Title:"Missing admin rights, unable to close instance."
-								,TitleColor:"White"
+								,Title_Color:"White"
 								,Text:"Previous instance detected."
 								. "`nUnable to close it due to missing admin rights."
 								. "`nPlease close it before continuing."
 								. "`n`nThis window will be closed automatically."
-								,TextColor:"White"
+								,Text_Color:"White"
 								,Condition:"Previous_Instance_Close"}
 				GUI_Beautiful_Warning(funcParams)
 			}
@@ -4885,9 +5354,8 @@ Gui_Trades_Cycle_Func() {
 	if ( ProgramSettings.Trades_GUI_Mode != "Overlay" )
 		Return
 
-	if !WinExist("ahk_id " TradesGUI_Values.Handler) {
-		Loop 2
-			TrayTip,% programName,% "Couldn't find the Trades GUI!`nOperation Canceled."
+	if !Trades_GUI_Exists() {
+		Show_Tray_Notification(programName, "Couldn't find the Trades GUI!`nOperation Canceled.")
 		Return
 	}
 	matchHandlers := Get_Matching_Windows_Infos("ID")
@@ -4897,7 +5365,7 @@ Gui_Trades_Cycle_Func() {
 	}
 	TradesGUI_Values.Insert("Dock_Window", matchHandlers[TradesGUI_Values["Dock_Window_Num"]])
 	Gui_Trades_Set_Position()
-	Logs_Append(A_ThisFunc, {Dock_Window:TradesGUI_Values.Dock_Window, Total_Matchs:matchHandlers.MaxIndex()})
+	Logs_Append(A_ThisFunc, {Dock_Window:TradesGUI_Values.Dock_Window, Total_Matchs:matchHandlers.MaxIndex() + 1})
 }
 
 Get_Matching_Windows_Infos(mode) {
@@ -4962,6 +5430,8 @@ Create_Tray_Menu() {
 	}
 	Menu, Tray, Add,Settings, Gui_Settings
 	Menu, Tray, Add,About?, Gui_About
+	Menu, Tray, Add,
+	Menu, Tray, Add,My Stats, Gui_Stats
 	Menu, Tray, Add, 
 	Menu, Tray, Add,Cycle Overlay,GUI_Trades_Cycle
 	Menu, Tray, Add, 
@@ -5029,35 +5499,43 @@ Run_As_Admin() {
 		Gui_AdminWarn()
 		ExitApp
 	}
-	funcParams := {  Width:350
-					,Height:50
-					,Background:"Green"
-					,BorderColor:"White"
-					,TitleColor:"White"
-					,Text:"Reloading to request admin privilieges in %count%..."
-					,TextColor:"White"
-					,Condition:"Reload_Timer"
-					,ConditionCount:3}
-	GUI_Beautiful_Warning(funcParams)
+	if !ProgramValues.Debug {
+		funcParams := {  Background_Color:"Green"
+						,Border_Color:"White"
+						,Title_Color:"White"
+						,Text:"Reloading to request admin privilieges in XX...`nClick on this window to reload now."
+						,Text_Color:"White"
+						,Condition:"Reload_Timer"
+						,Condition_Count:3
+						,Close_On_Click:true}
+		GUI_Beautiful_Warning(funcParams)
+	}
 	Reload_Func()
 }
 
 GUI_Beautiful_Warning(params) {
 	global ProgramValues
 
-	guiWidth := params.Width
-	guiHeight := params.Height
-	guiBackground := params.Background
-	borderSize := (params.Border)?(params.Border):(2)
-	borderColor := params.BorderColor
+	guiWidthBase := 350, guiHeightBase := 50, guiHeightNoUnderline := 30
+	guiFontName := "Consolas", guiFontSize := "10 Bold"
 
-	warnTitle := params.Title
-	warnTitleColor := params.TitleColor
-	warnText := params.Text
-	warnTextColor := params.TextColor
+	borderSize := 2, borderColor := params.Border_Color
+	backgroundCol := params.Background_Color
+	warnTitle := params.Title, warnTitleColor := params.Title_Color
+	warnText := params.Text,warnTextColor := params.Text_Color
 
-	condition := params.Condition
-	count := params.ConditionCount
+	condition := params.Condition, count := params.Condition_Count
+
+	underlineExists := (warnTitle)?(true):(false)
+	xOffset := 10, yOffset := (underlineExists)?(5):(20)
+
+	txtSize := Get_Text_Control_Size(warnText, guiFontName, guiFontSize, guiWidthBase+xOffset)
+	guiWidth := (txtSize.W > guiWidthBase)?(txtSize.W+xOffset):(guiWidthBase)
+	guiHeight := (underlineExists)?(guiHeightBase + txtSize.H):(guiHeightNoUnderline + txtSize.H)
+
+	closeOnClick := params.Close_On_Click
+
+	defaultGui := A_DefaultGUI
 
 	if (condition = "Previous_Instance_Close") {
 		SetTimer, GUI_Beautiful_Warning_Instance_WaitClose, 1000
@@ -5069,31 +5547,44 @@ GUI_Beautiful_Warning(params) {
 	Gui, BeautifulWarn:New, +AlwaysOnTop +ToolWindow -Caption -Border +LabelGui_Beautiful_Warning_ hwndGuiBeautifulWarningHandler,% ProgramValues.Name
 	Gui, BeautifulWarn:Default
 	Gui, Margin, 0, 0
-	Gui, Color,% guiBackground
-	Gui, Font, S10 Bold, Consolas
+	Gui, Color,% backgroundCol
+	Gui, Font,% "S" guiFontSize,% guiFontName
 	Gui, Add, Progress,% "x0" . " y0" . " h" borderSize . " w" guiWidth . " Background" borderColor ; Top
-	Gui, Add, Text, xm ym+5 Center w%guiWidth% c%warnTitleColor% BackgroundTrans Section,% ProgramValues.Name
+	Gui, Add, Text,% "x" xOffset " ym+5 w" guiWidth-(xOffset*2) " c" warnTitleColor " Center BackgroundTrans Section",% ProgramValues.Name
 	if (warnTitle) {
-		Gui, Add, Text, xs Center w%guiWidth% c%warnTitleColor% BackgroundTrans Section,% warnTitle
-		Gui, Add, Progress,% "xs" . " y+5 h" borderSize . " w" guiWidth . " Background" borderColor " Section" ; Underline
-		underlineExists := true
+		Gui, Add, Text,% "x" xOffset " w" guiWidth-(xOffset*2) " c" warnTitleColor "  Center BackgroundTrans Section",% warnTitle
+		Gui, Add, Progress,% "x" xOffset . " y+5 h" borderSize . " w" guiWidth-(xOffset*2) . " Background" borderColor " Section" ; Underline
 	}
 	Gui, Add, Progress,% "x" guiWidth-borderSize . " y0" . " h" guiHeight . " w" borderSize . " Background" borderColor ; Right
 	Gui, Add, Progress,% "x0" . " y" guiHeight-borderSize . " h" borderSize . " w" guiWidth . " Background" borderColor ; Bot
 	Gui, Add, Progress,% "x0" . " y0" . " h" guiHeight . " w" borderSize . " Background" borderColor ; Left
-	yOffset := (underlineExists)?(5):(20)
-	Gui, Add, Text, xs ys+%yOffset% Center w%guiWidth% c%warnTextColor% BackgroundTrans hwndWarnTextHandler,% warnText
+	Gui, Add, Text,% "x" xOffset " ys+" yOffset " w" guiWidth-(xOffset*2) " hwndWarnTextHandler c" warnTextColor " Center BackgroundTrans",% warnText
 	if (condition = "Reload_Timer") {
 		GoSub GUI_Beautiful_Warning_Reload_Timer
 		SetTimer, GUI_Beautiful_Warning_Reload_Timer, 1000
 	}
+
+	Gui, Add, Text,x0 y0 w%guiWidth% h%guiHeight% BackgroundTrans gGUI_Beautiful_Warning_OnLeftClick,% ""
 	Gui, Show, w%guiWidth% h%guiHeight%
+	Gui, %defaultGUI%:Default
+
 	WinWait,% "ahk_id " GuiBeautifulWarningHandler
 	WinWaitClose,% "ahk_id " GuiBeautifulWarningHandler
 	Return
 
+	GUI_Beautiful_Warning_ContextMenu:
+		GoSub GUI_Beautiful_Warning_OnLeftClick
+	Return
+
+	GUI_Beautiful_Warning_OnLeftClick:
+		if (closeOnClick) {
+			SetTimer, GUI_Beautiful_Warning_Reload_Timer, Off
+			Gui, BeautifulWarn:Destroy
+		}
+	Return
+
 	GUI_Beautiful_Warning_Reload_Timer:
-		StringReplace,warnTextEdit, warnText,`%count`%,%count%
+		StringReplace,warnTextEdit, warnText,XX,%count%
 		GuiControl, BeautifulWarn:,% WarnTextHandler,% warnTextEdit
 		if (!count)
 			Gui, BeautifulWarn:Destroy
@@ -5120,10 +5611,11 @@ GUI_Beautiful_Warning(params) {
 	Return
 
 	GUI_Beautiful_Warning_Close:
+		Gui, BeautifulWarn:Destroy
 	Return
 	GUI_Beautiful_Warning_Escape:
+		GoSub GUI_Beautiful_Warning_Close
 	Return
-
 }
 
 Gui_AdminWarn() {
@@ -5219,56 +5711,46 @@ Handle_CommandLine_Parameters() {
 	}
 }
 
+
 Tray_Refresh() {
-;			Refreshes the Tray Icons, to remove any "leftovers"
-;			Should work both for Windows 7 and 10
+/*		Remove any dead icon from the tray menu
+ *		Should work both for W7 & W10
+ */
 	WM_MOUSEMOVE := 0x200
-	HiddenWindows := A_DetectHiddenWindows
+	detectHiddenWin := A_DetectHiddenWindows
 	DetectHiddenWindows, On
-	TrayTitle := "AHK_class Shell_TrayWnd"
-	ControlNN := "ToolbarWindow322"
-	IcSz := 24
-	Loop, 8
-	{
-		index := A_Index
-		if ( index = 1 || index = 3 || index = 5 || index = 7 ) {
-			IcSz := 24
-		}
-		else if ( index = 2 || index = 4 || index = 6 || index = 8 ) {
-			IcSz := 32
-		}
-		if ( index = 1 || index = 2 ) {
-			TrayTitle := "AHK_class Shell_TrayWnd"
-			ControlNN := "ToolbarWindow322"
-		}
-		else if ( index = 3 || index = 4 ) {
-			TrayTitle := "AHK_class NotifyIconOverflowWindow"
-			ControlNN := "ToolbarWindow321"
-		}
-		if ( index = 5 || index = 6 ) {
-			TrayTitle := "AHK_class Shell_TrayWnd"
-			ControlNN := "ToolbarWindow321"
-		}
-		else if ( index = 7 || index = 8 ) {
-			TrayTitle := "AHK_class NotifyIconOverflowWindow"
-			ControlNN := "ToolbarWindow322"
-		}
-		ControlGetPos, xTray,yTray,wdTray,htTray, %ControlNN%, %TrayTitle%
-		y := htTray - 10
-		While (y > 0)
+
+	allTitles := ["ahk_class Shell_TrayWnd"
+			, "ahk_class NotifyIconOverflowWindow"]
+	allControls := ["ToolbarWindow321"
+				,"ToolbarWindow322"
+				,"ToolbarWindow323"
+				,"ToolbarWindow324"]
+	allIconSizes := [24,32]
+
+	for id, title in allTitles {
+		for id, controlName in allControls
 		{
-			x := wdTray - IcSz/2
-			While (x > 0)
+			for id, iconSize in allIconSizes
 			{
-				point := (y << 16) + x
-				PostMessage, %WM_MOUSEMOVE%, 0, %point%, %ControlNN%, %TrayTitle%
-				x -= IcSz/2
+				ControlGetPos, xTray,yTray,wdTray,htTray,% controlName,% title
+				y := htTray - 10
+				While (y > 0)
+				{
+					x := wdTray - iconSize/2
+					While (x > 0)
+					{
+						point := (y << 16) + x
+						PostMessage,% WM_MOUSEMOVE, 0,% point,% controlName,% title
+						x -= iconSize/2
+					}
+					y -= iconSize/2
+				}
 			}
-			y -= IcSz/2
 		}
 	}
-	DetectHiddenWindows, %HiddenWindows%
-	Return
+
+	DetectHiddenWindows, %detectHiddenWin%
 }
 
 Reload_Func() {
@@ -5279,7 +5761,7 @@ Reload_Func() {
  *		https://autohotkey.com/board/topic/46526-run-as-administrator-xpvista7-a-isadmin-params-lib/?p=600596
 */
 	global 0
-	global RunParameters, ProgramSettings
+	global RunParameters, ProgramSettings, ProgramValues
 
 
 	Sleep 10
@@ -5302,6 +5784,10 @@ Reload_Func() {
 			params .= A_Space . "/Screen_DPI=" """" ProgramSettings.Screen_DPI """" ; Pass the current user Win DPI as parameter
 	}
 
+	if ( A_IsAdmin || RunParameters.NoAdmin ) {
+		Gui_Trades_Save_Pending_Backup()
+	}
+
 	Exit_Func("Reload","")
 	DllCall("shell32\ShellExecute" (A_IsUnicode ? "":"A"),uint,0,str,"RunAs",str,(A_IsCompiled ? A_ScriptFullPath
 	: A_AhkPath),str,(A_IsCompiled ? "": """" . A_ScriptFullPath . """" . A_Space) params,str,A_WorkingDir,int,1)
@@ -5309,6 +5795,19 @@ Reload_Func() {
 	ExitApp
 
 	Sleep 10000
+}
+
+Gui_Trades_Save_Pending_Backup() {
+/*		Save all pending trades in a file.
+ */
+	global ProgramValues
+	allTrades := Gui_Trades_Manage_Trades("GET_ALL")
+	FileDelete,% ProgramValues.Trades_Backup_File
+	for key, element in allTrades {
+		if (key = "Max_Index")
+			element--
+		IniWrite,% element,% ProgramValues.Trades_Backup_File,GENERAL,% key
+	}
 }
 
 Gui_Trades_Save_Position(X="FALSE", Y="FALSE") {
@@ -5323,7 +5822,7 @@ Gui_Trades_Save_Position(X="FALSE", Y="FALSE") {
 		IniWrite,% Y,% iniFilePath,PROGRAM,Y_POS
 	}
 	else {
-		if ( ProgramSettings.Trades_GUI_Mode = "Window" ) && WinExist("ahk_id " TradesGUI_Values.Handler) {
+		if ( ProgramSettings.Trades_GUI_Mode = "Window" ) && Trades_GUI_Exists() {
 			WinGetPos, xpos, ypos, , ,% "ahk_id " TradesGUI_Values.Handler
 			if (IsNum(xpos) && IsNum(ypos)) {
 				IniWrite,% xpos,% iniFilePath,PROGRAM,X_POS
@@ -5389,4 +5888,148 @@ SetUnicodeText(ByRef ptrUnicodeText,hWnd) {
    DllCall("SendMessageW", "UInt",hWnd, "UInt",WM_SETTEXT, "UInt",0, "Uint",&ptrUnicodeText)
 }
 
-#Include %A_ScriptDir%/Resources/AHK/BinaryEncodingDecoding.ahk
+Get_Text_Control_Size(txt, fontName, fontSize, maxWidth="") {
+/*		Create a control with the specified text to retrieve
+ *		the space (width/height) it would normally take
+*/
+	Gui, GetTextSize:Font, S%fontSize%,% fontName
+	if (maxWidth) 
+		Gui, GetTextSize:Add, Text,x0 y0 +Wrap w%maxWidth% hwndTxtHandler,% txt
+	else 
+		Gui, GetTextSize:Add, Text,x0 y0 hwndTxtHandler,% txt
+	coords := Get_Control_Coords("GetTextSize", TxtHandler)
+	Gui, GetTextSize:Destroy
+
+	return coords
+
+/*	Alternative version, with auto sizing
+
+	Gui, GetTextSize:Font, S%fontSize%,% fontName
+	Gui, GetTextsize:Add, Text,x0 y0 hwndTxtHandlerAutoSize,% txt
+	coordsAuto := Get_Control_Coords("GetTextSize", TxtHandlerAutoSize)
+	if (maxWidth) {
+		Gui, GetTextSize:Add, Text,x0 y0 +Wrap w%maxWidth% hwndTxtHandlerFixedSize,% txt
+		coordsFixed := Get_Control_Coords("GetTextSize", TxtHandlerFixedSize)
+	}
+	Gui, GetTextSize:Destroy
+
+	if (maxWidth > coords.Auto)
+		coords := coordsAuto
+	else
+		coords := coordsFixed
+
+	return coords
+*/
+}
+
+Show_Tray_Notification(title, msg, params="") {
+/*		Show a notification.
+ *		Look based on w10 traytip.
+*/
+	static
+	global ProgramValues, ProgramSettings
+
+	local defaultGUI := A_DefaultGUI
+
+	Is_Update := params.Is_Update
+
+	guiWidthMax := 350, guiHeightMax := 150
+	guiFontName := "Segoe UI", guiFontSize := "9", guiTitleFontSize := "10"
+	textSize := Get_Text_Control_Size(msg, guiFontName, guiFontSize, guiWidthMax)
+
+	guiWidth := (textSize.W > guiWidthMax)?(guiWidthMax):(textSize.W)
+	guiHeight := (textSize.H > guiHeightMax)?(guiHeightMax):(textSize.H)
+	guiHeight += 50, guiWidth += 20 ; Fitting size
+	borderSize := 1
+	fadeTimer := (params.Fade_Timer)?(params.Fade_Timer):(5000)
+
+	showX := A_ScreenWidth, showY := A_ScreenHeight-guiHeight-60
+	showW := 0, showH := guiHeight
+
+	Gui, TrayNotification:Destroy
+	Gui, TrayNotification:New, +ToolWindow +AlwaysOnTop -Border +LastFound -SysMenu -Caption +LabelGui_TrayNotification_
+	Gui, TrayNotification:Default
+	Gui, Margin, 0, 0
+	Gui, Color, 1f1f1f
+
+	Gui, Add, Progress, x0 y0 w%guiWidth% h%borderSize% Background484848 ; Top
+	Gui, Add, Progress, x0 y0 w%borderSize% h%guiHeight% Background484848 ; Left
+	; Gui, Add, Progress,% "x" guiWidth-borderSize " y0" " w" borderSize " h" guiHeight " Background484848" ; Right
+	Gui, Add, Progress,% "x" 0 " y" guiHeight-borderSize " w" guiWidth " h" borderSize " Background484848" ; Bottom
+	Gui, Add, Text,% "x0 y0 w" guiWidth " h" guiHeight " BackgroundTrans gGui_TrayNotification_OnLeftClick",% ""
+
+	Gui, Add, Picture, x5 y5 w32 h32,% ProgramValues.Others_Folder "\icon.png"
+	Gui, Font, S%guiTitleFontSize% Bold,% guiFontName
+	Gui, Add, Text,% "xp+35" " yp+10" " w" guiWidth-20 " BackgroundTrans cFFFFFF gGui_TrayNotification_OnLeftClick",% title
+	Gui, Font, S%guiFontSize% Norm,% guiFontName
+	Gui, Add, Text,% "x10" " yp+25" " w" guiWidth-25 " R3 BackgroundTrans ca5a5a5 gGui_TrayNotification_OnLeftClick",% msg
+	Gui, Show,% "x" showX " y" showY " w" showW " h" showH " NoActivate"
+	Loop {
+		showW += 25
+		showW := (showW > guiWidth)?(guiWidth):(showW)
+		showX := A_ScreenWidth-showW
+		Gui, Show,% "x" showX " w" showW " NoActivate"
+		Sleep 1
+		if (showW = guiWidth)
+			Break
+	}
+
+	SetTimer, Fade_Tray_Notification, -%fadeTimer%
+	Gui, %defaultGUI%:Default
+	Return
+
+	Gui_TrayNotification_ContextMenu: ; Launched whenever the user right-clicks anywhere in the window except the title bar and menu bar.
+		Gui, TrayNotification:Destroy
+	Return
+
+	Gui_TrayNotification_OnLeftClick:
+		Gui, TrayNotification:Destroy
+		if (Is_Update) {
+			Download_Updater()
+		}
+	Return
+}
+
+Download_Updater() {
+	global ProgramValues
+
+	Gui_Trades_Save_Pending_Backup()
+
+	IniRead,updateBeta,% ProgramValues.Ini_File,PROGRAM,Update_Beta
+
+	updaterLink := (updateBeta)?(ProgramValues.Updater_Link_Beta):(ProgramValues.Updater_Link)
+	newVersionLink := (updateBeta)?(ProgramValues.NewVersion_Link_Beta):(ProgramValues.NewVersion_Link)
+	fileName := (updateBeta)?(ProgramValues.Name " (Beta).exe"):(ProgramValues.Name ".exe")
+
+	IniWrite,% A_Now,% ProgramValues.Ini_File,PROGRAM,LastUpdate
+	UrlDownloadToFile,% updaterLink,% ProgramValues.Updater_File
+	Sleep 10
+	Run,% ProgramValues.Updater_File 
+	. " /Name=""" ProgramValues.Name  """"
+	. " /File_Name=""" fileName """"
+	. " /Local_Folder=""" ProgramValues.Local_Folder """"
+	. " /Ini_File=""" ProgramValues.Ini_File """"
+	. " /NewVersion_Link=""" newVersionLink """"
+	ExitApp
+}
+
+Fade_Tray_Notification() {
+	transparency := 255
+
+	Gui, TrayNotification:+LastFound
+
+	Loop {
+		transparency -= 5
+		WinSet, Transparent,% transparency
+		if !(transparency)
+			Break
+		Sleep 1
+	}
+	Gui, TrayNotification:Destroy
+}
+
+
+#Include %A_ScriptDir%/Resources/AHK/
+#Include BinaryEncodingDecoding.ahk
+#Include JSON.ahk
+; #Include %A_ScriptDir%/Resources/AHK/BetaFuncs.ahk
