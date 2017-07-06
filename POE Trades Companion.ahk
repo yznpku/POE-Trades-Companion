@@ -3670,8 +3670,9 @@ Check_Update() {
 		versionOnline = %versionOnline% ; remove any whitespace
 	}
 	newVersion := (versionOnline)?(versionOnline):(ProgramValues.Version)
+	newVersion = %newVersion% ; Avoid a strange issue that would add 0's after decimal
 
-	ProgramValues.Insert("Version_Latest", newVersion)
+	ProgramValues.Version_Latest := newVersion
 	if ( newVersion != ProgramValues.Version ) {
 		ProgramValues.Update_Available := 1
 		if (autoUpdate=1) {
