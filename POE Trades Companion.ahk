@@ -61,12 +61,12 @@ Start_Script() {
 	MyDocuments 						:= (RunParameters.MyDocuments)?(RunParameters.MyDocuments):(A_MyDocuments)
 
 	ProgramValues.Name 					:= "POE Trades Companion"
-	ProgramValues.Version 				:= "1.11"
+	ProgramValues.Version 				:= "1.11.1"
 	ProgramValues.Debug 				:= "0"
 
 	ProgramValues.Updater_File 			:= "POE-TC-Updater.exe"
-	ProgramValues.Updater_Link 			:= "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/Updater.exe"
-	ProgramValues.Updater_Link_Beta 	:= "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/dev/Updater.exe"
+	ProgramValues.Updater_Link 			:= "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/Updater_v2.exe"
+	ProgramValues.Updater_Link_Beta 	:= "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/dev/Updater_v2.exe"
 
 	ProgramValues.Version_Link 			:= "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/version.txt"
 	ProgramValues.Version_Link_Beta  	:= "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/dev/version.txt"
@@ -1086,7 +1086,16 @@ Gui_Trades_Load_Pending_Backup() {
 
 	tempTrades := {}
 	IniRead, allKeys,% ProgramValues.Trades_Backup_File,GENERAL
-	IniRead, maxIndex,% ProgramValues.Trades_Backup_File,GENERAL,Max_Index
+	IniRead, maxIndex,% ProgramValues.Trades_Backup_File,GENERAL,Max_Index, 0
+
+;	Make sure the MaxIndex value is an actual trade
+	IniRead, value,% ProgramValues.Trades_Backup_File,GENERAL,% maxIndex "_Buyer", 0
+	while (!value && maxIndex) { 
+		maxIndex--
+		IniRead, value,% ProgramValues.Trades_Backup_File,GENERAL,% maxIndex "_Buyer", 0
+	}
+
+;	Parse the keys, retrieve all trade infos
 	Loop, Parse, allKeys,% "`n`r"
 	{
 		keyAndValue := A_LoopField
@@ -1097,6 +1106,7 @@ Gui_Trades_Load_Pending_Backup() {
 		}
 	}
 
+;	Add each trade to the GUI
 	Loop % maxIndex {
 		outterIndex := A_Index
 		thisTrade := {}
@@ -1426,7 +1436,7 @@ Gui_Trades_Do_Action_Func(CtrlHwnd, GuiEvent, EventInfo) {
 
 	messages := Object()
 	tabInfos := Gui_Trades_Get_Trades_Infos(TradesGUI_Values.Active_Tab)
-	if !(tabInfos.Buyer) {
+	if (!tabInfos.Buyer && btnAction != "Close_Tab") {
 		Show_Tray_Notification(ProgramValues.Name, "No buyer found for tab """ TradesGUI_Values.Active_Tab """`nOperation cancelled. Please report this issue.")
 		Return
 	}

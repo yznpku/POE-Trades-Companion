@@ -1,4 +1,11 @@
 \\
+--1.11.1--
+Fixes:
+- Auto-updating from pre-1.11 would fail.
+- A visual issue on the "About" window.
+- Under specific conditions, a blank tab would appear on startup.
+//
+\\
 --1.11--
 What's new:
 - Stats! Can be accessed by right clicking the tray icon, and choosing "My Stats".
