@@ -184,22 +184,25 @@ Start_Script() {
 	if ( ProgramValues["Debug"] ) {
 		; trade / No qual / Level
 		str := "2016/10/09 21:30:32 105384166 355 [INFO Client 6416] "
-			str .= "@From poetrade: Hi, I would like to buy your level 10 11% Faster Attacks Support listed for 5 alteration in Legacy (stash tab """"Shop: Gems""""; position: left 10, top 11) Offering 1alch?"
+			str .= "@From poetrade quality: Hi, I would like to buy your level 10 11% Faster Attacks Support listed for 5 alteration in Legacy (stash tab """"Shop: Gems""""; position: left 10, top 11) Offering 1alch?"
 
 		; trade / No qual / Level / Unpriced
 		str .= "`n" "2016/10/09 21:30:32 105384166 355 [INFO Client 6416] "
-			str .= "@From poetrade unpriced: Hi, I would like to buy your level 20 21% Faster Attacks Support in Beta Standard (stash tab """"Shop: poe.trade unpriced""""; position: left 1, top 2)"
+			str .= "@From poetrade quality unpriced: Hi, I would like to buy your level 20 21% Faster Attacks Support in Beta Standard (stash tab """"Shop: poe.trade unpriced""""; position: left 1, top 2)"
+
+		str .= "`n" "2016/10/09 21:30:32 105384166 355 [INFO Client 6416] "
+			str .= "@From poetrade currency: Hi, I'd like to buy your 566 chaos for my 7 exalted in Legacy. watthefuck"
 
 		; app / No qual / Level
 		str .= "`n" "2016/10/09 21:30:32 105384166 355 [INFO Client 6416] "
-			str .= " @From poeapp: wtb Faster Attacks Support (30/31%) listed for 1 Orb of Alteration in standard (stash """"Shop: poeapp 1""""; left 30, top 21)"
+			str .= " @From poeapp quality: wtb Faster Attacks Support (30/31%) listed for 1 Orb of Alteration in standard (stash """"Shop: poeapp 1""""; left 30, top 21)"
 
 		; app / No qual / Level / Unpriced
 		str .= "`n" "2016/10/09 21:30:32 105384166 355 [INFO Client 6416] "
-			str .= " @From poeapp unpriced: wtb Faster Attacks Support (40/41%) in standard (stash """"Shop: poeapp 1""""; left 40, top 21)"
+			str .= " @From poeapp quality unpriced other: wtb Faster Attacks Support (40/41%) in standard (stash """"Shop: poeapp 1""""; left 40, top 21)"
 
 		str .= "`n" "2016/10/09 21:30:32 105384166 355 [INFO Client 6416] "
-			str .= " @From poeapp unpriced: wtb Faster Attacks Support (40/41%) in standard (stash """"Shop: poeapp 1""""; left 40, top 21)"
+			str .= " @From poeapp quality unpriced other: wtb Faster Attacks Support (40/41%) in standard (stash """"Shop: poeapp 1""""; left 40, top 21)"
 
 		Filter_Logs_Message(str)
 	}
@@ -226,7 +229,7 @@ Get_Active_Trading_Leagues() {
 */
 	apiLink := "http://api.pathofexile.com/leagues?offset=XX&compact=1"
 	excludedWords := "SSF,Solo"
-	activeLeagues := "Standard|Hardcore"
+	activeLeagues := "Standard|Hardcore|Beta Standard|Beta Hardcore"
 	offsetCount := 6000 ; Legacy starts at 6000
 
 	Loop {
@@ -317,7 +320,7 @@ Filter_Logs_Message(message) {
 			whisp := whispName ": " whispMsg "`n"
 			; poeappRegExStr 				:= "(.*)wtb (.*) listed for (.*) in (?:(.*)\(stash ""(.*)""; left (.*), top (.*)\)|Hardcore (.*?)\W|(.*?)\W)(.*)" ; poeapp
 			; poetradeRegExStr 			:= "(.*)Hi, I(?: would|'d) like to buy your (?:(.*) |(.*))(?:listed for (.*)|for my (.*)|) in (?:(.*)\(stash tab ""(.*)""; position: left (.*), top (.*)\)|Hardcore (.*?)\W|(.*?)\W)(.*)" ; poe.trade
-			
+
 			poeTradeRegexStr 			:= "(.*)Hi, I would like to buy your (.*) listed for (.*) in (.*)" ; 1: Other, 2: Item, 3: Price, 4: League + Tab + Other
 			poeTradeUnpricedRegexStr 	:= "(.*)Hi, I would like to buy your (.*) in (.*)" ; 1: Other, 2: Item, 3: League + Tab + Other
 			poeTradeCurrencyRegexStr	:= "(.*)Hi, I'd like to buy your (.*) for my (.*) in (.*)" ; 1: Other, 2: Currency, 3: Price, 4: League + Tab + Other
@@ -351,7 +354,7 @@ Filter_Logs_Message(message) {
 					whispPat1 := "", whispPat2 := "", whispPat3 := "", whispPat4 := ""
 
 					for id, leagueName in Trading_Leagues {
-						if RegExMatch(endOfWhisper, leagueName " (.*)", endOfWhisperPat) {
+						if RegExMatch(endOfWhisper, leagueName "(.*)", endOfWhisperPat) {
 							whispLeague 		:= leagueName
 							endOfWhisper 		:= endOfWhisperPat1
 							endOfWhisperPat1 	:= ""
@@ -383,11 +386,11 @@ Filter_Logs_Message(message) {
 				else if ( regExName = "poeTradeUnpricedRegexStr") {
 					whispOther 			:= whispPat1
 					whispItem 			:= whispPat2
-					endofWhisper 		:= whispPat3
+					endOfWhisper 		:= whispPat3
 					whispPat1 := "", whispPat2 := "", whispPat3 := ""
 
 					for id, leagueName in Trading_Leagues {
-						if RegExMatch(endOfWhisper, leagueName " (.*)", endOfWhisperPat) {
+						if RegExMatch(endOfWhisper, leagueName "(.*)", endOfWhisperPat) {
 							whispLeague 		:= leagueName
 							endOfWhisper 		:= endOfWhisperPat1
 							endOfWhisperPat1	 := ""
@@ -421,11 +424,12 @@ Filter_Logs_Message(message) {
 				else if ( regExName = "poeTradeCurrencyRegexStr" ) {
 					whispOther 			:= whispPat1
 					whispItem 			:= whispPat2
-					endofWhisper 		:= whispPat3
-					whispPat1 := "", whispPat2 := "", whispPat3 := ""
+					whispPrice 			:= whispPat3
+					endOfWhisper 		:= whispPat4
+					whispPat1 := "", whispPat2 := "", whispPat3 := "", whispPat4 := ""
 
 					for id, leagueName in Trading_Leagues {
-						if RegExMatch(endOfWhisper, leagueName " (.*)", endOfWhisperPat) {
+						if RegExMatch(endOfWhisper, leagueName "(.*)", endOfWhisperPat) {
 							whispLeague 		:= leagueName
 							endOfWhisper 		:= endOfWhisperPat1
 							endOfWhisperPat1 	:= ""
@@ -447,16 +451,17 @@ Filter_Logs_Message(message) {
 					newTradeItem 		:= whispItem
 					newTradePrice 		:= whispPrice
 					newTradeLocation 	:= whispLeague
+					newTradeOther 		:= (whispOther && whispOther2)?(whispOther " " whispOther2):(whispOther . whispOther2)
 				}
 				else if ( regExName = "poeAppRegExStr" ) {
 					whispOther 			:= whispPat1
 					whispItem 			:= whispPat2
 					whispPrice 			:= whispPat3
-					endofWhisper 		:= whispPat4
+					endOfWhisper 		:= whispPat4
 					whispPat1 := "", whispPat2 := "", whispPat3 := "", whispPat4 := ""
 
 					for id, leagueName in Trading_Leagues {
-						if RegExMatch(endOfWhisper, leagueName " (.*)", endOfWhisperPat) {
+						if RegExMatch(endOfWhisper, leagueName "(.*)", endOfWhisperPat) {
 							whispLeague 		:= leagueName
 							endOfWhisper 		:= endOfWhisperPat1
 							endOfWhisperPat1 	:= ""
@@ -494,7 +499,7 @@ Filter_Logs_Message(message) {
 					whispPat1 := "", whispPat2 := "", whispPat3 := ""
 
 					for id, leagueName in Trading_Leagues {
-						if RegExMatch(endOfWhisper, leagueName " (.*)", endOfWhisperPat) {
+						if RegExMatch(endOfWhisper, leagueName "(.*)", endOfWhisperPat) {
 							whispLeague 		:= leagueName
 							endOfWhisper 		:= endOfWhisperPat1
 							endOfWhisperPat1 	:= ""
