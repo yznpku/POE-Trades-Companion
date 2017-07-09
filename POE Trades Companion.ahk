@@ -184,19 +184,23 @@ Start_Script() {
 	if ( ProgramValues["Debug"] ) {
 		; trade / No qual / Level
 		str := "2016/10/09 21:30:32 105384166 355 [INFO Client 6416] "
-			str .= "@From iSellStuff: Hi, I would like to buy your level 1 0% Faster Attacks Support listed for 5 alteration in Legacy (stash tab """"Shop: Gems""""; position: left 10, top 11) Offering 1alch?"
+			str .= "@From poetrade: Hi, I would like to buy your level 10 11% Faster Attacks Support listed for 5 alteration in Legacy (stash tab """"Shop: Gems""""; position: left 10, top 11) Offering 1alch?"
 
 		; trade / No qual / Level / Unpriced
 		str .= "`n" "2016/10/09 21:30:32 105384166 355 [INFO Client 6416] "
-			str .= "@From 22: Hi, I would like to buy your level 19 0% Faster Attacks Support in Beta Standard (stash tab """"Shop: poetrade 1""""; position: left 20, top 11)"
+			str .= "@From poetrade unpriced: Hi, I would like to buy your level 20 21% Faster Attacks Support in Beta Standard (stash tab """"Shop: poe.trade unpriced""""; position: left 1, top 2)"
 
 		; app / No qual / Level
 		str .= "`n" "2016/10/09 21:30:32 105384166 355 [INFO Client 6416] "
-			str .= " @From 33: wtb Faster Attacks Support (21/20%) listed for 1 Orb of Alteration in standard (stash """"Shop: poeapp 1""""; left 30, top 21)"
+			str .= " @From poeapp: wtb Faster Attacks Support (30/31%) listed for 1 Orb of Alteration in standard (stash """"Shop: poeapp 1""""; left 30, top 21)"
 
 		; app / No qual / Level / Unpriced
 		str .= "`n" "2016/10/09 21:30:32 105384166 355 [INFO Client 6416] "
-			str .= " @From 44: wtb Faster Attacks Support (21/20%) in standard (stash """"Shop: poeapp 1""""; left 40, top 21)"
+			str .= " @From poeapp unpriced: wtb Faster Attacks Support (40/41%) in standard (stash """"Shop: poeapp 1""""; left 40, top 21)"
+
+		str .= "`n" "2016/10/09 21:30:32 105384166 355 [INFO Client 6416] "
+			str .= " @From poeapp unpriced: wtb Faster Attacks Support (40/41%) in standard (stash """"Shop: poeapp 1""""; left 40, top 21)"
+
 		Filter_Logs_Message(str)
 	}
 
@@ -248,10 +252,13 @@ Get_Active_Trading_Leagues() {
 			Break
 	}
 
-	Loop, Parse, activeLeagues,% "D," 
+	tradingLeagues := []
+	Loop, Parse, activeLeagues,% "D|" 
 	{
 		if A_LoopField not contains %excludedWords%
-			tradingLeagues := (!tradingLeagues)?(A_LoopField):(tradingLeagues "," A_LoopField)
+		{
+			tradingLeagues.Push(A_LoopField)
+		}
 	}
 
 	return tradingLeagues
@@ -308,59 +315,229 @@ Filter_Logs_Message(message) {
 			}
 
 			whisp := whispName ": " whispMsg "`n"
-			poeappRegExStr := "(.*)wtb (.*) listed for (.*) in (?:(.*)\(stash ""(.*)""; left (.*), top (.*)\)|Hardcore (.*?)\W|(.*?)\W)(.*)" ; poeapp
-			poetradeRegExStr := "(.*)Hi, I(?: would|'d) like to buy your (?:(.*) |(.*))(?:listed for (.*)|for my (.*)|) in (?:(.*)\(stash tab ""(.*)""; position: left (.*), top (.*)\)|Hardcore (.*?)\W|(.*?)\W)(.*)" ; poe.trade
-/*			How do I successfully include the Trading_Leagues list to the RegEx?
-			"(?:listed for (.*)|for my (.*)|) in " Trading_Leagues ; This would work, but then I would be unable to know which league it is.
-*/
+			; poeappRegExStr 				:= "(.*)wtb (.*) listed for (.*) in (?:(.*)\(stash ""(.*)""; left (.*), top (.*)\)|Hardcore (.*?)\W|(.*?)\W)(.*)" ; poeapp
+			; poetradeRegExStr 			:= "(.*)Hi, I(?: would|'d) like to buy your (?:(.*) |(.*))(?:listed for (.*)|for my (.*)|) in (?:(.*)\(stash tab ""(.*)""; position: left (.*), top (.*)\)|Hardcore (.*?)\W|(.*?)\W)(.*)" ; poe.trade
+			
+			poeTradeRegexStr 			:= "(.*)Hi, I would like to buy your (.*) listed for (.*) in (.*)" ; 1: Other, 2: Item, 3: Price, 4: League + Tab + Other
+			poeTradeUnpricedRegexStr 	:= "(.*)Hi, I would like to buy your (.*) in (.*)" ; 1: Other, 2: Item, 3: League + Tab + Other
+			poeTradeCurrencyRegexStr	:= "(.*)Hi, I'd like to buy your (.*) for my (.*) in (.*)" ; 1: Other, 2: Currency, 3: Price, 4: League + Tab + Other
+			poeTradeStashRegexStr 		:= "\(stash tab ""(.*)""; position: left (.*), top (.*)\)(.*)" ; 1: Tab, 2: Left, 3: Top, 4: Other
+			poTradeQualityRegExStr 		:= "level (.*) (.*)% (.*)" ; 1: Item level, 2: Item quality, 3: Item name
 
-			allRegExStr := {poeapp:poeappRegExStr, poetrade:poetradeRegExStr}
+			poeAppRegExStr 				:= "(.*)wtb (.*) listed for (.*) in (.*)" ; 1: Other, 2: Item, 3: Price, 4: League + Tab + Other
+			poeAppUnpricedRegexStr 		:= "(.*)wtb (.*) in (.*)" ; 1: Other, 2: Item, 3: League + Tab + Other
+			poeAppStashRegexStr 		:= "\(stash ""(.*); left (.*), top(.*)\)(.*)" ; 1: Tab, 2: Left, 3: Top, 4: Other
+			poeAppQualityRegExStr 		:= "(.*) \((.*)/(.*)%\)" ; 1: Item name, 2: Item level, 3: Item quality
+
+			allRegexStr := {"poeTradeRegexStr":poeTradeRegexStr
+						   ,"poeTradeUnpricedRegexStr":poeTradeUnpricedRegexStr
+						   ,"poeTradeCurrencyRegexStr":poeTradeCurrencyRegexStr
+						   ,"poeAppRegExStr":poeAppRegExStr
+						   ,"poeAppUnpricedRegexStr":poeAppUnpricedRegexStr}
 			for regExName, regExStr in allRegExStr {
 				if RegExMatch(whisp, "i).*: " regExStr) {
 					Break
 				}
 			}
-			if RegExMatch(whisp, "i).*: " regExStr, subPat ) ; Matching pattern found
+			if RegExMatch(whisp, "i).*: " regExStr, whispPat ) ; Matching pattern found
 			{
 				timeSinceLastTrade := 0
 
-				if ( regExName = "poetrade" ) {
-					tradeItem := (subPat2)?(subPat2):(subPat3)?(subPat3):("ERROR RETRIEVING ITEM")
-					if RegExMatch(tradeItem, "level (.*) (.*)% (.*)", itemPat) {
-						tradeItem := itemPat3 " (Lvl:" itemPat1 " / Qual:" itemPat2 "%)"
-						itemPat1 := "", itemPat2 := "", itemPat3 := ""
-					}
-					tradePrice := (subPat4)?(subPat4):(subPat5)?(subPat5):("Unpriced Item (See Offer)")
-					tradeStash := (subPat6)?(subPat6 " (Tab:" subPat7 " / Pos:" subPat8 ";" subPat9 ")"):(subPat10)?("Hardcore " subPat10):(subPat11)?(subPat11):("ERROR RETRIEVING LOCATION")
-					tradeOther := (subPat11!=subPat6 && subPat11!=subPat10 && subPat11!=tradeStash)?(subPat1 subPat11):(subPat12 && subPat12!="`n")?(subPat12):("-")
+				if ( regExName = "poeTradeRegexStr" ) {
+					whispOther 			:= whispPat1
+					whispItem 			:= whispPat2
+					whispPrice 			:= whispPat3
+					endOfWhisper 		:= whispPat4
+					whispPat1 := "", whispPat2 := "", whispPat3 := "", whispPat4 := ""
 
-					tradeItem = %tradeItem% ; Remove blank spaces
-					tradePrice = %tradePrice%
-					tradeStash = %tradeStash%
-					tradeOther = %tradeOther%
-				}
-				else if ( regExName = "poeapp" ) {
-					tradeItem := subPat2
-					if RegExMatch(tradeItem, "(.*) \((.*)/(.*)%\)", itemPat) {
-						tradeItem := itemPat1 " (Lvl:" itemPat2 " / Qual:" itemPat3 "%)"
-						itemPat1 := "", itemPat2 := "", itemPat3 := ""
+					for id, leagueName in Trading_Leagues {
+						if RegExMatch(endOfWhisper, leagueName " (.*)", endOfWhisperPat) {
+							whispLeague 		:= leagueName
+							endOfWhisper 		:= endOfWhisperPat1
+							endOfWhisperPat1 	:= ""
+							Break
+						}
 					}
-					tradePrice := (subPat3)?(subPat3):("Unpriced Item (See Offer)")
-					tradeStash := (subPat4)?(subPat4 " (Tab:" subpat5 " / Pos:" subPat6 ";" subPat7 ")"):(subPat8)?("Hardcore " subPat8):(subPat9)?(subPat9):("ERROR RETRIEVING LOCATION")								
-					tradeOther := (subPat1 || subPat10 && subPat10 != "`n")?(subPat1 . subPat10):("-")
+					if RegExMatch(endOfWhisper, poeTradeStashRegexStr, stashPat) {
+						whispStash 		:= stashPat1
+						whispStashLeft 	:= stashPat2
+						whispStashTop 	:= stashPat3
+						whispOther2 	:= stashPat4
+						stashPat1 := "", stashPat2 := "", stashPat3 := "", stashPat4 := ""
+					}
+					else {
+						whispOther2 	:= endOfWhisper
+					}
+					if RegExMatch(whispItem, poTradeQualityRegExStr, itemQualPat) {
+						whispItemLevel 	:= itemQualPat1
+						whispItemQual 	:= itemQualPat2
+						whispItemName 	:= itemQualPat3
+						itemQualPat1 := "", itemQualPat2 := "", itemQualPat3 := ""
+					}
 
-					tradeItem = %tradeItem% ; Remove blank spaces
-					tradePrice = %tradePrice%
-					tradeStash = %tradeStash%
-					tradeOther = %tradeOther%
+					newTradeItem 		:= (whispItemName)?(whispItemName " Lvl:" whispItemLevel " / Qual:" whispItemQual "%"):(whispItem)
+					newTradePrice 		:= whispPrice
+					newTradeLocation 	:= (whispStash)?(whispLeague " (Tab:" whispStash " / Pos:" whispStashLeft ";" whispStashTop ")"):(whispLeague)
+					newTradeOther 		:= (whispOther && whispOther2)?(whispOther " " whispOther2):(whispOther . whispOther2)
 				}
+				else if ( regExName = "poeTradeUnpricedRegexStr") {
+					whispOther 			:= whispPat1
+					whispItem 			:= whispPat2
+					endofWhisper 		:= whispPat3
+					whispPat1 := "", whispPat2 := "", whispPat3 := ""
+
+					for id, leagueName in Trading_Leagues {
+						if RegExMatch(endOfWhisper, leagueName " (.*)", endOfWhisperPat) {
+							whispLeague 		:= leagueName
+							endOfWhisper 		:= endOfWhisperPat1
+							endOfWhisperPat1	 := ""
+							Break
+						}
+					}
+
+					if RegExMatch(endOfWhisper, poeTradeStashRegexStr, stashPat) {
+						whispStash 		:= stashPat1
+						whispStashLeft 	:= stashPat2
+						whispStashTop 	:= stashPat3
+						whispOther2 	:= stashPat4
+						stashPat1 := "", stashPat2 := "", stashPat3 := "", stashPat4 := ""
+					}
+					else {
+						whispOther2 	:= endOfWhisper
+					}
+
+					if RegExMatch(whispItem, poTradeQualityRegExStr, itemQualPat) {
+						whispItemLevel 	:= itemQualPat1
+						whispItemQual 	:= itemQualPat2
+						whispItemName 	:= itemQualPat3
+						itemQualPat1 := "", itemQualPat2 := "", itemQualPat3 := ""
+					}
+
+					newTradeItem 		:= (whispItemName)?(whispItemName " (Lvl:" whispItemLevel " / Qual:" whispItemQual "%)"):(whispItem)
+					newTradePrice 		:= "Unpriced Item (See Offer)"
+					newTradeLocation 	:= (whispStash)?(whispLeague " (Tab:" whispStash " / Pos:" whispStashLeft ";" whispStashTop ")"):(whispLeague)
+					newTradeOther 		:= (whispOther && whispOther2)?(whispOther " " whispOther2):(whispOther . whispOther2)
+				}
+				else if ( regExName = "poeTradeCurrencyRegexStr" ) {
+					whispOther 			:= whispPat1
+					whispItem 			:= whispPat2
+					endofWhisper 		:= whispPat3
+					whispPat1 := "", whispPat2 := "", whispPat3 := ""
+
+					for id, leagueName in Trading_Leagues {
+						if RegExMatch(endOfWhisper, leagueName " (.*)", endOfWhisperPat) {
+							whispLeague 		:= leagueName
+							endOfWhisper 		:= endOfWhisperPat1
+							endOfWhisperPat1 	:= ""
+							Break
+						}
+					}
+
+					if RegExMatch(endOfWhisper, poeTradeStashRegexStr, stashPat) {
+						whispStash 		:= stashPat1
+						whispStashLeft 	:= stashPat2
+						whispStashTop 	:= stashPat3
+						whispOther2 	:= stashPat4
+						stashPat1 := "", stashPat2 := "", stashPat3 := "", stashPat4 := ""
+					}
+					else {
+						whispOther2 	:= endOfWhisper
+					}
+
+					newTradeItem 		:= whispItem
+					newTradePrice 		:= whispPrice
+					newTradeLocation 	:= whispLeague
+				}
+				else if ( regExName = "poeAppRegExStr" ) {
+					whispOther 			:= whispPat1
+					whispItem 			:= whispPat2
+					whispPrice 			:= whispPat3
+					endofWhisper 		:= whispPat4
+					whispPat1 := "", whispPat2 := "", whispPat3 := "", whispPat4 := ""
+
+					for id, leagueName in Trading_Leagues {
+						if RegExMatch(endOfWhisper, leagueName " (.*)", endOfWhisperPat) {
+							whispLeague 		:= leagueName
+							endOfWhisper 		:= endOfWhisperPat1
+							endOfWhisperPat1 	:= ""
+							Break
+						}
+					}
+
+					if RegExMatch(endOfWhisper, poeAppStashRegexStr, stashPat) {
+						whispStash 		:= stashPat1
+						whispStashLeft 	:= stashPat2
+						whispStashTop 	:= stashPat3
+						whispOther2 	:= stashPat4
+						stashPat1 := "", stashPat2 := "", stashPat3 := "", stashPat4 := ""
+					}
+					else {
+						whispOther2 	:= endOfWhisper
+					}
+
+					if RegExMatch(whispItem, poeAppQualityRegExStr, itemQualPat) {
+						whispItemName 	:= itemQualPat1
+						whispItemLevel 	:= itemQualPat2
+						whispItemQual 	:= itemQualPat3
+						itemQualPat1 := "", itemQualPat2 := "", itemQualPat3 := ""
+					}
+
+					newTradeItem 		:= (whispItemName)?(whispItemName " (Lvl:" whispItemLevel " / Qual:" whispItemQual "%)"):(whispItem)
+					newTradePrice 		:= whispPrice
+					newTradeLocation 	:= (whispStash)?(whispLeague " (Tab:" whispStash " / Pos:" whispStashLeft ";" whispStashTop ")"):(whispLeague)
+					newTradeOther 		:= (whispOther && whispOther2)?(whispOther " " whispOther2):(whispOther . whispOther2)
+				}
+				else if ( regExName = "poeAppUnpricedRegexStr") {
+					whispOther 			:= whispPat1
+					whispItem 			:= whispPat2
+					endOfWhisper 		:= whispPat3
+					whispPat1 := "", whispPat2 := "", whispPat3 := ""
+
+					for id, leagueName in Trading_Leagues {
+						if RegExMatch(endOfWhisper, leagueName " (.*)", endOfWhisperPat) {
+							whispLeague 		:= leagueName
+							endOfWhisper 		:= endOfWhisperPat1
+							endOfWhisperPat1 	:= ""
+							Break
+						}
+					}
+
+					if RegExMatch(endOfWhisper, poeAppStashRegexStr, stashPat) {
+						whispStash 		:= stashPat1
+						whispStashLeft 	:= stashPat2
+						whispStashTop 	:= stashPat3
+						whispOther2 	:= stashPat4
+						stashPat1 := "", stashPat2 := "", stashPat3 := "", stashPat4 := ""
+					}
+					else {
+						whispOther2 	:= endOfWhisper
+					}
+
+					if RegExMatch(whispItem, poeAppQualityRegExStr, itemQualPat) {
+						whispItemName 	:= itemQualPat1
+						whispItemLevel 	:= itemQualPat2
+						whispItemQual 	:= itemQualPat3
+						itemQualPat1 := "", itemQualPat2 := "", itemQualPat3 := ""
+					}
+
+					newTradeItem 		:= (whispItemName)?(whispItemName " (Lvl:" whispItemLevel " / Qual:" whispItemQual "%)"):(whispItem)
+					newTradePrice 		:= "Unpriced Item (See Offer)"
+					newTradeLocation 	:= (whispStash)?(whispLeague " (Tab:" whispStash " / Pos:" whispStashLeft ";" whispStashTop ")"):(whispLeague)
+					newTradeOther 		:= (whispOther && whispOther2)?(whispOther " " whispOther2):(whispOther . whispOther2)
+				}
+
+				newTradeItem 		= %newTradeItem%
+				newTradePrice 		= %newTradePrice%
+				newTradeLocation 	= %newTradeLocation%
+				newTradeOther 		= %newTradeOther%
+				newTradeOther 		:= ( newTradeOther && (newTradeOther = "." || newTradeOther = "`n" || newTradeOther = " ") )?("-"):(!newTradeOther)?("-"):(newTradeOther)
 
 				; Do not add the trade if the same is already in queue
 				tradesExists := 0
 				tradesInfos := Gui_Trades_Manage_Trades("GET_ALL")
 				Loop % tradesInfos.Max_Index {
 					buyerContent := tradesInfos[A_Index "_Buyer"], itemContent := tradesInfos[A_Index "_Item"], priceContent := tradesInfos[A_Index "_Price"], locationContent := tradesInfos[A_Index "_Location"], otherContent = tradesInfos[A_Index "_Other"]
-					if (buyerContent=whispName && itemContent=tradeItem && priceContent=tradePrice && locationContent=tradeStash) {
+					if (buyerContent=whispName && itemContent=newTradeItem && priceContent=newTradePrice && locationContent=newTradeLocation) {
 						tradesExists := 1
 					}
 				}
@@ -368,12 +545,12 @@ Filter_Logs_Message(message) {
 				; Trade does not already exist
 				if (tradesExists = 0) {
 					newTradesInfos := {Buyer:whispName
-									  ,Item:tradeItem
-									  ,Price:tradePrice
-									  ,Location:tradeStash
+									  ,Item:newTradeItem
+									  ,Price:newTradePrice
+									  ,Location:newTradeLocation
 									  ,PID:gamePID
 									  ,Time:A_Hour ":" A_Min
-									  ,Other:tradeOther
+									  ,Other:newTradeOther
 									  ,Date:A_YYYY "-" A_MM "-" A_DD
 									  ,Guild:whispGuild}
 					messagesArray := Gui_Trades_Manage_Trades("ADD_NEW", newTradesInfos)
@@ -386,6 +563,7 @@ Filter_Logs_Message(message) {
 						SoundPlay,% ProgramSettings.Whisper_Sound_Path
 					}
 				}
+				whispName := "", whispGuild := "", newTradeItem := "", newTradePrice := "", newTradeLocation := "", newTradeOther := "", gamePID := ""
 			}
 			else {
 				if ( ProgramSettings.Whisper_Toggle = 1 ) && FileExist(ProgramSettings.Whisper_Sound_Path) { ; Play the sound set for whispers
