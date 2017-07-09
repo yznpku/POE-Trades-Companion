@@ -53,6 +53,8 @@ Start_Script() {
 	global Stats_TradeCurrencyNames 	:= Object() ; Abridged currency names from poe.trade
 	global Stats_RealCurrencyNames 		:= Object() ; All currency full names
 
+	global Trading_Leagues 				:= Get_Active_Trading_Leagues()
+
 ;	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	
 	ProgramSettings.Screen_DPI 			:= Get_DPI_Factor() 
@@ -213,11 +215,53 @@ Start_Script() {
 ;
 ;==================================================================================================================
 
+Get_Active_Trading_Leagues() {
+/*		Retrieves leagues from the API
+		Parse them, to keep only non-solo or non-ssf leagues
+		Return the resulting list
+*/
+	apiLink := "http://api.pathofexile.com/leagues?offset=XX&compact=1"
+	excludedWords := "SSF,Solo"
+	activeLeagues := "Standard|Hardcore"
+	offsetCount := 6000 ; Legacy starts at 6000
+
+	Loop {
+		apiLinkOffset := RegExReplace(apiLink, "XX", offsetCount)
+
+		whr := ComObjCreate("WinHttp.WinHttpRequest.5.1")
+		whr.Open("GET", apiLinkOffset, true) ; Using true above and WaitForResponse allows the script to r'emain responsive.
+		whr.Send()
+		whr.WaitForResponse(10) ; 10 seconds
+		leaguesJSON := whr.ResponseText
+		parsedLeagues := JSON.Load(leaguesJSON)
+		Loop % parsedLeagues.MaxIndex() {
+			arrID := parsedLeagues[A_Index]
+			leagueEnd := RegExMatch(arrID.endAt, "(.*)-(.*)-(.*)T(.*):(.*):(.*)Z", pat)
+			leagueEndTime := pat1 . pat2 . pat3 . pat4 . pat5 . pat6
+
+			if ( arrID.startAt && (leagueEndTime > A_Now || !leagueEndTime) ) {
+				activeLeagues .= "|" arrID.ID
+			}
+		}
+		offsetCount += parsedLeagues.MaxIndex()
+		if !(parsedLeagues.MaxIndex())
+			Break
+	}
+
+	Loop, Parse, activeLeagues,% "D," 
+	{
+		if A_LoopField not contains %excludedWords%
+			tradingLeagues := (!tradingLeagues)?(A_LoopField):(tradingLeagues "," A_LoopField)
+	}
+
+	return tradingLeagues
+}
+
 Filter_Logs_Message(message) {
 /*		Filter the logs message to retrieve the required informations we need
 			and send them to the Trades GUI if it is a trade whisper.
  */
-	global ProgramSettings, TradesGUI_Values
+	global ProgramSettings, TradesGUI_Values, Trading_Leagues
 
 	Loop, Parse, message, `n ; For each new individual line since last check
 	{
@@ -263,12 +307,13 @@ Filter_Logs_Message(message) {
 				}
 			}
 
-			; poeappRegExStr := "(.*)wtb (.*) listed for (.*) in (?:(.*)\(stash ""(.*)""; left (.*), top (.*)\)|Hardcore (.*?)\W|(.*?)\W)(.*)"
-			; poetradeRegExStr := "(.*)Hi, I(?: would|'d) like to buy your (?:(.*) |(.*))(?:listed for (.*)|for my (.*)|)(?!:listed for|for my) in (?:(.*)\(stash tab ""(.*)""; position: left (.*), top (.*)\)|Hardcore (.*?)\W|(.*?)\W)(.*)"
-
 			whisp := whispName ": " whispMsg "`n"
 			poeappRegExStr := "(.*)wtb (.*) listed for (.*) in (?:(.*)\(stash ""(.*)""; left (.*), top (.*)\)|Hardcore (.*?)\W|(.*?)\W)(.*)" ; poeapp
 			poetradeRegExStr := "(.*)Hi, I(?: would|'d) like to buy your (?:(.*) |(.*))(?:listed for (.*)|for my (.*)|) in (?:(.*)\(stash tab ""(.*)""; position: left (.*), top (.*)\)|Hardcore (.*?)\W|(.*?)\W)(.*)" ; poe.trade
+/*			How do I successfully include the Trading_Leagues list to the RegEx?
+			"(?:listed for (.*)|for my (.*)|) in " Trading_Leagues ; This would work, but then I would be unable to know which league it is.
+*/
+
 			allRegExStr := {poeapp:poeappRegExStr, poetrade:poetradeRegExStr}
 			for regExName, regExStr in allRegExStr {
 				if RegExMatch(whisp, "i).*: " regExStr) {
