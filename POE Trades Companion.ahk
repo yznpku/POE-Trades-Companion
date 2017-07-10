@@ -63,7 +63,7 @@ Start_Script() {
 	MyDocuments 						:= (RunParameters.MyDocuments)?(RunParameters.MyDocuments):(A_MyDocuments)
 
 	ProgramValues.Name 					:= "POE Trades Companion"
-	ProgramValues.Version 				:= "1.11.1"
+	ProgramValues.Version 				:= "1.11.2"
 	ProgramValues.Debug 				:= "0"
 
 	ProgramValues.Updater_File 			:= "POE-TC-Updater.exe"
