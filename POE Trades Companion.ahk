@@ -61,7 +61,7 @@ Start_Script() {
 	MyDocuments 						:= (RunParameters.MyDocuments)?(RunParameters.MyDocuments):(A_MyDocuments)
 
 	ProgramValues.Name 					:= "POE Trades Companion"
-	ProgramValues.Version 				:= "1.11.2"
+	ProgramValues.Version 				:= "1.11.3"
 	ProgramValues.Debug 				:= "0"
 
 	ProgramValues.Updater_File 			:= "POE-TC-Updater.exe"
@@ -1119,7 +1119,7 @@ Gui_Trades_Load_Pending_Backup() {
 		messagesArray := Gui_Trades_Manage_Trades("ADD_NEW", thisTrade)
 		Gui_Trades("UPDATE", messagesArray)
 	}
-
+	
 	FileDelete,% ProgramValues.Trades_Backup_File
 }
 
@@ -5819,8 +5819,6 @@ Gui_Trades_Save_Pending_Backup() {
 	allTrades := Gui_Trades_Manage_Trades("GET_ALL")
 	FileDelete,% ProgramValues.Trades_Backup_File
 	for key, element in allTrades {
-		if (key = "Max_Index")
-			element--
 		IniWrite,% element,% ProgramValues.Trades_Backup_File,GENERAL,% key
 	}
 }
