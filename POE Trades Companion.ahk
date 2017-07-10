@@ -1787,6 +1787,8 @@ Gui_Trades_Manage_Trades(mode, newItemInfos="", activeTabID=""){
 	returnArray := Object()
 	btnID := activeTabID
 
+	actualTabsCount := 0
+
 	if ( mode = "GET_ALL" || mode = "ADD_NEW") {
 	;	___BUYERS___	
 		Loop {
@@ -1794,6 +1796,7 @@ Gui_Trades_Manage_Trades(mode, newItemInfos="", activeTabID=""){
 			GuiControlGet, content, Trades:,% TradesGUI_Controls["Buyer_Slot_" A_Index]
 			if ( content ) {
 				returnArray.Insert(A_Index "_Buyer", content)
+				actualTabsCount++
 			}
 			else break
 		}
@@ -1875,7 +1878,7 @@ Gui_Trades_Manage_Trades(mode, newItemInfos="", activeTabID=""){
 			else break
 		}
 
-		returnArray.Insert("Max_Index", bCount)
+		returnArray.Insert("Max_Index", actualTabsCount)
 	}
 
 	if ( mode = "ADD_NEW") {
@@ -1888,6 +1891,7 @@ Gui_Trades_Manage_Trades(mode, newItemInfos="", activeTabID=""){
 		returnArray.Insert(otherCount "_Other", newItemInfos.Other)
 		returnArray.Insert(datesCount "_Date", newItemInfos.Date)
 		returnArray.Insert(guildsCount "_Guild", newItemInfos.Guild)
+		returnArray.Insert("Max_Index", bCount)
 	}
 
 	if ( mode = "REMOVE_CURRENT") {
