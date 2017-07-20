@@ -206,7 +206,7 @@ Start_Script() {
 		str .= "`n" "2016/10/09 21:30:32 105384166 355 [INFO Client 6416] "
 			str .= " @From poeapp quality unpriced other: wtb Faster Attacks Support (40/41%) in standard (stash """"Shop: poeapp 1""""; left 40, top 21)"
 
-		Filter_Logs_Message(str)
+		; Filter_Logs_Message(str)
 	}
 
 	Gui_Trades_Load_Pending_Backup()
@@ -667,7 +667,8 @@ Load_Skin_Assets() {
 			SplitPath, value, , , valueExt
 			if (valueExt)
 				SkinAssets[sectName "_" keyName] := skinFolder "\" value
-			else SkinAssets[sectName "_" keyName] := value
+			else
+				SkinAssets[sectName "_" keyName] := value
 		}
 	}
 }
@@ -686,6 +687,8 @@ Gui_Trades(mode="", tradeInfos="") {
 	static
 	global ProgramValues, TradesGUI_Values, TradesGUI_Controls, ProgramSettings, SkinAssets
 
+	Load_Skin_Assets()
+
 	activeSkin := ProgramSettings.Active_Skin
 	scaleMult := ProgramSettings.Scale_Multiplier
 
@@ -701,12 +704,24 @@ Gui_Trades(mode="", tradeInfos="") {
 	fontQual := (ProgramSettings.Font_Quality_Mode="Custom")?(ProgramSettings.Font_Quality_Custom)
 			   :(fontQualAuto)
 
-	colorTitleActive := "0x" ProgramSettings.Font_Color_Title_Active
-	colorTitleInactive := "0x" ProgramSettings.Font_Color_Title_Inactive
-	colorTradesInfos1 := "0x" ProgramSettings.Font_Color_Trades_Infos_1
-	colorTradesInfos2 := "0x" ProgramSettings.Font_Color_Trades_Infos_2
-	colorTabs := "0x" ProgramSettings.Font_Color_Tabs
-	colorButtons := "0x" ProgramSettings.Font_Color_Buttons
+	colorTitleActive 	:= (ProgramSettings.Color_Title_Active = "000000")?("Black"):("0x" ProgramSettings.Color_Title_Active)
+	colorTitleInactive 	:= (ProgramSettings.Color_Title_Inactive = "000000")?("Black"):("0x" ProgramSettings.Color_Title_Inactive)
+	colorTradesInfos1 	:= (ProgramSettings.Color_Trades_Infos_1 = "000000")?("Black"):("0x" ProgramSettings.Color_Trades_Infos_1)
+	colorTradesInfos2 	:= (ProgramSettings.Color_Trades_Infos_2 = "000000")?("Black"):("0x" ProgramSettings.Color_Trades_Infos_2)
+	colorBorder 		:= (ProgramSettings.Color_Border = "000000")?("Black"):("0x" ProgramSettings.Color_Border)
+
+	colorButtonNormal 	:= (ProgramSettings.Color_Button_Normal = "000000")?("Black"):("0x" ProgramSettings.Color_Button_Normal)
+	colorButtonHover 	:= (ProgramSettings.Color_Button_Hover = "000000")?("Black"):("0x" ProgramSettings.Color_Button_Hover)
+	colorButtonPress 	:= (ProgramSettings.Color_Button_Press = "000000")?("Black"):("0x" ProgramSettings.Color_Button_Press)
+
+	colorTabActive 		:= (ProgramSettings.Color_Tab_Active = "000000")?("Black"):("0x" ProgramSettings.Color_Tab_Active)
+	colorTabInactive 	:= (ProgramSettings.Color_Tab_Inactive = "000000")?("Black"):("0x" ProgramSettings.Color_Tab_Inactive)
+	colorTabHover 		:= (ProgramSettings.Color_Tab_Hover = "000000")?("Black"):("0x" ProgramSettings.Color_Tab_Hover)
+	colorTabPress 		:= (ProgramSettings.Color_Tab_Press = "000000")?("Black"):("0x" ProgramSettings.Color_Tab_Press)
+
+	pngTransColor 		:= (SkinAssets.Misc_Transparency_Color = "000000")?("Black"):("0x" SkinAssets.Misc_Transparency_Color)
+
+	colorTitleInactive := "White"
 
 	maxTabsRow := 8
 	maxTabsStage1 := 25
@@ -727,43 +742,38 @@ Gui_Trades(mode="", tradeInfos="") {
 
 	if ( mode = "CREATE" ) {
 
-		Load_Skin_Assets()
+		IBStyle_Tab :=					[ [0, SkinAssets.Tab_Inactive, "", colorTabInactive, "", pngTransColor]			; normal
+				              			, [0, SkinAssets.Tab_Hover, "", colorTabHover, "", pngTransColor]				; hover
+				    	      			, [0, SkinAssets.Tab_Press, "", colorTabPress, "", pngTransColor]				; pressed
+							  			, [0, SkinAssets.Tab_Active, "", colorTabActive, "", pngTransColor] ]			; disabled (defaulted)
 
-		pngTransColor := SkinAssets.Misc_Transparency_Color
-		textCol := "Red"
+		IBStyle_Arrow_Left :=			[ [0, SkinAssets.Arrow_Left_Normal, "", colorButtonNormal, "", pngTransColor]
+				              			, [0, SkinAssets.Arrow_Left_Hover, "", colorButtonHover, "", pngTransColor]
+				    	      			, [0, SkinAssets.Arrow_Left_Press, "", colorButtonPress, "", pngTransColor] ]
 
-		IBStyle_Tab :=					[ [0, SkinAssets.Tab_Inactive, "", colorTabs, "", pngTransColor]			; normal
-				              			, [0, SkinAssets.Tab_Hover, "", colorTabs, "", pngTransColor]				; hover
-				    	      			, [0, SkinAssets.Tab_Press, "", colorTabs, "", pngTransColor]				; pressed
-							  			, [0, SkinAssets.Tab_Active, "", colorTabs, "", pngTransColor] ]			; disabled (defaulted)
+		IBStyle_Arrow_Right := 			[ [0, SkinAssets.Arrow_Right_Normal, "", colorButtonNormal, "", pngTransColor]
+				              			, [0, SkinAssets.Arrow_Right_Hover, "", colorButtonHover, "", pngTransColor]
+				    	      			, [0, SkinAssets.Arrow_Right_Press, "", colorButtonPress, "", pngTransColor] ]
 
-		IBStyle_Arrow_Left :=			[ [0, SkinAssets.Arrow_Left_Normal, "", colorButtons, "", pngTransColor]
-				              			, [0, SkinAssets.Arrow_Left_Hover, "", colorButtons, "", pngTransColor]
-				    	      			, [0, SkinAssets.Arrow_Left_Press, "", colorButtons, "", pngTransColor] ]
+		IBStyle_Button_OneThird :=		[ [0, SkinAssets.Button_OneThird_Normal, "", colorButtonNormal, "", pngTransColor]
+				              			, [0, SkinAssets.Button_OneThird_Hover, "", colorButtonHover, "", pngTransColor]
+				    	      			, [0, SkinAssets.Button_OneThird_Press, "", colorButtonPress, "", pngTransColor] ]
 
-		IBStyle_Arrow_Right := 			[ [0, SkinAssets.Arrow_Right_Normal, "", colorButtons, "", pngTransColor]
-				              			, [0, SkinAssets.Arrow_Right_Hover, "", colorButtons, "", pngTransColor]
-				    	      			, [0, SkinAssets.Arrow_Right_Press, "", colorButtons, "", pngTransColor] ]
+		IBStyle_Button_TwoThird :=		[ [0, SkinAssets.Button_TwoThird_Normal, "", colorButtonNormal, "", pngTransColor]
+				              			, [0, SkinAssets.Button_TwoThird_Hover, "", colorButtonHover, "", pngTransColor]
+				    	      			, [0, SkinAssets.Button_TwoThird_Press, "", colorButtonPress, "", pngTransColor] ]
 
-		IBStyle_Button_OneThird :=		[ [0, SkinAssets.Button_OneThird_Normal, "", colorButtons, "", pngTransColor]
-				              			, [0, SkinAssets.Button_OneThird_Hover, "", colorButtons, "", pngTransColor]
-				    	      			, [0, SkinAssets.Button_OneThird_Press, "", colorButtons, "", pngTransColor] ]
+		IBStyle_Button_ThreeThird :=	[ [0, SkinAssets.Button_ThreeThird_Normal, "", colorButtonNormal, "", pngTransColor]
+				              			, [0, SkinAssets.Button_ThreeThird_Hover, "", colorButtonHover, "", pngTransColor]
+				    	      			, [0, SkinAssets.Button_ThreeThird_Press, "", colorButtonPress, "", pngTransColor] ]
 
-		IBStyle_Button_TwoThird :=		[ [0, SkinAssets.Button_TwoThird_Normal, "", colorButtons, "", pngTransColor]
-				              			, [0, SkinAssets.Button_TwoThird_Hover, "", colorButtons, "", pngTransColor]
-				    	      			, [0, SkinAssets.Button_TwoThird_Press, "", colorButtons, "", pngTransColor] ]
+		IBStyle_Button_Special :=		[ [0, SkinAssets.Button_Special_Normal, "", colorButtonNormal, "", pngTransColor]
+				              			, [0, SkinAssets.Button_Special_Hover, "", colorButtonHover, "", pngTransColor]
+				    	      			, [0, SkinAssets.Button_Special_Press, "", colorButtonPress, "", pngTransColor] ]
 
-		IBStyle_Button_ThreeThird :=	[ [0, SkinAssets.Button_ThreeThird_Normal, "", colorButtons, "", pngTransColor]
-				              			, [0, SkinAssets.Button_ThreeThird_Hover, "", colorButtons, "", pngTransColor]
-				    	      			, [0, SkinAssets.Button_ThreeThird_Press, "", colorButtons, "", pngTransColor] ]
-
-		IBStyle_Button_Special :=		[ [0, SkinAssets.Button_Special_Normal, "", colorButtons, "", pngTransColor]
-				              			, [0, SkinAssets.Button_Special_Hover, "", colorButtons, "", pngTransColor]
-				    	      			, [0, SkinAssets.Button_Special_Press, "", colorButtons, "", pngTransColor] ]
-
-		IBStyle_Close_Tab :=			[ [0, SkinAssets.Close_Tab_Normal, "", colorButtons, "", pngTransColor]
-				              			, [0, SkinAssets.Close_Tab_Hover, "", colorButtons, "", pngTransColor]
-				    	      			, [0, SkinAssets.Close_Tab_Press, "", colorButtons, "", pngTransColor] ]
+		IBStyle_Close_Tab :=			[ [0, SkinAssets.Close_Tab_Normal, "", colorButtonNormal, "", pngTransColor]
+				              			, [0, SkinAssets.Close_Tab_Hover, "", colorButtonHover, "", pngTransColor]
+				    	      			, [0, SkinAssets.Close_Tab_Press, "", colorButtonPress, "", pngTransColor] ]
 
 		Gui, Trades:Destroy
 		Gui, Trades:New, +ToolWindow +AlwaysOnTop -Border +hwndGuiTradesHandler +LabelGui_Trades_ +LastFound -SysMenu -Caption
@@ -773,8 +783,8 @@ Gui_Trades(mode="", tradeInfos="") {
 		TradesGUI_Values.Handler := GuiTradesHandler
 
 		tabHeight := Gui_Trades_Get_Tab_Height(), tabWidth := 390*scaleMult
-		guiWidth := 401*scaleMult, guiHeight := Floor((tabHeight+39)*scaleMult), guiHeightMin := 34*scaleMult ; 30 = banner size, 1 = tab bottom line
-		borderSize := 2
+		guiWidth := 401*scaleMult, guiHeight := Floor((tabHeight+39)*scaleMult), guiHeightMin := 31*scaleMult ; 30 = banner size, 1 = border
+		borderSize := 1
 		TradesGUI_Values.Insert("Height_Full", guiHeight)
 		TradesGUI_Values.Insert("Height_Minimized", guiHeightMin)
 
@@ -808,13 +818,12 @@ Gui_Trades(mode="", tradeInfos="") {
 
 		TradesGUI_Controls["Header_Title"]		:= hHeaderTitle
 		TradesGUI_Controls["Header_Minimize"]	:= hHeaderMinimize
-
 ; - - - - - Borders
 		Gui, Tab
-		Gui, Add, Progress,% "x" 0 . " y" 0 . " w" guiWidth . " h" borderSize . " hWndhBorderTop Background48a7ff" ; Top
-		Gui, Add, Progress,% "x" 0 . " y" 0 . " w" borderSize . " h" guiHeight . " hWndhBorderLeft Background48a7ff" ; Left
-		Gui, Add, Progress,% "x" guiWidth-borderSize . " y" 0 . " w" borderSize . " h" guiHeight . " hWndhBorderRight Background48a7ff" ; Right
-		Gui, Add, Progress,% "x" 0 . " y" guiHeight-borderSize . " w" guiWidth . " h" borderSize . " hWndhBorderBottom Background48a7ff" ; Bottom
+		Gui, Add, Progress,% "x" 0 . " y" 0 . " w" guiWidth . " h" borderSize . " hWndhBorderTop Background" colorBorder ; Top
+		Gui, Add, Progress,% "x" 0 . " y" 0 . " w" borderSize . " h" guiHeight . " hWndhBorderLeft Background" colorBorder ; Left
+		Gui, Add, Progress,% "x" guiWidth-borderSize . " y" 0 . " w" borderSize . " h" guiHeight . " hWndhBorderRight Background" colorBorder ; Right
+		Gui, Add, Progress,% "x" 0 . " y" guiHeight-borderSize . " w" guiWidth . " h" borderSize . " hWndhBorderBottom Background" colorBorder ; Bottom
 
 		TradesGUI_Controls["Border_Top"]		:= hBorderTop
 		TradesGUI_Controls["Border_Left"]		:= hBorderLeft
@@ -826,7 +835,7 @@ Gui_Trades(mode="", tradeInfos="") {
 			btnPos := (A_Index=1)?("x" borderSize*scaleMult " ys+" 30*scaleMult " w" 40*scaleMult " h" 25*scaleMult):(A_Index > maxTabsRow)?("xp yp wp hp"):("xp+40 yp wp hp")
 			Gui, Add, Button,%btnPos% gGui_Trades_SetActiveTab vTab%A_Index% hWndhTab%A_Index% Section,% A_Index
 			if !ImageButton.Create(hTab%A_Index%, IBStyle_Tab*)
-				MsgBox, 0, ImageButton Error Btn1, % ImageButton.LastError
+				MsgBox, 0, ImageButton Error Tab, % ImageButton.LastError
 
 			GuiControl,Trades:Hide,% hTab%A_Index%
 			TradesGUI_Controls["Tab_" A_Index] 				:= hTab%A_Index%
@@ -841,16 +850,23 @@ Gui_Trades(mode="", tradeInfos="") {
 
 ; - - - - - Left / Right arrows and Close
 		Gui, Add, Button,% "xp+" 40*scaleMult " yp w" 25*scaleMult " h" 25*scaleMult " hWndhArrowLeft gGui_Trades_Skinned_Arrow_Left BackgroundTrans",% (SkinAssets.Arrow_Left_Use_Character)?("<"):("")
-		ImageButton.Create(hArrowLeft, IBStyle_Arrow_Left*)
+		if !ImageButton.Create(hArrowLeft, IBStyle_Arrow_Left*)
+			MsgBox, 0, ImageButton Error Left Arrow, % ImageButton.LastError
 		Gui, Add, Button,% "xp+" 25*scaleMult " yp w" 25*scaleMult " h" 25*scaleMult " hWndhArrowRight gGui_Trades_Skinned_Arrow_Right BackgroundTrans",% (SkinAssets.Arrow_Right_Use_Character)?(">"):("")
-		ImageButton.Create(hArrowRight, IBStyle_Arrow_Right*)
+		if !ImageButton.Create(hArrowRight, IBStyle_Arrow_Right*)
+			MsgBox, 0, ImageButton Error Right Arrow, % ImageButton.LastError
 
-		Gui, Add, Button,% "xp+" 25*scaleMult " yp w" 27*scaleMult " h" 25*scaleMult " hWndhBtnCloseTab gGui_Trades_Close_Tab_Label Section",% (SkinAssets.Close_Tab_Use_Character)?("X"):("")
-		ImageButton.Create(hBtnCloseTab, IBStyle_Close_Tab*)
+		Gui, Add, Button,% "xp+" 27*scaleMult " yp w" 27*scaleMult " h" 25*scaleMult " hWndhBtnCloseTab gGui_Trades_Close_Tab_Label Section",% (SkinAssets.Close_Tab_Use_Character)?("X"):("")
+		if !ImageButton.Create(hBtnCloseTab, IBStyle_Close_Tab*)
+			MsgBox, 0, ImageButton Error Close Tab, % ImageButton.LastError
 
 		TradesGUI_Controls["Arrow_Left"]			:= hArrowLeft
 		TradesGUI_Controls["Arrow_Right"]			:= hArrowRight
 		TradesGUI_Controls["Close_Tab"]				:= hBtnCloseTab
+
+; - - - - - Tab Underline
+		Gui, Add, Picture,% "x" borderSize*scaleMult " yp+" 25*scaleMult " w" ((guiWidth-borderSize)*scaleMult)-(borderSize*scaleMult) " h" 2*scaleMult " hWndhTabsUnderline",% SkinAssets.Misc_Tabs_Underline
+		TradesGUI_Controls["Tabs_Underline"]			:= hTabsUnderline
 
 ; - - - - - Tabs content
 		Loop %maxTabsRendered% {
@@ -903,7 +919,7 @@ Gui_Trades(mode="", tradeInfos="") {
 
 				Gui, Add, Button,% "x" btnPos_X " y" btnPos_Y*scaleMult " w" btnPos_W*scaleMult " h" btnPos_H*scaleMult " hWnd" btnHandler " BackgroundTrans gGui_Trades_Do_Action_Func",% fontChars[btnType]
 				if !ImageButton.Create(%btnHandler%, IBStyle_Button_Special*)
-					MsgBox, 0, ImageButton Error Btn1, % ImageButton.LastError
+					MsgBox, 0, ImageButton Error Special Buttons, % ImageButton.LastError
 				; Gui, Add, Picture,% "x" btnOrnaLeftPos_X " y" btnOrnaLeftPos_Y " w" btnOrnaLeftPos_W " h" btnOrnaLeftPos_H,% ""
 				; Gui, Add, Picture,% "x" btnOrnaRightPos_X " y" btnOrnaRightPos_Y " w" btnOrnaRightPos_W " h" btnOrnaRightPos_H,% ""
 
@@ -960,10 +976,15 @@ Gui_Trades(mode="", tradeInfos="") {
 			btnAction := RegExReplace(btnAction, "__", "_")
 			btnAction := RegExReplace(btnAction, "_", "", ,1,-1)
 
+			IBStyle := (btnSettingsSize="Small")?(IBStyle_Button_OneThird)
+				   :(btnSettingsSize="Medium")?(IBStyle_Button_TwoThird)
+				   :(btnSettingsSize="Large")?(IBStyle_Button_ThreeThird)
+				   :(IBStyle_Button_OneThird)
+
 			if ( btnW != "ERROR" && btnX != "ERROR" && btnY != "ERROR" && btnAction != "" && btnAction != "ERROR" ) {
 				Gui, Add, Button,% "x" btnX " y" btnY*scaleMult " w" btnW " h" btnH*scaleMult " hWndhBtnCustom" A_Index " gGui_Trades_Do_Action_Func BackgroundTrans",% btnName
-				if !ImageButton.Create(hBtnCustom%A_Index%, IBStyle_Button_OneThird*)
-					MsgBox, 0, ImageButton Error Btn1, % ImageButton.LastError
+				if !ImageButton.Create(hBtnCustom%A_Index%, IBStyle*)
+					MsgBox, 0, ImageButton Error Custom Buttons %btnSettingsSize%, % ImageButton.LastError
 
 				TradesGUI_Controls.Insert("Button_Custom_" A_Index, hBtnCustom%A_Index%)
 				; TradesGUI_Controls.Insert("Button_Custom_" A_Index "_OrnamentLeft", CustomBtn%A_Index%OrnamentLeftHandler)
@@ -975,7 +996,7 @@ Gui_Trades(mode="", tradeInfos="") {
 		btnSettingsSize := "", btnSettingsHor := "", btnSettingsVer := "", btnSettingsAction := "", btnSettingsName := ""
 		btnW := "", btnH := "", btnX := "", btnY := "", btnName := "", btnAction := ""
 		btnOrnaW := "", btnOrnaH := "", btnOrnaLeftX := "", btnOrnaRightX := "", btnOrnaLeftY := "", btnOrnaRightY := ""
-		btnTextX := "", btnTextY := "", btnTextW := "", btnTextH := ""
+		btnTextX := "", btnTextY := "", btnTextW := "", btnTextH := "", IBStyle := ""
 
 ; - - - - - Error messages
 		noTradeMsg := "All trade request have been answered"
@@ -1085,10 +1106,6 @@ Gui_Trades(mode="", tradeInfos="") {
 										   ; It seems that activating another window prior to applying the transparency allows us to use the handler.
 										   ; Using +LastFound and WinSet without any specified window seems to be the most reliable way to detect the GUI handler.
 		GuiControl, Trades:Text,% TradesGUI_Controls["Header_Title"],% ProgramValues.Name " - Queued Trades: " tabsCount ; Update the title
-		GuiControl, Trades:%showOrHide%,% TradesGUI_Controls["Arrow_Left"]
-		GuiControl, Trades:%showOrHide%,% TradesGUI_Controls["Arrow_Right"]
-		GuiControl, Trades:%showOrHide%,% TradesGUI_Controls["Close_Tab"]
-		GuiControl, Trades:%showOrHide%,% TradesGUI_Controls["Tab_Underline"]
 
 ; - - - - - Hide or show controls, based on tabs count
 		Loop 9 {
@@ -1100,7 +1117,10 @@ Gui_Trades(mode="", tradeInfos="") {
 			GuiControl, Trades:%showOrHide%,% TradesGUI_Controls["Button_Unicode_" A_Index "_Ornament_Left"]
 			GuiControl, Trades:%showOrHide%,% TradesGUI_Controls["Button_Unicode_" A_Index "_Ornament_Right"]
 		}
-		; GoSub Gui_Trades_Skinned_OnTabSwitch
+		GuiControl, Trades:%showOrHide%,% TradesGUI_Controls["Arrow_Left"]
+		GuiControl, Trades:%showOrHide%,% TradesGUI_Controls["Arrow_Right"]
+		GuiControl, Trades:%showOrHide%,% TradesGUI_Controls["Close_Tab"]
+		GuiControl, Trades:%showOrHide%,% TradesGUI_Controls["Tabs_Underline"]
 
 ; - - - - - Choose latest tab, if enabled
 		if ( ProgramSettings.Trades_Select_Last_Tab ) && (!A_GuiEvent) { ; A_GuiEvent means we've just closed a tab. We do not want to activate the latest available tab.
@@ -2527,22 +2547,22 @@ Gui_Settings() {
 		Gui, Add, Edit,% "xp+100" . " yp" . " w50" . " ReadOnly"
 		Gui, Add, UpDown, vFontQualityCustom hwndFontQualityCustomHandler gGui_Settings_Set_Custom_Preset
 
-	Gui, Add, GroupBox,% "x" guiXWorkArea . " y" guiYWorkArea+235 . " w430 h75" . " c000000",Font Colors
+	Gui, Add, GroupBox,% "x" guiXWorkArea . " y" guiYWorkArea+235 . " w430 h75" . " c000000",Colors
 
-		Gui, Add, Text,% "xp+10" . " yp+23",Title (Active):
-		Gui, Add, Edit,% "xp+75" . " yp-3" . " w60" . " vTitleActiveColor" . " hwndTitleActiveColorHandler" . " Limit6",% ""
-		Gui, Add, Text,% "xp-75" . " yp+28",Title (Inactive):
-		Gui, Add, Edit,% "xp+75" . " yp-3" . " w60" . " vTitleInactiveColor" . " hwndTitleInactiveColorHandler" . " Limit6",% ""
-
-		Gui, Add, Text,% "xp+65" . " yp-22",Trade Infos (1):
-		Gui, Add, Edit,% "xp+75" . " yp-3" . " w60" . " vTradesInfos1Color" . " hwndTradesInfos1ColorHandler" . " Limit6",% ""
-		Gui, Add, Text,% "xp-75" . " yp+28",Trade Infos (2):
-		Gui, Add, Edit,% "xp+75" . " yp-3" . " w60" . " vTradesInfos2Color" . " hwndTradesInfos2ColorHandler" . " Limit6",% ""
-
-		Gui, Add, Text,% "xp+65" . " yp-22",Tabs:
-		Gui, Add, Edit,% "xp+75" . " yp-3" . " w60" . " vTabsColor" . " hwndTabsColorHandler" . " Limit6",% ""
-		Gui, Add, Text,% "xp-75" . " yp+28",Buttons:
-		Gui, Add, Edit,% "xp+75" . " yp-3" . " w60" . " vButtonsColor" . " hwndButtonsColorHandler" . " Limit6",% ""
+		Gui, Add, Text,% "xp+10 yp+23",% "Select an element:"
+		Gui, Add, DropDownList,% "xp+100 yp-3 w100 vFontsColors hwndFontsColorsHandler gGui_Settings_Fonts_Color_DropDownList AltSubmit",% "Border|Button (Normal)|Button (Hover)|Button (Press)"
+																						. "|Title (Active)|Title (Inactive)|Trade Infos (1)|Trade Infos (2)"
+																						. "|Tab (Active)|Tab (Inactive)|Tab (Hover)|Tab (Press)"
+		Loop 12 {
+			ctrlPos 	:= (A_Index=1)?("xp+110 yp w60 "):("xp yp wp ")
+			ctrlVars 	:= ["BorderColor","ButtonNormalColor","ButtonHoverColor","ButtonPressColor"
+					       ,"TitleActiveColor","TitleInactiveColor","TradesInfos1Color","TradesInfos2Color"
+					       ,"TabActiveColor","TabInactiveColor","TabHoverColor","TabPressColor"]
+			Gui, Add, Edit,% ctrlPos " v" ctrlVars[A_Index] " hwnd" ctrlVars[A_Index] "Handler gGui_Settings_Fonts_Color_Preview Hidden Limit6"
+		}
+		ctrlPos := "", ctrlVars := ""
+		Gui, Add, Progress,% "xp+70 yp w22 h22 Background000000 vFontsColorsPreview hwndFontsColorPreviewHandler Hidden"
+		Gui, Add, Text,% "xp-280 yp+25 vFontsColorsTip hwndFontsColorsTipsHandler",% "Description of the selected element will appear here."
 
 		Gui, Add, Link,% "x" guiXWorkArea + 80 . " y" guiYWorkArea+235,% "(Use <a href=""http://hslpicker.com/"">HSL Color Picker</a> to retrieve the 6 characters code starting with #) "
 
@@ -2558,47 +2578,28 @@ Gui_Settings() {
 		Gui, Add, Button, x%xpos% y%ypos% w120 h25 vTradesBtn%index% hwndTradesBtn%index%Handler gGui_Settings_Custom_Label,% "Custom " index
 
 		Gui, Add, GroupBox,% "x" guiXWorkArea . " y" guiYWorkArea+110 . " w430 h85" . " c000000",Positioning
-			Gui, Add, Text,% "xp+10" . " yp+20" . " hwndTradesHPOS" index "TextHandler",Horizontal:
-			Gui, Add, ListBox, w70 xp+55 yp vTradesHPOS%index% hwndTradesHPOS%index%Handler gGui_Settings_Trades_Preview R3,% "Left|Center|Right"
-			Gui, Add, Text, xp+75 yp hwndTradesVPOS%index%TextHandler,Vertical:
-			Gui, Add, ListBox, w70 xp+45 yp vTradesVPOS%index% hwndTradesVPOS%index%Handler gGui_Settings_Trades_Preview R3,% "Top|Middle|Bottom"
-			Gui, Add, Text, xp+75 yp hwndTradesSIZE%index%TextHandler,Size:
-			Gui, Add, ListBox, w70 xp+30 yp vTradesSIZE%index% hwndTradesSIZE%index%Handler gGui_Settings_Trades_Preview R4,% "Disabled|Small|Medium|Large"
+			Gui, Add, Text,% "xp+10" . " yp+20" . " hwndTradesHPOS" index "TextHandler Hidden",Horizontal:
+			Gui, Add, ListBox, w70 xp+55 yp vTradesHPOS%index% hwndTradesHPOS%index%Handler gGui_Settings_Trades_Preview R3 Hidden,% "Left|Center|Right"
+			Gui, Add, Text, xp+75 yp hwndTradesVPOS%index%TextHandler Hidden,Vertical:
+			Gui, Add, ListBox, w70 xp+45 yp vTradesVPOS%index% hwndTradesVPOS%index%Handler gGui_Settings_Trades_Preview R3 Hidden,% "Top|Middle|Bottom"
+			Gui, Add, Text, xp+75 yp hwndTradesSIZE%index%TextHandler Hidden,Size:
+			Gui, Add, ListBox, w70 xp+30 yp vTradesSIZE%index% hwndTradesSIZE%index%Handler gGui_Settings_Trades_Preview R4 Hidden,% "Disabled|Small|Medium|Large"
 
 		Gui, Add, GroupBox,% "x" guiXWorkarea . " y" guiYWorkArea+200 . " w430 h110" . " c000000",Behaviour
-			Gui, Add, Text,% "xp+10" . " yp+20" . " hwndTradesLabel" index "TextHandler",Label:
-			Gui, Add, Edit, xp+50 yp-3 w160 vTradesLabel%index% hwndTradesLabel%index%Handler gGui_Settings_Custom_Label,
-			Gui, Add, Text, xp+170 yp+3 vTradesHK%index%Text hwndTradesHK%index%TextHandler,Hotkey:
-			Gui, Add, Hotkey, xp+50 yp-3 vTradesHK%index% hwndTradesHK%index%Handler,
+			Gui, Add, Text,% "xp+10" . " yp+20" . " hwndTradesLabel" index "TextHandler Hidden",Label:
+			Gui, Add, Edit, xp+50 yp-3 w160 vTradesLabel%index% hwndTradesLabel%index%Handler gGui_Settings_Custom_Label Hidden,
+			Gui, Add, Text, xp+170 yp+3 vTradesHK%index%Text hwndTradesHK%index%TextHandler Hidden,Hotkey:
+			Gui, Add, Hotkey, xp+50 yp-3 vTradesHK%index% hwndTradesHK%index%Handler Hidden,
 
 			Gui, Add, Text,% "xp-270" . " yp+33" . " hwndTradesAction" index "TextHandler",Action:
-			Gui, Add, DropDownList, xp+50 yp-3 w160 vTradesAction%index% hwndTradesAction%index%Handler gGui_Settings_Custom_Label,% "Clipboard Item|Send Message|Send Message + Close Tab|Write Message"
-			Gui, Add, CheckBox,xp+170 yp vTradesMarkCompleted%index% hwndTradesMarkCompleted%index%Handler Center,Save the trade infos locally?`n(for personnal statistics purposes)
+			Gui, Add, DropDownList, xp+50 yp-3 w160 vTradesAction%index% hwndTradesAction%index%Handler gGui_Settings_Custom_Label Hidden,% "Clipboard Item|Send Message|Send Message + Close Tab|Write Message"
+			Gui, Add, CheckBox,xp+170 yp vTradesMarkCompleted%index% hwndTradesMarkCompleted%index%Handler Center Hidden,Save the trade infos locally?`n(for personnal statistics purposes)
 
-			Gui, Add, Edit,% "x" guiXWorkarea+10 . " yp+30 w50" . " hwndTradesMsgEditID" index "Handler" . " ReadOnly Limit1",1|2|3
-			Gui, Add, UpDown,% " vTradesMsgID" index " hwndTradesMsgID" index "Handler" . " Range1-3 gGui_Settings_Cycle_Messages"
-			Gui, Add, Edit, xp+50 yp w355 vTradesMsg1_%index% hwndTradesMsg1_%index%Handler,
-			Gui, Add, Edit, xp yp w355 vTradesMsg2_%index% hwndTradesMsg2_%index%Handler,
-			Gui, Add, Edit, xp yp w355 vTradesMsg3_%index% hwndTradesMsg3_%index%Handler,
-
-		GuiControl,Settings:Hide,% TradesHPOS%index%Handler
-		GuiControl,Settings:Hide,% TradesHPOS%index%TextHandler
-		GuiControl,Settings:Hide,% TradesVPOS%index%Handler
-		GuiControl,Settings:Hide,% TradesVPOS%index%TextHandler
-		GuiControl,Settings:Hide,% TradesSIZE%index%Handler
-		GuiControl,Settings:Hide,% TradesSIZE%index%TextHandler
-		GuiControl,Settings:Hide,% TradesLabel%index%Handler
-		GuiControl,Settings:Hide,% TradesLabel%index%TextHandler
-		GuiControl,Settings:Hide,% TradesHK%index%Handler
-		GuiControl,Settings:Hide,% TradesHK%index%TextHandler		
-		GuiControl,Settings:Hide,% TradesAction%index%Handler
-		GuiControl,Settings:Hide,% TradesAction%index%TextHandler
-		GuiControl,Settings:Hide,% TradesMarkCompleted%index%Handler
-		GuiControl,Settings:Hide,% TradesMsgEditID%index%Handler
-		GuiControl,Settings:Hide,% TradesMsgID%index%Handler
-		GuiControl,Settings:Hide,% TradesMsg1_%index%Handler
-		GuiControl,Settings:Hide,% TradesMsg2_%index%Handler
-		GuiControl,Settings:Hide,% TradesMsg3_%index%Handler
+			Gui, Add, Edit,% "x" guiXWorkarea+10 . " yp+30 w50" . " hwndTradesMsgEditID" index "Handler" . " ReadOnly Limit1 Hidden",1|2|3
+			Gui, Add, UpDown,% " vTradesMsgID" index " hwndTradesMsgID" index "Handler" . " Range1-3 gGui_Settings_Cycle_Messages Hidden"
+			Gui, Add, Edit, xp+50 yp w355 vTradesMsg1_%index% hwndTradesMsg1_%index%Handler Hidden,
+			Gui, Add, Edit, xp yp w355 vTradesMsg2_%index% hwndTradesMsg2_%index%Handler Hidden,
+			Gui, Add, Edit, xp yp w355 vTradesMsg3_%index% hwndTradesMsg3_%index%Handler Hidden,
 
 		DynamicGUIHandlersArray["Btn" index] := TradesBtn%index%Handler
 		DynamicGUIHandlersArray["HPOS" index] := TradesHPOS%index%Handler
@@ -2739,6 +2740,50 @@ Gui_Settings() {
 	guiCreated := 1
 return
 
+	Gui_Settings_Fonts_Color_Preview:
+		Gui, Settings:Submit, NoHide
+
+		if (isUserChangingPreset)
+			Return
+
+		ctrlVars := ["BorderColor","ButtonNormalColor","ButtonHoverColor","ButtonPressColor"
+					,"TitleActiveColor","TitleInactiveColor","TradesInfos1Color","TradesInfos2Color"
+					,"TabActiveColor","TabInactiveColor","TabHoverColor","TabPressColor"]
+		ctrlHandlers := [BorderColorHandler,ButtonNormalColorHandler,ButtonHoverColorHandler,ButtonPressColorHandler
+					,TitleActiveColorHandler,TitleInactiveColorHandler,TradesInfos1ColorHandler,TradesInfos2ColorHandler
+					,TabActiveColorHandler,TabInactiveColorHandler,TabHoverColorHandler,TabPressColorHandler]
+
+		for id, varName in ctrlVars {
+			if (A_GuiControl = varName) {
+				GuiControlGet, colorHex, Settings:,% ctrlHandlers[id]
+				GuiControl, Settings:+Background%colorHex%,% FontsColorPreviewHandler
+			}
+		}
+
+		ctrlHandlers := "", ctrlVars := "", colorHex := ""
+
+		GoSub Gui_Settings_Set_Custom_Preset
+	Return
+	Gui_Settings_Fonts_Color_DropDownList:
+		Gui, Settings:Submit, NoHide
+
+		ctrlHandlers := [BorderColorHandler,ButtonNormalColorHandler,ButtonHoverColorHandler,ButtonPressColorHandler
+					,TitleActiveColorHandler,TitleInactiveColorHandler,TradesInfos1ColorHandler,TradesInfos2ColorHandler
+					,TabActiveColorHandler,TabInactiveColorHandler,TabHoverColorHandler,TabPressColorHandler]
+		for id, handler in ctrlHandlers {
+			GuiControlGet, isVisible,Settings:Visible,% handler
+			if (isVisible)
+				GuiControl, Settings:Hide,% handler
+		}
+		GuiControl, Settings:Show,% ctrlHandlers[FontsColors]
+		GuiControl, Settings:Show,% FontsColorPreviewHandler
+
+		GuiControlGet, colorHex, Settings:,% ctrlHandlers[FontsColors]
+		GuiControl, Settings:+Background%colorHex%,% FontsColorPreviewHandler
+
+		ctrlHandlers := "", isVisible := "", colorHex := ""
+	Return
+
 	Gui_Settings_Cycle_Messages:
 		Gui, Settings:Submit, NoHide
 
@@ -2761,10 +2806,12 @@ return
 	Gui_Settings_Set_Custom_Preset:
 	/*		Select "User Defined" preset upon changing any setting.
 	*/
+		if (isUserChangingPreset)
+			Return
 
 		; Unless we are changing the preset, set the preset to "User Defined"
 		Gui, Settings:Submit, NoHide
-		if ( A_GuiControl != "ActivePreset" && !isUserChangingPreset ) {
+		if ( A_GuiControl != "ActivePreset" ) {
 			GuiControl, Settings:ChooseString,% ActivePresetHandler,User Defined
 		}
 
@@ -2804,25 +2851,23 @@ return
 		if (ActivePreset="User Defined") {
 			skinSettingsFile := ProgramValues.Ini_File
 			keys 					:= ["Active_Skin","Font","Font_Size_Mode","Font_Size_Custom","Font_Quality_Mode","Font_Quality_Custom"
-						   			   ,"Font_Color_Title_Active","Font_Color_Title_Inactive","Font_Color_Trades_Infos_1"
-						   			   ,"Font_Color_Trades_Infos_2","Font_Color_Tabs","Font_Color_Buttons"]
+						   			   ,"Color_Title_Active","Color_Title_Inactive","Color_Trades_Infos_1","Color_Trades_Infos_2"
+									   ,"Color_Border","Color_Button_Normal","Color_Button_Hover","Color_Button_Press"
+									   ,"Color_Tab_Active","Color_Tab_Inactive","Color_Tab_Hover","Color_Tab_Press"]
 			sect 					:= "CUSTOMIZATION_APPEARANCE"
 			controlsUseChoose 		:= "Active_Skin,Font,Font_Size_Mode,Font_Quality_Mode"
 			handlers 				:= [SelectedSkinHandler,SelectedFontHandler,FontSizeHandler,FontSizeCustomHandler,FontQuality,FontQualityCustomHandler
-						   			   ,TitleActiveColorHandler,TitleInactiveColorHandler,TradesInfos1ColorHandler
-						   			   ,TradesInfos2ColorHandler,TabsColorHandler,ButtonsColorHandler]
+						   			   ,TitleActiveColorHandler,TitleInactiveColorHandler,TradesInfos1ColorHandler,TradesInfos2ColorHandler
+						   			   ,BorderColorHandler,ButtonNormalColorHandler,ButtonHoverColorHandler,ButtonPressColorHandler
+						   			   ,TabActiveColorHandler,TabInactiveColorHandler,TabHoverColorHandler,TabPressColorHandler]
 			
 
 			for id, key in keys {
-				GuiControl, Settings:-g,% handlers[id]
-
 				IniRead, value,% skinSettingsFile,% sect,% key
 				if key in %controlsUseChoose%
 					GuiControl, Settings:ChooseString,% handlers[id],% value
 				else
 					GuiControl, Settings:,% handlers[id],% value
-
-				GuiControl, Settings:+gGui_Settings_Set_Custom_Preset,% handlers[id]
 			}
 		}
 		else {
@@ -2834,37 +2879,31 @@ return
 			handlers 			:= [SelectedFontHandler,FontSizeCustomHandler,FontQualityCustomHandler]
 
 			for id, key in keys {
-				GuiControl, Settings:-g,% handlers[id]
-
 				IniRead, value,% skinSettingsFile,% sect,% key
 				if key in %controlsUseChoose%
 					GuiControl, Settings:ChooseString,% handlers[id],% value
 				else
 					GuiControl, Settings:,% handlers[id],% value
-
-				GuiControl, Settings:+gGui_Settings_Set_Custom_Preset,% handlers[id]
 			}
 			GuiControl, Settings:ChooseString,% SelectedSkinHandler,% ActivePreset
 			GuiControl, Settings:ChooseString,% FontSizeHandler,% "Automatic"
 			GuiControl, Settings:ChooseString,% FontQuality,% "Automatic"
 
 			sect 				:= "COLORS"
-			keys 				:= ["Title_Trades","Title_No_Trades","Trade_Info_1"
-								   ,"Trade_Info_2","Tab_Active","Button_Normal"]
+			keys 				:= ["Title_Trades","Title_No_Trades","Trade_Info_1","Trade_Info_2","Border"
+								   ,"Tab_Active","Tab_Inactive","Tab_Hover","Tab_Press"
+								   ,"Button_Normal","Button_Hover","Button_Press"]
 			controlsUseChoose 	:= ""
-			handlers 			:= [TitleActiveColorHandler,TitleInactiveColorHandler,TradesInfos1ColorHandler
-						   		   ,TradesInfos2ColorHandler,TabsColorHandler,ButtonsColorHandler]
+			handlers 			:= [TitleActiveColorHandler,TitleInactiveColorHandler,TradesInfos1ColorHandler,TradesInfos2ColorHandler,BorderColorHandler
+								  ,TabActiveColorHandler,TabInactiveColorHandler,TabHoverColorHandler,TabPressColorHandler
+								  ,ButtonNormalColorHandler,ButtonHoverColorHandler,ButtonPressColorHandler]
 
 			for id, key in keys {
-				GuiControl, Settings:-g,% handlers[id]
-
 				IniRead, value,% skinSettingsFile,% sect,% key
 				if key is in %controlsUseChoose%
 					GuiControl, Settings:ChooseString,% handlers[id],% value
 				else
 					GuiControl, Settings:,% handlers[id],% value
-
-				GuiControl, Settings:+gGui_Settings_Set_Custom_Preset,% handlers[id]
 			}
 		}
 		Sleep 10
@@ -3208,21 +3247,33 @@ return
 ;	Appearance Tab
 		IniWrite,% ActivePreset,% iniFilePath,CUSTOMIZATION_APPEARANCE,Active_Preset
 		IniWrite,% SelectedSkin,% iniFilePath,CUSTOMIZATION_APPEARANCE,Active_Skin
+
 		StringReplace, SkinScaling, SkinScaling,% "%",% "", 1
 		SkinScaling := SkinScaling/100
 		SkinScaling := Round(SkinScaling, 2)
 		IniWrite,% SkinScaling,% iniFilePath,CUSTOMIZATION_APPEARANCE,Scale_Multiplier
+
 		IniWrite,% SelectedFont,% iniFilePath,CUSTOMIZATION_APPEARANCE,Font
 		IniWrite,% FontSize,% iniFilePath,CUSTOMIZATION_APPEARANCE,Font_Size_Mode
 		IniWrite,% FontSizeCustom,% iniFilePath,CUSTOMIZATION_APPEARANCE,Font_Size_Custom
 		IniWrite,% FontQuality,% iniFilePath,CUSTOMIZATION_APPEARANCE,Font_Quality_Mode
 		IniWrite,% FontQualityCustom,% iniFilePath,CUSTOMIZATION_APPEARANCE,Font_Quality_Custom
-		IniWrite,% TitleActiveColor,% iniFilePath,CUSTOMIZATION_APPEARANCE,Font_Color_Title_Active
-		IniWrite,% TitleInactiveColor,% iniFilePath,CUSTOMIZATION_APPEARANCE,Font_Color_Title_Inactive
-		IniWrite,% TradesInfos1Color,% iniFilePath,CUSTOMIZATION_APPEARANCE,Font_Color_Trades_Infos_1
-		IniWrite,% TradesInfos2Color,% iniFilePath,CUSTOMIZATION_APPEARANCE,Font_Color_Trades_Infos_2
-		IniWrite,% TabsColor,% iniFilePath,CUSTOMIZATION_APPEARANCE,Font_Color_Tabs
-		IniWrite,% ButtonsColor,% iniFilePath,CUSTOMIZATION_APPEARANCE,Font_Color_Buttons
+
+		IniWrite,% BorderColor,% iniFilePath,CUSTOMIZATION_APPEARANCE,Color_Border
+		IniWrite,% TitleActiveColor,% iniFilePath,CUSTOMIZATION_APPEARANCE,Color_Title_Active
+		IniWrite,% TitleInactiveColor,% iniFilePath,CUSTOMIZATION_APPEARANCE,Color_Title_Inactive
+		IniWrite,% TradesInfos1Color,% iniFilePath,CUSTOMIZATION_APPEARANCE,Color_Trades_Infos_1
+		IniWrite,% TradesInfos2Color,% iniFilePath,CUSTOMIZATION_APPEARANCE,Color_Trades_Infos_2
+
+		IniWrite,% ButtonNormalColor,% iniFilePath,CUSTOMIZATION_APPEARANCE,Color_Button_Normal
+		IniWrite,% ButtonHoverColor,% iniFilePath,CUSTOMIZATION_APPEARANCE,Color_Button_Hover
+		IniWrite,% ButtonPressColor,% iniFilePath,CUSTOMIZATION_APPEARANCE,Color_Button_Press
+
+		IniWrite,% TabActiveColor,% iniFilePath,CUSTOMIZATION_APPEARANCE,Color_Tab_Active
+		IniWrite,% TabInactiveColor,% iniFilePath,CUSTOMIZATION_APPEARANCE,Color_Tab_Inactive
+		IniWrite,% TabHoverColor,% iniFilePath,CUSTOMIZATION_APPEARANCE,Color_Tab_Hover
+		IniWrite,% TabPressColor,% iniFilePath,CUSTOMIZATION_APPEARANCE,Color_Tab_Press
+
 ;	Declare the new settings
 		Disable_Hotkeys()
 		settingsArray := Get_Local_Settings()
@@ -3302,9 +3353,11 @@ return
 					{
 						if keyName in Font_Size_Custom,Font_Quality_Custom,Font_Color_Title_Active,Font_Color_Title_Inactive,Font_Color_Trades_Infos_1,Font_Color_Trades_Infos_2,Font_Color_Tabs,Font_Color_Buttons
 						{
-							GuiControl, Settings:-g,% %handler%Handler ; Prevent from triggeting the gLabel
+							isUserChangingPreset := true
+							Sleep 10
 							GuiControl, Settings:,% %handler%Handler,% var
-							GuiControl, Settings:+gGui_Settings_Set_Custom_Preset,% %handler%Handler ; Re-enable gLabel
+							Sleep 10
+							isUserChangingPreset := false
 						}
 						else {
 							GuiControl, Settings:ChooseString,% %handler%Handler,% var
@@ -3606,10 +3659,20 @@ Gui_Settings_Get_Settings_Arrays() {
 	returnArray.CUSTOMIZATION_APPEARANCE_HandlersKeysArray := Object()
 	returnArray.CUSTOMIZATION_APPEARANCE_KeysArray := Object()
 	returnArray.CUSTOMIZATION_APPEARANCE_DefaultValues := Object()
-	returnArray.CUSTOMIZATION_APPEARANCE_HandlersArray.Insert(0, "ActivePreset", "SelectedSkin", "SkinScaling", "SelectedFont", "FontSize", "FontSizeCustom", "FontQuality", "FontQualityCustom", "TitleActiveColor", "TitleInactiveColor", "TradesInfos1Color", "TradesInfos2Color", "TabsColor", "ButtonsColor")
-	returnArray.CUSTOMIZATION_APPEARANCE_HandlersKeysArray.Insert(0, "Active_Preset", "Active_Skin", "Scale_Multiplier", "Font", "Font_Size_Mode", "Font_Size_Custom", "Font_Quality_Mode", "Font_Quality_Custom", "Font_Color_Title_Active", "Font_Color_Title_Inactive", "Font_Color_Trades_Infos_1", "Font_Color_Trades_Infos_2", "Font_Color_Tabs", "Font_Color_Buttons")
-	returnArray.CUSTOMIZATION_APPEARANCE_KeysArray.Insert(0, "Active_Preset", "Active_Skin", "Scale_Multiplier", "Font", "Font_Size_Mode", "Font_Size_Custom", "Font_Quality_Mode", "Font_Quality_Custom", "Font_Color_Title_Active", "Font_Color_Title_Inactive", "Font_Color_Trades_Infos_1", "Font_Color_Trades_Infos_2", "Font_Color_Tabs", "Font_Color_Buttons")
-	returnArray.CUSTOMIZATION_APPEARANCE_DefaultValues.Insert(0, "System", "System", "1", "System", "Automatic", "8", "Automatic", "5", "FFFF00", "FFFFFF", "SYSTEM", "SYSTEM" , "SYSTEM", "SYSTEM")
+	returnArray.CUSTOMIZATION_APPEARANCE_HandlersArray.Insert(0, "ActivePreset", "SelectedSkin", "SkinScaling", "SelectedFont", "FontSize", "FontSizeCustom", "FontQuality", "FontQualityCustom"
+															   , "TitleActiveColor", "TitleInactiveColor", "TradesInfos1Color", "TradesInfos2Color"
+															   , "BorderColor","ButtonNormalColor","ButtonHoverColor","ButtonPressColor","TabActiveColor","TabInactiveColor","TabHoverColor","TabPressColor")
+	returnArray.CUSTOMIZATION_APPEARANCE_HandlersKeysArray.Insert(0, "Active_Preset", "Active_Skin", "Scale_Multiplier", "Font", "Font_Size_Mode", "Font_Size_Custom", "Font_Quality_Mode", "Font_Quality_Custom"
+																   ,"Color_Title_Active", "Color_Title_Inactive", "Color_Trades_Infos_1", "Color_Trades_Infos_2"
+																   ,"Color_Border","Color_Button_Normal","Color_Button_Hover","Color_Button_Press","Color_Tab_Active","Color_Tab_Inactive","Color_Tab_Hover","Color_Tab_Press")
+	returnArray.CUSTOMIZATION_APPEARANCE_KeysArray.Insert(0, "Active_Preset", "Active_Skin", "Scale_Multiplier", "Font", "Font_Size_Mode", "Font_Size_Custom", "Font_Quality_Mode", "Font_Quality_Custom"
+														   ,"Color_Title_Active", "Color_Title_Inactive", "Color_Trades_Infos_1", "Color_Trades_Infos_2"
+														   ,"Color_Border","Color_Button_Normal","Color_Button_Hover","Color_Button_Press","Color_Tab_Active","Color_Tab_Inactive","Color_Tab_Hover","Color_Tab_Press")
+	returnArray.CUSTOMIZATION_APPEARANCE_DefaultValues.Insert(0, "White", "White", "1", "Segoe UI", "Automatic", "8", "Automatic", "5"
+															   ,"000000", "000000", "000000", "000000"
+															   ,"000000","000000","000000","000000","000000","000000","000000","000000")
+
+							
 
 	returnArray.HOTKEYS_SPECIAL_HandlersArray := Object()
 	returnArray.HOTKEYS_SPECIAL_HandlersKeysArray := Object()	
@@ -5687,7 +5750,7 @@ Extract_Skin_Files() {
 
 	FileInstall, Resources\Skins\White\Background.png,% skinFolder "\White\Background.png", 1
 	FileInstall, Resources\Skins\White\Header.png,% skinFolder "\White\Header.png", 1
-	FileInstall, Resources\Skins\White\TabUnderline.png,% skinFolder "\White\TabUnderline.png", 1
+	FileInstall, Resources\Skins\White\TabsUnderline.png,% skinFolder "\White\TabsUnderline.png", 1
 	FileInstall, Resources\Skins\White\Icon.png,% skinFolder "\White\Icon.png", 1
 	
 	
@@ -5733,7 +5796,7 @@ Extract_Skin_Files() {
 
 	FileInstall, Resources\Skins\Path of Exile\Background.png,% skinFolder "\Path of Exile\Background.png", 1
 	FileInstall, Resources\Skins\Path of Exile\Header.png,% skinFolder "\Path of Exile\Header.png", 1
-	FileInstall, Resources\Skins\Path of Exile\TabUnderline.png,% skinFolder "\Path of Exile\TabUnderline.png", 1
+	FileInstall, Resources\Skins\Path of Exile\TabsUnderline.png,% skinFolder "\Path of Exile\TabsUnderline.png", 1
 	FileInstall, Resources\Skins\Path of Exile\Icon.png,% skinFolder "\Path of Exile\Icon.png", 1
 }
 
