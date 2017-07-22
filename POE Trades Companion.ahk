@@ -10,7 +10,7 @@
 *	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
 */
 
-#Warn LocalSameAsGlobal
+#Warn LocalSameAsGlobal, StdOut
 OnExit("Exit_Func")
 #SingleInstance Off
 #Persistent
@@ -783,7 +783,7 @@ Gui_Trades(mode="", tradeInfos="") {
 		TradesGUI_Values.Handler := GuiTradesHandler
 
 		tabHeight := Gui_Trades_Get_Tab_Height(), tabWidth := 390*scaleMult
-		guiWidth := 401*scaleMult, guiHeight := Floor((tabHeight+39)*scaleMult), guiHeightMin := 31*scaleMult ; 30 = banner size, 1 = border
+		guiWidth := 401*scaleMult, guiHeight := Floor((tabHeight+39)*scaleMult), guiHeightMin := 30*scaleMult ; 30 = banner size
 		borderSize := 1
 		TradesGUI_Values.Insert("Height_Full", guiHeight)
 		TradesGUI_Values.Insert("Height_Minimized", guiHeightMin)
@@ -904,10 +904,10 @@ Gui_Trades(mode="", tradeInfos="") {
 			TradesGUI_Controls["Guild_Slot_" A_Index] 			:= GuildSlot%A_Index%Handler
 		}
 
-; - - - - - TC-Symbols buttons
+; - - - - - TC_Symbols buttons
 		Gui, Tab
-		Gui, Font,% "S" 20*scaleMult,% "TC-Symbols"
-		fontChars := {Clipboard:"A", Whisper:"B", Invite:"E", Trade:"C", Kick:"D"}
+		Gui, Font,% "S" 20*scaleMult,% "TC_Symbols"
+		fontChars := {Clipboard:"0", Whisper:"1", Invite:"2", Trade:"3", Kick:"4"}
 		fontCharsID := {1:"Clipboard",2:"Whisper",3:"Invite",4:"Trade",5:"Kick"}
 		for btnID, btnType in fontCharsID {
 			btnOrder := ProgramSettings["Button_Unicode_" btnID "_Position"]
@@ -1246,6 +1246,8 @@ Gui_Trades(mode="", tradeInfos="") {
 ;		Declare the global GUI width and height
 		TradesGUI_Values.Width := A_GuiWidth
 		TradesGUI_Values.Height := A_GuiHeight
+
+		GuiControl, Trades:Move,% TradesGUI_Controls.Border_Bottom,% "y" A_GuiHeight-borderSize ; Bottom border
 	return
 
 	Gui_Trades_Close:
@@ -1584,11 +1586,6 @@ Gui_Trades_Set_Height(desiredHeight) {
 	guiHeightFull := TradesGUI_Values.Height_Full
 	scaleMult := ProgramSettings.Scale_Multiplier
 	
-	GuiControlGet, borderSize, Trades:Pos,% TradesGUI_Controls.Border_Top
-	; GuiControl, Trades:Move,% TradesGUI_Controls.Tab,h%tabHeight%
-	; GuiControl, Trades:Move,% TradesGUI_Controls.Border_Left,h%desiredHeight%
-	; GuiControl, Trades:Move,% TradesGUI_Controls.Border_Right,h%desiredHeight%
-	GuiControl, Trades:Move,% TradesGUI_Controls.Border_Bottom,% "y" desiredHeight-borderSizeH
 	WinMove,% "ahk_id " TradesGUI_Values.Handler, , , , ,% desiredHeight*dpiFactor
 }
 
@@ -2531,7 +2528,7 @@ Gui_Settings() {
 
 		fontsList := "System"
 		for fontFile, fontTitle in ProgramFonts {
-			if fontTitle not contains TC-Symbols
+			if fontTitle not contains TC_Symbols
 				fontsList .= "|" fontTitle
 		}
 		Sort, fontsList,D|
@@ -2639,7 +2636,7 @@ Gui_Settings() {
 			   :(ypos)
 		width := 210, height := 80
 
-		Gui, Font,% "S" 20,% "TC-Symbols"
+		Gui, Font,% "S" 20,% "TC_Symbols"
 		Gui, Add, GroupBox,% "x" xpos " y" ypos " w" width " h" height . " c000000 hwndUnicodeBtn" A_Index "Handler",% ""
 			handler := "UnicodeBtn" A_Index "Handler"
 			ConvertesChars := Hex2Bin(nString, element) ; Convert hex code into its corresponding unicode character
@@ -5697,9 +5694,13 @@ Extract_Font_Files() {
 
 	FileInstall, Resources\Fonts\Fontin-SmallCaps.ttf,% fontsFolder "\Fontin-SmallCaps.ttf", 1
 	FileInstall, Resources\Fonts\Consolas.ttf,% fontsFolder "\Consolas.ttf", 1
-	FileInstall, Resources\Fonts\TC-Symbols.ttf,% fontsFolder "\TC-Symbols.ttf", 1
+	FileInstall, Resources\Fonts\TC_Symbols.ttf,% fontsFolder "\TC_Symbols.ttf", 1
 	FileInstall, Resources\Fonts\Segoe UI.ttf,% fontsFolder "\Segoe UI.ttf", 1
+
 	FileInstall, Resources\Fonts\Settings.ini,% fontsFolder "\Settings.ini", 1
+	FileInstall, Resources\Fonts\FontReg.exe,% fontsFolder "\FontReg.exe", 0
+
+	Run,% fontsFolder "/FontReg.exe /Copy",% fontsFolder ; Install the fonts
 }
 
 Extract_Skin_Files() {
