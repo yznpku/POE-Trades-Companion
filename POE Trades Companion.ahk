@@ -154,13 +154,21 @@ Start_Script() {
 		}
 	}
 
-;	Function Calls
+;	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
 	Run_As_Admin()
 	Close_Previous_Program_Instance()
 	Tray_Refresh()
 
+;	Updating assets and settings
 	Update_Local_Settings()
-	Set_Local_Settings()
+	Extract_Sound_Files()
+	Extract_Skin_Files()
+	Extract_Font_Files()
+	Extract_Data_Files()
+	Gui_Settings_Set_Skin_Preset()
+
+	Set_Local_Settings() ; Reset broken settings
 	localSettings := Get_Local_Settings()
 	Declare_Local_Settings(localSettings)
 
@@ -168,10 +176,7 @@ Start_Script() {
 	Declare_Game_Settings(settings)
 
 	Delete_Old_Logs_Files(10)
-	Extract_Sound_Files()
-	Extract_Skin_Files()
-	Extract_Font_Files()
-	Extract_Data_Files()
+
 	Extract_Others_Files()
 	Manage_Font_Resources("LOAD")
 	Check_Update()
@@ -223,51 +228,6 @@ Start_Script() {
 ;										LOGS MONITORING
 ;
 ;==================================================================================================================
-
-Get_Active_Trading_Leagues() {
-/*		Retrieves leagues from the API
-		Parse them, to keep only non-solo or non-ssf leagues
-		Return the resulting list
-*/
-	apiLink := "http://api.pathofexile.com/leagues?offset=XX&compact=1"
-	excludedWords := "SSF,Solo"
-	activeLeagues := "Standard|Hardcore|Beta Standard|Beta Hardcore"
-	offsetCount := 6000 ; Legacy starts at 6000
-
-	Loop {
-		apiLinkOffset := RegExReplace(apiLink, "XX", offsetCount)
-
-		whr := ComObjCreate("WinHttp.WinHttpRequest.5.1")
-		whr.Open("GET", apiLinkOffset, true) ; Using true above and WaitForResponse allows the script to r'emain responsive.
-		whr.Send()
-		whr.WaitForResponse(10) ; 10 seconds
-		leaguesJSON := whr.ResponseText
-		parsedLeagues := JSON.Load(leaguesJSON)
-		Loop % parsedLeagues.MaxIndex() {
-			arrID := parsedLeagues[A_Index]
-			leagueEnd := RegExMatch(arrID.endAt, "(.*)-(.*)-(.*)T(.*):(.*):(.*)Z", pat)
-			leagueEndTime := pat1 . pat2 . pat3 . pat4 . pat5 . pat6
-
-			if ( arrID.startAt && (leagueEndTime > A_Now || !leagueEndTime) ) {
-				activeLeagues .= "|" arrID.ID
-			}
-		}
-		offsetCount += parsedLeagues.MaxIndex()
-		if !(parsedLeagues.MaxIndex())
-			Break
-	}
-
-	tradingLeagues := []
-	Loop, Parse, activeLeagues,% "D|" 
-	{
-		if A_LoopField not contains %excludedWords%
-		{
-			tradingLeagues.Push(A_LoopField)
-		}
-	}
-
-	return tradingLeagues
-}
 
 Filter_Logs_Message(message) {
 /*		Filter the logs message to retrieve the required informations we need
@@ -647,38 +607,6 @@ Monitor_Game_Logs(mode="") {
 ;
 ;==================================================================================================================
 
-Load_Skin_Assets() {
-	global ProgramValues, ProgramSettings, SkinAssets
-	SkinAssets 			:= {}
-	skinFolder 			:= ProgramValues.Skins_Folder "\" ProgramSettings.Active_Skin
-	assetsFile 		 	:= skinFolder "\Assets.ini"
-	sections := ["Arrow_Left","Arrow_Right","Button_OneThird","Button_TwoThird","Button_ThreeThird","Button_Special","Close_Tab","Tab","Misc"]
-	for id, sectName in sections {
-		keysInThisSection := []
-		IniRead, keysAndValue,% assetsFile,% sectName
-		Loop, Parse, keysAndValue,% "D`n" 
-		{
-			RegExMatch(A_LoopField, "(.*?)=", keyPat)
-			keysInThisSection.Push(keyPat1)
-		}
-		for id, keyName in keysInThisSection {
-			IniRead, value,% assetsFile,% sectName,% keyName,false
-			IniRead_Convert_TrueFalse(value)
-			SplitPath, value, , , valueExt
-			if (valueExt)
-				SkinAssets[sectName "_" keyName] := skinFolder "\" value
-			else
-				SkinAssets[sectName "_" keyName] := value
-		}
-	}
-}
-IniRead_Convert_TrueFalse(ByRef value) {
-/*		Converts a "True" or "False" string
-*/
-	value := (value="True")?(True):(value="False")?(False):(value)
-}
-
-
 Gui_Trades(mode="", tradeInfos="") {
 ;			Trades GUI. Each new item will be added in a new tab
 ;			Clicking on a button will do its corresponding action
@@ -686,8 +614,6 @@ Gui_Trades(mode="", tradeInfos="") {
 ;			Is transparent and click-through when there is no trade on queue
 	static
 	global ProgramValues, TradesGUI_Values, TradesGUI_Controls, ProgramSettings, SkinAssets
-
-	Load_Skin_Assets()
 
 	activeSkin := ProgramSettings.Active_Skin
 	scaleMult := ProgramSettings.Scale_Multiplier
@@ -703,25 +629,6 @@ Gui_Trades(mode="", tradeInfos="") {
 		IniRead, fontQualAuto,% ProgramValues.Fonts_Settings_File,QUALITY,Default
 	fontQual := (ProgramSettings.Font_Quality_Mode="Custom")?(ProgramSettings.Font_Quality_Custom)
 			   :(fontQualAuto)
-
-	colorTitleActive 	:= (ProgramSettings.Color_Title_Active = "000000")?("Black"):("0x" ProgramSettings.Color_Title_Active)
-	colorTitleInactive 	:= (ProgramSettings.Color_Title_Inactive = "000000")?("Black"):("0x" ProgramSettings.Color_Title_Inactive)
-	colorTradesInfos1 	:= (ProgramSettings.Color_Trades_Infos_1 = "000000")?("Black"):("0x" ProgramSettings.Color_Trades_Infos_1)
-	colorTradesInfos2 	:= (ProgramSettings.Color_Trades_Infos_2 = "000000")?("Black"):("0x" ProgramSettings.Color_Trades_Infos_2)
-	colorBorder 		:= (ProgramSettings.Color_Border = "000000")?("Black"):("0x" ProgramSettings.Color_Border)
-
-	colorButtonNormal 	:= (ProgramSettings.Color_Button_Normal = "000000")?("Black"):("0x" ProgramSettings.Color_Button_Normal)
-	colorButtonHover 	:= (ProgramSettings.Color_Button_Hover = "000000")?("Black"):("0x" ProgramSettings.Color_Button_Hover)
-	colorButtonPress 	:= (ProgramSettings.Color_Button_Press = "000000")?("Black"):("0x" ProgramSettings.Color_Button_Press)
-
-	colorTabActive 		:= (ProgramSettings.Color_Tab_Active = "000000")?("Black"):("0x" ProgramSettings.Color_Tab_Active)
-	colorTabInactive 	:= (ProgramSettings.Color_Tab_Inactive = "000000")?("Black"):("0x" ProgramSettings.Color_Tab_Inactive)
-	colorTabHover 		:= (ProgramSettings.Color_Tab_Hover = "000000")?("Black"):("0x" ProgramSettings.Color_Tab_Hover)
-	colorTabPress 		:= (ProgramSettings.Color_Tab_Press = "000000")?("Black"):("0x" ProgramSettings.Color_Tab_Press)
-
-	pngTransColor 		:= (SkinAssets.Misc_Transparency_Color = "000000")?("Black"):("0x" SkinAssets.Misc_Transparency_Color)
-
-	colorTitleInactive := "White"
 
 	maxTabsRow := 8
 	maxTabsStage1 := 25
@@ -741,6 +648,25 @@ Gui_Trades(mode="", tradeInfos="") {
 	btnUnicodePos := "", useSmallerButtons := ""
 
 	if ( mode = "CREATE" ) {
+		Load_Skin_Assets()
+
+		colorTitleActive 	:= (ProgramSettings.Color_Title_Active = "000000")?("Black"):("0x" ProgramSettings.Color_Title_Active)
+		colorTitleInactive 	:= (ProgramSettings.Color_Title_Inactive = "000000")?("Black"):("0x" ProgramSettings.Color_Title_Inactive)
+		colorTradesInfos1 	:= (ProgramSettings.Color_Trades_Infos_1 = "000000")?("Black"):("0x" ProgramSettings.Color_Trades_Infos_1)
+		colorTradesInfos2 	:= (ProgramSettings.Color_Trades_Infos_2 = "000000")?("Black"):("0x" ProgramSettings.Color_Trades_Infos_2)
+		colorBorder 		:= (ProgramSettings.Color_Border = "000000")?("Black"):("0x" ProgramSettings.Color_Border)
+
+		colorButtonNormal 	:= (ProgramSettings.Color_Button_Normal = "000000")?("Black"):("0x" ProgramSettings.Color_Button_Normal)
+		colorButtonHover 	:= (ProgramSettings.Color_Button_Hover = "000000")?("Black"):("0x" ProgramSettings.Color_Button_Hover)
+		colorButtonPress 	:= (ProgramSettings.Color_Button_Press = "000000")?("Black"):("0x" ProgramSettings.Color_Button_Press)
+
+		colorTabActive 		:= (ProgramSettings.Color_Tab_Active = "000000")?("Black"):("0x" ProgramSettings.Color_Tab_Active)
+		colorTabInactive 	:= (ProgramSettings.Color_Tab_Inactive = "000000")?("Black"):("0x" ProgramSettings.Color_Tab_Inactive)
+		colorTabHover 		:= (ProgramSettings.Color_Tab_Hover = "000000")?("Black"):("0x" ProgramSettings.Color_Tab_Hover)
+		colorTabPress 		:= (ProgramSettings.Color_Tab_Press = "000000")?("Black"):("0x" ProgramSettings.Color_Tab_Press)
+
+		pngTransColor 		:= (SkinAssets.Misc_Transparency_Color = "000000")?("Black"):("0x" SkinAssets.Misc_Transparency_Color)
+
 
 		IBStyle_Tab :=					[ [0, SkinAssets.Tab_Inactive, "", colorTabInactive, "", pngTransColor]			; normal
 				              			, [0, SkinAssets.Tab_Hover, "", colorTabHover, "", pngTransColor]				; hover
@@ -1005,7 +931,7 @@ Gui_Trades(mode="", tradeInfos="") {
 				    . "`nthen [Settings] to set your preferences."
 		GuiControl, Trades:, TabCtrl,% "No Trades On Queue|"
 		Gui, Tab,% "No Trades On Queue",,Exact
-		Gui, Add, Text,x0 y50 w%guiWidth% Center BackgroundTrans hWndhNoTradeMsg c%colorTradesInfos1%,% noTradeMsg
+		Gui, Add, Text,x0 y55 w%guiWidth% Center BackgroundTrans hWndhNoTradeMsg c%colorTradesInfos1%,% noTradeMsg
 		TradesGUI_Controls["No_Trade_Msg"] 		:= hNoTradeMsg
 
 		noInstanceMsg := "No game instance could be found,"
@@ -1014,7 +940,7 @@ Gui_Trades(mode="", tradeInfos="") {
 					   . "`nthen [Settings] to set your preferences."
 		GuiControl, Trades:, TabCtrl,% "Logs File Not Found|"
 		Gui, Tab,% "Logs File Not Found",,Exact
-		Gui, Add, Text,x0 y50 w%guiWidth% Center BackgroundTrans hWndhNoInstanceMsg c%colorTradesInfos1%,% noInstanceMsg
+		Gui, Add, Text,x0 y55 w%guiWidth% Center BackgroundTrans hWndhNoInstanceMsg c%colorTradesInfos1%,% noInstanceMsg
 		TradesGUI_Controls["No_Instance_Msg"] 	:= hNoInstanceMsg
 
 ; - - - - -
@@ -1038,7 +964,7 @@ Gui_Trades(mode="", tradeInfos="") {
 			gameInstances := Get_All_Games_Instances()
 			Sleep 10
 		}
-		GuiControl, Trades:ChooseString,% TradesGUI_Controls["Tab"],% "|No Trades On Queue"
+		GuiControl, Trades:ChooseString,% TradesGUI_Controls["Tab"],% "No Trades On Queue"
 		countDown := "", gameInstances := ""
 		Monitor_Game_Logs()
 	}
@@ -1095,8 +1021,9 @@ Gui_Trades(mode="", tradeInfos="") {
 			GuiControl, Trades:Show,% ErrorMsgTextHandler
 			GuiControl, Trades: +c%colorTitleInactive%,% TradesGUI_Controls.Header_Title
 			GuiControl, Trades: +c%colorTitleInactive%,% TradesGUI_Controls.Header_Minimize
-			GuiControl, Trades:ChooseString,% TradesGUI_Controls["Tab"],% "|No Trades On Queue"
+			GuiControl, Trades:ChooseString,% TradesGUI_Controls["Tab"],% "No Trades On Queue"
 		}
+
 		clickThroughState := ( ProgramSettings.Trades_Click_Through && !isGuiActive )?("+"):("-")
 		transparency := (!isGuiActive)?(ProgramSettings.Transparency):(ProgramSettings.Transparency_Active)
 		Gui, Trades: +LastFound
@@ -1394,13 +1321,6 @@ Tile_Picture(guiName, TilehWnd, desiredW, desiredH) {
 	if (ErrorLevel && hBM2 <> ErrorLevel) {
 		DllCall("DeleteObject",uint,errorlevel)
 	}
-}
-
-IsBetween(value, first, last) {
-   if value between %first% and %last%
-      return true
-   else
-      return false
 }
 
 Gui_Trades_Load_Pending_Backup() {
@@ -2441,6 +2361,7 @@ Gui_Settings() {
     P3C2 := TV_Add("Advanced", P3, "Expand")
     P3C3 := TV_Add("Special", P3, "Expand")
 
+    Gui, Add, Button,% "x" GuiXWorkArea " y325 w430 h25 hWndhSettingsPreview gGui_Settings_Trades_Preview Hidden",% "Save and preview your changes"
 	Gui, Add, Text,% "x" guiXWorkarea . " y" 360,% "Settings will be saved upon closing this window."
 	Gui, Add, Link,% "x" guiXWorkarea . " y" 375 . " vWikiBtn gGui_Settings_Btn_WIKI",% "Keep the cursor above a control to know more about it. You may also <a href="""">Visit the Wiki</a>"
 
@@ -2576,11 +2497,11 @@ Gui_Settings() {
 
 		Gui, Add, GroupBox,% "x" guiXWorkArea . " y" guiYWorkArea+110 . " w430 h85" . " c000000",Positioning
 			Gui, Add, Text,% "xp+10" . " yp+20" . " hwndTradesHPOS" index "TextHandler Hidden",Horizontal:
-			Gui, Add, ListBox, w70 xp+55 yp vTradesHPOS%index% hwndTradesHPOS%index%Handler gGui_Settings_Trades_Preview R3 Hidden,% "Left|Center|Right"
+			Gui, Add, ListBox, w70 xp+55 yp vTradesHPOS%index% hwndTradesHPOS%index%Handler R3 Hidden,% "Left|Center|Right"
 			Gui, Add, Text, xp+75 yp hwndTradesVPOS%index%TextHandler Hidden,Vertical:
-			Gui, Add, ListBox, w70 xp+45 yp vTradesVPOS%index% hwndTradesVPOS%index%Handler gGui_Settings_Trades_Preview R3 Hidden,% "Top|Middle|Bottom"
+			Gui, Add, ListBox, w70 xp+45 yp vTradesVPOS%index% hwndTradesVPOS%index%Handler R3 Hidden,% "Top|Middle|Bottom"
 			Gui, Add, Text, xp+75 yp hwndTradesSIZE%index%TextHandler Hidden,Size:
-			Gui, Add, ListBox, w70 xp+30 yp vTradesSIZE%index% hwndTradesSIZE%index%Handler gGui_Settings_Trades_Preview R4 Hidden,% "Disabled|Small|Medium|Large"
+			Gui, Add, ListBox, w70 xp+30 yp vTradesSIZE%index% hwndTradesSIZE%index%Handler R4 Hidden,% "Disabled|Small|Medium|Large"
 
 		Gui, Add, GroupBox,% "x" guiXWorkarea . " y" guiYWorkArea+200 . " w430 h110" . " c000000",Behaviour
 			Gui, Add, Text,% "xp+10" . " yp+20" . " hwndTradesLabel" index "TextHandler Hidden",Label:
@@ -2626,7 +2547,7 @@ Gui_Settings() {
 		Gui, Add, Text,xs+10 ys+15 BackgroundTrans,Allows to bind hotkeys to these buttons.
 		Gui, Add, Text,xp yp+15 BackgroundTrans,Disabling all Custom Buttons will effectively show only this row.
 
-	hexCodes := ["41", "42", "45", "43", "44"] ; 41:Clip/42:Whis/43:Trade/44:Kick/45:Inv
+	hexCodes := ["0", "1", "2", "3", "4"]
 	ctrlActions := ["Clipboard" , "Whisper", "Invite", "Trade", "Kick"]
 	for key, element in hexCodes {
 		xpos := (Mod(A_Index,2)!=0)?(guiXWorkarea)
@@ -2644,7 +2565,7 @@ Gui_Settings() {
 		   	Gui, Font
 		   	Gui, Add, Text,% "xp+50 yp+7",% "(" ctrlActions[key] ")"
 		   	Gui, Add, Text,% "x" xpos+10 " yp+22",Position: 
-		   	Gui, Add, DropDownList,% "xp+60" " yp-2" " w" width-80 " R6" " vUnicodeBtn" A_Index "Position" " hwndUnicodeBtn" A_Index "PositionHandler" " gGui_Settings_Trades_Preview",% "Disabled|1|2|3|4|5"
+		   	Gui, Add, DropDownList,% "xp+60" " yp-2" " w" width-80 " R6" " vUnicodeBtn" A_Index "Position" " hwndUnicodeBtn" A_Index "PositionHandler",% "Disabled|1|2|3|4|5"
 		   	Gui, Add, CheckBox,% "x" xpos+10 " yp+27" . " vUnicodeBtn" A_Index "HotkeyToggle" " hwndUnicodeBtn" A_Index "HotkeyToggleHandler", Hotkey:
 		   	Gui, Add, Hotkey,% "xp+60" " yp-3" " w" width-80 . " vUnicodeBtn" A_Index "Hotkey" " hwndUnicodeBtn" A_Index "HotkeyHandler"
 		   	index := A_Index
@@ -2833,18 +2754,17 @@ return
 		GuiControl,% "Settings:" state,% FontSizeCustomHandler
 		state := (FontQuality="Custom")?("Enable"):("Disable")
 		GuiControl, Settings:%state%,% FontQualityCustomHandler
-
-		; if ( A_GuiControl!="ActivePreset")
-			; GoSub Gui_Settings_Trades_Preview
 	Return
 
 	Gui_Settings_Presets:
 	/*		Apply the selected preset Settings
 	*/
-		Gui, Settings:Submit, NoHide
+		if !isSettingPreferences
+			Gui, Settings:Submit, NoHide
 
 		isUserChangingPreset := true
 		Sleep 10
+		GuiControl, Settings:ChooseString,% SkinScalingHandler,% Floor(ProgramSettings.Scale_Multiplier*100) "%"
 		if (ActivePreset="User Defined") {
 			skinSettingsFile := ProgramValues.Ini_File
 			keys 					:= ["Active_Skin","Font","Font_Size_Mode","Font_Size_Custom","Font_Quality_Mode","Font_Quality_Custom"
@@ -2853,7 +2773,7 @@ return
 									   ,"Color_Tab_Active","Color_Tab_Inactive","Color_Tab_Hover","Color_Tab_Press"]
 			sect 					:= "CUSTOMIZATION_APPEARANCE"
 			controlsUseChoose 		:= "Active_Skin,Font,Font_Size_Mode,Font_Quality_Mode"
-			handlers 				:= [SelectedSkinHandler,SelectedFontHandler,FontSizeHandler,FontSizeCustomHandler,FontQuality,FontQualityCustomHandler
+			handlers 				:= [SelectedSkinHandler,SelectedFontHandler,FontSizeHandler,FontSizeCustomHandler,FontQualityHandler,FontQualityCustomHandler
 						   			   ,TitleActiveColorHandler,TitleInactiveColorHandler,TradesInfos1ColorHandler,TradesInfos2ColorHandler
 						   			   ,BorderColorHandler,ButtonNormalColorHandler,ButtonHoverColorHandler,ButtonPressColorHandler
 						   			   ,TabActiveColorHandler,TabInactiveColorHandler,TabHoverColorHandler,TabPressColorHandler]
@@ -2884,7 +2804,7 @@ return
 			}
 			GuiControl, Settings:ChooseString,% SelectedSkinHandler,% ActivePreset
 			GuiControl, Settings:ChooseString,% FontSizeHandler,% "Automatic"
-			GuiControl, Settings:ChooseString,% FontQuality,% "Automatic"
+			GuiControl, Settings:ChooseString,% FontQualityHandler,% "Automatic"
 
 			sect 				:= "COLORS"
 			keys 				:= ["Title_Trades","Title_No_Trades","Trade_Info_1","Trade_Info_2","Border"
@@ -2905,93 +2825,6 @@ return
 		}
 		Sleep 10
 		isUserChangingPreset := false
-
-		
-		; 	Sleep 10
-		; 	GuiControl, Settings:ChooseString,% SelectedSkinHandler,% ActivePreset
-		; 	IniRead, value,% skinSettingsFile,% "FONT",% "Name"
-		; 	GuiControl, Settings:ChooseString,% SelectedFontHandler,% "|" value
-		; 	IniRead, value,% skinSettingsFile,% "FONT",% "Size"
-		; 	GuiControl, Settings:ChooseString,% FontSizeHandler,% "Automatic"
-		; 	GuiControl, Settings:,% FontSizeCustomHandler,% value
-		; 	IniRead, value,% skinSettingsFile,% "FONT",% "Quality"
-		; 	GuiControl, Settings:ChooseString,% FontQuality,% "Automatic"
-		; 	GuiControl, Settings:,% FontQualityCustomHandler,% value
-
-		; 	IniRead, value,% skinSettingsFile,% "COLORS",% "Title_Trades"
-		; 	GuiControl, Settings:,% TitleActiveColorHandler,% value
-		; 	IniRead, value,% skinSettingsFile,% "COLORS",% "Title_No_Trades"
-		; 	GuiControl, Settings:,% TitleInactiveColorHandler,% value
-		; 	IniRead, value,% skinSettingsFile,% "COLORS",% "Trade_Info_1"
-		; 	GuiControl, Settings:,% TradesInfos1ColorHandler,% value
-		; 	IniRead, value,% skinSettingsFile,% "COLORS",% "Trade_Info_2"
-		; 	GuiControl, Settings:,% TradesInfos2ColorHandler,% value
-		; 	IniRead, value,% skinSettingsFile,% "COLORS",% "Tab_Active"
-		; 	GuiControl, Settings:,% TabsColorHandler,% value
-		; 	; IniRead, value,% skinSettingsFile,% "COLORS",% "Tab_Inactive"
-		; 	; GuiControl, Settings:,% SelectedFontHandler,% value
-		; 	; IniRead, value,% skinSettingsFile,% "COLORS",% "Tab_Hover"
-		; 	; GuiControl, Settings:,% SelectedFontHandler,% value
-		; 	; IniRead, value,% skinSettingsFile,% "COLORS",% "Tab_Press"
-		; 	; GuiControl, Settings:,% SelectedFontHandler,% value
-		; 	IniRead, value,% skinSettingsFile,% "COLORS",% "Button_Normal"
-		; 	GuiControl, Settings:,% ButtonsColorHandler,% value
-		; 	; IniRead, value,% skinSettingsFile,% "COLORS",% "Button_Hover"
-		; 	; GuiControl, Settings:,% SelectedFontHandler,% value
-		; 	; IniRead, value,% skinSettingsFile,% "COLORS",% "Button_Press"
-		; 	; GuiControl, Settings:,% SelectedFontHandler,% value
-
-		; 	Sleep 10
-		; }
-		; isUserChangingPreset := false
-
-
-	/*
-		Gui, Settings:Submit, NoHide
-		ActivePresetSettings := Gui_Settings_Get_Settings_Arrays()
-		INI_Keys := ActivePresetSettings.CUSTOMIZATION_APPEARANCE_KeysArray
-		ControlsHandlers := ActivePresetSettings.CUSTOMIZATION_APPEARANCE_HandlersArray
-
-		; for key, element in INI_Keys {
-			skinSettingsFile := (ActivePreset="User Defined")?(ProgramValues[("Ini_File")]):(ProgramValues.Skins_Folder "\" ActivePreset "\Settings.ini")
-			
-			; IniRead, value,% skinSettingsFile,% "CUSTOMIZATION_APPEARANCE",% element
-			; ctrlName := ControlsHandlers[key]
-			; ctrlHandler := (ctrlName="ActivePreset")?(ActivePresetHandler)
-			; 			  :(ctrlName="SelectedSkin")?(SelectedSkinHandler)
-			; 			  :(ctrlName="SkinScaling")?(SkinScalingHandler)
-			; 			  :(ctrlName="SelectedFont")?(SelectedFontHandler)
-			; 			  :(ctrlName="FontSize")?(FontSizeHandler)
-			; 			  :(ctrlName="FontSizeCustom")?(FontSizeCustomHandler)
-			; 			  :(ctrlName="FontQuality")?(FontQualityHandler)
-			; 			  :(ctrlName="FontQualityCustom")?(FontQualityCustomHandler)
-			; 			  :(ctrlName="TitleActiveColor")?(TitleActiveColorHandler)
-			; 			  :(ctrlName="TitleInactiveColor")?(TitleInactiveColorHandler)
-			; 			  :(ctrlName="TradesInfos1Color")?(TradesInfos1ColorHandler)
-			; 			  :(ctrlName="TradesInfos2Color")?(TradesInfos2ColorHandler)
-			; 			  :(ctrlName="TabsColor")?(TabsColorHandler)
-			; 			  :(ctrlName="ButtonsColor")?(ButtonsColorHandler)
-			; 			  :("ERROR")
-
-
-		; 	GuiControl, Settings:-g,% ctrlHandler ; Prevent from triggeting the gLabel
-		; 	if element in Font_Size_Custom,Font_Quality_Custom,Font_Color_Title_Active,Font_Color_Title_Inactive,Font_Color_Trades_Infos_1,Font_Color_Trades_Infos_2,Font_Color_Tabs,Font_Color_Buttons
-		; 	{
-		; 		GuiControl, Settings:,% ctrlHandler,% value
-		; 	}
-		; 	else if ( element = "Scale_Multiplier" ) {
-		; 		value := value*100
-		; 		value := Round(value, 0)
-		; 		GuiControl, Settings:Choose,% ctrlHandler,% value "%"
-		; 	}
-		; 	else
-		; 		GuiControl, Settings:Choose,% ctrlHandler,% value
-
-		; 	GuiControl, Settings:+gGui_Settings_Set_Custom_Preset,% ctrlHandler ; Re-enable gLabel
-		; }
-		GoSub, Gui_Settings_Set_Custom_Preset
-		GoSub, Gui_Settings_Trades_Preview
-	*/
 	Return
 
 	Gui_Settings_TreeView:
@@ -3009,22 +2842,22 @@ return
 	  			:("ERROR")
 	      GuiControl, Settings:Choose,% TabHandler,% tabName
 	  }
+	  if tabName contains Customization
+	  	GuiControl, Settings:Show,% hSettingsPreview
+	  else 
+	  	GuiControl, Settings:Hide,% hSettingsPreview
 	Return
 
 	Gui_Settings_Trades_Preview:
-		; Gui, Settings:+Disabled
-
 		GoSub, Gui_Settings_Btn_Apply
 
 		Backup_isMin := TradesGUI_Values.Is_Minimized, Backup_autoMin := ProgramSettings.Trades_Auto_Minimize
 		TradesGUI_Values.Is_Minimized := 0, ProgramSettings.Trades_Auto_Minimize := 0
 
-		; Gui_Trades_Redraw("CREATE", {preview:1})
+		Gui_Trades_Redraw("CREATE", {preview:1})
 
 		TradesGUI_Values.Is_Minimized := Backup_isMin, ProgramSettings.Trades_Auto_Minimize := Backup_autoMin
 		Backup_isMin := "", Backup_autoMin := ""
-
-		; Gui, Settings:-Disabled
 	Return
 
 	Gui_Settings_Custom_Label:
@@ -3309,6 +3142,9 @@ return
 		HOTKEYS_SPECIAL_HandlersArray := returnArray.HOTKEYS_SPECIAL_HandlersArray
 		HOTKEYS_SPECIAL_HandlersKeysArray := returnArray.HOTKEYS_SPECIAL_HandlersKeysArray
 
+		isSettingPreferences := true
+		Sleep 10
+
 		for key, element in sectionArray
 		{
 			sectionName := element
@@ -3346,35 +3182,39 @@ return
 					}
 				}
 				else if ( sectionName = "CUSTOMIZATION_APPEARANCE" ) {
-					if keyName in Active_Skin,Font,Font_Size_Mode,Font_Size_Custom,Font_Quality_Mode,Font_Quality_Custom,Active_Preset,Font_Color_Title_Active,Font_Color_Title_Inactive,Font_Color_Trades_Infos_1,Font_Color_Trades_Infos_2,Font_Color_Tabs,Font_Color_Buttons
-					{
-						if keyName in Font_Size_Custom,Font_Quality_Custom,Font_Color_Title_Active,Font_Color_Title_Inactive,Font_Color_Trades_Infos_1,Font_Color_Trades_Infos_2,Font_Color_Tabs,Font_Color_Buttons
-						{
-							isUserChangingPreset := true
-							Sleep 10
-							GuiControl, Settings:,% %handler%Handler,% var
-							Sleep 10
-							isUserChangingPreset := false
-						}
-						else {
-							GuiControl, Settings:ChooseString,% %handler%Handler,% var
-							if ( keyName = "Font_Size_Mode" ) {
-								state := (var="Custom")?("Enable"):("Disable")
-								GuiControl, Settings:%state%,% FontSizeCustomHandler
-							}
-							if (keyName = "Font_Quality_Mode") {
-								state := (var="Custom")?("Enable"):("Disable")
-								GuiControl, Settings:%state%,% FontQualityCustomHandler
-							}
-						}
-					}
-					else if (keyName = "Scale_Multiplier")
-					{
-						var := var*100
-						var := Round(var, 0)
-						GuiControl, Settings:ChooseString,% %handler%Handler,% var "%"
+					if (keyName = "Active_Preset") {
+						GuiControl, Settings:ChooseString,% %handler%Handler,% "|" var
 					}
 				}
+				; 	if keyName in Active_Skin,Font,Font_Size_Mode,Font_Size_Custom,Font_Quality_Mode,Font_Quality_Custom,Active_Preset,Font_Color_Title_Active,Font_Color_Title_Inactive,Font_Color_Trades_Infos_1,Font_Color_Trades_Infos_2,Font_Color_Tabs,Font_Color_Buttons
+				; 	{
+				; 		if keyName in Font_Size_Custom,Font_Quality_Custom,Font_Color_Title_Active,Font_Color_Title_Inactive,Font_Color_Trades_Infos_1,Font_Color_Trades_Infos_2,Font_Color_Tabs,Font_Color_Buttons
+				; 		{
+				; 			isUserChangingPreset := true
+				; 			Sleep 10
+				; 			GuiControl, Settings:,% %handler%Handler,% var
+				; 			Sleep 10
+				; 			isUserChangingPreset := false
+				; 		}
+				; 		else {
+				; 			GuiControl, Settings:ChooseString,% %handler%Handler,% var
+				; 			if ( keyName = "Font_Size_Mode" ) {
+				; 				state := (var="Custom")?("Enable"):("Disable")
+				; 				GuiControl, Settings:%state%,% FontSizeCustomHandler
+				; 			}
+				; 			if (keyName = "Font_Quality_Mode") {
+				; 				state := (var="Custom")?("Enable"):("Disable")
+				; 				GuiControl, Settings:%state%,% FontQualityCustomHandler
+				; 			}
+				; 		}
+				; 	}
+				; 	else if (keyName = "Scale_Multiplier")
+				; 	{
+				; 		var := var*100
+				; 		var := Round(var, 0)
+				; 		GuiControl, Settings:ChooseString,% %handler%Handler,% var "%"
+				; 	}
+				; }
 				else if ( sectionName = "CUSTOMIZATION_BUTTONS_UNICODE" ) {
 					if keyName contains _Position
 						GuiControl, Settings:ChooseString,% %handler%Handler,% var
@@ -3383,10 +3223,15 @@ return
 				}
 				else if ( var != "ERROR" && var != "" ) { ; Everything else
 					GuiControl, Settings:,% %handler%Handler,% var
-				}
 			}
 		}
-return
+		Sleep 10
+		isSettingPreferences := false
+	}
+	Return
+}
+
+Gui_Settings_Set_Skin_Preset() {
 
 }
 
@@ -3665,9 +3510,9 @@ Gui_Settings_Get_Settings_Arrays() {
 	returnArray.CUSTOMIZATION_APPEARANCE_KeysArray.Insert(0, "Active_Preset", "Active_Skin", "Scale_Multiplier", "Font", "Font_Size_Mode", "Font_Size_Custom", "Font_Quality_Mode", "Font_Quality_Custom"
 														   ,"Color_Title_Active", "Color_Title_Inactive", "Color_Trades_Infos_1", "Color_Trades_Infos_2"
 														   ,"Color_Border","Color_Button_Normal","Color_Button_Hover","Color_Button_Press","Color_Tab_Active","Color_Tab_Inactive","Color_Tab_Hover","Color_Tab_Press")
-	returnArray.CUSTOMIZATION_APPEARANCE_DefaultValues.Insert(0, "White", "White", "1", "Segoe UI", "Automatic", "8", "Automatic", "5"
-															   ,"000000", "000000", "000000", "000000"
-															   ,"000000","000000","000000","000000","000000","000000","000000","000000")
+	returnArray.CUSTOMIZATION_APPEARANCE_DefaultValues.Insert(0, "White", "", "", "", "", "", "", ""
+															   ,"", "", "", ""
+															   ,"","","","","","","","")
 
 							
 
@@ -4348,12 +4193,65 @@ Update_Local_Settings() {
 	global ProgramValues
 
 	iniFile := ProgramValues.Ini_File
+	IniRead, priorVersion,% iniFile,% "PROGRAM",% "Version",% ProgramValues.Version ; Added on 1.12
+	subVersions := StrSplit(priorVersion, ".")
+	mainVer := subVersions[1], releaseVer := subVersions[2], patchVer := subVersions[3]
+
+;	Example. This will handle changes that happened between 1.12 and current.
+	if (releaseVer < 12) {
+
+	}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+* * * * * * * * * * * * * *  		1.12					* * *
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+*/
+/*	More customization was added. Keys changed.
+	Previously, there was one single setting for Tabs and Buttons colours.
+		Keys would start with the Font_Color_ prefix.
+	Now, there are multiple colours available, based on the button state.
+		Keys start with the Color_ prefix
+
+	We delete those old Font_Color_ keys.
+*/
+	sect := "CUSTOMIZATION_APPEARANCE"
+	keysToDel := ["Font_Color_Title_Active","Font_Color_Title_Inactive","Font_Color_Trades_Infos_1"
+				 ,"Font_Color_Trades_Infos_2","Font_Color_Tabs","Font_Color_Buttons"]
+	IniRead, activeColor,% iniFile,% sect,% "Font_Color_Title_Active"
+	if (activeColor != "ERROR") {
+		for index, keyName in keysToDel {
+			IniDelete,% iniFile,% sect,% keyName
+		}
+	}
+
+/*	System Skin
+	1.12: System skin is removed, replaced with a new "White" skin.
+
+	If the active preset or skin is System, we delete the corresponding keys.
+	We also delete the System skin local folder.
+*/
+	sect := "CUSTOMIZATION_APPEARANCE"
+	IniRead, activePreset,% iniFile,% sect,% "Active_Preset"
+	IniRead, activeSkin,% iniFile,% sect,% "Active_Skin"
+	if (activePreset = "System" || activeSkin = "System") {
+		IniDelete,% iniFile,% sect,% "Active_Preset"
+		IniDelete,% iniFile,% sect,% "Active_Skin"
+	}
+	if InStr(FileExist(ProgramValues.Skins_Folder "\System"), "D") {
+		FileRemoveDir,% ProgramValues.Skins_Folder "\System", 1
+	}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+* * * * * * * * * * * * * *  		1.10					* * *
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+*/
 /* 	Hotkeys_Mode
-	In 1.10, this setting was removed.
+	1.10: This setting was removed.
 	Previously, the hotkeys would share the same tab. Pressing on a "Switch" button would
 		hide re-create the Settings with the selected mode.
 	Now, both have their own tab, and the user can use Basic and Advanced hotkeys together.
-		For this reason, based on the mode, we have to make sure the hotkey toggle is switched off.
+
+	For this reason, based on the mode, we have to make sure the hotkey toggle is switched off.
 */
 	IniRead, hotkeysMode,% iniFile, SETTINGS, Hotkeys_Mode
 	if ( hotkeysMode && hotkeysMode != "ERROR" ) {
@@ -4375,18 +4273,20 @@ Update_Local_Settings() {
 		}
 		IniDelete,% iniFile, SETTINGS, Hotkeys_Mode
 	}
+
 /*	CTRL / ALT / SHIFT States
-	In 1.10, this setting was removed.
+	1.10: This setting was removed.
 	Previously, those modifiers would be treated as separate checkboxes.
 	Now, it is handled by the hotkey control.
-		For this reason, based on the modifiers, we have to modify the original hotkey.
+
+	For this reason, based on the modifiers, we have to modify the original hotkey.
 */
 	Loop {
 		IniRead, modCtrl,% iniFile, HOTKEYS, HK%A_Index%_CTRL
 		IniRead, modAlt,% iniFile, HOTKEYS, HK%A_Index%_ALT
 		IniRead, modShift,% iniFile, HOTKEYS, HK%A_Index%_SHIFT
 
-		if !(IsNum(modCtrl))
+		if (modCtrl = "ERROR")
 			Break
 
 		modCtrl := (modCtrl=1)?("^"):("")
@@ -4487,7 +4387,7 @@ Set_Local_Settings(){
 			keyName := element
 			value := %sectionName%_DefaultValues[key]
 			IniRead, var,% iniFilePath,% sectionName,% keyName
-			if ( var = "ERROR" ) {
+			if ( var = "ERROR" || var = "" ) {
 				IniWrite,% value,% iniFilePath,% sectionName,% keyName
 			}
 		}
@@ -5321,6 +5221,91 @@ FGP_Value(FilePath, Property) {
 ;
 ;==================================================================================================================
 
+IsBetween(value, first, last) {
+   if value between %first% and %last%
+      return true
+   else
+      return false
+}
+
+Load_Skin_Assets() {
+	global ProgramValues, ProgramSettings, SkinAssets
+	SkinAssets 			:= {}
+	skinFolder 			:= ProgramValues.Skins_Folder "\" ProgramSettings.Active_Skin
+	assetsFile 		 	:= skinFolder "\Assets.ini"
+	sections := ["Arrow_Left","Arrow_Right","Button_OneThird","Button_TwoThird","Button_ThreeThird","Button_Special","Close_Tab","Tab","Misc"]
+	for id, sectName in sections {
+		keysInThisSection := []
+		IniRead, keysAndValue,% assetsFile,% sectName
+		Loop, Parse, keysAndValue,% "D`n" 
+		{
+			RegExMatch(A_LoopField, "(.*?)=", keyPat)
+			keysInThisSection.Push(keyPat1)
+		}
+		for id, keyName in keysInThisSection {
+			IniRead, value,% assetsFile,% sectName,% keyName,false
+			IniRead_Convert_TrueFalse(value)
+			SplitPath, value, , , valueExt
+			if (valueExt)
+				SkinAssets[sectName "_" keyName] := skinFolder "\" value
+			else
+				SkinAssets[sectName "_" keyName] := value
+		}
+	}
+}
+
+IniRead_Convert_TrueFalse(ByRef value) {
+/*		Converts a "True" or "False" string
+*/
+	value := (value="True")?(True):(value="False")?(False):(value)
+}
+
+Get_Active_Trading_Leagues() {
+/*		Retrieves leagues from the API
+		Parse them, to keep only non-solo or non-ssf leagues
+		Return the resulting list
+*/
+	apiLink := "http://api.pathofexile.com/leagues?offset=XX&compact=1"
+	excludedWords := "SSF,Solo"
+	activeLeagues := "Standard|Hardcore|Beta Standard|Beta Hardcore"
+	offsetCount := 6000 ; Legacy starts at 6000
+
+	Loop {
+		apiLinkOffset := RegExReplace(apiLink, "XX", offsetCount)
+
+		whr := ComObjCreate("WinHttp.WinHttpRequest.5.1")
+		whr.Open("GET", apiLinkOffset, true) ; Using true above and WaitForResponse allows the script to r'emain responsive.
+		whr.Send()
+		whr.WaitForResponse(10) ; 10 seconds
+		leaguesJSON := whr.ResponseText
+		parsedLeagues := JSON.Load(leaguesJSON)
+		Loop % parsedLeagues.MaxIndex() {
+			arrID := parsedLeagues[A_Index]
+			leagueEnd := RegExMatch(arrID.endAt, "(.*)-(.*)-(.*)T(.*):(.*):(.*)Z", pat)
+			leagueEndTime := pat1 . pat2 . pat3 . pat4 . pat5 . pat6
+
+			if ( arrID.startAt && (leagueEndTime > A_Now || !leagueEndTime) ) {
+				activeLeagues .= "|" arrID.ID
+			}
+		}
+		offsetCount += parsedLeagues.MaxIndex()
+		if !(parsedLeagues.MaxIndex())
+			Break
+	}
+
+	tradingLeagues := []
+	Loop, Parse, activeLeagues,% "D|" 
+	{
+		if A_LoopField not contains %excludedWords%
+		{
+			tradingLeagues.Push(A_LoopField)
+		}
+	}
+
+	return tradingLeagues
+}
+
+
 LV_SubitemHitTest(HLV) {
 /*		Credits to just me
 		autohotkey.com/board/topic/80265-solved-which-column-is-clicked-in-listview/?p=510061
@@ -5688,13 +5673,16 @@ Extract_Font_Files() {
 /*			Include the Resources into the compiled executable
  *			Extract the Resources into their specified folder
 */
-	global ProgramValues, ProgramFonts
+	global ProgramValues
 
 	fontsFolder := ProgramValues.Fonts_Folder
 
+	if FileExist(fontsFolder "\TC-Symbols.*")
+		FileDelete,% fontsFolder "\TC-Symbols.*"
+	FileInstall, Resources\Fonts\TC_Symbols.ttf,% fontsFolder "\TC_Symbols.ttf", 1
+
 	FileInstall, Resources\Fonts\Fontin-SmallCaps.ttf,% fontsFolder "\Fontin-SmallCaps.ttf", 1
 	FileInstall, Resources\Fonts\Consolas.ttf,% fontsFolder "\Consolas.ttf", 1
-	FileInstall, Resources\Fonts\TC_Symbols.ttf,% fontsFolder "\TC_Symbols.ttf", 1
 	FileInstall, Resources\Fonts\Segoe UI.ttf,% fontsFolder "\Segoe UI.ttf", 1
 
 	FileInstall, Resources\Fonts\Settings.ini,% fontsFolder "\Settings.ini", 1
@@ -5753,8 +5741,7 @@ Extract_Skin_Files() {
 	FileInstall, Resources\Skins\White\Header.png,% skinFolder "\White\Header.png", 1
 	FileInstall, Resources\Skins\White\TabsUnderline.png,% skinFolder "\White\TabsUnderline.png", 1
 	FileInstall, Resources\Skins\White\Icon.png,% skinFolder "\White\Icon.png", 1
-	
-	
+
 
 ;	Path of Exile Skin
 	if !( InStr(FileExist(skinFolder "\Path of Exile"), "D") )
@@ -5975,7 +5962,8 @@ Create_Tray_Menu() {
 	if ( ProgramValues.Debug ) {
 		Menu, Debug, Add,Open game folder,Open_Game_Folder
 		Menu, Debug, Add,Open local folder,Open_Local_Folder
-		Menu, Debug, Add,Delete local settings (+Reload),Delete_Local_Folder
+		Menu, Debug, Add,Delete Preferences file,Delete_Preferences
+		Menu, Debug, Add,Delete entire local folder,Delete_Local_Folder
 		Menu, Tray, Add, Debug,:Debug
 	}
 	Menu, Tray, Add,Settings, Gui_Settings
@@ -5994,9 +5982,17 @@ Create_Tray_Menu() {
 	Menu, Tray, Icon
 	Return
 
+	Delete_Preferences:
+		FileDelete,% ProgramValues.Ini_File
+	Return
+
 	Delete_Local_Folder:
-		FileRemoveDir,% ProgramValues.Local_Folder, 1
-		Reload_Func()
+		MsgBox, 4100, ,% "THIS WILL DELETE THE ENTIRE FOLDER`NMAKE SURE TO BACKUP YOUR FILES BEFORE CONTINUING.`N`NARE YOU SURE?"
+		IfMsgBox, Yes
+		{
+			FileRemoveDir,% ProgramValues.Local_Folder, 1
+			Reload_Func()
+		}
 	Return
 
 	Open_Game_Folder:
