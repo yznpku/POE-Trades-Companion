@@ -165,6 +165,7 @@ Start_Script() {
 	Extract_Sound_Files()
 	Extract_Skin_Files()
 	Extract_Font_Files()
+	Install_Font_Files()
 	Extract_Data_Files()
 	Update_Skin_Preset()
 
@@ -5723,6 +5724,71 @@ StringToHex(String) {
 	Return HexString
 }
 
+Install_Font_Files() {
+/*		Compare local and installed fonts file size
+		If any font is not installed or is different, run FontReg.
+*/
+	global ProgramValues, RunParameters
+
+	fontsFolder := ProgramValues.Fonts_Folder
+	winFonts := A_WinDir "\Fonts"
+
+	loc_FontFiles := []
+	win_FontFiles := []
+
+;	Get local fonts. Check if they're installed. Also check for duplicates (fontname_0.ttf)
+	Loop, Files, %fontsFolder%\*.ttf
+	{
+		SplitPath, A_LoopFileName, , , , fileNameNoExt
+		loc_FontFiles.Push(fileNameNoExt)
+		if FileExist(winFonts "\" A_LoopFileName)
+			win_FontFiles.Push(fileNameNoExt)
+		Loop {
+			fileNameDupe := fileNameNoExt "_" A_Index-1
+			if !FileExist(winFonts "\" fileNameDupe ".ttf")
+				break
+			else
+				win_FontFiles.Push(fileNameDupe)
+		}
+	}
+
+;	Remove fonts that are already installed from fontsNeedInstall
+	fontsNeedInstall := loc_FontFiles
+	for locID, locFontFile in loc_FontFiles {
+		for winID, winFontFile in win_FontFiles {
+			if RegExMatch(winFontFile, locFontFile "_\d") || (locFontFile = winFontFile) {
+				FileGetSize, locSize,% fontsFolder "\" locFontFile ".ttf"
+				FileGetSize, winSize,% winFonts "\" winFontFile ".ttf"
+
+				if (locSize = winSize){
+					fontsNeedInstall[locID] := ""
+				}
+			}
+		}
+	}
+
+;	Get font that need to be installed names and number
+	fontsNeedInstall_Index := 0, fontsNeedsInstall_Names := ""
+	for id, fontName in fontsNeedInstall {
+		if (fontName)
+			fontsNeedInstall_Index++, fontsNeedsInstall_Names .= fontName ","
+	}
+
+;	All fonts are already installed.
+	if (!fontsNeedInstall_Index)
+		Return
+
+;	Not running as admin. We need UAC to install a font.
+	if (!A_IsAdmin || RunParameters.NoAdmin) {
+		MsgBox, 4096,% ProgramValues.Name " - Missing admin rights.",% "Fonts need to be installed on your system for the tool to work correctly."
+										. "`nThe following fonts will be installed on your system (" fontsNeedInstall_Index "): " fontsNeedsInstall_Names
+										. "`nPlease allow the next UAC prompt."
+										. "`n(Rebooting may be neccessary after installing the fonts)"
+	}
+
+;	Run FontReg with /Copy to install fonts.
+	try Run,% fontsFolder "/FontReg.exe /Copy",% fontsFolder
+}
 
 Extract_Font_Files() {
 /*			Include the Resources into the compiled executable
@@ -5742,8 +5808,6 @@ Extract_Font_Files() {
 
 	FileInstall, Resources\Fonts\Settings.ini,% fontsFolder "\Settings.ini", 1
 	FileInstall, Resources\Fonts\FontReg.exe,% fontsFolder "\FontReg.exe", 0
-
-	Run,% fontsFolder "/FontReg.exe /Copy",% fontsFolder ; Install the fonts
 }
 
 Extract_Skin_Files() {
@@ -6438,8 +6502,7 @@ Manage_Font_Resources(mode) {
 
 	Loop, Files, %fontsFolder%\*.*
 	{
-		if A_LoopFileExt in otf,otc,ttf,ttc
-		{
+		if (A_LoopFileExt = "ttf") {
 			if ( mode="LOAD") {
 				DllCall( "GDI32.DLL\AddFontResourceEx", Str, A_LoopFileFullPath,UInt,(FR_PRIVATE:=0x10), Int,0)
 				fontTitle := FGP_Value(A_LoopFileFullPath, 21)	; 21 = Title
