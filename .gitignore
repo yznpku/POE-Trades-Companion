@@ -4,10 +4,12 @@
 /_Testings/*
 ENABLE_DEBUG.txt
 Verpatch.*
+*_Old*
 
 # Resources source files
 *.sfd
 *.psd
+Resources/Fonts/*/*
 
 # =========================
 # Default .gitignore
