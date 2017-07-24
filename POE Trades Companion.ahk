@@ -175,6 +175,7 @@ Start_Script() {
 	settings := Get_Game_Settings()
 	Declare_Game_Settings(settings)
 
+	Create_Tray_Menu()
 	Delete_Old_Logs_Files(10)
 
 	Extract_Others_Files()
@@ -186,7 +187,6 @@ Start_Script() {
 	; Pre-rendering Trades-GUI
 	Load_Skin_Assets()
 	Gui_Trades("CREATE")
-	Create_Tray_Menu()
 
 	if ( ProgramValues["Debug"] ) {
 		; trade / No qual / Level
@@ -211,7 +211,7 @@ Start_Script() {
 		str .= "`n" "2016/10/09 21:30:32 105384166 355 [INFO Client 6416] "
 			str .= " @From poeapp quality unpriced other: wtb Faster Attacks Support (40/41%) in standard (stash """"Shop: poeapp 1""""; left 40, top 21)"
 
-		; Filter_Logs_Message(str)
+		Filter_Logs_Message(str)
 	}
 
 	Gui_Trades_Load_Pending_Backup()
@@ -769,7 +769,7 @@ Gui_Trades(mode="", tradeInfos="") {
 		timeSlotWidth := txtCtrlSize.W*scaleMult, txtCtrlSize := ""
 
 		Gui, Font,S%fontSize% Q%fontQual%,% fontName
-		Gui, Add, Tab2, x0 y0 w0 h0 -Wrap vTabCtrl hWndhTabCtrl,% "Error Messages"
+		Gui, Add, Tab2, x0 y0 w0 h0 -Wrap vTabCtrl hWndhTabCtrl,% ""
 		TradesGUI_Controls["Tab"] := hTabCtrl
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -844,20 +844,20 @@ Gui_Trades(mode="", tradeInfos="") {
 
 			; Text slots
 			controlParams := " BackgroundTrans c" colorTradesInfos1
-			Gui, Add, Text,% "x" 10 " ys+" 30*scaleMult " hwndBuyerText" A_Index "Handler " controlParams,% "Buyer: " A_Index
-			Gui, Add, Text,% "xp yp+" 15*scaleMult " hwndItemText" A_Index "Handler " controlParams,% "Item: "
-			Gui, Add, Text,% "xp yp+" 15*scaleMult " hwndPriceText" A_Index "Handler " controlParams,% "Price: "
-			Gui, Add, Text,% "xp yp+" 15*scaleMult " hwndLocationText" A_Index "Handler " controlParams,% "Location: "
-			Gui, Add, Text,% "xp yp+" 15*scaleMult " hwndOtherText" A_Index "Handler " controlParams,% "Other: "
+			Gui, Add, Text,% "x" 10 " ys+" 30*scaleMult " w80 R1 hwndBuyerText" A_Index "Handler " controlParams,% "Buyer:"
+			Gui, Add, Text,% "xp yp+" 15*scaleMult " w80 R1 hwndItemText" A_Index "Handler " controlParams,% "Item:"
+			Gui, Add, Text,% "xp yp+" 15*scaleMult " w80 R1 hwndPriceText" A_Index "Handler " controlParams,% "Price:"
+			Gui, Add, Text,% "xp yp+" 15*scaleMult " w80 R1 hwndLocationText" A_Index "Handler " controlParams,% "Location:"
+			Gui, Add, Text,% "xp yp+" 15*scaleMult " w80 R1 hwndOtherText" A_Index "Handler " controlParams,% "Other:"
 
 			; Infos slots
 			controlParams := " BackgroundTrans +0x0100 R1 c" colorTradesInfos2
-			Gui, Add, Text,% "xp+" 100*scaleMult " ys+" 30*scaleMult " w" 255*scaleMult " vBuyerSlot" A_Index " hwndBuyerSlot" A_Index "Handler" controlParams,% ""
-			Gui, Add, Text,% "xp yp+" 15*scaleMult " w" 310*scaleMult " vItemSlot" A_Index " hwndItemSlot" A_Index "Handler" controlParams,% ""
-			Gui, Add, Text,% "xp yp+" 15*scaleMult " wp vPriceSlot" A_Index . " hwndPriceSlot" A_Index "Handler " controlParams,% ""
-			Gui, Add, Text,% "xp yp+" 15*scaleMult " wp vLocationSlot" A_Index . " hwndLocationSlot" A_Index "Handler " controlParams,% ""
-			Gui, Add, Text,% "xp yp+" 15*scaleMult " wp vOtherSlot" A_Index . " hwndOtherSlot" A_Index "Handler " controlParams,% ""
-			Gui, Add, Text,% "x" (guiWidth-timeSlotWidth)-((5*scaleMult)) " ys+" 28*scaleMult " w" timeSlotWidth . " h15 vTimeSlot" A_Index " hwndTimeSlot" A_Index "Handler " controlParams,% ""
+			Gui, Add, Text,% "xp+" 80*scaleMult " ys+" 30*scaleMult " w" 255*scaleMult " vBuyerSlot" A_Index " hwndBuyerSlot" A_Index "Handler " controlParams " R1",% ""
+			Gui, Add, Text,% "xp yp+" 15*scaleMult " w" 310*scaleMult " vItemSlot" A_Index " hwndItemSlot" A_Index "Handler " controlParams " R1",% ""
+			Gui, Add, Text,% "xp yp+" 15*scaleMult " wp vPriceSlot" A_Index . " hwndPriceSlot" A_Index "Handler " controlParams " R1",% ""
+			Gui, Add, Text,% "xp yp+" 15*scaleMult " wp vLocationSlot" A_Index . " hwndLocationSlot" A_Index "Handler " controlParams " R1",% ""
+			Gui, Add, Text,% "xp yp+" 15*scaleMult " wp vOtherSlot" A_Index . " hwndOtherSlot" A_Index "Handler " controlParams " R1",% ""
+			Gui, Add, Text,% "x" (guiWidth-timeSlotWidth)-((5*scaleMult)) " ys+" 28*scaleMult " w" timeSlotWidth . " h15 vTimeSlot" A_Index " hwndTimeSlot" A_Index "Handler " controlParams " R1",% ""
 			Gui, Add, Text,% "x0 y0 w0 h0 vPIDSlot" A_Index " hwndPIDSlot" A_Index "Handler",% ""
 			Gui, Add, Text,% "x0 y0 w0 h0 vDateSlot" A_Index " hwndDateSlot" A_Index "Handler",% ""
 			Gui, Add, Text,% "x0 y0 w0 h0 vGuildSlot" A_Index " hwndGuildSlot" A_Index "Handler",% ""
@@ -994,7 +994,10 @@ Gui_Trades(mode="", tradeInfos="") {
 */ 
 
 	if ( mode = "EXE_NOT_FOUND" ) {
-		GuiControl, Trades:ChooseString,% TradesGUI_Controls["Tab"],% "|Logs File Not Found"
+		if (TradesGUI_Values.Tabs_Count)
+			Gui_Trades_SetActiveTab_Func(1)
+		else 
+			GuiControl, Trades:ChooseString,% TradesGUI_Controls["Tab"],% "|Logs File Not Found"
 		gameInstances := Get_All_Games_Instances()
 		While ( gameInstances = "EXE_NOT_FOUND" ) {
 			countDown := 10
@@ -1007,7 +1010,10 @@ Gui_Trades(mode="", tradeInfos="") {
 			gameInstances := Get_All_Games_Instances()
 			Sleep 10
 		}
-		GuiControl, Trades:ChooseString,% TradesGUI_Controls["Tab"],% "No Trades On Queue"
+		if (TradesGUI_Values.Tabs_Count)
+			Gui_Trades_SetActiveTab_Func(1)
+		else
+			GuiControl, Trades:ChooseString,% TradesGUI_Controls["Tab"],% "No Trades On Queue"
 		countDown := "", gameInstances := ""
 		Monitor_Game_Logs()
 	}
@@ -1094,15 +1100,7 @@ Gui_Trades(mode="", tradeInfos="") {
 
 ; - - - - - Choose latest tab, if enabled
 		if ( ProgramSettings.Trades_Select_Last_Tab ) && (!A_GuiEvent) { ; A_GuiEvent means we've just closed a tab. We do not want to activate the latest available tab.
-			GuiControl, Trades:ChooseString,% TradesGUI_Controls["Tab"],% "|" tabsCount
-			TradesGUI_Values.Active_Tab := tabsCount
-		}
-		else {
-			GuiControl, Trades:ChooseString,TradesGUI_Controls["Tab"],% "|" TradesGUI_Values.Active_Tab
-			if ( ErrorLevel ) {
-				TradesGUI_Values.Active_Tab--
-				GuiControl, Trades:ChooseString,TradesGUI_Controls["Tab"],% "|" TradesGUI_Values.Active_Tab
-			}
+			Gui_Trades_SetActiveTab_Func(tabsCount)
 		}
 
 ; - - - - - Increase tabs limit
@@ -1155,10 +1153,10 @@ Gui_Trades(mode="", tradeInfos="") {
 		GuiControl, Trades:ChooseString,% TradesGUI_Controls["Tab"],% "|No Trades On Queue"
 		if (ProgramSettings.Trades_Auto_Minimize)
 			Gui_Trades_Minimize_Func("MIN", 1)
-		; OnMessage(0x200, "WM_MOUSEMOVE")
-		; OnMessage(0x201, "WM_LBUTTONDOWN")
-		; OnMessage(0x203, "WM_LBUTTONDBLCLK")
-		; OnMessage(0x204, "WM_RBUTTONDOWN")
+		OnMessage(0x200, "WM_MOUSEMOVE")
+		OnMessage(0x201, "WM_LBUTTONDOWN")
+		OnMessage(0x203, "WM_LBUTTONDBLCLK")
+		OnMessage(0x204, "WM_RBUTTONDOWN")
 
 		dpiFactor := ProgramSettings.Screen_DPI, showX := guiWidth-49
 	}
@@ -1270,6 +1268,7 @@ Gui_Trades_SetActiveTab_Func(tabID) {
 	if ( ProgramSettings.Clip_On_Tab_Switch ) {
 		Gui_Trades_Clipboard_Item_Func()
 	}
+
 }
 
 Gui_Trades_Adjust_Tabs() {
@@ -1525,16 +1524,8 @@ Gui_Trades_Select_Tab(params="") {
 								,Action:selectAction})
 		Return
 	}
-	if (selectTabID >= 1 && selectTabID <= tabsCount) {
-		; if (ProgramSettings.Active_Skin = "System") {
-			GuiControl, Trades:Choose,% tabCtrl,% selectTabID
-			TradesGUI_Values.Previous_Active_Tab := currentTabID
-			TradesGUI_Values.Active_Tab := selectTabID
-		; }
-		; else {
-			; Gui_Trades_Skinned_Show_Tab_Content(selectTabID)
-		; }
-	}
+	if IsBetween(selectTabID,1,tabsCount)
+		Gui_Trades_SetActiveTab_Func(selectTabID)
 }
 
 
@@ -1808,11 +1799,11 @@ Gui_Trades_Redraw(msg, params="") {
 
 	Gui_Trades_Save_Position()
 	if ( !params.noSplash )
-		SplashTextOn, 250, 40,% ProgramValues.Name,Please wait...`nCurrently re-creating the interface.
+		SplashTextOn, 300, 25,% ProgramValues.Name,Please wait while the interface is being created.
 	allTrades := Gui_Trades_Manage_Trades("GET_ALL")
 	if ( params.preview ) {
 		if !(allTrades.Max_Index) {
-			allTrades.1_Buyer := "iSellStuff"
+			allTrades.1_Buyer 		:= "iSellStuff"
 			allTrades.1_Item		:= "level 1 Faster Attacks Support"
 			allTrades.1_Price		:= "5 alteration"
 			allTrades.1_Location	:= "Breach (stash tab ""Gems""; position: left 6, top 8)"
@@ -1821,11 +1812,14 @@ Gui_Trades_Redraw(msg, params="") {
 			allTrades.1_PID			:= 0
 			allTrades.1_Date		:= A_YYYY "-" A_MM "-" A_DD
 			allTrades.1_Guild		:= ""
+			allTrades.Max_Index 	:= 1
 		}
 	}
 	Gui_Trades(msg)
 	Gui_Trades("UPDATE", allTrades)
 	SplashTextOff
+	if ( params.preview )
+		Gui_Trades_SetActiveTab_Func(1)
 }
 
 Gui_Trades_Get_Tab_ID() {
@@ -1980,7 +1974,7 @@ Gui_Trades_Statistics(mode, tabInfos="") {
 	historyFile := ProgramValues.Trades_History_File
 
 	if (mode="ADD") {
-		if (ProgramValues.Debug)
+		if (ProgramValues.Debug || tabInfos.Buyer = "iSellStuff" )
 			Return
 
 		IniRead, index,% historyFile,% "GENERAL",% "Index"
@@ -4908,7 +4902,7 @@ WM_RBUTTONDOWN(wParam, lParam, msg, hwnd) {
 	global TradesGUI_Controls, TradesGUI_Values
 
 	if ( A_Gui = "Trades" ) {
-		if (hwnd = TradesGUI_Controls.Close_TAb) {
+		if (hwnd = TradesGUI_Controls.Close_Tab) {
 			Menu, TradesCloseBtn, Add, Close similar trades, Gui_Trades_Close_Similar
 			Menu, TradesCloseBtn, Show
 		}
@@ -4983,8 +4977,8 @@ WM_MOUSEMOVE(wParam, lParam, msg, hwnd) {
 
 	programSkinFolderPath := ProgramValues.Skins_Folder
 
-	lastButton := TradesGUI_Values.Last_Hovered_Button
-	lastPngFilePrefix := TradesGUI_Values.TradesGUI_Last_PNG
+	; lastButton := TradesGUI_Values.Last_Hovered_Button
+	; lastPngFilePrefix := TradesGUI_Values.TradesGUI_Last_PNG
 	RegExMatch(A_GuiControl, "\D+", btnType)
 	RegExMatch(A_GuiControl, "\d+", btnID)
 
@@ -5001,6 +4995,9 @@ WM_MOUSEMOVE(wParam, lParam, msg, hwnd) {
 				     :(btntype="BtnClose")?(TradesGUI_Controls["Button_Close"])
 				     :(btntype="UnicodeBtn")?(TradesGUI_Controls["Button_Unicode_" btnID])
 				     :("ERROR")
+
+/*	Used for the pre 1.12 skinning system.
+	Would switch the button asset based on hover/click state
 
 		if (ProgramSettings.Active_Skin != "System") {
 			if btnType in CustomBtn,BtnClose,GoRight,GoLeft,UnicodeBtn
@@ -5035,6 +5032,7 @@ WM_MOUSEMOVE(wParam, lParam, msg, hwnd) {
 				TradesGUI_Values.Insert.Last_Hovered_Button := ""
 			}
 		}
+*/
 		if btnType in BuyerSlot,ItemSlot,PriceSlot,LocationSlot,OtherSlot
 		{
 			CoordMode, ToolTip, Screen
@@ -5046,8 +5044,8 @@ WM_MOUSEMOVE(wParam, lParam, msg, hwnd) {
 			global Remove_ToolTip_OnMouseMove_Values := {X:mouseX, Y:mouseY, Treshold_X:100, Treshold_Y:10}
 			SetTimer, Remove_Tooltip_OnMouseMove, 100
 		}
-		if !A_GuiControl ; No control hovered, reset the value
-			TradesGUI_Values.Last_Hovered_Button := ""
+		; if !A_GuiControl ; No control hovered, reset the value
+			; TradesGUI_Values.Last_Hovered_Button := ""
 	}
 
 	else if ( A_GUI = "Settings" ) {
@@ -5080,16 +5078,18 @@ WM_MOUSEMOVE(wParam, lParam, msg, hwnd) {
 		return
 	}
 
-	if (btnID)
-		lastBtnID := btnID
-	if (pngFilePrefix)
-		TradesGUI_Values.Insert("TradesGUI_Last_PNG", pngFilePrefix) ; __TO_BE_INSPECTED__ Usused leftover?
-	if (A_GuiControl)
-		TradesGUI_Values.Insert("Trades_GUI_Hover_Control", A_GuiControl) ; __TO_BE_INSPECTED__ Usused leftover?
+	; if (btnID)
+	; 	lastBtnID := btnID
+	; if (pngFilePrefix)
+	; 	TradesGUI_Values.Insert("TradesGUI_Last_PNG", pngFilePrefix) ; __TO_BE_INSPECTED__ Usused leftover?
+	; if (A_GuiControl)
+	; 	TradesGUI_Values.Insert("Trades_GUI_Hover_Control", A_GuiControl) ; __TO_BE_INSPECTED__ Usused leftover?
 }
 
 WM_LBUTTONDOWN(wParam, lParam, msg, hwnd) {
 	global TradesGUI_Values, ProgramValues, TradesGUI_Controls, ProgramSettings
+/*	Used for the pre 1.12 skinning system.
+	Would switch the button asset based on hover/click state
 
 	programSkinFolderPath := ProgramValues.Skins_Folder
 
@@ -5097,6 +5097,7 @@ WM_LBUTTONDOWN(wParam, lParam, msg, hwnd) {
 	RegExMatch(A_GuiControl, "\d+", btnID)
 
 	if (A_GUI = "Trades") {
+
 		btnHandler := (btnType="CustomBtn")?(TradesGUI_Controls["Button_Custom_" btnID])
 				     :(btntype="BtnClose")?(TradesGUI_Controls["Button_Close"])
 				     :(btnType="GoRight")?(TradesGUI_Controls["Arrow_Right"])
@@ -5142,6 +5143,7 @@ WM_LBUTTONDOWN(wParam, lParam, msg, hwnd) {
 			}
 		}
 	}
+*/
 }
 
 ShellMessage(wParam,lParam) {
@@ -6560,7 +6562,7 @@ Show_Tray_Notification(title, msg, params="") {
 	Gui, Font, S%guiTitleFontSize% Bold,% guiFontName
 	Gui, Add, Text,% "xp+35" " yp+10" " w" guiWidth-20 " BackgroundTrans cFFFFFF gGui_TrayNotification_OnLeftClick",% title
 	Gui, Font, S%guiFontSize% Norm,% guiFontName
-	Gui, Add, Text,% "x10" " yp+25" " w" guiWidth-25 " R3 BackgroundTrans ca5a5a5 gGui_TrayNotification_OnLeftClick",% msg
+	Gui, Add, Text,% "x10" " yp+25" " w" guiWidth-25 " BackgroundTrans ca5a5a5 gGui_TrayNotification_OnLeftClick",% msg
 	Gui, Show,% "x" showX " y" showY " w" showW " h" showH " NoActivate"
 	Loop {
 		showW += 25
@@ -6572,6 +6574,7 @@ Show_Tray_Notification(title, msg, params="") {
 			Break
 	}
 
+	SetTimer, Fade_Tray_Notification, Delete ; Remove previous timer, if existing
 	SetTimer, Fade_Tray_Notification, -%fadeTimer%
 	Gui, %defaultGUI%:Default
 	Return
