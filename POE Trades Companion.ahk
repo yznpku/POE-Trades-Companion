@@ -1799,7 +1799,7 @@ Gui_Trades_Redraw(msg, params="") {
 
 	Gui_Trades_Save_Position()
 	if ( !params.noSplash )
-		SplashTextOn, 300, 25,% ProgramValues.Name,Please wait while the interface is being created.
+		SplashTextOn, 300, 25,% ProgramValues.Name,% "Re-drawing the interface..."
 	allTrades := Gui_Trades_Manage_Trades("GET_ALL")
 	if ( params.preview ) {
 		if !(allTrades.Max_Index) {
@@ -1920,7 +1920,7 @@ Gui_Trades_Mode_Func(thisMenuItem) {
 		ProgramSettings.Insert("Trades_GUI_Mode", "Window")
 	}
 	IniWrite,% ProgramSettings.Trades_GUI_Mode,% iniFilePath,SETTINGS,Trades_GUI_Mode
-	Gui_Trades_Redraw("CREATE", {noSplash:1})
+	; Gui_Trades_Redraw("CREATE", {noSplash:1})
 }
 
 Gui_Trades_Get_Trades_Infos(tabID){
@@ -2340,7 +2340,7 @@ Gui_Trades_Set_Position(xpos="UNSPECIFIED", ypos="UNSPECIFIED"){
 	static
 	global TradesGUI_Values, ProgramSettings
 
-	if ( ProgramSettings.Dock_Mode != "Overlay" )
+	if ( ProgramSettings.Trades_GUI_Mode != "Overlay" )
 		Return
 
 	dpiFactor := ProgramSettings.Screen_DPI
@@ -2980,6 +2980,7 @@ return
 	Gui_Settings_Btn_Apply:
 		Gui, +OwnDialogs
 		Gui, Submit, NoHide
+		SplashTextOn, 300, 20,% ProgramValues.Name,% "Saving your settings..."
 ;	Trades GUI
 		trans := ( ShowTransparency / 100 ) * 255 ; ( value - percentage ) * max // Convert percentage to 0-255 range
 		transActive := ( ShowTransparencyActive / 100 ) * 255 ; ( value - percentage ) * max // Convert percentage to 0-255 range
@@ -3150,6 +3151,7 @@ return
 		settings := Get_Game_Settings()
 		Declare_Game_Settings(settings)
 		Enable_Hotkeys()
+		SplashTextOff
 	return
 
 	Gui_Settings_Size:
@@ -3195,9 +3197,6 @@ return
 				IniRead, var,% iniFilePath,% sectionName,% keyName
 				if ( keyName = "Show_Mode" ) { ; Make sure only one goes through
 					GuiControl, Settings:,% Show%var%Handler,1
-				}
-				else if ( keyName = "Dock_Mode" ) { ; Make sure only one goes through
-					GuiControl, Settings:, % Dock%var%Handler,1
 				}
 				else if ( keyName = "Transparency" || keyName = "Transparency_Active" ) { ; Convert to pecentage
 					var := ((var - 0) * 100) / (255 - 0)
