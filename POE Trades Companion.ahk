@@ -166,7 +166,7 @@ Start_Script() {
 	Extract_Skin_Files()
 	Extract_Font_Files()
 	Extract_Data_Files()
-	Gui_Settings_Set_Skin_Preset()
+	Update_Skin_Preset()
 
 	Set_Local_Settings() ; Reset broken settings
 	localSettings := Get_Local_Settings()
@@ -221,6 +221,48 @@ Start_Script() {
 	; Gui_About()
 	Logs_Append("DUMP", localSettings)
 	Monitor_Game_Logs()
+}
+
+Update_Skin_Preset() {
+/*		Temporary solution (?)
+		Retrieve the current preset and update the .ini file with the new settings
+*/
+	global ProgramValues
+
+	IniRead, activePreset,% ProgramValues.Ini_File,CUSTOMIZATION_APPEARANCE,Active_Preset
+	if (activePreset = "User Defined")
+		Return
+
+
+;	Applying font settings
+	iniFile := ProgramValues.Ini_File
+	skinSettingsFile := ProgramValues.Skins_Folder "\" activePreset "\Settings.ini"
+
+	iniSect 			:= "CUSTOMIZATION_APPEARANCE"
+	iniKeys 			:= ["Font","Font_Size_Custom","Font_Quality_Custom"]
+	skinSect			:= "FONT"
+	skinKeys			:= ["Name","Size","Quality"]
+
+	for id, key in skinKeys {
+		IniRead, value,% skinSettingsFile,% skinSect,% key
+		IniWrite,% value,% iniFile,% iniSect,% iniKeys[id]
+	}
+	IniWrite,% "Automatic",% iniFile,% iniSect,% "Font_Size_Mode"
+	IniWrite,% "Automatic",% iniFile,% iniSect,% "Font_Quality_Mode"
+
+;	Applying colour settings
+	iniSect 			:= "CUSTOMIZATION_APPEARANCE"
+	iniKeys 			:= ["Color_Title_Active","Color_Title_Inactive","Color_Trades_Infos_1","Color_Trades_Infos_2","Color_Border"
+						   ,"Color_Tab_Active","Color_Tab_Inactive","Color_Tab_Hover","Color_Tab_Press"
+						   ,"Color_Button_Normal","Color_Button_Hover","Color_Button_Press"]
+	skinSect 			:= "COLORS"
+	skinKeys 			:= ["Title_Trades","Title_No_Trades","Trade_Info_1","Trade_Info_2","Border"
+						   ,"Tab_Active","Tab_Inactive","Tab_Hover","Tab_Press"
+						   ,"Button_Normal","Button_Hover","Button_Press"]
+	for id, key in skinKeys {
+		IniRead, value,% skinSettingsFile,% skinSect,% key
+		IniWrite,% value,% iniFile,% iniSect,% iniKeys[id]
+	}
 }
 
 ;==================================================================================================================
@@ -710,6 +752,7 @@ Gui_Trades(mode="", tradeInfos="") {
 
 		tabHeight := Gui_Trades_Get_Tab_Height(), tabWidth := 390*scaleMult
 		guiWidth := 401*scaleMult, guiHeight := Floor((tabHeight+39)*scaleMult), guiHeightMin := 30*scaleMult ; 30 = banner size
+
 		borderSize := 1
 		TradesGUI_Values.Insert("Height_Full", guiHeight)
 		TradesGUI_Values.Insert("Height_Minimized", guiHeightMin)
@@ -2347,10 +2390,12 @@ Gui_Settings() {
 	Gui, Settings:New, +AlwaysOnTop +SysMenu -MinimizeBox -MaximizeBox +OwnDialogs +LabelGui_Settings_ hwndSettingsHandler,% programName " - Settings"
 	Gui, Settings:Default
 
+	Gui, Font, ,Segoe UI
+
 	tabsList := "Settings|Customization|Customization Appearance|Customization Custom Buttons|Customization Smaller Buttons|Hotkeys|Hotkeys Basic|Hotkeys Advanced|Hotkeys Special"
 
 	guiXWorkArea := 150, guiYWorkArea := 10
-	Gui, Add, TreeView, x10 y10 h380 w130 -0x4 -Buttons gGui_Settings_TreeView
+	Gui, Add, TreeView, x10 y10 h380 w130 -0x4 -Buttons gGui_Settings_OnTabSiwtch
     P1 := TV_Add("Settings","", "Expand")
     P2 := TV_Add("Customization","","Expand")
     P2C1 := TV_Add("Appearance", P2, "Expand")
@@ -2482,7 +2527,7 @@ Gui_Settings() {
 		Gui, Add, Progress,% "xp+70 yp w22 h22 Background000000 vFontsColorsPreview hwndFontsColorPreviewHandler Hidden"
 		Gui, Add, Text,% "xp-280 yp+25 vFontsColorsTip hwndFontsColorsTipsHandler",% "Description of the selected element will appear here."
 
-		Gui, Add, Link,% "x" guiXWorkArea + 80 . " y" guiYWorkArea+235,% "(Use <a href=""http://hslpicker.com/"">HSL Color Picker</a> to retrieve the 6 characters code starting with #) "
+		Gui, Add, Link,% "x" guiXWorkArea + 80 . " y" guiYWorkArea+235,% "(<a href=""http://hslpicker.com/"">HSL Color Picker</a> - Get the 6 chars code starting with #) "
 
 ;	-------------------------
 	Gui, Tab, Customization Custom Buttons
@@ -2653,7 +2698,7 @@ Gui_Settings() {
 
 	GoSub, Gui_Settings_Set_Preferences
 	Gui, Trades: -E0x20
-	Gui, Show
+	Gui, Settings:Show
 	GuiControl, Settings:Choose,% TabHandler,1
 	guiCreated := 1
 return
@@ -2827,7 +2872,7 @@ return
 		isUserChangingPreset := false
 	Return
 
-	Gui_Settings_TreeView:
+	Gui_Settings_OnTabSiwtch:
 	  if (A_GuiEvent = "S") {
 	  	evntinf := A_EventInfo
 	  	tabName := (evntinf=P1)?("Settings")
@@ -3231,10 +3276,6 @@ return
 	Return
 }
 
-Gui_Settings_Set_Skin_Preset() {
-
-}
-
 Gui_Settings_Custom_Label_Func(type, controlsArray, btnID, action, label) {
 	global TradesGUI_Controls, ProgramSettings, TradesGUI_Values
 
@@ -3510,9 +3551,9 @@ Gui_Settings_Get_Settings_Arrays() {
 	returnArray.CUSTOMIZATION_APPEARANCE_KeysArray.Insert(0, "Active_Preset", "Active_Skin", "Scale_Multiplier", "Font", "Font_Size_Mode", "Font_Size_Custom", "Font_Quality_Mode", "Font_Quality_Custom"
 														   ,"Color_Title_Active", "Color_Title_Inactive", "Color_Trades_Infos_1", "Color_Trades_Infos_2"
 														   ,"Color_Border","Color_Button_Normal","Color_Button_Hover","Color_Button_Press","Color_Tab_Active","Color_Tab_Inactive","Color_Tab_Hover","Color_Tab_Press")
-	returnArray.CUSTOMIZATION_APPEARANCE_DefaultValues.Insert(0, "White", "", "", "", "", "", "", ""
-															   ,"", "", "", ""
-															   ,"","","","","","","","")
+	returnArray.CUSTOMIZATION_APPEARANCE_DefaultValues.Insert(0, "White", "White", "1", "Segoe UI", "Automatic", "8", "Automatic", "5"
+															   ,"FFFFFF", "000000", "000000", "000000"
+															   ,"359cfc","000000","000000","000000","000000","000000","000000","000000")
 
 							
 
@@ -4190,17 +4231,23 @@ Declare_Game_Settings(settings) {
 }
 
 Update_Local_Settings() {
+/*	Cross-release changes that need updating
+*/
 	global ProgramValues
-
 	iniFile := ProgramValues.Ini_File
-	IniRead, priorVersion,% iniFile,% "PROGRAM",% "Version",% ProgramValues.Version ; Added on 1.12
-	subVersions := StrSplit(priorVersion, ".")
+
+	IniRead, priorVer,% iniFile,% "PROGRAM",% "Version",% "UNKNOWN" ; Added on 1.12
+	priorVerNum := (priorVer="UNKNOWN")?(ProgramValues.Version):(priorVer)
+
+	subVersions := StrSplit(priorVersionNum, ".")
 	mainVer := subVersions[1], releaseVer := subVersions[2], patchVer := subVersions[3]
 
 ;	Example. This will handle changes that happened between 1.12 and current.
 	if (releaseVer < 12) {
 
 	}
+
+
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
 * * * * * * * * * * * * * *  		1.12					* * *
@@ -4233,7 +4280,7 @@ Update_Local_Settings() {
 	sect := "CUSTOMIZATION_APPEARANCE"
 	IniRead, activePreset,% iniFile,% sect,% "Active_Preset"
 	IniRead, activeSkin,% iniFile,% sect,% "Active_Skin"
-	if (activePreset = "System" || activeSkin = "System") {
+	if (activePreset = "System" || activeSkin = "System" || activePreset = "User Defined") {
 		IniDelete,% iniFile,% sect,% "Active_Preset"
 		IniDelete,% iniFile,% sect,% "Active_Skin"
 	}
@@ -4258,7 +4305,7 @@ Update_Local_Settings() {
 		if ( hotkeysMode = "Basic" ) {
 			Loop {
 				IniRead, exists,% iniFile, HOTKEYS_ADVANCED, HK%A_Index%_ADV_Toggle
-				if !(exists)
+				if (exists = "ERROR")
 					Break
 				IniWrite, 0, % iniFile, HOTKEYS_ADVANCED, HK%A_Index%_ADV_Toggle
 			}
@@ -4266,7 +4313,7 @@ Update_Local_Settings() {
 		else if ( hotkeysMode = "Advanced" ) {
 			Loop {
 				IniRead, exists,% iniFile, HOTKEYS, HK%A_Index%_Toggle
-				if !(exists)
+				if (exists = "ERROR")
 					Break
 				IniWrite, 0, % iniFile, HOTKEYS, HK%A_Index%_Toggle
 			}
@@ -4357,6 +4404,13 @@ Set_Local_Settings(){
 	IniWrite,% fileProcessName,% iniFilePath,PROGRAM,FileProcessName
 	DetectHiddenWindows, %HiddenWindows%
 
+;	Set current version, used for Update_Local_Settings()
+	IniWrite,% ProgramValues.Version,% iniFilePath,% "PROGRAM",% "Version"
+
+;	Set beta state, if version contains BETA
+	if ProgramValues.Version contains BETA
+		IniWrite, 1,% iniFilePath,% "PROGRAM",% "Update_Beta"
+
 ;	Retrieve the settings arrays
 	settingsArray := Gui_Settings_Get_Settings_Arrays()
 	sectionArray := settingsArray.sectionArray
@@ -4387,7 +4441,7 @@ Set_Local_Settings(){
 			keyName := element
 			value := %sectionName%_DefaultValues[key]
 			IniRead, var,% iniFilePath,% sectionName,% keyName
-			if ( var = "ERROR" || var = "" ) {
+			if ( var = "ERROR" || var = "" || var = "0.00" ) {
 				IniWrite,% value,% iniFilePath,% sectionName,% keyName
 			}
 		}
