@@ -199,7 +199,7 @@ Start_Script() {
 			str .= "@From poetrade quality unpriced: Hi, I would like to buy your level 20 21% Faster Attacks Support in Beta Standard (stash tab """"Shop: poe.trade unpriced""""; position: left 1, top 2)"
 
 		str .= "`n" "2016/10/09 21:30:32 105384166 355 [INFO Client 6416] "
-			str .= "@From poetrade currency: Hi, I'd like to buy your 566 chaos for my 7 exalted in Legacy. watthefuck"
+			str .= "@From poetrade currency: Hi, I'd like to buy your 566 chaos for my 7 exalted in Legacy."
 
 		; app / No qual / Level
 		str .= "`n" "2016/10/09 21:30:32 105384166 355 [INFO Client 6416] "
@@ -540,6 +540,7 @@ Filter_Logs_Message(message) {
 				newTradePrice 		= %newTradePrice%
 				newTradeLocation 	= %newTradeLocation%
 				newTradeOther 		= %newTradeOther%
+				newTradeOther 		:= StrReplace(newTradeOther, "`n", "")
 				newTradeOther 		:= ( newTradeOther && (newTradeOther = "." || newTradeOther = "`n" || newTradeOther = " ") )?("-"):(!newTradeOther)?("-"):(newTradeOther)
 
 				; Do not add the trade if the same is already in queue
@@ -1407,7 +1408,7 @@ Gui_Trades_Load_Pending_Backup() {
 		Gui_Trades("UPDATE", messagesArray)
 	}
 	
-	; FileDelete,% ProgramValues.Trades_Backup_File
+	FileDelete,% ProgramValues.Trades_Backup_File
 }
 
 Trades_GUI_Exists() {
@@ -4241,6 +4242,11 @@ Update_Local_Settings() {
 
 	}
 
+	if (priorVer = "UNKNOWN") { ; Pre 1.12. Delete skin folders to remove old assets.
+		FileRemoveDir,% ProgramValues.Skins_Folder "\System", 1
+		FileRemoveDir,% ProgramValues.Skins_Folder "\Path of Exile", 1
+	}
+
 
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
@@ -5321,34 +5327,25 @@ Get_Active_Trading_Leagues() {
 		Parse them, to keep only non-solo or non-ssf leagues
 		Return the resulting list
 */
-	apiLink := "http://api.pathofexile.com/leagues?offset=XX&compact=1"
+	apiLink := "http://api.pathofexile.com/leagues?type=main&compact=1"
 	excludedWords := "SSF,Solo"
-	activeLeagues := "Standard|Hardcore|Beta Standard|Beta Hardcore"
-	offsetCount := 6000 ; Legacy starts at 6000
+	activeLeagues := "Beta Standard|Beta Hardcore"
 
-	Loop {
-		apiLinkOffset := RegExReplace(apiLink, "XX", offsetCount)
+;	Retrieve from online API
+	whr := ComObjCreate("WinHttp.WinHttpRequest.5.1")
+	whr.Open("GET", apiLink, true) ; Using true above and WaitForResponse allows the script to r'emain responsive.
+	whr.Send()
+	whr.WaitForResponse(10) ; 10 seconds
+	leaguesJSON := whr.ResponseText
 
-		whr := ComObjCreate("WinHttp.WinHttpRequest.5.1")
-		whr.Open("GET", apiLinkOffset, true) ; Using true above and WaitForResponse allows the script to r'emain responsive.
-		whr.Send()
-		whr.WaitForResponse(10) ; 10 seconds
-		leaguesJSON := whr.ResponseText
-		parsedLeagues := JSON.Load(leaguesJSON)
-		Loop % parsedLeagues.MaxIndex() {
-			arrID := parsedLeagues[A_Index]
-			leagueEnd := RegExMatch(arrID.endAt, "(.*)-(.*)-(.*)T(.*):(.*):(.*)Z", pat)
-			leagueEndTime := pat1 . pat2 . pat3 . pat4 . pat5 . pat6
-
-			if ( arrID.startAt && (leagueEndTime > A_Now || !leagueEndTime) ) {
-				activeLeagues .= "|" arrID.ID
-			}
-		}
-		offsetCount += parsedLeagues.MaxIndex()
-		if !(parsedLeagues.MaxIndex())
-			Break
+;	Parse the leagues (JSON)
+	parsedLeagues := JSON.Load(leaguesJSON)
+	Loop % parsedLeagues.MaxIndex() {
+		arrID := parsedLeagues[A_Index]
+		activeLeagues .= "|" arrID.ID
 	}
 
+;	Remove SSF & Solo leagues
 	tradingLeagues := []
 	Loop, Parse, activeLeagues,% "D|" 
 	{
@@ -5859,7 +5856,7 @@ Extract_Skin_Files() {
 	FileInstall, Resources\Skins\White\Background.png,% skinFolder "\White\Background.png", 1
 	FileInstall, Resources\Skins\White\Header.png,% skinFolder "\White\Header.png", 1
 	FileInstall, Resources\Skins\White\TabsUnderline.png,% skinFolder "\White\TabsUnderline.png", 1
-	FileInstall, Resources\Skins\White\Icon.png,% skinFolder "\White\Icon.png", 1
+	FileInstall, Resources\Skins\White\Icon.ico,% skinFolder "\White\Icon.ico", 1
 
 
 ;	Path of Exile Skin
@@ -5904,7 +5901,7 @@ Extract_Skin_Files() {
 	FileInstall, Resources\Skins\Path of Exile\Background.png,% skinFolder "\Path of Exile\Background.png", 1
 	FileInstall, Resources\Skins\Path of Exile\Header.png,% skinFolder "\Path of Exile\Header.png", 1
 	FileInstall, Resources\Skins\Path of Exile\TabsUnderline.png,% skinFolder "\Path of Exile\TabsUnderline.png", 1
-	FileInstall, Resources\Skins\Path of Exile\Icon.png,% skinFolder "\Path of Exile\Icon.png", 1
+	FileInstall, Resources\Skins\Path of Exile\Icon.ico,% skinFolder "\Path of Exile\Icon.ico", 1
 }
 
 Extract_Sound_Files() {
@@ -6467,9 +6464,9 @@ Gui_Trades_Save_Pending_Backup() {
  */
 	global ProgramValues
 	allTrades := Gui_Trades_Manage_Trades("GET_ALL")
-	; FileDelete,% ProgramValues.Trades_Backup_File
+	FileDelete,% ProgramValues.Trades_Backup_File
 	for key, element in allTrades {
-		; IniWrite,% element,% ProgramValues.Trades_Backup_File,GENERAL,% key
+		IniWrite,% element,% ProgramValues.Trades_Backup_File,GENERAL,% key
 	}
 }
 
@@ -6589,7 +6586,7 @@ Show_Tray_Notification(title, msg, params="") {
  *		Look based on w10 traytip.
 */
 	static
-	global ProgramValues, ProgramSettings
+	global SkinAssets
 
 	local defaultGUI := A_DefaultGUI
 
@@ -6620,11 +6617,12 @@ Show_Tray_Notification(title, msg, params="") {
 	Gui, Add, Progress,% "x" 0 " y" guiHeight-borderSize " w" guiWidth " h" borderSize " Background484848" ; Bottom
 	Gui, Add, Text,% "x0 y0 w" guiWidth " h" guiHeight " BackgroundTrans gGui_TrayNotification_OnLeftClick",% ""
 
-	Gui, Add, Picture, x5 y5 w32 h32,% ProgramValues.Others_Folder "\icon.png"
+	Gui, Add, Picture, x5 y5 w24 h24 hwndhIcon,% SkinAssets.Misc_Icon
 	Gui, Font, S%guiTitleFontSize% Bold,% guiFontName
-	Gui, Add, Text,% "xp+35" " yp+10" " w" guiWidth-20 " BackgroundTrans cFFFFFF gGui_TrayNotification_OnLeftClick",% title
+	Gui, Add, Text,% "xp+35" " yp+5" " w" guiWidth-20 " BackgroundTrans cFFFFFF gGui_TrayNotification_OnLeftClick",% title
 	Gui, Font, S%guiFontSize% Norm,% guiFontName
-	Gui, Add, Text,% "x10" " yp+25" " w" guiWidth-25 " BackgroundTrans ca5a5a5 gGui_TrayNotification_OnLeftClick",% msg
+	Gui, Add, Text,% "xp" " yp+25" " w" guiWidth-35 " BackgroundTrans ca5a5a5 gGui_TrayNotification_OnLeftClick",% msg
+	GuiControl, TrayNotification:Move,% hIcon,% "y" (guiHeight/2) - (24/2)
 	Gui, Show,% "x" showX " y" showY " w" showW " h" showH " NoActivate"
 	Loop {
 		showW += 25
