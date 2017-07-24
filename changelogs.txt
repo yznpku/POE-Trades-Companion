@@ -1,4 +1,31 @@
 \\
+--1.12.BETA_1--
+Skinning is now easier than ever.
+If you are interested into making your own skin, visit here:
+https://github.com/lemasato/POE-Trades-Companion/wiki/Creating-Your-Skin
+
+What's new:
+- The Trades GUI has been greatly improved. See the link at the top.
+The "System" theme has been replaced with the new "White" theme.
+The PoE theme has also seen many visual changes, and has been adapted to the new Skinning system.
+- More customisation is available in the "Customization > Appearance" tab, in the Settings.
+- Leagues are now retrieven from the online API.
+- All type of whisper received from poeapp.com should now be working correctly.
+
+What's changed:
+- Fonts now need to be installed on your system for the Trades GUI to function correctly.
+All fonts inside the program's local font folder will automatically be installed, using FontReg.
+- Slight visual change to the tray notifications.
+
+What's fixed:
+- The "Overlay" mode would not function as intended.
+Overlay mode is used to dock the Trades GUI to the top right of your game's window.
+- When changing settings from the "Appearance" tab, a new fake trade request is created on the Trades GUI, to make previewing changes easier.
+This tab would no longer appear since 1.10. Additionally, stats from this tab will not be saved.
+//
+
+
+\\
 --1.11.3--
 Fixes:
 - New whispers from the same buyer would not be added to its "Other:" slot.
