@@ -2,7 +2,7 @@
 --1.12.BETA_1--
 Skinning is now easier than ever.
 If you are interested into making your own skin, visit here:
-https://github.com/lemasato/POE-Trades-Companion/wiki/Creating-Your-Skin
+github.com/lemasato/POE-Trades-Companion/wiki/Creating-Your-Skin
 
 What's new:
 - The Trades GUI has been greatly improved. See the link at the top.
