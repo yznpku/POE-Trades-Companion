@@ -33,6 +33,10 @@ DllCall( "RegisterShellHookWindow", UInt,Hwnd )
 MsgNum := DllCall( "RegisterWindowMessage", Str,"SHELLHOOK" )
 OnMessage( MsgNum, "ShellMessage")
 
+;Constants
+global JOINED := 1 
+global NEW_MESSAGE := 2
+
 Start_Script()
 Return
 
@@ -190,7 +194,7 @@ Start_Script() {
 	Load_Skin_Assets()
 	Gui_Trades("CREATE")
 
-	if ( ProgramValues["Debug"] ) {
+	if (ProgramValues["Debug"]) {
 		; trade / No qual / Level
 		str := "2016/10/09 21:30:32 105384166 355 [INFO Client 6416] "
 			str .= "@From poetrade quality: Hi, I would like to buy your level 10 11% Faster Attacks Support listed for 5 alteration in Legacy (stash tab """"Shop: Gems""""; position: left 10, top 11) Offering 1alch?"
@@ -311,8 +315,10 @@ Filter_Logs_Message(message) {
 					else { ; Does not contains text, do not include previous text
 						otherText := "(Hover to see all messages)`n" "[" A_Hour ":" A_Min "] " whispMsg
 					}
-					setInfos := { OTHER:otherText, TabID:A_Index }
+					setInfos := { OTHER:otherText, TabID:A_Index, NewMsg:1 }
+
 					Gui_Trades_Set_Trades_Infos(setInfos)
+					GUI_Trades_Update_Tab_Style(A_Index)
 				}
 			}
 
@@ -568,7 +574,10 @@ Filter_Logs_Message(message) {
 									  ,Time:A_Hour ":" A_Min
 									  ,Other:newTradeOther
 									  ,Date:A_YYYY "-" A_MM "-" A_DD
-									  ,Guild:whispGuild}
+									  ,Guild:whispGuild
+									  ,InArea:0
+									  ,NewMsg:0
+									  ,Style:0}
 					messagesArray := Gui_Trades_Manage_Trades("ADD_NEW", newTradesInfos)
 					Gui_Trades("UPDATE", messagesArray)
 
@@ -587,6 +596,46 @@ Filter_Logs_Message(message) {
 				}
 			}
 		}
+		; Check if a buyer has joined or left the area 
+		areaRegexStr := (ProgramValues["Debug"] != 0 )
+			? ("^(?:[^ ]+ ){6}(\d+)\](?:.*) : (.*?) (?:has) (joined|left) (?:the area.*)") ; matches ' : {name} has {joined|left} ..' from chat as well 
+			: ("^(?:[^ ]+ ){6}(\d+)\] : (.*?) (?:has) (joined|left) (?:the area.*)") 
+
+		if ( RegExMatch( A_LoopField, areaRegexStr, subPat ) ) {
+			gamePID := subPat1, whispName := subPat2, areaStatus := subPat3
+			TradesGUI_Values.Last_Whisper := whispName
+			; Check if player has pending trade
+			tradesInfos := Gui_Trades_Manage_Trades("GET_ALL")
+			updateCount := 0
+			Loop % tradesInfos.Max_Index {
+				if (whispName = tradesInfos[A_Index "_Buyer"]) {
+
+					; Check if the player is already in the area
+					if ( areaStatus = "joined" && !tradesInfos[A_Index "_InArea"]) {
+						GUI_Trades_Set_InArea(A_Index)
+						GUI_Trades_Update_Tab_Style(A_Index)
+						; Play sound and alert
+						; if ( ProgramSettings.Joined_Toggle = 1 ) && FileExist(ProgramSettings.Joined_Sound_Path) { 
+						; 	SoundPlay,% ProgramSettings.Joined_Sound_Path
+						; }
+						if ( ProgramSettings.Trade_Toggle = 1 ) && FileExist(ProgramSettings.Trade_Sound_Path) { ; Play the sound set for trades
+							SoundPlay,% ProgramSettings.Trade_Sound_Path
+						}
+						if !WinActive("ahk_pid " gamePID) {
+							if ( ProgramSettings.Whisper_Flash ) {
+							gameHwnd := WinExist("ahk_pid " gamePID)
+							DllCall("FlashWindow", UInt, gameHwnd, Int, 1)
+							}
+						}
+					} else if (areaStatus = "left" && tradesInfos[A_Index "_InArea"] = 1) {
+						GUI_Trades_Set_InArea(A_Index, 0)
+						GUI_Trades_Update_Tab_Style(A_Index)
+					}
+				}
+			}
+
+		}
+		; End of area joined
 	}
 }
 
@@ -770,6 +819,11 @@ Gui_Trades(mode="", tradeInfos="") {
 				              			, [0, SkinAssets.Close_Tab_Hover, "", colorButtonHover, "", pngTransColor]
 				    	      			, [0, SkinAssets.Close_Tab_Press, "", colorButtonPress, "", pngTransColor] ]
 
+		; Add Tab Styles to ProgramValues for later use
+		ProgramValues.IBStyle_Tab := IBStyle_Tab
+		ProgramValues.IBStyle_Tab_Whisper := IBStyle_Tab_Whisper
+		ProgramValues.IBStyle_Tab_Joined := IBStyle_Tab_Joined
+
 		Gui, Trades:Destroy
 		Gui, Trades:New, +ToolWindow +AlwaysOnTop -Border +hwndGuiTradesHandler +LabelGui_Trades_ +LastFound -SysMenu -Caption
 		Gui, Trades:Default
@@ -829,19 +883,40 @@ Gui_Trades(mode="", tradeInfos="") {
 ; - - - - - Tabs
 		Loop %maxTabsRendered% {
 			btnPos := (A_Index=1)?("x" borderSize*scaleMult " ys+" 30*scaleMult " w" 40*scaleMult " h" 25*scaleMult):(A_Index > maxTabsRow)?("xp yp wp hp"):("xp+40 yp wp hp")
+			
+			; Default Tab
 			Gui, Add, Button,%btnPos% gGui_Trades_SetActiveTab vTab%A_Index% hWndhTab%A_Index% Section,% A_Index
 			if !ImageButton.Create(hTab%A_Index%, IBStyle_Tab*)
-				MsgBox, 0, ImageButton Error Tab, % ImageButton.LastError
+				MsgBox, 0, ImageButton Error Tab%A_Index% Default, % ImageButton.LastError
 
 			GuiControl,Trades:Hide,% hTab%A_Index%
-			TradesGUI_Controls["Tab_" A_Index] 				:= hTab%A_Index%
+			TradesGUI_Controls["TabDefault_" A_Index] := hTab%A_Index%
+
+			; Joined Tab
+			btnPos := "xp yp wp hp"
+			Gui, Add, Button,%btnPos% gGui_Trades_SetActiveTab vTabJoined%A_Index% hWndhTabJoined%A_Index% Section,% A_Index
+			if !ImageButton.Create(hTabJoined%A_Index%, IBStyle_Tab_Joined*)
+				MsgBox, 0, ImageButton Error Tab%A_Index% Joined, % ImageButton.LastError
+
+			GuiControl,Trades:Hide,% hTabJoined%A_Index%
+			TradesGUI_Controls["TabJoined_" A_Index] := hTabJoined%A_Index%
+
+			; Whisper tab
+			Gui, Add, Button,%btnPos% gGui_Trades_SetActiveTab vTabMsg%A_Index% hWndhTabMsg%A_Index% Section,% A_Index
+			if !ImageButton.Create(hTabMsg%A_Index%, IBStyle_Tab_Whisper*)
+				MsgBox, 0, ImageButton Error Tab%A_Index% Whisper, % ImageButton.LastError
+
+			GuiControl,Trades:Hide,% hTabMsg%A_Index%
+			TradesGUI_Controls["TabMsg_" A_Index] := hTabMsg%A_Index%
+
+			TradesGUI_Controls["Tab_" A_Index] := hTab%A_Index%
 		}
 
 		Loop % maxTabsRow {
 			btnPos := (A_Index=1)?("x" borderSize*scaleMult " yp w0 h0"):(A_Index > maxTabsRow)?("xp yp wp hp"):("xp+" 40*scaleMult " yp wp hp")
 
 			Gui, Add, Text,%btnPos% hWndhTabSlot%A_Index%,% ""
-			TradesGUI_Controls["Tab_Slot_" A_Index] 		:= hTabSlot%A_Index%
+			TradesGUI_Controls["Tab_Slot_" A_Index] := hTabSlot%A_Index%
 		}
 
 ; - - - - - Left / Right arrows and Close
@@ -888,6 +963,8 @@ Gui_Trades(mode="", tradeInfos="") {
 			Gui, Add, Text,% "x0 y0 w0 h0 vPIDSlot" A_Index " hwndPIDSlot" A_Index "Handler",% ""
 			Gui, Add, Text,% "x0 y0 w0 h0 vDateSlot" A_Index " hwndDateSlot" A_Index "Handler",% ""
 			Gui, Add, Text,% "x0 y0 w0 h0 vGuildSlot" A_Index " hwndGuildSlot" A_Index "Handler",% ""
+			Gui, Add, Text,% "x0 y0 w0 h0 vInAreaSlot" A_Index " hwndInAreaSlot" A_Index "Handler",% ""
+			Gui, Add, Text,% "x0 y0 w0 h0 vNewMsgSlot" A_Index " hwndNewMsgSlot" A_Index "Handler",% ""
 
 			TradesGUI_Controls["Buyer_Slot_" A_Index] 			:= BuyerSlot%A_Index%Handler
 			TradesGUI_Controls["Item_Slot_" A_Index] 			:= ItemSlot%A_Index%Handler
@@ -898,6 +975,8 @@ Gui_Trades(mode="", tradeInfos="") {
 			TradesGUI_Controls["PID_Slot_" A_Index] 			:= PIDSlot%A_Index%Handler
 			TradesGUI_Controls["Date_Slot_" A_Index] 			:= DateSlot%A_Index%Handler
 			TradesGUI_Controls["Guild_Slot_" A_Index] 			:= GuildSlot%A_Index%Handler
+			TradesGUI_Controls["InArea_Slot_" A_Index] 			:= InAreaSlot%A_Index%Handler
+			TradesGUI_Controls["NewMsg_Slot_" A_Index] 			:= NewMsgSlot%A_Index%Handler
 		}
 
 ; - - - - - TC_Symbols buttons
@@ -1081,6 +1160,10 @@ Gui_Trades(mode="", tradeInfos="") {
 			GuiControl, Trades:,% OtherSlot%A_Index%Handler,% tradeInfos[A_Index "_Other"]
 			GuiControl, Trades:,% DateSlot%A_Index%Handler,% tradeInfos[A_Index "_Date"]
 			GuiControl, Trades:,% GuildSlot%A_Index%Handler,% tradeInfos[A_Index "_Guild"]
+			GuiControl, Trades:,% InAreaSlot%A_Index%Handler,% tradeInfos[A_Index "_InArea"]
+			GuiControl, Trades:,% NewMsgSlot%A_Index%Handler,% tradeInfos[A_Index "_NewMsg"]
+			GuiControl,,% TradesGUI_Controls["Tab_" A_Index],% A_Index
+			GUI_Trades_Update_Tab_Style(A_Index)
 		}
 		Gui_Trades_Adjust_Tabs() ; Hide or show tabs controls, based on tabsCount
 
@@ -1622,7 +1705,10 @@ Gui_Trades_Skinned_Arrow_Left(val="") {
 			GuiControl, Trades:Show,% TradesGUI_Controls["Tab_" newFirstVisible] ; New first tab has to be shown
 		}
 		tabSlotCoords := Get_Control_Coords("Trades", TradesGUI_Controls["Tab_Slot_" index]) ; Get the tab slot coords
-		GuiControl, Trades:Move,% TradesGUI_Controls["Tab_" tabMoving],% "x" tabSlotCoords.X " y" tabSlotCoords.Y
+		; Move each style of tab with default
+		GuiControl, Trades:Move,% TradesGUI_Controls["TabDefault_" tabMoving],% "x" tabSlotCoords.X " y" tabSlotCoords.Y
+		GuiControl, Trades:Move,% TradesGUI_Controls["TabMsg_" tabMoving],% "x" tabSlotCoords.X " y" tabSlotCoords.Y
+		GuiControl, Trades:Move,% TradesGUI_Controls["TabJoined_" tabMoving],% "x" tabSlotCoords.X " y" tabSlotCoords.Y
 		index++, tabMoving++ ; Move onto the next tab
 	}
 	GuiControl, Trades:Hide,% TradesGUI_Controls["Tab_" tabMoving] ; Hide the previously latest tab
@@ -1651,7 +1737,10 @@ Gui_Trades_Skinned_Arrow_Right(goFar=0) {
 			GuiControl, Trades:Show,% TradesGUI_Controls["Tab_" newLastVisible] ; New last tab has to be shown
 		}
 		tabSlotCoords := Get_Control_Coords("Trades", TradesGUI_Controls["Tab_Slot_" index])
-		GuiControl, Trades:Move,% TradesGUI_Controls["Tab_" tabMoving],% "x" tabSlotCoords.X " y" tabSlotCoords.Y
+		; Move each style of tab with default
+		GuiControl, Trades:Move,% TradesGUI_Controls["TabDefault_" tabMoving],% "x" tabSlotCoords.X " y" tabSlotCoords.Y
+		GuiControl, Trades:Move,% TradesGUI_Controls["TabMsg_" tabMoving],% "x" tabSlotCoords.X " y" tabSlotCoords.Y
+		GuiControl, Trades:Move,% TradesGUI_Controls["TabJoined_" tabMoving],% "x" tabSlotCoords.X " y" tabSlotCoords.Y
 		index--, tabMoving--
 	}
 	GuiControl, Trades:Hide,% TradesGUI_Controls["Tab_" tabMoving] ; Hide the previously first tab
@@ -1972,6 +2061,8 @@ Gui_Trades_Get_Trades_Infos(tabID){
 	GuiControlGet, tabTime, Trades:,% TradesGUI_Controls["Time_Slot_" tabID]
 	GuiControlGet, tabDate, Trades:,% TradesGUI_Controls["Date_Slot_" tabID]
 	GuiControlGet, tabGuild, Trades:,% TradesGUI_Controls["Guild_Slot_" tabID]
+	GuiControlGet, tabInArea, Trades:,% TradesGUI_Controls["InArea_Slot_" tabID]
+	GuiControlGet, tabNewMsg, Trades:,% TradesGUI_Controls["NewMsg_Slot_" tabID]
 
 	if RegExMatch(tabLocation, "(.*)\(Tab:(.*) / Pos:(.*)\)", tabLocationPat) 
 		leagueName := tabLocationPat1, stashName := tabLocationPat2, stashPos := tabLocationPat3
@@ -1998,7 +2089,9 @@ Gui_Trades_Get_Trades_Infos(tabID){
 				,PID:tabPID
 				,Time:tabTime
 				,Date_YYYYMMDD:tabDate
-				,TabID:tabID}
+				,TabID:tabID
+				,InArea:tabInArea
+				,NewMsg:tabNewMsg}
 
 	return tabInfos
 }
@@ -2074,6 +2167,7 @@ Gui_Trades_Set_Trades_Infos(setInfos){
 	global TradesGUI_Controls
 
 	newPID := setInfos.NewPID, oldPID := setInfos.OldPID, other := setInfos.Other, tabID := setInfos.TabID
+	newMsg := setInfos.NewMsg
 
 	if ( newPID ) {
 		; Replace the PID for all trades matching the same PID
@@ -2087,6 +2181,7 @@ Gui_Trades_Set_Trades_Infos(setInfos){
 
 	else if ( other ) {
 		GuiControl,Trades:,% TradesGUI_Controls["Other_Slot_" tabID],% other
+		GuiControl,Trades:,% TradesGUI_Controls["NewMsg_Slot_" tabID],% newMsg
 	}
 }
 
@@ -2190,7 +2285,25 @@ Gui_Trades_Manage_Trades(mode, newItemInfos="", activeTabID=""){
 			}
 			else break
 		}
-
+	;	___InArea___
+		Loop {
+			inAreaCount := A_Index
+			GuiControlGet, content, Trades:,% TradesGUI_Controls["InArea_Slot_" A_Index]
+			if ( content != "") {
+				returnArray.Insert(A_Index "_InArea", content)
+			}
+			else break
+		}
+	;	___NewMsg___
+		Loop {
+			newMsgCount := A_Index
+			GuiControlGet, content, Trades:,% TradesGUI_Controls["NewMsg_Slot_" A_Index]
+			if ( content != "" ) {
+				returnArray.Insert(A_Index "_NewMsg", content)
+			}
+			else break
+		}
+	
 		returnArray.Insert("Max_Index", actualTabsCount)
 	}
 
@@ -2204,6 +2317,8 @@ Gui_Trades_Manage_Trades(mode, newItemInfos="", activeTabID=""){
 		returnArray.Insert(otherCount "_Other", newItemInfos.Other)
 		returnArray.Insert(datesCount "_Date", newItemInfos.Date)
 		returnArray.Insert(guildsCount "_Guild", newItemInfos.Guild)
+		returnArray.Insert(inAreaCount "_InArea", newItemInfos.InArea)
+		returnArray.Insert(newMsgCount "_NewMsg", newItemInfos.NewMsg)
 		returnArray.Insert("Max_Index", bCount)
 	}
 
@@ -2352,6 +2467,38 @@ Gui_Trades_Manage_Trades(mode, newItemInfos="", activeTabID=""){
 		}
 		counter--
 		GuiControl,Trades:,% TradesGUI_Controls["Guild_Slot_" counter],% ""
+
+;	___InArea___
+		Loop {
+			if ( A_Index < btnID )
+				counter := A_Index
+			else if ( A_Index >= btnID )
+				counter := A_Index+1
+			GuiControlGet, content, Trades:,% TradesGUI_Controls["InArea_Slot_" counter]
+			if ( content != "") {
+				index := A_Index
+				returnArray.Insert(index "_InArea", content)
+			}
+			else break
+		}
+		counter--
+		GuiControl,Trades:,% TradesGUI_Controls["InArea_Slot_" counter],% ""
+
+;	___NewMsg___
+		Loop {
+			if ( A_Index < btnID )
+				counter := A_Index
+			else if ( A_Index >= btnID )
+				counter := A_Index+1
+			GuiControlGet, content, Trades:,% TradesGUI_Controls["NewMsg_Slot_" counter]
+			if ( content != "") {
+				index := A_Index
+				returnArray.Insert(index "_NewMsg", content)
+			}
+			else break
+		}
+		counter--
+		GuiControl,Trades:,% TradesGUI_Controls["NewMsg_Slot_" counter],% ""
 
 	}
 
@@ -5120,6 +5267,8 @@ WM_MOUSEMOVE(wParam, lParam, msg, hwnd) {
 			GuiControlGet, content,Trades:,% btnHandler
 			ctrlPos := Get_Control_Coords("Trades", btnHandler)
 			WinGetPos, tradesXPOS, tradesYPOS
+			; Tooltip for other text needs to be lower so we get the right GUIControl on click
+			ctrlPos.Y := (btnType = "OtherSlot") ? ctrlPos.Y+15 : ctrlPos.Y
 			ToolTip, % content,% tradesXPOS+ctrlPOS.X,% tradesYPOS+ctrlPOS.Y
 			MouseGetPos, mouseX, mouseY
 			global Remove_ToolTip_OnMouseMove_Values := {X:mouseX, Y:mouseY, Treshold_X:100, Treshold_Y:10}
@@ -5169,6 +5318,14 @@ WM_MOUSEMOVE(wParam, lParam, msg, hwnd) {
 
 WM_LBUTTONDOWN(wParam, lParam, msg, hwnd) {
 	global TradesGUI_Values, ProgramValues, TradesGUI_Controls, ProgramSettings
+	RegExMatch(A_GuiControl, "\D+", btnType)
+	RegExMatch(A_GuiControl, "\d+", btnID)
+
+	; Remove message notification when user clicks on other_slot
+	if (btnType = "OtherSlot") {
+		GUI_Trades_Set_NewMsg(btnID, 0)
+		GUI_Trades_Update_Tab_Style(btnId)
+	}
 /*	Used for the pre 1.12 skinning system.
 	Would switch the button asset based on hover/click state
 
@@ -6773,6 +6930,62 @@ Fade_Tray_Notification() {
 	Gui, TrayNotification:Destroy
 }
 
+; GUI_Trades_Set_NewMsg ,GUI_Trades_Set_InArea: Both default to 1
+GUI_Trades_Set_NewMsg(tabId, value = 1) {
+	global TradesGUI_Controls
+	GuiControl,Trades:,% TradesGUI_Controls["NewMsg_Slot_" tabId],% value
+}
+GUI_Trades_Set_InArea(tabId, value = 1) {
+	global TradesGUI_Controls
+	GuiControl,Trades:,% TradesGUI_Controls["InArea_Slot_" tabId],% value
+}
+
+Gui_Trades_Update_Tabs() {
+	global TradesGui_Values, TradesGui_Controls, ProgramSettings
+	tabsCount  := TradesGui_Values.Tabs_Count
+	Loop %tabsCount% {
+		GUI_Trades_Update_Tab_Style(A_Index)
+	}
+}
+
+GUI_Trades_Update_Tab_Style(tabId) {
+	Global TradesGUI_Controls, TradesGUI_Values, ProgramValues
+
+	oldTab := TradesGUI_Controls["Tab_" tabID]
+	GuiControlGet, isVisible, Visible,% oldTab
+
+	tabInfos := Gui_Trades_Get_Trades_Infos(tabID)
+	if (tabInfos.InArea = 1) {
+		TradesGUI_Controls["Tab_" tabId] := TradesGUI_Controls["TabJoined_" tabId]
+	} else	if (tabInfos.NewMsg = 1) {
+		TradesGUI_Controls["Tab_" tabId] := TradesGUI_Controls["TabMsg_" tabId]
+	} else {
+		TradesGUI_Controls["Tab_" tabId] := TradesGUI_Controls["TabDefault_" tabId]
+	}
+	if (isVisible = 1) {
+		GuiControl,Hide,% oldTab
+		GuiControl,Show,% TradesGUI_Controls["Tab_" tabID]
+	}
+
+	if (tabId = TradesGUI_Values.Active_Tab) {
+		Gui_Trades_SetActiveTab_Func(tabId)
+	}
+
+
+}
+
+
+; For Debugging, pause script and output a  message to MsgBox
+Pause_MSG(msg = "") {
+	if (msg != "") {
+		MsgBox, 0, Paused, % msg
+	}
+	Pause
+}
+if (programValues["Debug"]) {
+	Pause::Pause
+	ScrollLock::Gui_Trades_Update_Tabs()
+}
 
 #Include %A_ScriptDir%/Resources/AHK/
 #Include BinaryEncodingDecoding.ahk
