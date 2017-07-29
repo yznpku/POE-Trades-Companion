@@ -576,8 +576,7 @@ Filter_Logs_Message(message) {
 									  ,Date:A_YYYY "-" A_MM "-" A_DD
 									  ,Guild:whispGuild
 									  ,InArea:0
-									  ,NewMsg:0
-									  ,Style:0}
+									  ,NewMsg:0}
 					messagesArray := Gui_Trades_Manage_Trades("ADD_NEW", newTradesInfos)
 					Gui_Trades("UPDATE", messagesArray)
 
