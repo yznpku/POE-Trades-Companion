@@ -256,10 +256,14 @@ Update_Skin_Preset() {
 	iniSect 			:= "CUSTOMIZATION_APPEARANCE"
 	iniKeys 			:= ["Color_Title_Active","Color_Title_Inactive","Color_Trades_Infos_1","Color_Trades_Infos_2","Color_Border"
 						   ,"Color_Tab_Active","Color_Tab_Inactive","Color_Tab_Hover","Color_Tab_Press"
+						   ,"Color_Tab_Joined_Active","Color_Tab_Joined_Inactive","Color_Tab_Joined_Hover","Color_Tab_Joined_Press"
+						   ,"Color_Tab_Whisper_Active","Color_Tab_Whisper_Inactive","Color_Tab_Whisper_Hover","Color_Tab_Whisper_Press"
 						   ,"Color_Button_Normal","Color_Button_Hover","Color_Button_Press"]
 	skinSect 			:= "COLORS"
 	skinKeys 			:= ["Title_Trades","Title_No_Trades","Trade_Info_1","Trade_Info_2","Border"
 						   ,"Tab_Active","Tab_Inactive","Tab_Hover","Tab_Press"
+						   ,"Tab_Joined_Active","Tab_Joined_Inactive","Tab_Joined_Hover","Tab_Joined_Press"
+						   ,"Tab_Whisper_Active","Tab_Whisper_Inactive","Tab_Whisper_Hover","Tab_Whisper_Press"
 						   ,"Button_Normal","Button_Hover","Button_Press"]
 	for id, key in skinKeys {
 		IniRead, value,% skinSettingsFile,% skinSect,% key
@@ -695,20 +699,30 @@ Gui_Trades(mode="", tradeInfos="") {
 	if ( mode = "CREATE" ) {
 		Load_Skin_Assets()
 
-		colorTitleActive 	:= (ProgramSettings.Color_Title_Active = "000000")?("Black"):("0x" ProgramSettings.Color_Title_Active)
-		colorTitleInactive 	:= (ProgramSettings.Color_Title_Inactive = "000000")?("Black"):("0x" ProgramSettings.Color_Title_Inactive)
-		colorTradesInfos1 	:= (ProgramSettings.Color_Trades_Infos_1 = "000000")?("Black"):("0x" ProgramSettings.Color_Trades_Infos_1)
-		colorTradesInfos2 	:= (ProgramSettings.Color_Trades_Infos_2 = "000000")?("Black"):("0x" ProgramSettings.Color_Trades_Infos_2)
-		colorBorder 		:= (ProgramSettings.Color_Border = "000000")?("Black"):("0x" ProgramSettings.Color_Border)
+		colorTitleActive 			:= (ProgramSettings.Color_Title_Active = "000000")?("Black"):("0x" ProgramSettings.Color_Title_Active)
+		colorTitleInactive 			:= (ProgramSettings.Color_Title_Inactive = "000000")?("Black"):("0x" ProgramSettings.Color_Title_Inactive)
+		colorTradesInfos1 			:= (ProgramSettings.Color_Trades_Infos_1 = "000000")?("Black"):("0x" ProgramSettings.Color_Trades_Infos_1)
+		colorTradesInfos2 			:= (ProgramSettings.Color_Trades_Infos_2 = "000000")?("Black"):("0x" ProgramSettings.Color_Trades_Infos_2)
+		colorBorder 				:= (ProgramSettings.Color_Border = "000000")?("Black"):("0x" ProgramSettings.Color_Border)
 
-		colorButtonNormal 	:= (ProgramSettings.Color_Button_Normal = "000000")?("Black"):("0x" ProgramSettings.Color_Button_Normal)
-		colorButtonHover 	:= (ProgramSettings.Color_Button_Hover = "000000")?("Black"):("0x" ProgramSettings.Color_Button_Hover)
-		colorButtonPress 	:= (ProgramSettings.Color_Button_Press = "000000")?("Black"):("0x" ProgramSettings.Color_Button_Press)
+		colorButtonNormal 			:= (ProgramSettings.Color_Button_Normal = "000000")?("Black"):("0x" ProgramSettings.Color_Button_Normal)
+		colorButtonHover 			:= (ProgramSettings.Color_Button_Hover = "000000")?("Black"):("0x" ProgramSettings.Color_Button_Hover)
+		colorButtonPress 			:= (ProgramSettings.Color_Button_Press = "000000")?("Black"):("0x" ProgramSettings.Color_Button_Press)
 
-		colorTabActive 		:= (ProgramSettings.Color_Tab_Active = "000000")?("Black"):("0x" ProgramSettings.Color_Tab_Active)
-		colorTabInactive 	:= (ProgramSettings.Color_Tab_Inactive = "000000")?("Black"):("0x" ProgramSettings.Color_Tab_Inactive)
-		colorTabHover 		:= (ProgramSettings.Color_Tab_Hover = "000000")?("Black"):("0x" ProgramSettings.Color_Tab_Hover)
-		colorTabPress 		:= (ProgramSettings.Color_Tab_Press = "000000")?("Black"):("0x" ProgramSettings.Color_Tab_Press)
+		colorTabActive 				:= (ProgramSettings.Color_Tab_Active = "000000")?("Black"):("0x" ProgramSettings.Color_Tab_Active)
+		colorTabInactive 			:= (ProgramSettings.Color_Tab_Inactive = "000000")?("Black"):("0x" ProgramSettings.Color_Tab_Inactive)
+		colorTabHover 				:= (ProgramSettings.Color_Tab_Hover = "000000")?("Black"):("0x" ProgramSettings.Color_Tab_Hover)
+		colorTabPress 				:= (ProgramSettings.Color_Tab_Press = "000000")?("Black"):("0x" ProgramSettings.Color_Tab_Press)
+
+		colorTabJoinedActive 		:= (ProgramSettings.Color_Tab_Joined_Active = "000000")?("Black"):("0x" ProgramSettings.Color_Tab_Joined_Active)
+		colorTabJoinedInactive 		:= (ProgramSettings.Color_Tab_Joined_Inactive = "000000")?("Black"):("0x" ProgramSettings.Color_Tab_Joined_Inactive)
+		colorTabJoinedHover 		:= (ProgramSettings.Color_Tab_Joined_Hover = "000000")?("Black"):("0x" ProgramSettings.Color_Tab_Joined_Hover)
+		colorTabJoinedPress 		:= (ProgramSettings.Color_Tab_Joined_Press = "000000")?("Black"):("0x" ProgramSettings.Color_Tab_Joined_Press)
+
+		colorTabWhisperActive 		:= (ProgramSettings.Color_Tab_Whisper_Active = "000000")?("Black"):("0x" ProgramSettings.Color_Tab_Whisper_Active)
+		colorTabWhisperInactive 	:= (ProgramSettings.Color_Tab_Whisper_Inactive = "000000")?("Black"):("0x" ProgramSettings.Color_Tab_Whisper_Inactive)
+		colorTabWhisperHover 		:= (ProgramSettings.Color_Tab_Whisper_Hover = "000000")?("Black"):("0x" ProgramSettings.Color_Tab_Whisper_Hover)
+		colorTabWhisperPress 		:= (ProgramSettings.Color_Tab_Whisper_Press = "000000")?("Black"):("0x" ProgramSettings.Color_Tab_Whisper_Press)
 
 		pngTransColor 		:= (SkinAssets.Misc_Transparency_Color = "000000")?("Black"):("0x" SkinAssets.Misc_Transparency_Color)
 
@@ -717,6 +731,16 @@ Gui_Trades(mode="", tradeInfos="") {
 				              			, [0, SkinAssets.Tab_Hover, "", colorTabHover, "", pngTransColor]				; hover
 				    	      			, [0, SkinAssets.Tab_Press, "", colorTabPress, "", pngTransColor]				; pressed
 							  			, [0, SkinAssets.Tab_Active, "", colorTabActive, "", pngTransColor] ]			; disabled (defaulted)
+
+		IBStyle_Tab_Joined :=			[ [0, SkinAssets.Tab_Joined_Inactive, "", colorTabJoinedInactive, "", pngTransColor]
+				              			, [0, SkinAssets.Tab_Joined_Hover, "", colorTabJoinedHover, "", pngTransColor]
+				    	      			, [0, SkinAssets.Tab_Joined_Press, "", colorTabJoinedPress, "", pngTransColor]
+							  			, [0, SkinAssets.Tab_Joined_Active, "", colorTabJoinedActive, "", pngTransColor] ]
+
+		IBStyle_Tab_Whisper :=			[ [0, SkinAssets.Tab_Whisper_Inactive, "", colorTabWhisperInactive, "", pngTransColor]
+				              			, [0, SkinAssets.Tab_Whisper_Hover, "", colorTabWhisperHover, "", pngTransColor]
+				    	      			, [0, SkinAssets.Tab_Whisper_Press, "", colorTabWhisperPress, "", pngTransColor]
+							  			, [0, SkinAssets.Tab_Whisper_Active, "", colorTabWhisperActive, "", pngTransColor] ]
 
 		IBStyle_Arrow_Left :=			[ [0, SkinAssets.Arrow_Left_Normal, "", colorButtonNormal, "", pngTransColor]
 				              			, [0, SkinAssets.Arrow_Left_Hover, "", colorButtonHover, "", pngTransColor]
@@ -2518,19 +2542,25 @@ Gui_Settings() {
 	Gui, Add, GroupBox,% "x" guiXWorkArea . " y" guiYWorkArea+235 . " w430 h75" . " c000000",Colors
 
 		Gui, Add, Text,% "xp+10 yp+23",% "Select an element:"
-		Gui, Add, DropDownList,% "xp+100 yp-3 w100 vFontsColors hwndFontsColorsHandler gGui_Settings_Fonts_Color_DropDownList AltSubmit",% "Border|Button (Normal)|Button (Hover)|Button (Press)"
+		Gui, Add, DropDownList,% "xp+100 yp-3 w150 vFontsColors hwndFontsColorsHandler gGui_Settings_Fonts_Color_DropDownList AltSubmit",% "Border|Button (Normal)|Button (Hover)|Button (Press)"
 																						. "|Title (Active)|Title (Inactive)|Trade Infos (1)|Trade Infos (2)"
 																						. "|Tab (Active)|Tab (Inactive)|Tab (Hover)|Tab (Press)"
-		Loop 12 {
-			ctrlPos 	:= (A_Index=1)?("xp+110 yp w60 "):("xp yp wp ")
+																						. "|Tab Joined (Active)|Tab Joined (Inactive)|Tab Joined (Hover)|Tab Joined (Press)"
+																						. "|Tab Whisper (Active)|Tab Whisper (Inactive)|Tab Whisper (Hover)|Tab Whisper (Press)"
+		Loop {
+			ctrlPos 	:= (A_Index=1)?("xp+160 yp w60 "):("xp yp wp ")
 			ctrlVars 	:= ["BorderColor","ButtonNormalColor","ButtonHoverColor","ButtonPressColor"
 					       ,"TitleActiveColor","TitleInactiveColor","TradesInfos1Color","TradesInfos2Color"
-					       ,"TabActiveColor","TabInactiveColor","TabHoverColor","TabPressColor"]
+					       ,"TabActiveColor","TabInactiveColor","TabHoverColor","TabPressColor"
+					       ,"TabJoinedActiveColor","TabJoinedInactiveColor","TabJoinedHoverColor","TabJoinedPressColor"
+						   ,"TabWhisperActiveColor","TabWhisperInactiveColor","TabWhisperHoverColor","TabWhisperPressColor"]
+			if (!ctrlVars[A_Index])
+				Break
 			Gui, Add, Edit,% ctrlPos " v" ctrlVars[A_Index] " hwnd" ctrlVars[A_Index] "Handler gGui_Settings_Fonts_Color_Preview Hidden Limit6"
 		}
 		ctrlPos := "", ctrlVars := ""
 		Gui, Add, Progress,% "xp+70 yp w22 h22 Background000000 vFontsColorsPreview hwndFontsColorPreviewHandler Hidden"
-		Gui, Add, Text,% "xp-280 yp+25 vFontsColorsTip hwndFontsColorsTipsHandler",% "Description of the selected element will appear here."
+		Gui, Add, Text,% "xp-330 yp+25 vFontsColorsTip hwndFontsColorsTipsHandler",% "Description of the selected element will appear here."
 
 		Gui, Add, Link,% "x" guiXWorkArea + 80 . " y" guiYWorkArea+235,% "(<a href=""http://hslpicker.com/"">HSL Color Picker</a> - Get the 6 chars code starting with #) "
 
@@ -2716,10 +2746,14 @@ return
 
 		ctrlVars := ["BorderColor","ButtonNormalColor","ButtonHoverColor","ButtonPressColor"
 					,"TitleActiveColor","TitleInactiveColor","TradesInfos1Color","TradesInfos2Color"
-					,"TabActiveColor","TabInactiveColor","TabHoverColor","TabPressColor"]
+					,"TabActiveColor","TabInactiveColor","TabHoverColor","TabPressColor"
+					,"TabJoinedActiveColor","TabJoinedInactiveColor","TabJoinedHoverColor","TabJoinedPressColor"
+					,"TabWhisperActiveColor","TabWhisperInactiveColor","TabWhisperHoverColor","TabWhisperPressColor"]
 		ctrlHandlers := [BorderColorHandler,ButtonNormalColorHandler,ButtonHoverColorHandler,ButtonPressColorHandler
 					,TitleActiveColorHandler,TitleInactiveColorHandler,TradesInfos1ColorHandler,TradesInfos2ColorHandler
-					,TabActiveColorHandler,TabInactiveColorHandler,TabHoverColorHandler,TabPressColorHandler]
+					,TabActiveColorHandler,TabInactiveColorHandler,TabHoverColorHandler,TabPressColorHandler
+					,TabJoinedActiveColorHandler,TabJoinedInactiveColorHandler,TabJoinedHoverColorHandler,TabJoinedPressColorHandler
+					,TabWhisperActiveColorHandler,TabWhisperInactiveColorHandler,TabWhisperHoverColorHandler,TabWhisperPressColorHandler]
 
 		for id, varName in ctrlVars {
 			if (A_GuiControl = varName) {
@@ -2737,7 +2771,9 @@ return
 
 		ctrlHandlers := [BorderColorHandler,ButtonNormalColorHandler,ButtonHoverColorHandler,ButtonPressColorHandler
 					,TitleActiveColorHandler,TitleInactiveColorHandler,TradesInfos1ColorHandler,TradesInfos2ColorHandler
-					,TabActiveColorHandler,TabInactiveColorHandler,TabHoverColorHandler,TabPressColorHandler]
+					,TabActiveColorHandler,TabInactiveColorHandler,TabHoverColorHandler,TabPressColorHandler
+					,TabJoinedActiveColorHandler,TabJoinedInactiveColorHandler,TabJoinedHoverColorHandler,TabJoinedPressColorHandler
+					,TabWhisperActiveColorHandler,TabWhisperInactiveColorHandler,TabWhisperHoverColorHandler,TabWhisperPressColorHandler]
 		for id, handler in ctrlHandlers {
 			GuiControlGet, isVisible,Settings:Visible,% handler
 			if (isVisible)
@@ -2820,13 +2856,17 @@ return
 			keys 					:= ["Active_Skin","Font","Font_Size_Mode","Font_Size_Custom","Font_Quality_Mode","Font_Quality_Custom"
 						   			   ,"Color_Title_Active","Color_Title_Inactive","Color_Trades_Infos_1","Color_Trades_Infos_2"
 									   ,"Color_Border","Color_Button_Normal","Color_Button_Hover","Color_Button_Press"
-									   ,"Color_Tab_Active","Color_Tab_Inactive","Color_Tab_Hover","Color_Tab_Press"]
+									   ,"Color_Tab_Active","Color_Tab_Inactive","Color_Tab_Hover","Color_Tab_Press"
+									   ,"Color_Tab_Joined_Active","Color_Tab_Joined_Inactive","Color_Tab_Joined_Hover","Color_Tab_Joined_Press"
+									   ,"Color_Tab_Whisper_Active","Color_Tab_Whisper_Inactive","Color_Tab_Whisper_Hover","Color_Tab_Whisper_Press"]
 			sect 					:= "CUSTOMIZATION_APPEARANCE"
 			controlsUseChoose 		:= "Active_Skin,Font,Font_Size_Mode,Font_Quality_Mode"
 			handlers 				:= [SelectedSkinHandler,SelectedFontHandler,FontSizeHandler,FontSizeCustomHandler,FontQualityHandler,FontQualityCustomHandler
 						   			   ,TitleActiveColorHandler,TitleInactiveColorHandler,TradesInfos1ColorHandler,TradesInfos2ColorHandler
 						   			   ,BorderColorHandler,ButtonNormalColorHandler,ButtonHoverColorHandler,ButtonPressColorHandler
-						   			   ,TabActiveColorHandler,TabInactiveColorHandler,TabHoverColorHandler,TabPressColorHandler]
+						   			   ,TabActiveColorHandler,TabInactiveColorHandler,TabHoverColorHandler,TabPressColorHandler
+						   			   ,TabJoinedActiveColorHandler,TabJoinedInactiveColorHandler,TabJoinedHoverColorHandler,TabJoinedPressColorHandler
+						   			   ,TabWhisperActiveColorHandler,TabWhisperInactiveColorHandler,TabWhisperHoverColorHandler,TabWhisperPressColorHandler]
 			
 
 			for id, key in keys {
@@ -2859,10 +2899,14 @@ return
 			sect 				:= "COLORS"
 			keys 				:= ["Title_Trades","Title_No_Trades","Trade_Info_1","Trade_Info_2","Border"
 								   ,"Tab_Active","Tab_Inactive","Tab_Hover","Tab_Press"
+								   ,"Tab_Joined_Active","Tab_Joined_Inactive","Tab_Joined_Hover","Tab_Joined_Press"
+								   ,"Tab_Whisper_Active","Tab_Whisper_Inactive","Tab_Whisper_Hover","Tab_Whisper_Press"
 								   ,"Button_Normal","Button_Hover","Button_Press"]
 			controlsUseChoose 	:= ""
 			handlers 			:= [TitleActiveColorHandler,TitleInactiveColorHandler,TradesInfos1ColorHandler,TradesInfos2ColorHandler,BorderColorHandler
 								  ,TabActiveColorHandler,TabInactiveColorHandler,TabHoverColorHandler,TabPressColorHandler
+								  ,TabJoinedActiveColorHandler,TabJoinedInactiveColorHandler,TabJoinedHoverColorHandler,TabJoinedPressColorHandler
+						   		  ,TabWhisperActiveColorHandler,TabWhisperInactiveColorHandler,TabWhisperHoverColorHandler,TabWhisperPressColorHandler
 								  ,ButtonNormalColorHandler,ButtonHoverColorHandler,ButtonPressColorHandler]
 
 			for id, key in keys {
@@ -3154,6 +3198,16 @@ return
 		IniWrite,% TabInactiveColor,% iniFilePath,CUSTOMIZATION_APPEARANCE,Color_Tab_Inactive
 		IniWrite,% TabHoverColor,% iniFilePath,CUSTOMIZATION_APPEARANCE,Color_Tab_Hover
 		IniWrite,% TabPressColor,% iniFilePath,CUSTOMIZATION_APPEARANCE,Color_Tab_Press
+
+		IniWrite,% TabJoinedActiveColor,% iniFilePath,CUSTOMIZATION_APPEARANCE,Color_Tab_Joined_Active
+		IniWrite,% TabJoinedInactiveColor,% iniFilePath,CUSTOMIZATION_APPEARANCE,Color_Tab_Joined_Inactive
+		IniWrite,% TabJoinedHoverColor,% iniFilePath,CUSTOMIZATION_APPEARANCE,Color_Tab_Joined_Hover
+		IniWrite,% TabJoinedPressColor,% iniFilePath,CUSTOMIZATION_APPEARANCE,Color_Tab_Joined_Press
+
+		IniWrite,% TabWhisperActiveColor,% iniFilePath,CUSTOMIZATION_APPEARANCE,Color_Tab_Whisper_Active
+		IniWrite,% TabWhisperInactiveColor,% iniFilePath,CUSTOMIZATION_APPEARANCE,Color_Tab_Whisper_Inactive
+		IniWrite,% TabWhisperHoverColor,% iniFilePath,CUSTOMIZATION_APPEARANCE,Color_Tab_Whisper_Hover
+		IniWrite,% TabWhisperPressColor,% iniFilePath,CUSTOMIZATION_APPEARANCE,Color_Tab_Whisper_Press
 
 ;	Declare the new settings
 		Disable_Hotkeys()
@@ -3548,16 +3602,28 @@ Gui_Settings_Get_Settings_Arrays() {
 	returnArray.CUSTOMIZATION_APPEARANCE_DefaultValues := Object()
 	returnArray.CUSTOMIZATION_APPEARANCE_HandlersArray.Insert(0, "ActivePreset", "SelectedSkin", "SkinScaling", "SelectedFont", "FontSize", "FontSizeCustom", "FontQuality", "FontQualityCustom"
 															   , "TitleActiveColor", "TitleInactiveColor", "TradesInfos1Color", "TradesInfos2Color"
-															   , "BorderColor","ButtonNormalColor","ButtonHoverColor","ButtonPressColor","TabActiveColor","TabInactiveColor","TabHoverColor","TabPressColor")
+															   , "BorderColor","ButtonNormalColor","ButtonHoverColor","ButtonPressColor"
+															   ,"TabActiveColor","TabInactiveColor","TabHoverColor","TabPressColor"
+															   ,"TabJoinedActiveColor","TabJoinedInactiveColor","TabJoinedHoverColor","TabJoinedPressColor"
+															   ,"TabWhisperActiveColor","TabWhisperInactiveColor","TabWhisperHoverColor","TabWhisperPressColor")
 	returnArray.CUSTOMIZATION_APPEARANCE_HandlersKeysArray.Insert(0, "Active_Preset", "Active_Skin", "Scale_Multiplier", "Font", "Font_Size_Mode", "Font_Size_Custom", "Font_Quality_Mode", "Font_Quality_Custom"
 																   ,"Color_Title_Active", "Color_Title_Inactive", "Color_Trades_Infos_1", "Color_Trades_Infos_2"
-																   ,"Color_Border","Color_Button_Normal","Color_Button_Hover","Color_Button_Press","Color_Tab_Active","Color_Tab_Inactive","Color_Tab_Hover","Color_Tab_Press")
+																   ,"Color_Border","Color_Button_Normal","Color_Button_Hover","Color_Button_Press"
+																   ,"Color_Tab_Active","Color_Tab_Inactive","Color_Tab_Hover","Color_Tab_Press"
+																   ,"Color_Tab_Joined_Active","Color_Tab_Joined_Inactive","Color_Tab_Joined_Hover","Color_Tab_Joined_Press"
+																   ,"Color_Tab_Whisper_Active","Color_Tab_Whisper_Inactive","Color_Tab_Whisper_Hover","Color_Tab_Whisper_Press")
 	returnArray.CUSTOMIZATION_APPEARANCE_KeysArray.Insert(0, "Active_Preset", "Active_Skin", "Scale_Multiplier", "Font", "Font_Size_Mode", "Font_Size_Custom", "Font_Quality_Mode", "Font_Quality_Custom"
 														   ,"Color_Title_Active", "Color_Title_Inactive", "Color_Trades_Infos_1", "Color_Trades_Infos_2"
-														   ,"Color_Border","Color_Button_Normal","Color_Button_Hover","Color_Button_Press","Color_Tab_Active","Color_Tab_Inactive","Color_Tab_Hover","Color_Tab_Press")
+														   ,"Color_Border","Color_Button_Normal","Color_Button_Hover","Color_Button_Press"
+														   ,"Color_Tab_Active","Color_Tab_Inactive","Color_Tab_Hover","Color_Tab_Press"
+														   ,"Color_Tab_Joined_Active","Color_Tab_Joined_Inactive","Color_Tab_Joined_Hover","Color_Tab_Joined_Press"
+														   ,"Color_Tab_Whisper_Active","Color_Tab_Whisper_Inactive","Color_Tab_Whisper_Hover","Color_Tab_Whisper_Press")
 	returnArray.CUSTOMIZATION_APPEARANCE_DefaultValues.Insert(0, "White", "White", "1", "Segoe UI", "Automatic", "8", "Automatic", "5"
 															   ,"FFFFFF", "000000", "000000", "000000"
-															   ,"359cfc","000000","000000","000000","000000","000000","000000","000000")
+															   ,"359cfc","000000","000000","000000"
+															   ,"000000","000000","000000","000000"
+															   ,"000000","000000","000000","000000"
+															   ,"000000","000000","000000","000000")
 
 							
 
