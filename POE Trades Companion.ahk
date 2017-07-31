@@ -1,4 +1,4 @@
-/*
+﻿/*
 *	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
 *					POE Trades Companion																															*
 *					See all the information about the trade request upon receiving a poe.trade whisper															*
@@ -827,7 +827,7 @@ Gui_Trades(mode="", tradeInfos="") {
 		if !ImageButton.Create(hArrowRight, IBStyle_Arrow_Right*)
 			MsgBox, 0, ImageButton Error Right Arrow, % ImageButton.LastError
 
-		Gui, Add, Button,% "xp+" 27*scaleMult " yp w" 27*scaleMult " h" 25*scaleMult " hWndhBtnCloseTab gGui_Trades_Close_Tab_Label Section",% (SkinAssets.Close_Tab_Use_Character)?("X"):("")
+		Gui, Add, Button,% "xp+" 26*scaleMult " yp w" 27*scaleMult " h" 25*scaleMult " hWndhBtnCloseTab gGui_Trades_Close_Tab_Label Section",% (SkinAssets.Close_Tab_Use_Character)?("X"):("")
 		if !ImageButton.Create(hBtnCloseTab, IBStyle_Close_Tab*)
 			MsgBox, 0, ImageButton Error Close Tab, % ImageButton.LastError
 
@@ -1327,9 +1327,14 @@ Tile_Picture(guiName, TilehWnd, desiredW, desiredH) {
 		Gui, Example:Add, Picture,x0 y0 hWndhTile,% pathToYourPicture
 		Tile_Picture("Example", hTile, 500, 300)
 */
+	global ProgramSettings
+	
 	picturePos := Get_Control_Coords(guiName, TileHwnd) ; Get size of the picture
 	w := picturePos.W,    h := picturePos.H
-	
+
+	dpiFactor := ProgramSettings.Screen_DPI ; Size has to be multiplied by the current DPI setting
+	desiredW := desiredW*dpiFactor, desiredH := desiredH*dpiFactor
+
 	SendMessage,0x173,0,0,,ahk_id %TilehWnd% ; 0x173 is STM_GETIMAGE
 	hBMCopy:=ErrorLevel
 	
@@ -5194,7 +5199,7 @@ ShellMessage(wParam,lParam) {
 		else
 			Gui, Trades:Show, NoActivate ; Always Shwo
 
-		if ( ProgramSettings.Gui_Trades_Mode = "Overlay")
+		if ( ProgramSettings.Trades_GUI_Mode = "Overlay")
 			Gui_Trades_Set_Position() ; Re-position the GUI
 
 		Gui, Trades:+LastFound
@@ -5814,7 +5819,7 @@ Extract_Skin_Files() {
 	global ProgramValues
 	skinFolder := ProgramValues.Skins_Folder
 
-;	System Skin
+;	White Skin
 	if !( InStr(FileExist(skinFolder "\White"), "D") )
 		FileCreateDir, % skinFolder "\White"
 
@@ -6586,7 +6591,7 @@ Show_Tray_Notification(title, msg, params="") {
  *		Look based on w10 traytip.
 */
 	static
-	global SkinAssets
+	global SkinAssets, ProgramSettings
 
 	local defaultGUI := A_DefaultGUI
 
@@ -6598,6 +6603,11 @@ Show_Tray_Notification(title, msg, params="") {
 
 	guiWidth := (textSize.W > guiWidthMax)?(guiWidthMax):(textSize.W)
 	guiHeight := (textSize.H > guiHeightMax)?(guiHeightMax):(textSize.H)
+
+	; Fixing DPI size
+	guiWidth := guiWidth * ProgramSettings.Screen_DPI
+	guiHeight := guiHeight * ProgramSettings.Screen_DPI
+
 	guiHeight += 50, guiWidth += 20 ; Fitting size
 	borderSize := 1
 	fadeTimer := (params.Fade_Timer)?(params.Fade_Timer):(5000)
@@ -6621,7 +6631,7 @@ Show_Tray_Notification(title, msg, params="") {
 	Gui, Font, S%guiTitleFontSize% Bold,% guiFontName
 	Gui, Add, Text,% "xp+35" " yp+5" " w" guiWidth-20 " BackgroundTrans cFFFFFF gGui_TrayNotification_OnLeftClick",% title
 	Gui, Font, S%guiFontSize% Norm,% guiFontName
-	Gui, Add, Text,% "xp" " yp+25" " w" guiWidth-35 " BackgroundTrans ca5a5a5 gGui_TrayNotification_OnLeftClick",% msg
+	Gui, Add, Text,% "xp" " yp+25" " w" guiWidth-40 " BackgroundTrans ca5a5a5 gGui_TrayNotification_OnLeftClick",% msg
 	GuiControl, TrayNotification:Move,% hIcon,% "y" (guiHeight/2) - (24/2)
 	Gui, Show,% "x" showX " y" showY " w" showW " h" showH " NoActivate"
 	Loop {
