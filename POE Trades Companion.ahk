@@ -60,9 +60,6 @@ Start_Script() {
 	global Trading_Leagues 				:= Get_Active_Trading_Leagues()
 
 ;	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-	ProgramValues.NoSplash := 1
-	ProgramValues.Keep_Backup := 0
-	
 	ProgramSettings.Screen_DPI 			:= Get_DPI_Factor() 
 
 	Handle_CommandLine_Parameters()
@@ -6090,11 +6087,70 @@ Extract_Skin_Files() {
 	FileInstall, Resources\Skins\White\TabHover.png,% skinFolder "\White\TabHover.png", 1
 	FileInstall, Resources\Skins\White\TabInactive.png,% skinFolder "\White\TabInactive.png", 1
 
+	FileInstall, Resources\Skins\White\TabJoinedActive.png,% skinFolder "\White\TabJoinedActive.png", 1
+	FileInstall, Resources\Skins\White\TabJoinedHover.png,% skinFolder "\White\TabJoinedHover.png", 1
+	FileInstall, Resources\Skins\White\TabJoinedInactive.png,% skinFolder "\White\TabJoinedInactive.png", 1
+
+	FileInstall, Resources\Skins\White\TabWhisperActive.png,% skinFolder "\White\TabWhisperActive.png", 1
+	FileInstall, Resources\Skins\White\TabWhisperHover.png,% skinFolder "\White\TabWhisperHover.png", 1
+	FileInstall, Resources\Skins\White\TabWhisperInactive.png,% skinFolder "\White\TabWhisperInactive.png", 1
+
 	FileInstall, Resources\Skins\White\Background.png,% skinFolder "\White\Background.png", 1
 	FileInstall, Resources\Skins\White\Header.png,% skinFolder "\White\Header.png", 1
 	FileInstall, Resources\Skins\White\TabsUnderline.png,% skinFolder "\White\TabsUnderline.png", 1
 	FileInstall, Resources\Skins\White\Icon.ico,% skinFolder "\White\Icon.ico", 1
 
+;	Dark Blue Skin
+	if !( InStr(FileExist(skinFolder "\Dark Blue"), "D") )
+		FileCreateDir, % skinFolder "\Dark Blue"
+
+	FileInstall, Resources\Skins\Dark Blue\Assets.ini,% skinFolder "\Dark Blue\Assets.ini", 1
+	FileInstall, Resources\Skins\Dark Blue\Settings.ini,% skinFolder "\Dark Blue\Settings.ini", 1
+
+	FileInstall, Resources\Skins\Dark Blue\ArrowLeft.png,% skinFolder "\Dark Blue\ArrowLeft.png", 1
+	FileInstall, Resources\Skins\Dark Blue\ArrowLeftHover.png,% skinFolder "\Dark Blue\ArrowLeftHover.png", 1
+	FileInstall, Resources\Skins\Dark Blue\ArrowLeftPress.png,% skinFolder "\Dark Blue\ArrowLeftPress.png", 1
+
+	FileInstall, Resources\Skins\Dark Blue\ArrowRight.png,% skinFolder "\Dark Blue\ArrowRight.png", 1
+	FileInstall, Resources\Skins\Dark Blue\ArrowRightHover.png,% skinFolder "\Dark Blue\ArrowRightHover.png", 1
+	FileInstall, Resources\Skins\Dark Blue\ArrowRightPress.png,% skinFolder "\Dark Blue\ArrowRightPress.png", 1
+
+	FileInstall, Resources\Skins\Dark Blue\ButtonOneThird.png,% skinFolder "\Dark Blue\ButtonOneThird.png", 1
+	FileInstall, Resources\Skins\Dark Blue\ButtonOneThirdHover.png,% skinFolder "\Dark Blue\ButtonOneThirdHover.png", 1
+	FileInstall, Resources\Skins\Dark Blue\ButtonOneThirdPress.png,% skinFolder "\Dark Blue\ButtonOneThirdPress.png", 1
+
+	FileInstall, Resources\Skins\Dark Blue\ButtonTwoThird.png,% skinFolder "\Dark Blue\ButtonTwoThird.png", 1
+	FileInstall, Resources\Skins\Dark Blue\ButtonTwoThirdHover.png,% skinFolder "\Dark Blue\ButtonTwoThirdHover.png", 1
+	FileInstall, Resources\Skins\Dark Blue\ButtonTwoThirdPress.png,% skinFolder "\Dark Blue\ButtonTwoThirdPress.png", 1
+
+	FileInstall, Resources\Skins\Dark Blue\ButtonThreeThird.png,% skinFolder "\Dark Blue\ButtonThreeThird.png", 1
+	FileInstall, Resources\Skins\Dark Blue\ButtonThreeThirdHover.png,% skinFolder "\Dark Blue\ButtonThreeThirdHover.png", 1
+	FileInstall, Resources\Skins\Dark Blue\ButtonThreeThirdPress.png,% skinFolder "\Dark Blue\ButtonThreeThirdPress.png", 1
+
+	FileInstall, Resources\Skins\Dark Blue\ButtonSpecial.png,% skinFolder "\Dark Blue\ButtonSpecial.png", 1
+	FileInstall, Resources\Skins\Dark Blue\ButtonSpecialHover.png,% skinFolder "\Dark Blue\ButtonSpecialHover.png", 1
+	FileInstall, Resources\Skins\Dark Blue\ButtonSpecialPress.png,% skinFolder "\Dark Blue\ButtonSpecialPress.png", 1
+
+	FileInstall, Resources\Skins\Dark Blue\CloseTab.png,% skinFolder "\Dark Blue\CloseTab.png", 1
+	FileInstall, Resources\Skins\Dark Blue\CloseTabHover.png,% skinFolder "\Dark Blue\CloseTabHover.png", 1
+	FileInstall, Resources\Skins\Dark Blue\CloseTabPress.png,% skinFolder "\Dark Blue\CloseTabPress.png", 1
+
+	FileInstall, Resources\Skins\Dark Blue\TabActive.png,% skinFolder "\Dark Blue\TabActive.png", 1
+	FileInstall, Resources\Skins\Dark Blue\TabHover.png,% skinFolder "\Dark Blue\TabHover.png", 1
+	FileInstall, Resources\Skins\Dark Blue\TabInactive.png,% skinFolder "\Dark Blue\TabInactive.png", 1
+
+	FileInstall, Resources\Skins\Dark Blue\TabJoinedActive.png,% skinFolder "\Dark Blue\TabJoinedActive.png", 1
+	FileInstall, Resources\Skins\Dark Blue\TabJoinedHover.png,% skinFolder "\Dark Blue\TabJoinedHover.png", 1
+	FileInstall, Resources\Skins\Dark Blue\TabJoinedInactive.png,% skinFolder "\Dark Blue\TabJoinedInactive.png", 1
+
+	FileInstall, Resources\Skins\Dark Blue\TabWhisperActive.png,% skinFolder "\Dark Blue\TabWhisperActive.png", 1
+	FileInstall, Resources\Skins\Dark Blue\TabWhisperHover.png,% skinFolder "\Dark Blue\TabWhisperHover.png", 1
+	FileInstall, Resources\Skins\Dark Blue\TabWhisperInactive.png,% skinFolder "\Dark Blue\TabWhisperInactive.png", 1
+
+	FileInstall, Resources\Skins\Dark Blue\Background.png,% skinFolder "\Dark Blue\Background.png", 1
+	FileInstall, Resources\Skins\Dark Blue\Header.png,% skinFolder "\Dark Blue\Header.png", 1
+	FileInstall, Resources\Skins\Dark Blue\TabsUnderline.png,% skinFolder "\Dark Blue\TabsUnderline.png", 1
+	FileInstall, Resources\Skins\Dark Blue\Icon.ico,% skinFolder "\Dark Blue\Icon.ico", 1
 
 ;	Path of Exile Skin
 	if !( InStr(FileExist(skinFolder "\Path of Exile"), "D") )
