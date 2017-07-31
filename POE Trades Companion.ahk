@@ -5370,7 +5370,7 @@ Load_Skin_Assets() {
 	SkinAssets 			:= {}
 	skinFolder 			:= ProgramValues.Skins_Folder "\" ProgramSettings.Active_Skin
 	assetsFile 		 	:= skinFolder "\Assets.ini"
-	sections := ["Arrow_Left","Arrow_Right","Button_OneThird","Button_TwoThird","Button_ThreeThird","Button_Special","Close_Tab","Tab","Misc"]
+	sections := ["Arrow_Left","Arrow_Right","Button_OneThird","Button_TwoThird","Button_ThreeThird","Button_Special","Close_Tab","Tab","Tab_Joined","Tab_Whisper","Misc"]
 	for id, sectName in sections {
 		keysInThisSection := []
 		IniRead, keysAndValue,% assetsFile,% sectName
