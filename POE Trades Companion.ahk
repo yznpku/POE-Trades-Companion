@@ -57,6 +57,7 @@ Start_Script() {
 
 ;	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	ProgramValues.NoSplash := 1
+	ProgramValues.Keep_Backup := 0
 	
 	ProgramSettings.Screen_DPI 			:= Get_DPI_Factor() 
 
@@ -1145,8 +1146,8 @@ Gui_Trades(mode="", tradeInfos="") {
 	if ( mode = "CREATE" ) {
 		showWidth := guiWidth
 		showHeight := guiHeight
-		IniRead, showX,% iniFilePath,PROGRAM,X_POS
-		IniRead, showY,% iniFilePath,PROGRAM,Y_POS
+		IniRead, showX,% ProgramValues.Ini_File,PROGRAM,X_POS
+		IniRead, showY,% ProgramValues.Ini_File,PROGRAM,Y_POS
 		showXDefault := A_ScreenWidth-(showWidth), showYDefault := 0 ; Top right
 		showX := (IsNum(showX))?(showX):(showXDefault) ; Prevent unassigned or incorrect value
 		showY := (IsNum(showY))?(showY):(showYDefault) ; Prevent unassigned or incorrect value
@@ -1171,7 +1172,7 @@ Gui_Trades(mode="", tradeInfos="") {
 	Gui, Trades: +LastFound
 	WinSet, Redraw
 	WinSet, AlwaysOnTop, On
-	IniWrite,% tabsCount,% iniFilePath,PROGRAM,Tabs_Number
+	IniWrite,% tabsCount,% ProgramValues.Ini_File,PROGRAM,Tabs_Number
 
 	previousTabsCount := tabsCount
 	Sleep 10
@@ -1412,6 +1413,9 @@ Gui_Trades_Load_Pending_Backup() {
 		messagesArray := Gui_Trades_Manage_Trades("ADD_NEW", thisTrade)
 		Gui_Trades("UPDATE", messagesArray)
 	}
+
+	if (ProgramValues.Keep_Backup)
+		Return
 	
 	FileDelete,% ProgramValues.Trades_Backup_File
 }
@@ -6468,6 +6472,10 @@ Gui_Trades_Save_Pending_Backup() {
 /*		Save all pending trades in a file.
  */
 	global ProgramValues
+
+	if (ProgramValues.Keep_Backup)
+		Return
+
 	allTrades := Gui_Trades_Manage_Trades("GET_ALL")
 	FileDelete,% ProgramValues.Trades_Backup_File
 	for key, element in allTrades {
