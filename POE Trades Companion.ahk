@@ -60,6 +60,8 @@ Start_Script() {
 	global Trading_Leagues 				:= Get_Active_Trading_Leagues()
 
 ;	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	; ProgramValues.Keep_Backup 		:= 1 	; Keep Trades_Backup.ini instead of deleting it on load.
+	; ProgramValues.NoSplash 			:= 1 	; Skip the "Reloading to request..." GUI.
 	ProgramSettings.Screen_DPI 			:= Get_DPI_Factor() 
 
 	Handle_CommandLine_Parameters()
@@ -769,49 +771,48 @@ Gui_Trades(mode="", tradeInfos="") {
 		colorTabWhisperHover 		:= (ProgramSettings.Color_Tab_Whisper_Hover = "000000")?("Black"):("0x" ProgramSettings.Color_Tab_Whisper_Hover)
 		colorTabWhisperPress 		:= (ProgramSettings.Color_Tab_Whisper_Press = "000000")?("Black"):("0x" ProgramSettings.Color_Tab_Whisper_Press)
 
-		pngTransColor 		:= (SkinAssets.Misc_Transparency_Color = "000000")?("Black"):("0x" SkinAssets.Misc_Transparency_Color)
+		pngTransColor 				:= (SkinAssets.Misc_Transparency_Color = "000000")?("Black"):("0x" SkinAssets.Misc_Transparency_Color)
 
-
-		IBStyle_Tab :=					[ [0, SkinAssets.Tab_Inactive, "", colorTabInactive, "", pngTransColor]			; normal
+		IBStyle_Tab 				:=	[ [0, SkinAssets.Tab_Inactive, "", colorTabInactive, "", pngTransColor]			; normal
 				              			, [0, SkinAssets.Tab_Hover, "", colorTabHover, "", pngTransColor]				; hover
 				    	      			, [0, SkinAssets.Tab_Press, "", colorTabPress, "", pngTransColor]				; pressed
 							  			, [0, SkinAssets.Tab_Active, "", colorTabActive, "", pngTransColor] ]			; disabled (defaulted)
 
-		IBStyle_Tab_Joined :=			[ [0, SkinAssets.Tab_Joined_Inactive, "", colorTabJoinedInactive, "", pngTransColor]
+		IBStyle_Tab_Joined 			:=	[ [0, SkinAssets.Tab_Joined_Inactive, "", colorTabJoinedInactive, "", pngTransColor]
 				              			, [0, SkinAssets.Tab_Joined_Hover, "", colorTabJoinedHover, "", pngTransColor]
 				    	      			, [0, SkinAssets.Tab_Joined_Press, "", colorTabJoinedPress, "", pngTransColor]
 							  			, [0, SkinAssets.Tab_Joined_Active, "", colorTabJoinedActive, "", pngTransColor] ]
 
-		IBStyle_Tab_Whisper :=			[ [0, SkinAssets.Tab_Whisper_Inactive, "", colorTabWhisperInactive, "", pngTransColor]
+		IBStyle_Tab_Whisper 		:=	[ [0, SkinAssets.Tab_Whisper_Inactive, "", colorTabWhisperInactive, "", pngTransColor]
 				              			, [0, SkinAssets.Tab_Whisper_Hover, "", colorTabWhisperHover, "", pngTransColor]
 				    	      			, [0, SkinAssets.Tab_Whisper_Press, "", colorTabWhisperPress, "", pngTransColor]
 							  			, [0, SkinAssets.Tab_Whisper_Active, "", colorTabWhisperActive, "", pngTransColor] ]
 
-		IBStyle_Arrow_Left :=			[ [0, SkinAssets.Arrow_Left_Normal, "", colorButtonNormal, "", pngTransColor]
+		IBStyle_Arrow_Left 			:=	[ [0, SkinAssets.Arrow_Left_Normal, "", colorButtonNormal, "", pngTransColor]
 				              			, [0, SkinAssets.Arrow_Left_Hover, "", colorButtonHover, "", pngTransColor]
 				    	      			, [0, SkinAssets.Arrow_Left_Press, "", colorButtonPress, "", pngTransColor] ]
 
-		IBStyle_Arrow_Right := 			[ [0, SkinAssets.Arrow_Right_Normal, "", colorButtonNormal, "", pngTransColor]
+		IBStyle_Arrow_Right 		:=	[ [0, SkinAssets.Arrow_Right_Normal, "", colorButtonNormal, "", pngTransColor]
 				              			, [0, SkinAssets.Arrow_Right_Hover, "", colorButtonHover, "", pngTransColor]
 				    	      			, [0, SkinAssets.Arrow_Right_Press, "", colorButtonPress, "", pngTransColor] ]
 
-		IBStyle_Button_OneThird :=		[ [0, SkinAssets.Button_OneThird_Normal, "", colorButtonNormal, "", pngTransColor]
+		IBStyle_Button_OneThird 	:=	[ [0, SkinAssets.Button_OneThird_Normal, "", colorButtonNormal, "", pngTransColor]
 				              			, [0, SkinAssets.Button_OneThird_Hover, "", colorButtonHover, "", pngTransColor]
 				    	      			, [0, SkinAssets.Button_OneThird_Press, "", colorButtonPress, "", pngTransColor] ]
 
-		IBStyle_Button_TwoThird :=		[ [0, SkinAssets.Button_TwoThird_Normal, "", colorButtonNormal, "", pngTransColor]
+		IBStyle_Button_TwoThird 	:=	[ [0, SkinAssets.Button_TwoThird_Normal, "", colorButtonNormal, "", pngTransColor]
 				              			, [0, SkinAssets.Button_TwoThird_Hover, "", colorButtonHover, "", pngTransColor]
 				    	      			, [0, SkinAssets.Button_TwoThird_Press, "", colorButtonPress, "", pngTransColor] ]
 
-		IBStyle_Button_ThreeThird :=	[ [0, SkinAssets.Button_ThreeThird_Normal, "", colorButtonNormal, "", pngTransColor]
+		IBStyle_Button_ThreeThird 	:=	[ [0, SkinAssets.Button_ThreeThird_Normal, "", colorButtonNormal, "", pngTransColor]
 				              			, [0, SkinAssets.Button_ThreeThird_Hover, "", colorButtonHover, "", pngTransColor]
 				    	      			, [0, SkinAssets.Button_ThreeThird_Press, "", colorButtonPress, "", pngTransColor] ]
 
-		IBStyle_Button_Special :=		[ [0, SkinAssets.Button_Special_Normal, "", colorButtonNormal, "", pngTransColor]
+		IBStyle_Button_Special 		:=	[ [0, SkinAssets.Button_Special_Normal, "", colorButtonNormal, "", pngTransColor]
 				              			, [0, SkinAssets.Button_Special_Hover, "", colorButtonHover, "", pngTransColor]
 				    	      			, [0, SkinAssets.Button_Special_Press, "", colorButtonPress, "", pngTransColor] ]
 
-		IBStyle_Close_Tab :=			[ [0, SkinAssets.Close_Tab_Normal, "", colorButtonNormal, "", pngTransColor]
+		IBStyle_Close_Tab 			:=	[ [0, SkinAssets.Close_Tab_Normal, "", colorButtonNormal, "", pngTransColor]
 				              			, [0, SkinAssets.Close_Tab_Hover, "", colorButtonHover, "", pngTransColor]
 				    	      			, [0, SkinAssets.Close_Tab_Press, "", colorButtonPress, "", pngTransColor] ]
 
@@ -823,6 +824,7 @@ Gui_Trades(mode="", tradeInfos="") {
 		Gui, Trades:Destroy
 		Gui, Trades:New, +ToolWindow +AlwaysOnTop -Border +hwndGuiTradesHandler +LabelGui_Trades_ +LastFound -SysMenu -Caption
 		Gui, Trades:Default
+		Gui, Color, %pngTransColor%
 		Gui, Margin, 0, 0
 		Gui, +OwnDialogs
 		TradesGUI_Values.Handler := GuiTradesHandler
@@ -875,6 +877,10 @@ Gui_Trades(mode="", tradeInfos="") {
 		TradesGUI_Controls["Border_Left"]		:= hBorderLeft
 		TradesGUI_Controls["Border_Right"]		:= hBorderRight
 		TradesGUI_Controls["Border_Bottom"]		:= hBorderBottom
+
+; - - - - - Tabs Background
+		Gui, Add, Picture,% "x" borderSize*scaleMult " ys+" 30*scaleMult " w" (40*scaleMult)*maxTabsRow " h" 25*scaleMult " hwndhTabsBackground Hidden",% SkinAssets.Misc_Tabs_Background
+		TradesGUI_Controls.Tabs_Background := hTabsBackground
 
 ; - - - - - Tabs
 		Loop %maxTabsRendered% {
@@ -1203,6 +1209,7 @@ Gui_Trades(mode="", tradeInfos="") {
 		GuiControl, Trades:%showOrHide%,% TradesGUI_Controls["Arrow_Right"]
 		GuiControl, Trades:%showOrHide%,% TradesGUI_Controls["Close_Tab"]
 		GuiControl, Trades:%showOrHide%,% TradesGUI_Controls["Tabs_Underline"]
+		GuiControl, Trades:%showOrHide%,% TradesGUI_Controls["Tabs_Background"]
 
 ; - - - - - Choose latest tab, if enabled
 		if ( ProgramSettings.Trades_Select_Last_Tab ) && (!A_GuiEvent) { ; A_GuiEvent means we've just closed a tab. We do not want to activate the latest available tab.
@@ -6097,6 +6104,7 @@ Extract_Skin_Files() {
 
 	FileInstall, Resources\Skins\White\Background.png,% skinFolder "\White\Background.png", 1
 	FileInstall, Resources\Skins\White\Header.png,% skinFolder "\White\Header.png", 1
+	FileInstall, Resources\Skins\White\TabsBackground.png,% skinFolder "\White\TabsBackground.png", 1
 	FileInstall, Resources\Skins\White\TabsUnderline.png,% skinFolder "\White\TabsUnderline.png", 1
 	FileInstall, Resources\Skins\White\Icon.ico,% skinFolder "\White\Icon.ico", 1
 
@@ -6149,6 +6157,7 @@ Extract_Skin_Files() {
 
 	FileInstall, Resources\Skins\Dark Blue\Background.png,% skinFolder "\Dark Blue\Background.png", 1
 	FileInstall, Resources\Skins\Dark Blue\Header.png,% skinFolder "\Dark Blue\Header.png", 1
+	FileInstall, Resources\Skins\Dark Blue\TabsBackground.png,% skinFolder "\Dark Blue\TabsBackground.png", 1
 	FileInstall, Resources\Skins\Dark Blue\TabsUnderline.png,% skinFolder "\Dark Blue\TabsUnderline.png", 1
 	FileInstall, Resources\Skins\Dark Blue\Icon.ico,% skinFolder "\Dark Blue\Icon.ico", 1
 
@@ -6191,8 +6200,17 @@ Extract_Skin_Files() {
 	FileInstall, Resources\Skins\Path of Exile\TabHover.png,% skinFolder "\Path of Exile\TabHover.png", 1
 	FileInstall, Resources\Skins\Path of Exile\TabInactive.png,% skinFolder "\Path of Exile\TabInactive.png", 1
 
+	FileInstall, Resources\Skins\Path of Exile\TabJoinedActive.png,% skinFolder "\Path of Exile\TabJoinedActive.png", 1
+	FileInstall, Resources\Skins\Path of Exile\TabJoinedHover.png,% skinFolder "\Path of Exile\TabJoinedHover.png", 1
+	FileInstall, Resources\Skins\Path of Exile\TabJoinedInactive.png,% skinFolder "\Path of Exile\TabJoinedInactive.png", 1
+
+	FileInstall, Resources\Skins\Path of Exile\TabWhisperActive.png,% skinFolder "\Path of Exile\TabWhisperActive.png", 1
+	FileInstall, Resources\Skins\Path of Exile\TabWhisperHover.png,% skinFolder "\Path of Exile\TabWhisperHover.png", 1
+	FileInstall, Resources\Skins\Path of Exile\TabWhisperInactive.png,% skinFolder "\Path of Exile\TabWhisperInactive.png", 1
+
 	FileInstall, Resources\Skins\Path of Exile\Background.png,% skinFolder "\Path of Exile\Background.png", 1
 	FileInstall, Resources\Skins\Path of Exile\Header.png,% skinFolder "\Path of Exile\Header.png", 1
+	FileInstall, Resources\Skins\Path of Exile\TabsBackground.png,% skinFolder "\Path of Exile\TabsBackground.png", 1
 	FileInstall, Resources\Skins\Path of Exile\TabsUnderline.png,% skinFolder "\Path of Exile\TabsUnderline.png", 1
 	FileInstall, Resources\Skins\Path of Exile\Icon.ico,% skinFolder "\Path of Exile\Icon.ico", 1
 }
