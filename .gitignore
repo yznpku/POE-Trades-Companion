@@ -3,6 +3,7 @@
 /_Scrapped_Ideas/*
 /_Testings/*
 ENABLE_DEBUG.txt
+File_Install.ahk
 Verpatch.*
 *_Old*
 
@@ -62,4 +63,3 @@ $RECYCLE.BIN/
 Network Trash Folder
 Temporary Items
 .apdisk
-

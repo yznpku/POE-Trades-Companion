@@ -6057,28 +6057,29 @@ Extract_Skin_Files() {
 
 	skinNames := {}
 	fromfolder = %A_WorkingDir%\Resources\Skins
-	fileInstallScript = % ProgramValues.Local_Folder "\File_Install.ahk"
-	if FileExist(fileInstallScript)
-		FileDelete fileInstallScript
+	fileInstallScript = %A_WorkingDir%\File_Install.ahk
+	; If script is not compiled, create a file install script from ./Resources/Skins
+	if (!A_IsCompiled) {
+		if FileExist(fileInstallScript)
+			FileDelete % fileInstallScript
 
-	loop %fromFolder%\* , 2 
-		skinNames.Insert(A_LoopFileName)
+		loop %fromFolder%\* , 2 
+			skinNames.Insert(A_LoopFileName)
 
-	for index, skinName in skinNames {
-		FileAppend, if !( InStr(FileExist("%skinFolder%\%skinName%")`, "D") )`n, %fileInstallScript%
-		FileAppend, FileCreateDir`, %skinFolder%\%skinName%`n, %fileInstallScript%
-		loop %fromFolder%\%skinName%\*.*
-			{
-			if A_LoopFileExt in ini,png,jpg,ico
-				FileAppend, FileInstall`, %A_LoopFileFullPath%`,%skinFolder%\%skinName%\%A_LoopFileName%`, 1`n , %fileInstallScript%
-			}
+		for index, skinName in skinNames {
+			FileAppend, if !( InStr(FileExist("%skinFolder%\%skinName%")`, "D") )`n, %fileInstallScript%
+			FileAppend, FileCreateDir`, %skinFolder%\%skinName%`n, %fileInstallScript%
+			loop %fromFolder%\%skinName%\*.*
+				{
+				if A_LoopFileExt in ini,png,jpg,ico
+					FileAppend, FileInstall`, %A_LoopFileFullPath%`,%skinFolder%\%skinName%\%A_LoopFileName%`, 1`n , %fileInstallScript%
+				}
+		}
+		if FileExist(fileInstallScript)
+			Run % fileInstallScript
 	}
-
-	if FileExist(fileInstallScript) {
-		Run % fileInstallScript
-	} else {
-		MsgBox,, Error, Unable to read file install script.
-	}
+	; Include file install script if it is available. Make sure fileinstall script has been created when compiling or it wont run.
+	#Include *i File_Install.ahk
 }
 
 Extract_Sound_Files() {
