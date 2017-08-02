@@ -1,4 +1,23 @@
 \\
+--1.12.BETA_2--
+Features:
+- Tabs notifications:
+When your buyer joins your area, the tab colour will turn to green. The colour will revert back to normal when the buyer leaves the area.
+When receiving another whisper from a buyer, the tab colour will turn to purple. The colour will revert back to normal when you acknowledged the whisper by hovering the "Other:" slot for that tab.
+These options cannot be disabled at the moment, but full 1.12 release will allow to do so as well as playing a custom sound.
+- Night theme: Dark Blue.
+
+Changes:
+- The About GUI now shows both current Beta and Stable version numbers.
+
+Fixes:
+- On loading, when using the "Mode: Window", the Trades GUI would appear at the default position instead of the previously saved one.
+- When using the "Mode: Overlay", upon activating another window, the Trades GUI position would not be automatically adjusted.
+- When using a non-default Screen DPI, the Trades GUI background picture would not fill the entire size.
+- When using a non-default Screen DPI, the tray notifications would appear cut-off.
+- Auto Updater: When running the source code (.ahk), the POE Trades Companion.ahk file would get deleted upon updating using the internal updater.
+//
+\\
 --1.12.BETA_1--
 Skinning is now easier than ever.
 If you are interested into making your own skin, visit here:
