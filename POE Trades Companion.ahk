@@ -1414,8 +1414,6 @@ Gui_Trades_Close_Tab(tabID="") {
 	tabsRange			:= Gui_Trades_Get_Tabs_Range()
 	tabToClose 			:= (tabID)?(tabID):(TradesGUI_Values.Active_Tab)
 
-	tooltip % tabToClose
-
 	isNotInFirstRow := (tabsRange.Last = currentTabsCount)
 	
 	if (isNotInFirstRow) { ; Hide the tab, before removing it
@@ -2708,7 +2706,7 @@ Gui_Settings() {
 		}
 		ctrlPos := "", ctrlVars := ""
 		Gui, Add, Progress,% "xp+70 yp w22 h22 Background000000 vFontsColorsPreview hwndFontsColorPreviewHandler Hidden"
-		Gui, Add, Text,% "xp-330 yp+25 vFontsColorsTip hwndFontsColorsTipsHandler",% "Description of the selected element will appear here."
+		Gui, Add, Text,% "xp-330 yp+25 R2 w400 vFontsColorsTip hwndFontsColorsTipsHandler",% "Description of the selected element will appear here."
 
 		Gui, Add, Link,% "x" guiXWorkArea + 80 . " y" guiYWorkArea+235,% "(<a href=""http://hslpicker.com/"">HSL Color Picker</a> - Get the 6 chars code starting with #) "
 
@@ -2933,7 +2931,31 @@ return
 		GuiControlGet, colorHex, Settings:,% ctrlHandlers[FontsColors]
 		GuiControl, Settings:+Background%colorHex%,% FontsColorPreviewHandler
 
-		ctrlHandlers := "", isVisible := "", colorHex := ""
+;		Show the tip corresponding
+		Tips := (FontsColors = "1")?("Colour for the window border.")
+			   :(FontsColors = "2")?("Font colour on buttons.")
+			   :(FontsColors = "3")?("Font colour for the currently hovered button.")
+			   :(FontsColors = "4")?("Font colour for the currently pressed button.")
+			   :(FontsColors = "5")?("Font colour for the title bar when you have active tabs.")
+			   :(FontsColors = "6")?("Font colour for the title bar when no tabs are open.")
+			   :(FontsColors = "7")?("Font colour for the Slot names.")
+			   :(FontsColors = "8")?("Font colour for the informations in the Slots.")
+			   :(FontsColors = "9")?("Font colour for the current active tab.")
+			   :(FontsColors = "10")?("Font colour on inactive tabs.")
+			   :(FontsColors = "11")?("Font colour for the currently hovered tab.")
+			   :(FontsColors = "12")?("Font colour for the currently pressed tab.")
+			   :(FontsColors = "13")?("Font colour for the current active tab.`nAnd for which the buyer has joined the area.")
+			   :(FontsColors = "14")?("Font colour on inactive tabs.`nAnd for which the buyer has joined the area.")
+			   :(FontsColors = "15")?("Font colour for the currently hovered tab.`nAnd for which the buyer has joined the area.")
+			   :(FontsColors = "16")?("Font colour for the currently pressed tab.`nAnd for which the buyer has joined the area.")
+			   :(FontsColors = "17")?("Font colour for the current active tab.`nAnd for which the buyer has sent you another whisper.")
+			   :(FontsColors = "18")?("Font colour on inactive tabs.`nAnd for which the buyer has sent you another whisper.")
+			   :(FontsColors = "19")?("Font colour for the currently hovered tab.`nAnd for which the buyer sent you another whisper.")
+			   :(FontsColors = "20")?("Font colour for the currently pressed tab.`nAnd for which the buyer sent you another whisper.")
+			   :("No description for this element has been found.")
+		GuiControl, Settings:,% FontsColorsTipsHandler,% Tips
+
+		ctrlHandlers := "", isVisible := "", colorHex := "", Tips := ""
 	Return
 
 	Gui_Settings_Cycle_Messages:
