@@ -1,5 +1,8 @@
 \\
---1.12.BETA_3--
+--1.12.BETA_3/BETA_4--
+
+BETA_4: Fix: On start, while creating the TradesGUI, switching windows would cause a message box. (Only happens with Mode: Overlay)
+
 Features:
 - Tabs notifications:
 When your buyer joins your area, the tab colour will turn to green. The colour will revert back to normal when the buyer leaves the area.

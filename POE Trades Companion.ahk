@@ -64,7 +64,7 @@ Start_Script() {
 	MyDocuments 						:= (RunParameters.MyDocuments)?(RunParameters.MyDocuments):(A_MyDocuments)
 
 	ProgramValues.Name 					:= "POE Trades Companion"
-	ProgramValues.Version 				:= "1.12.BETA_3"
+	ProgramValues.Version 				:= "1.12.BETA_4"
 	ProgramValues.Debug 				:= "0"
 
 	ProgramValues.Updater_File 			:= "POE-TC-Updater.exe"
@@ -664,7 +664,7 @@ Monitor_Game_Logs(mode="") {
 		}
 		else {
 			logsFile := r
-			Gui_Trades_Set_Position()
+			try Gui_Trades_Set_Position()
 		}
 	}
 	Logs_Append(A_ThisFunc, {File:logsFile})
@@ -740,6 +740,8 @@ Gui_Trades(mode="", tradeInfos="") {
 	btnUnicodePos := "", useSmallerButtons := ""
 
 	if ( mode = "CREATE" ) {
+
+		TradesGUI_Values.Created 	:= false
 
 		colorTitleActive 			:= (ProgramSettings.Color_Title_Active = "000000")?("Black"):("0x" ProgramSettings.Color_Title_Active)
 		colorTitleInactive 			:= (ProgramSettings.Color_Title_Inactive = "000000")?("Black"):("0x" ProgramSettings.Color_Title_Inactive)
@@ -1267,6 +1269,8 @@ Gui_Trades(mode="", tradeInfos="") {
 		OnMessage(0x204, "WM_RBUTTONDOWN")
 
 		dpiFactor := ProgramSettings.Screen_DPI, showX := guiWidth-49
+
+		TradesGUI_Created := true
 	}
 
 ; - - - - - Adjust position, with Overlay mode
@@ -2524,6 +2528,9 @@ Gui_Trades_Set_Position(xpos="UNSPECIFIED", ypos="UNSPECIFIED"){
 	if ( ProgramSettings.Trades_GUI_Mode != "Overlay" )
 		Return
 
+	if !TradesGUI_Values.Created
+		return
+
 	dpiFactor := ProgramSettings.Screen_DPI
 
 	if WinExist("ahk_id " TradesGUI_Values.Dock_Window) {
@@ -2536,11 +2543,11 @@ Gui_Trades_Set_Position(xpos="UNSPECIFIED", ypos="UNSPECIFIED"){
 			xpos := ( ( (A_ScreenWidth/dpiFactor) - TradesGUI_Values.Width ) * dpiFactor )
 		if ypos is not number
 			ypos := 0
-		Gui, Trades:Show, % "x" xpos " y" ypos " NoActivate"
+		Gui, Trades:Show,% "x" xpos " y" ypos " NoActivate"
 	}
 	else {
 		xpos := ( ( (A_ScreenWidth/dpiFactor) - TradesGUI_Values.Width ) * dpiFactor )
-		Gui, Trades:Show, % "x" xpos " y0" " NoActivate"
+		Gui, Trades:Show,% "x" xpos " y0" " NoActivate"
 	}
 	Logs_Append(A_ThisFunc, {X:xpos, Y:ypos})
 }
@@ -4359,8 +4366,6 @@ Gui_About(params="") {
 	Gui, About:Default
 	Gui, Font, ,Consolas
 
-	isUpdateAvailable := 1
-
 	groupText := (isUpdateAvailable)?("Update v" onlineVersionAvailable " available."):("No update available.")
 	Gui, Add, GroupBox, w500 h100 xm Section c000000 hwndUpdateAvailableTextHandler,% groupText
 	Gui, Add, Text, xs+20 ys+20,% "Current version: " A_Tab A_Tab verCurrent
@@ -5473,10 +5478,12 @@ ShellMessage(wParam,lParam) {
 			Return ; returning prevents from triggering Gui_Trades_Set_Position while the GUI is active
 		}
 
+		if (!TradesGUI_Values.Created)
+			Return
+
 		WinGet, winEXE, ProcessName, ahk_id %lParam%
 		WinGet, winID, ID, ahk_id %lParam%
 		if ( ProgramSettings.Show_Mode = "InGame" ) {
-
 			if ( TradesGUI_Values.Width ) { ; TradesGUI exists
 				if POEGameList not contains %winEXE%
 				{
@@ -5491,7 +5498,7 @@ ShellMessage(wParam,lParam) {
 			Gui, Trades:Show, NoActivate ; Always Shwo
 
 		if ( ProgramSettings.Trades_GUI_Mode = "Overlay")
-			Gui_Trades_Set_Position() ; Re-position the GUI
+			try Gui_Trades_Set_Position() ; Re-position the GUI
 
 		Gui, Trades:+LastFound
 		WinSet, AlwaysOnTop, On
@@ -6251,7 +6258,7 @@ Gui_Trades_Cycle_Func() {
 		TradesGUI_Values.Dock_Window_Num := 0
 	}
 	TradesGUI_Values.Insert("Dock_Window", matchHandlers[TradesGUI_Values["Dock_Window_Num"]])
-	Gui_Trades_Set_Position()
+	try Gui_Trades_Set_Position()
 	Logs_Append(A_ThisFunc, {Dock_Window:TradesGUI_Values.Dock_Window, Total_Matchs:matchHandlers.MaxIndex() + 1})
 }
 
