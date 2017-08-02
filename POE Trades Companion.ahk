@@ -178,6 +178,7 @@ Start_Script() {
 
 	Create_Tray_Menu()
 	Delete_Old_Logs_Files(10)
+	Load_Skin_Assets()
 
 	Extract_Others_Files()
 	Manage_Font_Resources("LOAD")
@@ -186,7 +187,6 @@ Start_Script() {
 	Enable_Hotkeys()
 
 	; Pre-rendering Trades-GUI
-	Load_Skin_Assets()
 	Gui_Trades("CREATE")
 
 	if (ProgramValues["Debug"]) {
@@ -740,7 +740,6 @@ Gui_Trades(mode="", tradeInfos="") {
 	btnUnicodePos := "", useSmallerButtons := ""
 
 	if ( mode = "CREATE" ) {
-		Load_Skin_Assets()
 
 		colorTitleActive 			:= (ProgramSettings.Color_Title_Active = "000000")?("Black"):("0x" ProgramSettings.Color_Title_Active)
 		colorTitleInactive 			:= (ProgramSettings.Color_Title_Inactive = "000000")?("Black"):("0x" ProgramSettings.Color_Title_Inactive)
@@ -1938,6 +1937,7 @@ Gui_Trades_Redraw(msg, params="") {
 			allTrades.Max_Index 	:= 1
 		}
 	}
+	Load_Skin_Assets()
 	Gui_Trades(msg)
 	Gui_Trades("UPDATE", allTrades)
 	SplashTextOff
@@ -4312,6 +4312,9 @@ Check_Update() {
 	ProgramValues.Version_Latest 		:= latestStableVersion
 	ProgramValues.Version_Latest_Beta	:= latestBetaVersion
 
+	onlineVersionAvailable	 		:= (isUsingBeta)?(ProgramValues.Version_Latest_Beta):(ProgramValues.Version_Latest)
+	ProgramValues.Version_Online 	:= onlineVersionAvailable
+
 ;	Set new version number and notify about update
 	isUpdateAvailable := (!isUsingBeta && latestStableVersion != "ERROR" && latestStableVersion != currentVersion)?(1)
 						:(isUsingBeta && latestBetaVersion != "ERROR" && latestBetaVersion != currentVersion)?(1)
@@ -4323,12 +4326,12 @@ Check_Update() {
 			timeDif := A_Now
 			EnvSub, timeDif,% lastTimeUpdated, Seconds
 			if (timeDif > 61 || !timeDif) { ; !timeDif means var was not in YYYYMMDDHH24MISS format 
-				Show_Tray_Notification(newVersion " is available!", "Auto-updating is enabled. Downloading the updater...")
+				Show_Tray_Notification(onlineVersionAvailable " is available!", "Auto-updating is enabled. Downloading the updater...")
 				Download_Updater()
 			}
 		}
 		else {
-			Show_Tray_Notification(newVersion " is available!", "Left click on this notification to run the automatic download.`nRight click to dismiss it.", {Is_Update:1, Fade_Timer:10000})
+			Show_Tray_Notification(onlineVersionAvailable " is available!", "Left click on this notification to run the automatic download.`nRight click to dismiss it.", {Is_Update:1, Fade_Timer:10000})
 		}
 	}
 	SetTimer, Check_Update, -1800000
@@ -4346,11 +4349,10 @@ Gui_About(params="") {
 
 	iniFilePath := ProgramValues.Ini_File, programName := ProgramValues.Name
 	verCurrent := ProgramValues.Version, verLatest := ProgramValues.Version_Latest
-	isUpdateAvailable := ProgramValues.Update_Available
+	isUpdateAvailable := ProgramValues.Update_Available, onlineVersionAvailable := ProgramValues.Version_Online
 
 	IniRead, isUsingBeta,% iniFilePath,PROGRAM,Update_Beta
 	IniRead, isAutoUpdateEnabled,% iniFilePath,PROGRAM,AutoUpdate
-	newVersionAvailable := (isUsingBeta)?(ProgramValues.Version_Latest_Beta):(ProgramValues.Version_Latest)
 
 	Gui, About:Destroy
 	Gui, About:New, +HwndaboutGuiHandler +AlwaysOnTop +SysMenu -MinimizeBox -MaximizeBox +OwnDialogs +LabelGui_About_,% programName " by lemasato v" verCurrent
@@ -4359,7 +4361,7 @@ Gui_About(params="") {
 
 	isUpdateAvailable := 1
 
-	groupText := (isUpdateAvailable)?("Update v" newVersionAvailable " available."):("No update available.")
+	groupText := (isUpdateAvailable)?("Update v" onlineVersionAvailable " available."):("No update available.")
 	Gui, Add, GroupBox, w500 h100 xm Section c000000 hwndUpdateAvailableTextHandler,% groupText
 	Gui, Add, Text, xs+20 ys+20,% "Current version: " A_Tab A_Tab verCurrent
 	if (isUpdateAvailable)
@@ -5586,6 +5588,7 @@ IsBetween(value, first, last) {
 
 Load_Skin_Assets() {
 	global ProgramValues, ProgramSettings, SkinAssets
+
 	SkinAssets 			:= {}
 	skinFolder 			:= ProgramValues.Skins_Folder "\" ProgramSettings.Active_Skin
 	assetsFile 		 	:= skinFolder "\Assets.ini"
