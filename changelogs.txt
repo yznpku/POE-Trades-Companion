@@ -1,5 +1,5 @@
 \\
---1.12.BETA_2--
+--1.12.BETA_3--
 Features:
 - Tabs notifications:
 When your buyer joins your area, the tab colour will turn to green. The colour will revert back to normal when the buyer leaves the area.
