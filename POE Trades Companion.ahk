@@ -33,10 +33,6 @@ DllCall( "RegisterShellHookWindow", UInt,Hwnd )
 MsgNum := DllCall( "RegisterWindowMessage", Str,"SHELLHOOK" )
 OnMessage( MsgNum, "ShellMessage")
 
-;Constants
-global JOINED := 1 
-global NEW_MESSAGE := 2
-
 Start_Script()
 Return
 
@@ -60,8 +56,8 @@ Start_Script() {
 	global Trading_Leagues 				:= Get_Active_Trading_Leagues()
 
 ;	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-	; ProgramValues.Keep_Backup 		:= 1 	; Keep Trades_Backup.ini instead of deleting it on load.
-	; ProgramValues.NoSplash 			:= 1 	; Skip the "Reloading to request..." GUI.
+	; ProgramValues.Keep_Backup 			:= 1 	; Keep Trades_Backup.ini instead of deleting it on load.
+	; ProgramValues.NoSplash 				:= 1 	; Skip the "Reloading to request..." GUI.
 	ProgramSettings.Screen_DPI 			:= Get_DPI_Factor() 
 
 	Handle_CommandLine_Parameters()
@@ -4228,12 +4224,14 @@ Check_Update() {
 	static
 	global ProgramValues
 
-	IniRead, updateBeta,% ProgramValues.Ini_File,PROGRAM,Update_Beta, 0
-	IniRead, autoUpdate,% ProgramValues.Ini_File,PROGRAM,AutoUpdate, 0
-	IniRead, prevUpdateTime,% ProgramValues.Ini_File,PROGRAM,LastUpdate,% A_Now
+	IniRead, isUsingBeta,% ProgramValues.Ini_File,PROGRAM,Update_Beta, 0
+	IniRead, isAutoUpdateEnabled,% ProgramValues.Ini_File,PROGRAM,AutoUpdate, 0
+	IniRead, lastTimeUpdated,% ProgramValues.Ini_File,PROGRAM,LastUpdate,% A_Now
 
-	changeslogsLink := (updateBeta)?(ProgramValues.Changelogs_Link_Beta):(ProgramValues.Changelogs_Link)
-	versionLink := (updateBeta)?(ProgramValues.Version_Link_Beta):(ProgramValues.Version_Link)
+	changeslogsLink 		:= (isUsingBeta)?(ProgramValues.Changelogs_Link_Beta):(ProgramValues.Changelogs_Link)
+	versionLinkStable 		:= ProgramValues.Version_Link
+	versionLinkBeta 		:= ProgramValues.Version_Link_Beta
+	currentVersion 			:= ProgramValues.Version
 
 ;	Delete files remaining from updating
 	if FileExist(ProgramValues.Updater_File)
@@ -4258,9 +4256,9 @@ Check_Update() {
 		}
 	}
 	
-;	Version number file
+;	Version.txt on master branch
 	whr := ComObjCreate("WinHttp.WinHttpRequest.5.1")
-	whr.Open("GET", versionLink, true)
+	whr.Open("GET", versionLinkStable, true)
 	whr.Send()
 	whr.WaitForResponse(10)
 	versionOnline := whr.ResponseText
@@ -4269,16 +4267,40 @@ Check_Update() {
 		StringReplace, versionOnline, versionOnline, `n,,1 ; remove the 2nd white line
 		versionOnline = %versionOnline% ; remove any whitespace
 	}
-	newVersion := (versionOnline)?(versionOnline):(ProgramValues.Version)
-	newVersion = %newVersion% ; Avoid a strange issue that would add 0's after decimal
 
-	ProgramValues.Version_Latest := newVersion
-	if ( newVersion != ProgramValues.Version ) {
-		ProgramValues.Update_Available := 1
-		if (autoUpdate=1) {
+;	Version.txt on dev branch
+	whr := ComObjCreate("WinHttp.WinHttpRequest.5.1")
+	whr.Open("GET", versionLinkBeta, true)
+	whr.Send()
+	whr.WaitForResponse(10)
+	versionOnlineBeta := whr.ResponseText
+	versionOnlineBeta = %versionOnlineBeta%
+	if ( versionOnlineBeta ) && !( RegExMatch(versionOnlineBeta, "Not(Found| Found)") ) { ; couldn't reach the file, cancel update
+		StringReplace, versionOnlineBeta, versionOnlineBeta, `n,,1 ; remove the 2nd white line
+		versionOnlineBeta = %versionOnlineBeta% ; remove any whitespace
+	}
+
+;	Set version IDs
+	latestStableVersion 	:= (versionOnline)?(versionOnline):("ERROR")
+	latestStableVersion = %latestStableVersion%
+
+	latestBetaVersion 		:= (versionOnlineBeta)?(versionOnlineBeta):("ERROR")
+	latestBetaVersion = %latestBetaVersion%
+
+	ProgramValues.Version_Latest 		:= latestStableVersion
+	ProgramValues.Version_Latest_Beta	:= latestBetaVersion
+
+;	Set new version number and notify about update
+	isUpdateAvailable := (!isUsingBeta && latestStableVersion != "ERROR" && latestStableVersion != currentVersion)?(1)
+						:(isUsingBeta && latestBetaVersion != "ERROR" && latestBetaVersion != currentVersion)?(1)
+						:(0)
+	ProgramValues.Update_Available := isUpdateAvailable
+
+	if ( isUpdateAvailable ) {
+		if (isAutoUpdateEnabled = 1) {
 			timeDif := A_Now
-			EnvSub, timeDif, %prevUpdateTime%, Seconds
-			if (timeDif > 61 || !timeDif) { ; !timeDif means prevUpdateTime was not in YYYYMMDDHH24MISS format 
+			EnvSub, timeDif,% lastTimeUpdated, Seconds
+			if (timeDif > 61 || !timeDif) { ; !timeDif means var was not in YYYYMMDDHH24MISS format 
 				Show_Tray_Notification(newVersion " is available!", "Auto-updating is enabled. Downloading the updater...")
 				Download_Updater()
 			}
@@ -4302,31 +4324,40 @@ Gui_About(params="") {
 
 	iniFilePath := ProgramValues.Ini_File, programName := ProgramValues.Name
 	verCurrent := ProgramValues.Version, verLatest := ProgramValues.Version_Latest
+	isUpdateAvailable := ProgramValues.Update_Available
 
-	isUpdateAvailable := (verLatest && verCurrent != verLatest)?(1):(0)
-
-	IniRead, updateBeta,% iniFilePath,PROGRAM,Update_Beta
-	IniRead, autoUpdate,% iniFilePath,PROGRAM,AutoUpdate
+	IniRead, isUsingBeta,% iniFilePath,PROGRAM,Update_Beta
+	IniRead, isAutoUpdateEnabled,% iniFilePath,PROGRAM,AutoUpdate
+	newVersionAvailable := (isUsingBeta)?(ProgramValues.Version_Latest_Beta):(ProgramValues.Version_Latest)
 
 	Gui, About:Destroy
 	Gui, About:New, +HwndaboutGuiHandler +AlwaysOnTop +SysMenu -MinimizeBox -MaximizeBox +OwnDialogs +LabelGui_About_,% programName " by lemasato v" verCurrent
 	Gui, About:Default
 	Gui, Font, ,Consolas
 
-	groupText := (isUpdateAvailable)?("Update v" verLatest " available."):("No update available.")
-	Gui, Add, GroupBox, w500 h80 xm Section c000000 hwndUpdateAvailableTextHandler,% groupText
-	Gui, Add, Text, xs+20 ys+20,% "Current version: " A_Tab verCurrent
-	Gui, Add, Text, xs+20 ys+35 hwndLastestVersionTextHandler,% "Latest version: " A_Tab verLatest
+	isUpdateAvailable := 1
+
+	groupText := (isUpdateAvailable)?("Update v" newVersionAvailable " available."):("No update available.")
+	Gui, Add, GroupBox, w500 h100 xm Section c000000 hwndUpdateAvailableTextHandler,% groupText
+	Gui, Add, Text, xs+20 ys+20,% "Current version: " A_Tab A_Tab verCurrent
+	if (isUpdateAvailable)
+		Gui, Add, Button,x+25 yp-5 w80 h20 gGui_About_Update,Update
+	Gui, Add, Text, xs+20 ys+40 hwndLastestVersionTextHandler,% "Latest Version (Stable): " A_Tab ProgramValues.Version_Latest
+	Gui, Add, Text, xs+20 ys+55 hwndLastestVersionBetaTextHandler,% "Latest Version (Beta): " A_Tab A_Tab ProgramValues.Version_Latest_Beta
 	if ( isUpdateAvailable ) {
 		GuiControl, About:+cGreen +Redraw,% UpdateAvailableTextHandler
-		GuiControl, About:+cGreen +Redraw,% LastestVersionTextHandler
-		Gui, Add, Button,x+25 yp-5 w80 h20 gGui_About_Update,Update
+		if (isUsingBeta) {
+			GuiControl, About:+cBlue +Redraw,% LastestVersionBetaTextHandler
+		}
+		else {
+			GuiControl, About:+cGreen +Redraw,% LastestVersionTextHandler
+		}
 	}
-	Gui, Add, CheckBox,xs+20 ys+55 vUpdateAutomatically,Enable automatic updates
+	Gui, Add, CheckBox,xs+20 ys+75 vUpdateAutomatically,Enable automatic updates
 	Gui, Add, CheckBox,xp+200 yp vUpdateBeta,Enable BETA (Requires reloading)
-	if ( autoUpdate = 1 )
+	if ( isAutoUpdateEnabled = 1 )
 		GuiControl, About:,UpdateAutomatically,1
-	if ( updateBeta = 1 )
+	if ( isUsingBeta = 1 )
 		GuiControl, About:,UpdateBeta,1
 
 	FileRead, changelogText,% ProgramValues.Changelogs_File
@@ -6056,8 +6087,8 @@ Extract_Skin_Files() {
 	skinFolder := ProgramValues.Skins_Folder
 
 	skinNames := {}
-	fromfolder = %A_WorkingDir%\Resources\Skins
-	fileInstallScript = %A_WorkingDir%\File_Install.ahk
+	fromfolder := % A_ScriptDir "\Resources\Skins"
+	fileInstallScript := A_ScriptDir "\Resources\ahk\File_Install.ahk"
 	; If script is not compiled, create a file install script from ./Resources/Skins
 	if (!A_IsCompiled) {
 		if FileExist(fileInstallScript)
@@ -6072,7 +6103,7 @@ Extract_Skin_Files() {
 			loop %fromFolder%\%skinName%\*.*
 				{
 				if A_LoopFileExt in ini,png,jpg,ico
-					FileAppend, FileInstall`, %A_LoopFileFullPath%`,%skinFolder%\%skinName%\%A_LoopFileName%`, 1`n , %fileInstallScript%
+					FileAppend, FileInstall`, %A_LoopFileFullPath%`,%skinFolder%\%skinName%\%A_LoopFileName%`, 1`n ,% fileInstallScript
 				}
 		}
 		if FileExist(fileInstallScript)
@@ -6843,22 +6874,26 @@ Download_Updater() {
 
 	Gui_Trades_Save_Pending_Backup()
 
-	IniRead,updateBeta,% ProgramValues.Ini_File,PROGRAM,Update_Beta
+	IniRead, isUsingBeta,% ProgramValues.Ini_File,PROGRAM,Update_Beta, 0
 
-	updaterLink := (updateBeta)?(ProgramValues.Updater_Link_Beta):(ProgramValues.Updater_Link)
-	newVersionLink := (updateBeta)?(ProgramValues.NewVersion_Link_Beta):(ProgramValues.NewVersion_Link)
-	fileName := (updateBeta)?(ProgramValues.Name " (Beta).exe"):(ProgramValues.Name ".exe")
+	updaterLink 		:= (isUsingBeta)?(ProgramValues.Updater_Link_Beta):(ProgramValues.Updater_Link)
+	newVersionLink 		:= (isUsingBeta)?(ProgramValues.NewVersion_Link_Beta):(ProgramValues.NewVersion_Link)
 
 	IniWrite,% A_Now,% ProgramValues.Ini_File,PROGRAM,LastUpdate
 	UrlDownloadToFile,% updaterLink,% ProgramValues.Updater_File
 	Sleep 10
-	Run,% ProgramValues.Updater_File 
-	. " /Name=""" ProgramValues.Name  """"
-	. " /File_Name=""" fileName """"
-	. " /Local_Folder=""" ProgramValues.Local_Folder """"
-	. " /Ini_File=""" ProgramValues.Ini_File """"
-	. " /NewVersion_Link=""" newVersionLink """"
-	ExitApp
+	if (!ErrorLevel) {
+		Run,% ProgramValues.Updater_File 
+		. " /Name=""" ProgramValues.Name  """"
+		. " /File_Name=""" ProgramValues.Name ".exe" """"
+		. " /Local_Folder=""" ProgramValues.Local_Folder """"
+		. " /Ini_File=""" ProgramValues.Ini_File """"
+		. " /NewVersion_Link=""" newVersionLink """"
+		ExitApp
+	}
+	else {
+		Show_Tray_Notification("Failed to download the updater.", "There was an issue while downloading the updater.`nPlease try again later, or try updating manually.")
+	}
 }
 
 Fade_Tray_Notification() {
