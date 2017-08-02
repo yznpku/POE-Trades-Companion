@@ -6135,7 +6135,7 @@ Extract_Skin_Files() {
 			Run % fileInstallScript
 	}
 	; Include file install script if it is available. Make sure fileinstall script has been created when compiling or it wont run.
-	#Include *i File_Install.ahk
+	#Include *i %A_ScriptDir%/Resources/AHK/File_Install.ahk
 }
 
 Extract_Sound_Files() {
