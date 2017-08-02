@@ -87,7 +87,7 @@ Close_Program_Instancies() {
 		Sleep 1
 
 		SplitPath, A_LoopField, fileExt, , fileExt
-		if (fileExt != ".ahk")
+		if (fileExt != "ahk")
 			FileDelete,% A_LoopField
 		Sleep 1
 	}
