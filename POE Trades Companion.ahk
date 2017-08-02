@@ -612,9 +612,9 @@ Filter_Logs_Message(message) {
 						; if ( ProgramSettings.Joined_Toggle = 1 ) && FileExist(ProgramSettings.Joined_Sound_Path) { 
 						; 	SoundPlay,% ProgramSettings.Joined_Sound_Path
 						; }
-						if ( ProgramSettings.Trade_Toggle = 1 ) && FileExist(ProgramSettings.Trade_Sound_Path) { ; Play the sound set for trades
-							SoundPlay,% ProgramSettings.Trade_Sound_Path
-						}
+						; if ( ProgramSettings.Trade_Toggle = 1 ) && FileExist(ProgramSettings.Trade_Sound_Path) { ; Play the sound set for trades
+						; 	SoundPlay,% ProgramSettings.Trade_Sound_Path
+						; }
 						if !WinActive("ahk_pid " gamePID) {
 							if ( ProgramSettings.Whisper_Flash ) {
 							gameHwnd := WinExist("ahk_pid " gamePID)
