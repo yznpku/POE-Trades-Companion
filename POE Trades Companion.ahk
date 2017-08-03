@@ -162,11 +162,7 @@ Start_Script() {
 	Update_Local_Settings() ; Updating local settings between versions
 
 ;	Extracting assets
-	Extract_Sound_Files()
-	Extract_Skin_Files()
-	Extract_Font_Files()
-	Extract_Data_Files()
-	Extract_Others_Files()
+	Extract_Assets()
 
 	Install_Font_Files()
 	Manage_Font_Resources("LOAD")
@@ -297,8 +293,7 @@ Filter_Logs_Message(message) {
 						  ,"poeAppRegExStr":poeAppRegExStr
 						  ,"poeAppUnpricedRegexStr":poeAppUnpricedRegexStr}
 
-	static areaRegexStr := (ProgramValues["Debug"])?("^(?:[^ ]+ ){6}(\d+)\](?:.*) : (.*?) (?:has) (joined|left) (?:the area.*)") ; matches ' : {name} has {joined|left} ..' from chat as well 
-						  :("^(?:[^ ]+ ){6}(\d+)\] : (.*?) (?:has) (joined|left) (?:the area.*)")
+	static areaRegexStr := ("^(?:[^ ]+ ){6}(\d+)\] : (.*?) (?:has) (joined|left) (?:the area.*)") 
 
 
 	Loop, Parse, message, `n ; For each new individual line since last check
@@ -3111,7 +3106,7 @@ return
 
 			for id, key in keys {
 				IniRead, value,% skinSettingsFile,% sect,% key
-				if key is in %controlsUseChoose%
+				if key in %controlsUseChoose%
 					GuiControl, Settings:ChooseString,% handlers[id],% value
 				else
 					GuiControl, Settings:,% handlers[id],% value
@@ -5825,8 +5820,8 @@ Logs_Append(funcName, params) {
 			paramsKeysContent .= params.KEYS[A_Index] ": """ params.VALUES[A_Index] """`n"
 		}
 
-		apppendToFile := ""
-		apppendToFile := ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>`n"
+		appendToFile := ""
+		appendToFile := ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>`n"
 						. ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>`n"
 						. ">>> OS SECTION `n"
 						. ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>`n"
@@ -5857,7 +5852,7 @@ Logs_Append(funcName, params) {
 						. paramsKeysContent
 						. "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<`n"
 						. "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<`n"
-		FileAppend,% apppendToFile,% logsFile
+		FileAppend,% appendToFile,% logsFile
 	}
 
 	else {
@@ -6122,223 +6117,144 @@ Install_Font_Files() {
 	try Run,% fontsFolder "/FontReg.exe /Copy",% fontsFolder
 }
 
-Extract_Font_Files() {
-/*			Include the Resources into the compiled executable
- *			Extract the Resources into their specified folder
-*/
+Extract_Assets() {
 	global ProgramValues
+	static 0 ; Bypass warning "local same as global" for var 0
 
-	fontsFolder := ProgramValues.Fonts_Folder
+	if (A_IsCompiled) {
+		#Include, *i File_Install.ahk
+		Return
+	}
 
-	if FileExist(fontsFolder "\TC-Symbols.*")
-		FileDelete,% fontsFolder "\TC-Symbols.*"
-	FileInstall, Resources\Fonts\TC_Symbols.ttf,% fontsFolder "\TC_Symbols.ttf", 1
+;	File location
+	installFile := % A_ScriptDir "\File_Install.ahk"
+	FileDelete,% installFile
 
-	FileInstall, Resources\Fonts\Fontin-SmallCaps.ttf,% fontsFolder "\Fontin-SmallCaps.ttf", 1
-	FileInstall, Resources\Fonts\Consolas.ttf,% fontsFolder "\Consolas.ttf", 1
-	FileInstall, Resources\Fonts\Segoe UI.ttf,% fontsFolder "\Segoe UI.ttf", 1
+;	Pass ProgramValues to file
+	appendToFile .= "tempParams := {}`n"
+				 .	"Loop, %0% {`n"
+				 .	"	param := `%A_Index`%`n"
+				 . 	"	if RegExMatch(param, ""/Fonts_Folder=(.*)"", found) {`n"
+				 . 	"		tempParams.Fonts_Folder := found1`n"
+				 . 	"	}`n"
+				 . 	"	if RegExMatch(param, ""/SFX_Folder=(.*)"", found) {`n"
+				 . 	"		tempParams.SFX_Folder := found1`n"
+				 . 	"	}`n"
+				 . 	"	if RegExMatch(param, ""/Others_Folder=(.*)"", found) {`n"
+				 . 	"		tempParams.Others_Folder := found1`n"
+				 . 	"	}`n"
+				 . 	"	if RegExMatch(param, ""/Data_Folder=(.*)"", found) {`n"
+				 . 	"		tempParams.Data_Folder := found1`n"
+				 . 	"	}`n"
+				 . 	"	if RegExMatch(param, ""/Skins_Folder=(.*)"", found) {`n"
+				 . 	"		tempParams.Skins_Folder := found1`n"
+				 . 	"	}`n"
+				 .	"	ProgramValues := tempParams`n"
+				 . 	"}`n"
 
-	FileInstall, Resources\Fonts\Settings.ini,% fontsFolder "\Settings.ini", 1
-	FileInstall, Resources\Fonts\FontReg.exe,% fontsFolder "\FontReg.exe", 0
-}
+;	FONTS
+	resFolder := A_ScriptDir "\Resources\Fonts"
+	allowedExt := "ttf,ini"
+	allowedFiles := "FontReg.exe"
+	appendToFile .= "`n; FONT`n"
 
-Extract_Skin_Files() {
-/*			Include the default skins into the compiled executable
- *			Extracts the included skins into the skins Folder
-*/
-	global ProgramValues
-	skinFolder := ProgramValues.Skins_Folder
+	appendToFile .= "if !( InStr(FileExist(ProgramValues.Fonts_Folder), ""D"") )`n"
+				  . "	FileCreateDir,`% ProgramValues.Fonts_Folder `n"
+	Loop, Files,% resFolder "\*"
+	{
+		RegExMatch(A_LoopFileFullPath, "\\Resources\\(.*)", path)
+		filePath := "Resources\" path1
+		
+		if A_LoopFileName in %allowedFiles%
+			appendToFile .= "FileInstall, " filePath ",`% ProgramValues.Fonts_Folder """ "\" A_LoopFileName """" ", 1`n"
+		else if A_LoopFileExt in %allowedExt%			
+			appendToFile .= "FileInstall, " filePath ",`% ProgramValues.Fonts_Folder """ "\" A_LoopFileName """" ", 1`n"
+	}
 
-;	White Skin
-	if !( InStr(FileExist(skinFolder "\White"), "D") )
-		FileCreateDir, % skinFolder "\White"
+;	SFX
+	resFolder := A_ScriptDir "\Resources\SFX"
+	allowedExt := "wav,mp3"
+	appendToFile .= "`n; SFX`n"
 
-	FileInstall, Resources\Skins\White\Assets.ini,% skinFolder "\White\Assets.ini", 1
-	FileInstall, Resources\Skins\White\Settings.ini,% skinFolder "\White\Settings.ini", 1
+	appendToFile .= "if !( InStr(FileExist(ProgramValues.SFX_Folder), ""D"") )`n"
+				  . "	FileCreateDir,`% ProgramValues.SFX_Folder `n"
+	Loop, Files,% resFolder "\*"
+	{
+		RegExMatch(A_LoopFileFullPath, "\\Resources\\(.*)", path)
+		filePath := "Resources\" path1
 
-	FileInstall, Resources\Skins\White\ArrowLeft.png,% skinFolder "\White\ArrowLeft.png", 1
-	FileInstall, Resources\Skins\White\ArrowLeftHover.png,% skinFolder "\White\ArrowLeftHover.png", 1
-	FileInstall, Resources\Skins\White\ArrowLeftPress.png,% skinFolder "\White\ArrowLeftPress.png", 1
+		if A_LoopFileExt in %allowedExt%
+			appendToFile .= "FileInstall, " filePath ",`% ProgramValues.SFX_Folder """ "\" A_LoopFileName """" ", 1`n"
+	}
 
-	FileInstall, Resources\Skins\White\ArrowRight.png,% skinFolder "\White\ArrowRight.png", 1
-	FileInstall, Resources\Skins\White\ArrowRightHover.png,% skinFolder "\White\ArrowRightHover.png", 1
-	FileInstall, Resources\Skins\White\ArrowRightPress.png,% skinFolder "\White\ArrowRightPress.png", 1
+;	DATA
+	resFolder := A_ScriptDir "\Resources\Data"
+	appendToFile .= "`n; DATA`n"
 
-	FileInstall, Resources\Skins\White\ButtonOneThird.png,% skinFolder "\White\ButtonOneThird.png", 1
-	FileInstall, Resources\Skins\White\ButtonOneThirdHover.png,% skinFolder "\White\ButtonOneThirdHover.png", 1
-	FileInstall, Resources\Skins\White\ButtonOneThirdPress.png,% skinFolder "\White\ButtonOneThirdPress.png", 1
+	appendToFile .= "if !( InStr(FileExist(ProgramValues.Data_Folder), ""D"") )`n"
+				  . "	FileCreateDir,`% ProgramValues.Data_Folder `n"
+	Loop, Files,% resFolder "\*"
+	{
+		RegExMatch(A_LoopFileFullPath, "\\Resources\\(.*)", path)
+		filePath := "Resources\" path1
 
-	FileInstall, Resources\Skins\White\ButtonTwoThird.png,% skinFolder "\White\ButtonTwoThird.png", 1
-	FileInstall, Resources\Skins\White\ButtonTwoThirdHover.png,% skinFolder "\White\ButtonTwoThirdHover.png", 1
-	FileInstall, Resources\Skins\White\ButtonTwoThirdPress.png,% skinFolder "\White\ButtonTwoThirdPress.png", 1
+		appendToFile .= "FileInstall, " filePath ",`% ProgramValues.Data_Folder """ "\" A_LoopFileName """" ", 1`n"
+	} 
 
-	FileInstall, Resources\Skins\White\ButtonThreeThird.png,% skinFolder "\White\ButtonThreeThird.png", 1
-	FileInstall, Resources\Skins\White\ButtonThreeThirdHover.png,% skinFolder "\White\ButtonThreeThirdHover.png", 1
-	FileInstall, Resources\Skins\White\ButtonThreeThirdPress.png,% skinFolder "\White\ButtonThreeThirdPress.png", 1
+;	OTHERS
+	resFolder := A_ScriptDir "\Resources\Others"
+	allowedFiles := "DonatePaypal.png,Icon.png"
+	appendToFile .= "`n; OTHERS`n"
 
-	FileInstall, Resources\Skins\White\ButtonSpecial.png,% skinFolder "\White\ButtonSpecial.png", 1
-	FileInstall, Resources\Skins\White\ButtonSpecialHover.png,% skinFolder "\White\ButtonSpecialHover.png", 1
-	FileInstall, Resources\Skins\White\ButtonSpecialPress.png,% skinFolder "\White\ButtonSpecialPress.png", 1
+	appendToFile .= "if !( InStr(FileExist(ProgramValues.Others_Folder), ""D"") )`n"
+				  . "	FileCreateDir,`% ProgramValues.Others_Folder `n"
+	Loop, Files,% resFolder "\*"
+	{
+		RegExMatch(A_LoopFileFullPath, "\\Resources\\(.*)", path)
+		filePath := "Resources\" path1
 
-	FileInstall, Resources\Skins\White\CloseTab.png,% skinFolder "\White\CloseTab.png", 1
-	FileInstall, Resources\Skins\White\CloseTabHover.png,% skinFolder "\White\CloseTabHover.png", 1
-	FileInstall, Resources\Skins\White\CloseTabPress.png,% skinFolder "\White\CloseTabPress.png", 1
+		if A_LoopFileName in %allowedFiles%
+			appendToFile .= "FileInstall, " filePath ",`% ProgramValues.Others_Folder """ "\" A_LoopFileName """" ", 1`n"
+	} 
 
-	FileInstall, Resources\Skins\White\TabActive.png,% skinFolder "\White\TabActive.png", 1
-	FileInstall, Resources\Skins\White\TabHover.png,% skinFolder "\White\TabHover.png", 1
-	FileInstall, Resources\Skins\White\TabInactive.png,% skinFolder "\White\TabInactive.png", 1
+;	SKINS
+	skinNames := []
+	resFolder := A_ScriptDir "\Resources\Skins"
+	appendToFile .= "`n; SKINS`n"
+	allowedExt := "png,ico,ini"
+	excludedFolders := "_Old"
 
-	FileInstall, Resources\Skins\White\TabJoinedActive.png,% skinFolder "\White\TabJoinedActive.png", 1
-	FileInstall, Resources\Skins\White\TabJoinedHover.png,% skinFolder "\White\TabJoinedHover.png", 1
-	FileInstall, Resources\Skins\White\TabJoinedInactive.png,% skinFolder "\White\TabJoinedInactive.png", 1
+	appendToFile .= "if !( InStr(FileExist(ProgramValues.Skins_Folder), ""D"") )`n"
+				  . "	FileCreateDir,`% ProgramValues.Skins_Folder `n"
+	Loop, Files,% resFolder "\*", D
+	{
+		if A_LoopFileName not in %excludedFolders%
+		skinNames.Push(A_LoopFileName)
+	}
+	for id, skinName in skinNames {
+		appendToFile .= "`n" A_Tab "; " skinName "`n"
 
-	FileInstall, Resources\Skins\White\TabWhisperActive.png,% skinFolder "\White\TabWhisperActive.png", 1
-	FileInstall, Resources\Skins\White\TabWhisperHover.png,% skinFolder "\White\TabWhisperHover.png", 1
-	FileInstall, Resources\Skins\White\TabWhisperInactive.png,% skinFolder "\White\TabWhisperInactive.png", 1
+		appendToFile .= "if !( InStr(FileExist(ProgramValues.Skins_Folder ""\" skinName """), ""D"") )`n"
+					  . "	FileCreateDir,`% ProgramValues.Skins_Folder ""\" skinName """`n"
+		Loop, Files,% resFolder "\" skinName "\*"
+		{
+			RegExMatch(A_LoopFileFullPath, "\\Resources\\(.*)", path)
+			filePath := "Resources\" path1
 
-	FileInstall, Resources\Skins\White\Background.png,% skinFolder "\White\Background.png", 1
-	FileInstall, Resources\Skins\White\Header.png,% skinFolder "\White\Header.png", 1
-	FileInstall, Resources\Skins\White\TabsBackground.png,% skinFolder "\White\TabsBackground.png", 1
-	FileInstall, Resources\Skins\White\TabsUnderline.png,% skinFolder "\White\TabsUnderline.png", 1
-	FileInstall, Resources\Skins\White\Icon.ico,% skinFolder "\White\Icon.ico", 1
+			if A_LoopFileExt in %allowedExt%
+				appendToFile .= "FileInstall, " filePath ",`% ProgramValues.Skins_Folder ""\" skinName "\" A_LoopFileName """" ", 1`n"
+		}
+	}
 
-;	Dark Blue Skin
-	if !( InStr(FileExist(skinFolder "\Dark Blue"), "D") )
-		FileCreateDir, % skinFolder "\Dark Blue"
-
-	FileInstall, Resources\Skins\Dark Blue\Assets.ini,% skinFolder "\Dark Blue\Assets.ini", 1
-	FileInstall, Resources\Skins\Dark Blue\Settings.ini,% skinFolder "\Dark Blue\Settings.ini", 1
-
-	FileInstall, Resources\Skins\Dark Blue\ArrowLeft.png,% skinFolder "\Dark Blue\ArrowLeft.png", 1
-	FileInstall, Resources\Skins\Dark Blue\ArrowLeftHover.png,% skinFolder "\Dark Blue\ArrowLeftHover.png", 1
-	FileInstall, Resources\Skins\Dark Blue\ArrowLeftPress.png,% skinFolder "\Dark Blue\ArrowLeftPress.png", 1
-
-	FileInstall, Resources\Skins\Dark Blue\ArrowRight.png,% skinFolder "\Dark Blue\ArrowRight.png", 1
-	FileInstall, Resources\Skins\Dark Blue\ArrowRightHover.png,% skinFolder "\Dark Blue\ArrowRightHover.png", 1
-	FileInstall, Resources\Skins\Dark Blue\ArrowRightPress.png,% skinFolder "\Dark Blue\ArrowRightPress.png", 1
-
-	FileInstall, Resources\Skins\Dark Blue\ButtonOneThird.png,% skinFolder "\Dark Blue\ButtonOneThird.png", 1
-	FileInstall, Resources\Skins\Dark Blue\ButtonOneThirdHover.png,% skinFolder "\Dark Blue\ButtonOneThirdHover.png", 1
-	FileInstall, Resources\Skins\Dark Blue\ButtonOneThirdPress.png,% skinFolder "\Dark Blue\ButtonOneThirdPress.png", 1
-
-	FileInstall, Resources\Skins\Dark Blue\ButtonTwoThird.png,% skinFolder "\Dark Blue\ButtonTwoThird.png", 1
-	FileInstall, Resources\Skins\Dark Blue\ButtonTwoThirdHover.png,% skinFolder "\Dark Blue\ButtonTwoThirdHover.png", 1
-	FileInstall, Resources\Skins\Dark Blue\ButtonTwoThirdPress.png,% skinFolder "\Dark Blue\ButtonTwoThirdPress.png", 1
-
-	FileInstall, Resources\Skins\Dark Blue\ButtonThreeThird.png,% skinFolder "\Dark Blue\ButtonThreeThird.png", 1
-	FileInstall, Resources\Skins\Dark Blue\ButtonThreeThirdHover.png,% skinFolder "\Dark Blue\ButtonThreeThirdHover.png", 1
-	FileInstall, Resources\Skins\Dark Blue\ButtonThreeThirdPress.png,% skinFolder "\Dark Blue\ButtonThreeThirdPress.png", 1
-
-	FileInstall, Resources\Skins\Dark Blue\ButtonSpecial.png,% skinFolder "\Dark Blue\ButtonSpecial.png", 1
-	FileInstall, Resources\Skins\Dark Blue\ButtonSpecialHover.png,% skinFolder "\Dark Blue\ButtonSpecialHover.png", 1
-	FileInstall, Resources\Skins\Dark Blue\ButtonSpecialPress.png,% skinFolder "\Dark Blue\ButtonSpecialPress.png", 1
-
-	FileInstall, Resources\Skins\Dark Blue\CloseTab.png,% skinFolder "\Dark Blue\CloseTab.png", 1
-	FileInstall, Resources\Skins\Dark Blue\CloseTabHover.png,% skinFolder "\Dark Blue\CloseTabHover.png", 1
-	FileInstall, Resources\Skins\Dark Blue\CloseTabPress.png,% skinFolder "\Dark Blue\CloseTabPress.png", 1
-
-	FileInstall, Resources\Skins\Dark Blue\TabActive.png,% skinFolder "\Dark Blue\TabActive.png", 1
-	FileInstall, Resources\Skins\Dark Blue\TabHover.png,% skinFolder "\Dark Blue\TabHover.png", 1
-	FileInstall, Resources\Skins\Dark Blue\TabInactive.png,% skinFolder "\Dark Blue\TabInactive.png", 1
-
-	FileInstall, Resources\Skins\Dark Blue\TabJoinedActive.png,% skinFolder "\Dark Blue\TabJoinedActive.png", 1
-	FileInstall, Resources\Skins\Dark Blue\TabJoinedHover.png,% skinFolder "\Dark Blue\TabJoinedHover.png", 1
-	FileInstall, Resources\Skins\Dark Blue\TabJoinedInactive.png,% skinFolder "\Dark Blue\TabJoinedInactive.png", 1
-
-	FileInstall, Resources\Skins\Dark Blue\TabWhisperActive.png,% skinFolder "\Dark Blue\TabWhisperActive.png", 1
-	FileInstall, Resources\Skins\Dark Blue\TabWhisperHover.png,% skinFolder "\Dark Blue\TabWhisperHover.png", 1
-	FileInstall, Resources\Skins\Dark Blue\TabWhisperInactive.png,% skinFolder "\Dark Blue\TabWhisperInactive.png", 1
-
-	FileInstall, Resources\Skins\Dark Blue\Background.png,% skinFolder "\Dark Blue\Background.png", 1
-	FileInstall, Resources\Skins\Dark Blue\Header.png,% skinFolder "\Dark Blue\Header.png", 1
-	FileInstall, Resources\Skins\Dark Blue\TabsBackground.png,% skinFolder "\Dark Blue\TabsBackground.png", 1
-	FileInstall, Resources\Skins\Dark Blue\TabsUnderline.png,% skinFolder "\Dark Blue\TabsUnderline.png", 1
-	FileInstall, Resources\Skins\Dark Blue\Icon.ico,% skinFolder "\Dark Blue\Icon.ico", 1
-
-;	Path of Exile Skin
-	if !( InStr(FileExist(skinFolder "\Path of Exile"), "D") )
-		FileCreateDir, % skinFolder "\Path of Exile"
-
-	FileInstall, Resources\Skins\Path of Exile\Assets.ini,% skinFolder "\Path of Exile\Assets.ini", 1
-	FileInstall, Resources\Skins\Path of Exile\Settings.ini,% skinFolder "\Path of Exile\Settings.ini", 1
-
-	FileInstall, Resources\Skins\Path of Exile\ArrowLeft.png,% skinFolder "\Path of Exile\ArrowLeft.png", 1
-	FileInstall, Resources\Skins\Path of Exile\ArrowLeftHover.png,% skinFolder "\Path of Exile\ArrowLeftHover.png", 1
-	FileInstall, Resources\Skins\Path of Exile\ArrowLeftPress.png,% skinFolder "\Path of Exile\ArrowLeftPress.png", 1
-
-	FileInstall, Resources\Skins\Path of Exile\ArrowRight.png,% skinFolder "\Path of Exile\ArrowRight.png", 1
-	FileInstall, Resources\Skins\Path of Exile\ArrowRightHover.png,% skinFolder "\Path of Exile\ArrowRightHover.png", 1
-	FileInstall, Resources\Skins\Path of Exile\ArrowRightPress.png,% skinFolder "\Path of Exile\ArrowRightPress.png", 1
-
-	FileInstall, Resources\Skins\Path of Exile\ButtonOneThird.png,% skinFolder "\Path of Exile\ButtonOneThird.png", 1
-	FileInstall, Resources\Skins\Path of Exile\ButtonOneThirdHover.png,% skinFolder "\Path of Exile\ButtonOneThirdHover.png", 1
-	FileInstall, Resources\Skins\Path of Exile\ButtonOneThirdPress.png,% skinFolder "\Path of Exile\ButtonOneThirdPress.png", 1
-
-	FileInstall, Resources\Skins\Path of Exile\ButtonTwoThird.png,% skinFolder "\Path of Exile\ButtonTwoThird.png", 1
-	FileInstall, Resources\Skins\Path of Exile\ButtonTwoThirdHover.png,% skinFolder "\Path of Exile\ButtonTwoThirdHover.png", 1
-	FileInstall, Resources\Skins\Path of Exile\ButtonTwoThirdPress.png,% skinFolder "\Path of Exile\ButtonTwoThirdPress.png", 1
-
-	FileInstall, Resources\Skins\Path of Exile\ButtonThreeThird.png,% skinFolder "\Path of Exile\ButtonThreeThird.png", 1
-	FileInstall, Resources\Skins\Path of Exile\ButtonThreeThirdHover.png,% skinFolder "\Path of Exile\ButtonThreeThirdHover.png", 1
-	FileInstall, Resources\Skins\Path of Exile\ButtonThreeThirdPress.png,% skinFolder "\Path of Exile\ButtonThreeThirdPress.png", 1
-
-	FileInstall, Resources\Skins\Path of Exile\ButtonSpecial.png,% skinFolder "\Path of Exile\ButtonSpecial.png", 1
-	FileInstall, Resources\Skins\Path of Exile\ButtonSpecialHover.png,% skinFolder "\Path of Exile\ButtonSpecialHover.png", 1
-	FileInstall, Resources\Skins\Path of Exile\ButtonSpecialPress.png,% skinFolder "\Path of Exile\ButtonSpecialPress.png", 1
-
-	FileInstall, Resources\Skins\Path of Exile\CloseTab.png,% skinFolder "\Path of Exile\CloseTab.png", 1
-	FileInstall, Resources\Skins\Path of Exile\CloseTabHover.png,% skinFolder "\Path of Exile\CloseTabHover.png", 1
-	FileInstall, Resources\Skins\Path of Exile\CloseTabPress.png,% skinFolder "\Path of Exile\CloseTabPress.png", 1
-
-	FileInstall, Resources\Skins\Path of Exile\TabActive.png,% skinFolder "\Path of Exile\TabActive.png", 1
-	FileInstall, Resources\Skins\Path of Exile\TabHover.png,% skinFolder "\Path of Exile\TabHover.png", 1
-	FileInstall, Resources\Skins\Path of Exile\TabInactive.png,% skinFolder "\Path of Exile\TabInactive.png", 1
-
-	FileInstall, Resources\Skins\Path of Exile\TabJoinedActive.png,% skinFolder "\Path of Exile\TabJoinedActive.png", 1
-	FileInstall, Resources\Skins\Path of Exile\TabJoinedHover.png,% skinFolder "\Path of Exile\TabJoinedHover.png", 1
-	FileInstall, Resources\Skins\Path of Exile\TabJoinedInactive.png,% skinFolder "\Path of Exile\TabJoinedInactive.png", 1
-
-	FileInstall, Resources\Skins\Path of Exile\TabWhisperActive.png,% skinFolder "\Path of Exile\TabWhisperActive.png", 1
-	FileInstall, Resources\Skins\Path of Exile\TabWhisperHover.png,% skinFolder "\Path of Exile\TabWhisperHover.png", 1
-	FileInstall, Resources\Skins\Path of Exile\TabWhisperInactive.png,% skinFolder "\Path of Exile\TabWhisperInactive.png", 1
-
-	FileInstall, Resources\Skins\Path of Exile\Background.png,% skinFolder "\Path of Exile\Background.png", 1
-	FileInstall, Resources\Skins\Path of Exile\Header.png,% skinFolder "\Path of Exile\Header.png", 1
-	FileInstall, Resources\Skins\Path of Exile\TabsBackground.png,% skinFolder "\Path of Exile\TabsBackground.png", 1
-	FileInstall, Resources\Skins\Path of Exile\TabsUnderline.png,% skinFolder "\Path of Exile\TabsUnderline.png", 1
-	FileInstall, Resources\Skins\Path of Exile\Icon.ico,% skinFolder "\Path of Exile\Icon.ico", 1
-}
-
-Extract_Sound_Files() {
-/*			Include the SFX into the compiled executable
- *			Extracts the included SFX into the SFX Folder
-*/
-	global ProgramValues
-	sfxFolder := ProgramValues.SFX_Folder
-
-	FileInstall, Resources\SFX\MM_Tatl_Gleam.wav,% sfxFolder "\MM_Tatl_Gleam.wav", 0
-	FileInstall, Resources\SFX\MM_Tatl_Hey.wav,% sfxFolder "\MM_Tatl_Hey.wav", 0
-	FileInstall, Resources\SFX\WW_MainMenu_CopyErase_Start.wav,% sfxFolder "\WW_MainMenu_CopyErase_Start.wav", 0
-	FileInstall, Resources\SFX\WW_MainMenu_Letter.wav,% sfxFolder "\WW_MainMenu_Letter.wav", 0
-}
-
-Extract_Data_Files() {
-	global ProgramValues
-	dataFolder := ProgramValues.Data_Folder
-
-	FileInstall, Resources\Data\Currency_All.txt,% dataFolder "\Currency_All.txt", 1
-	FileInstall, Resources\Data\currencyTradeNames.json,% dataFolder "\currencyTradeNames.json", 1
-}
-
-Extract_Others_Files() {
-/*			Include any other file that does not belong to the others
-			Extracts the included files into the specified folder
-*/
-	global ProgramValues
-	othersFolder := ProgramValues.Others_Folder
-
-	FileInstall, Resources\Others\DonatePaypal.png,% othersFolder "\DonatePaypal.png", 1
-	FileInstall, Resources\Others\icon.png,% othersFolder "\icon.png", 1
+;	ADD TO FILE
+	FileAppend,% appendToFile "`n",% installFile
+	Sleep 10
+	RunWait,% installFile
+		   . " /Fonts_Folder=" 	"""" ProgramValues.Fonts_Folder """"
+		   . " /SFX_Folder=" 	"""" ProgramValues.SFX_Folder """"
+		   . " /Data_Folder=" 	"""" ProgramValues.Data_Folder """"
+		   . " /Others_Folder=" """" ProgramValues.Others_Folder """"
+		   . " /Skins_Folder=" 	"""" ProgramValues.Skins_Folder """"
 }
 
 Close_Previous_Program_Instance() {
