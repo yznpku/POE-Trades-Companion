@@ -57,7 +57,6 @@ Start_Script() {
 
 ;	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	; ProgramValues.Keep_Backup 			:= 1 	; Keep Trades_Backup.ini instead of deleting it on load.
-	; ProgramValues.NoSplash 				:= 1 	; Skip the "Reloading to request..." GUI.
 	ProgramSettings.Screen_DPI 			:= Get_DPI_Factor() 
 
 	Handle_CommandLine_Parameters()
@@ -65,7 +64,6 @@ Start_Script() {
 
 	ProgramValues.Name 					:= "POE Trades Companion"
 	ProgramValues.Version 				:= "1.12.BETA_5"
-	ProgramValues.Debug 				:= "0"
 
 	ProgramValues.Updater_File 			:= "POE-TC-Updater.exe"
 	ProgramValues.Updater_Link 			:= "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/Updater_v2.exe"
@@ -109,12 +107,6 @@ Start_Script() {
 
 	ProgramValues.PID 					:= DllCall("GetCurrentProcessId")
 
-	if FileExist(A_ScriptDir "/ENABLE_DEBUG.txt") {
-		FileRead, fileContent,% A_ScriptDir "/ENABLE_DEBUG.txt"
-		fileContent := StrReplace(fileContent, "`n", "")
-		ProgramValues.Debug := fileContent
-	}
-	ProgramValues.Debug := (A_IsCompiled)?(0):(ProgramValues.Debug) ; Prevent from enabling debug on compiled executable
 ;	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 	GroupAdd, POEGame, ahk_exe PathOfExile.exe
@@ -126,6 +118,15 @@ Start_Script() {
 
 ;	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+;	Debug options
+	if !(A_IsCompiled) {
+		FileRead, debugJSON,% A_ScriptDir "\Debug.json"
+		parsed_debugJSON := JSON.Load(debugJSON)
+		ProgramValues.Debug 			:= parsed_debugJSON.settings.enable
+		ProgramValues.No_Admin_Splash 	:= parsed_debugJSON.settings.no_admin_splash
+	}
+
+;	Data currency
 	FileRead, allCurrency,% ProgramValues.Data_Folder "\Resources\Data\Currency_All.txt"
 	Loop, Parse, allCurrency, `n`r
 	{
@@ -135,6 +136,7 @@ Start_Script() {
 	}
 	StringTrimRight, Stats_RealCurrencyNames, Stats_RealCurrencyNames, 1 ; Remove last comma
 
+;	Data currency names converter
 	FileRead, JSONFile,% ProgramValues.Data_Folder "\Resources\Data\currencyTradeNames.json"
 	parsedJSON := JSON.Load(JSONFile)
 	Stats_TradeCurrencyNames := parsedJSON.currencyNames.eng
@@ -189,30 +191,10 @@ Start_Script() {
 	; Pre-rendering Trades-GUI
 	Gui_Trades("CREATE")
 
-	if (ProgramValues["Debug"]) {
-		; trade / No qual / Level
-		str := "2016/10/09 21:30:32 105384166 355 [INFO Client 6416] "
-			str .= "@From poetrade quality: Hi, I would like to buy your level 10 11% Faster Attacks Support listed for 5 alteration in Legacy (stash tab """"Shop: Gems""""; position: left 10, top 11) Offering 1alch?"
-
-		; trade / No qual / Level / Unpriced
-		str .= "`n" "2016/10/09 21:30:32 105384166 355 [INFO Client 6416] "
-			str .= "@From poetrade quality unpriced: Hi, I would like to buy your level 20 21% Faster Attacks Support in Beta Standard (stash tab """"Shop: poe.trade unpriced""""; position: left 1, top 2)"
-
-		str .= "`n" "2016/10/09 21:30:32 105384166 355 [INFO Client 6416] "
-			str .= "@From poetrade currency: Hi, I'd like to buy your 566 chaos for my 7 exalted in Legacy."
-
-		; app / No qual / Level
-		str .= "`n" "2016/10/09 21:30:32 105384166 355 [INFO Client 6416] "
-			str .= " @From poeapp quality: wtb Faster Attacks Support (30/31%) listed for 1 Orb of Alteration in standard (stash """"Shop: poeapp 1""""; left 30, top 21)"
-
-		; app / No qual / Level / Unpriced
-		str .= "`n" "2016/10/09 21:30:32 105384166 355 [INFO Client 6416] "
-			str .= " @From poeapp quality unpriced other: wtb Faster Attacks Support (40/41%) in standard (stash """"Shop: poeapp 1""""; left 40, top 21)"
-
-		str .= "`n" "2016/10/09 21:30:32 105384166 355 [INFO Client 6416] "
-			str .= " @From poeapp quality unpriced other: wtb Faster Attacks Support (40/41%) in standard (stash """"Shop: poeapp 1""""; left 40, top 21)"
-
-		Filter_Logs_Message(str)
+	; Parse debug msgs
+	if (ProgramValues.Debug) {
+		Loop % parsed_debugJSON.chat_logs.MaxIndex()
+			Filter_Logs_Message(parsed_debugJSON.chat_logs[A_Index])
 	}
 
 	Gui_Trades_Load_Pending_Backup()
@@ -295,7 +277,7 @@ Filter_Logs_Message(message) {
 
 			if !WinActive("ahk_pid " gamePID) {
 				if ( ProgramSettings.Whisper_Tray ) {
-					Show_Tray_Notification("Whisper from " whispName, whispMsg)
+					Tray_Notifications_Show("Whisper from " whispName, whispMsg)
 				}
 
 				if ( ProgramSettings.Whisper_Flash ) {
@@ -684,7 +666,7 @@ Monitor_Game_Logs(mode="") {
 		timeSinceLastTrade += 1*(sleepTime/1000)
 		Sleep %sleepTime%
 	}
-	Show_Tray_Notification("An issue with the logs file occured!", "It could be one of the following reasons: "
+	Tray_Notifications_Show("An issue with the logs file occured!", "It could be one of the following reasons: "
 		. "`n- The file doesn't exist anymore."
 		. "`n- Content from the file was deleted."
 		. "`n- The file object used by the program was closed."
@@ -836,7 +818,7 @@ Gui_Trades(mode="", tradeInfos="") {
 		maxTabsRendered := (!maxTabsRendered)?(maxTabsStage1):(maxTabsRendered)
 
 		if ( maxTabsRendered > maxTabsStage2 ) { 
-			Show_Tray_Notification(ProgramValues.Name, "Current tabs limit reached." . "`nRendering more tabs")
+			Tray_Notifications_Show(ProgramValues.Name, "Current tabs limit reached." . "`nRendering more tabs")
 		}
 
 		TradesGUI_Values["Max_Tabs_Rendered"] := maxTabsRendered
@@ -1841,7 +1823,7 @@ Gui_Trades_Do_Action_Func(CtrlHwnd, GuiEvent, EventInfo) {
 	messages := Object()
 	tabInfos := Gui_Trades_Get_Trades_Infos(TradesGUI_Values.Active_Tab)
 	if (!tabInfos.Buyer && btnAction != "Close_Tab") {
-		Show_Tray_Notification(ProgramValues.Name, "No buyer found for tab """ TradesGUI_Values.Active_Tab """`nOperation cancelled. Please report this issue.")
+		Tray_Notifications_Show(ProgramValues.Name, "No buyer found for tab """ TradesGUI_Values.Active_Tab """`nOperation cancelled. Please report this issue.")
 		Return
 	}
 
@@ -4333,12 +4315,12 @@ Check_Update() {
 			timeDif := A_Now
 			EnvSub, timeDif,% lastTimeUpdated, Seconds
 			if (timeDif > 61 || !timeDif) { ; !timeDif means var was not in YYYYMMDDHH24MISS format 
-				Show_Tray_Notification(onlineVersionAvailable " is available!", "Auto-updating is enabled. Downloading the updater...")
+				Tray_Notifications_Show(onlineVersionAvailable " is available!", "Auto-updating is enabled. Downloading the updater...")
 				Download_Updater()
 			}
 		}
 		else {
-			Show_Tray_Notification(onlineVersionAvailable " is available!", "Left click on this notification to run the automatic download.`nRight click to dismiss it.", {Is_Update:1, Fade_Timer:10000})
+			Tray_Notifications_Show(onlineVersionAvailable " is available!", "Left click on this notification to run the automatic download.`nRight click to dismiss it.", {Is_Update:1, Fade_Timer:10000})
 		}
 	}
 	SetTimer, Check_Update, -1800000
@@ -5956,7 +5938,7 @@ Send_InGame_Message(allMessages, tabInfos="", specialEvent="") {
 			PIDArray := Get_Matching_Windows_Infos("PID")
 			handlersArray := Get_Matching_Windows_Infos("ID")
 			if ( handlersArray.MaxIndex() = "" ) {
-				Show_Tray_Notification(programName, "The PID assigned to the tab does not belong to a POE instance, and no POE instance was found!`n`nPlease click the button again after restarting the game.")
+				Tray_Notifications_Show(programName, "The PID assigned to the tab does not belong to a POE instance, and no POE instance was found!`n`nPlease click the button again after restarting the game.")
 				Return 1
 			}
 			else {
@@ -6382,7 +6364,7 @@ Gui_Trades_Cycle_Func() {
 		Return
 
 	if !Trades_GUI_Exists() {
-		Show_Tray_Notification(programName, "Couldn't find the Trades GUI!`nOperation Canceled.")
+		Tray_Notifications_Show(programName, "Couldn't find the Trades GUI!`nOperation Canceled.")
 		Return
 	}
 	matchHandlers := Get_Matching_Windows_Infos("ID")
@@ -6535,7 +6517,7 @@ Run_As_Admin() {
 		Gui_AdminWarn()
 		ExitApp
 	}
-	if (!ProgramValues.Debug && !ProgramValues.NoSplash) {
+	if (!ProgramValues.Debug && !ProgramValues.No_Admin_Splash) {
 		funcParams := {  Background_Color:"Green"
 						,Border_Color:"White"
 						,Title_Color:"White"
@@ -6959,14 +6941,12 @@ Get_Text_Control_Size(txt, fontName, fontSize, maxWidth="") {
 */
 }
 
-Show_Tray_Notification(title, msg, params="") {
+Tray_Notifications_Show(title, msg, params="") {
 /*		Show a notification.
  *		Look based on w10 traytip.
 */
 	static
 	global SkinAssets, ProgramSettings
-
-	local defaultGUI := A_DefaultGUI
 
 	Is_Update := params.Is_Update
 
@@ -6978,48 +6958,36 @@ Show_Tray_Notification(title, msg, params="") {
 	guiHeight := (textSize.H > guiHeightMax)?(guiHeightMax):(textSize.H)
 
 	; Fixing DPI size
-	guiWidth := guiWidth * ProgramSettings.Screen_DPI
 	guiHeight := guiHeight * ProgramSettings.Screen_DPI
 
 	guiHeight += 50, guiWidth += 20 ; Fitting size
 	borderSize := 1
 	fadeTimer := (params.Fade_Timer)?(params.Fade_Timer):(5000)
 
-	showX := A_ScreenWidth, showY := A_ScreenHeight-guiHeight-60
-	showW := 0, showH := guiHeight
+	showX := A_ScreenWidth-guiWidth-15, showY := A_ScreenHeight-guiHeight-60
+	showW := guiWidth, showH := guiHeight
 
 	Gui, TrayNotification:Destroy
 	Gui, TrayNotification:New, +ToolWindow +AlwaysOnTop -Border +LastFound -SysMenu -Caption +LabelGui_TrayNotification_
 	Gui, TrayNotification:Default
-	Gui, Margin, 0, 0
-	Gui, Color, 1f1f1f
+	Gui, TrayNotification:Margin, 0, 0
+	Gui, TrayNotification:Color, 1f1f1f
 
-	Gui, Add, Progress, x0 y0 w%guiWidth% h%borderSize% Background484848 ; Top
-	Gui, Add, Progress, x0 y0 w%borderSize% h%guiHeight% Background484848 ; Left
-	; Gui, Add, Progress,% "x" guiWidth-borderSize " y0" " w" borderSize " h" guiHeight " Background484848" ; Right
-	Gui, Add, Progress,% "x" 0 " y" guiHeight-borderSize " w" guiWidth " h" borderSize " Background484848" ; Bottom
-	Gui, Add, Text,% "x0 y0 w" guiWidth " h" guiHeight " BackgroundTrans gGui_TrayNotification_OnLeftClick",% ""
+	Gui, TrayNotification:Add, Progress, x0 y0 w%guiWidth% h%borderSize% Background484848 ; Top
+	Gui, TrayNotification:Add, Progress, x0 y0 w%borderSize% h%guiHeight% Background484848 ; Left
+	Gui, TrayNotification:Add, Progress,% "x" guiWidth-borderSize " y0" " w" borderSize " h" guiHeight " Background484848" ; Right
+	Gui, TrayNotification:Add, Progress,% "x" 0 " y" guiHeight-borderSize " w" guiWidth " h" borderSize " Background484848" ; Bottom
+	Gui, TrayNotification:Add, Text,% "x0 y0 w" guiWidth " h" guiHeight " BackgroundTrans gGui_TrayNotification_OnLeftClick",% ""
 
-	Gui, Add, Picture, x5 y5 w24 h24 hwndhIcon,% SkinAssets.Misc_Icon
-	Gui, Font, S%guiTitleFontSize% Bold,% guiFontName
-	Gui, Add, Text,% "xp+35" " yp+5" " w" guiWidth-20 " BackgroundTrans cFFFFFF gGui_TrayNotification_OnLeftClick",% title
-	Gui, Font, S%guiFontSize% Norm,% guiFontName
-	Gui, Add, Text,% "xp" " yp+25" " w" guiWidth-40 " BackgroundTrans ca5a5a5 gGui_TrayNotification_OnLeftClick",% msg
+	Gui, TrayNotification:Add, Picture, x5 y5 w24 h24 hwndhIcon,% SkinAssets.Misc_Icon
+	Gui, TrayNotification:Font, S%guiTitleFontSize% Bold,% guiFontName
+	Gui, TrayNotification:Add, Text,% "xp+35" " yp+5" " w" guiWidth-20 " BackgroundTrans cFFFFFF gGui_TrayNotification_OnLeftClick",% title
+	Gui, TrayNotification:Font, S%guiFontSize% Norm,% guiFontName
+	Gui, TrayNotification:Add, Text,% "xp" " yp+25" " w" guiWidth-40 " BackgroundTrans ca5a5a5 gGui_TrayNotification_OnLeftClick",% msg
 	GuiControl, TrayNotification:Move,% hIcon,% "y" (guiHeight/2) - (24/2)
-	Gui, Show,% "x" showX " y" showY " w" showW " h" showH " NoActivate"
-	Loop {
-		showW += 25
-		showW := (showW > guiWidth)?(guiWidth):(showW)
-		showX := A_ScreenWidth-showW
-		Gui, Show,% "x" showX " w" showW " NoActivate"
-		Sleep 1
-		if (showW = guiWidth)
-			Break
-	}
+	Gui, TrayNotification:Show,% "x" showX " y" showY " w" showW " h" showH " NoActivate"
 
-	SetTimer, Fade_Tray_Notification, Delete ; Remove previous timer, if existing
-	SetTimer, Fade_Tray_Notification, -%fadeTimer%
-	Gui, %defaultGUI%:Default
+	SetTimer, Tray_Notifications_Fade, -%fadeTimer%
 	Return
 
 	Gui_TrayNotification_ContextMenu: ; Launched whenever the user right-clicks anywhere in the window except the title bar and menu bar.
@@ -7032,6 +7000,22 @@ Show_Tray_Notification(title, msg, params="") {
 			Download_Updater()
 		}
 	Return
+}
+
+Tray_Notifications_Fade() {
+	static transparency
+
+	transparency := (!transparency)?(255):(transparency)
+
+	transparency := (0 > transparency)?(0):(transparency-10)
+	Gui, TrayNotification:+LastFound
+	WinSet, Transparent,% transparency
+	if (!transparency) {
+		Gui, TrayNotification:Destroy
+		SetTimer,% A_ThisFunc, Delete
+	}
+	else
+		SetTimer,% A_ThisFunc, -50
 }
 
 Download_Updater() {
@@ -7057,23 +7041,8 @@ Download_Updater() {
 		ExitApp
 	}
 	else {
-		Show_Tray_Notification("Failed to download the updater.", "There was an issue while downloading the updater.`nPlease try again later, or try updating manually.")
+		Tray_Notifications_Show("Failed to download the updater.", "There was an issue while downloading the updater.`nPlease try again later, or try updating manually.")
 	}
-}
-
-Fade_Tray_Notification() {
-	transparency := 255
-
-	Gui, TrayNotification:+LastFound
-
-	Loop {
-		transparency -= 5
-		WinSet, Transparent,% transparency
-		if !(transparency)
-			Break
-		Sleep 1
-	}
-	Gui, TrayNotification:Destroy
 }
 
 ; GUI_Trades_Set_NewMsg ,GUI_Trades_Set_InArea: Both default to 1
