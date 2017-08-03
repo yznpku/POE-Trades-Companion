@@ -40,18 +40,20 @@ Start_Script() {
 /*
 */
 ;	Global objects declaration
-	global ProgramValues 				:= Object() ; Specific to the program's informations
-	global ProgramFonts 				:= Object() ; Fonts private to the program
-	global ProgramSettings 				:= Object() ; Settings from the local .ini
-	global RunParameters 				:= Object() ; Run-time parameters
+	global DebugValues 					:= {} ; Debug values
 
-	global GameSettings 				:= Object() ; Settings from the game .ini
+	global ProgramValues 				:= {} ; Specific to the program's informations
+	global ProgramFonts 				:= {} ; Fonts private to the program
+	global ProgramSettings 				:= {} ; Settings from the local .ini
+	global RunParameters 				:= {} ; Run-time parameters
 
-	global TradesGUI_Values 			:= Object() ; TradesGUI various infos
-	global TradesGUI_Controls 			:= Object() ; TradesGUI controls handlers
+	global GameSettings 				:= {} ; Settings from the game .ini
 
-	global Stats_TradeCurrencyNames 	:= Object() ; Abridged currency names from poe.trade
-	global Stats_RealCurrencyNames 		:= Object() ; All currency full names
+	global TradesGUI_Values 			:= {} ; TradesGUI various infos
+	global TradesGUI_Controls 			:= {} ; TradesGUI controls handlers
+
+	global Stats_TradeCurrencyNames 	:= {} ; Abridged currency names from poe.trade
+	global Stats_RealCurrencyNames 		:= {} ; All currency full names
 
 	global Trading_Leagues 				:= Get_Active_Trading_Leagues()
 
@@ -89,10 +91,10 @@ Start_Script() {
 	ProgramValues.Logs_Folder 			:= ProgramValues.Local_Folder "\Logs"
 	ProgramValues.Skins_Folder 			:= ProgramValues.Local_Folder "\Skins"
 	ProgramValues.Fonts_Folder 			:= ProgramValues.Local_Folder "\Fonts"
-	ProgramValues.Fonts_Settings_File	:= ProgramValues.Fonts_Folder "\Settings.ini"
 	ProgramValues.Data_Folder			:= ProgramValues.Local_Folder "\Data"
 	ProgramValues.Others_Folder 		:= ProgramValues.Local_Folder "\Others"
 
+	ProgramValues.Fonts_Settings_File	:= ProgramValues.Fonts_Folder "\Settings.ini"
 	ProgramValues.Ini_File 				:= ProgramValues.Local_Folder "\Preferences.ini"
 	ProgramValues.Logs_File 			:= ProgramValues.Logs_Folder "\" A_YYYY "-" A_MM "-" A_DD "_" A_Hour "-" A_Min "-" A_Sec ".txt"
 	ProgramValues.Changelogs_File 		:= ProgramValues.Logs_Folder "\changelogs.txt"
@@ -119,12 +121,7 @@ Start_Script() {
 ;	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 ;	Debug options
-	if !(A_IsCompiled) {
-		FileRead, debugJSON,% A_ScriptDir "\Debug.json"
-		parsed_debugJSON := JSON.Load(debugJSON)
-		ProgramValues.Debug 			:= parsed_debugJSON.settings.enable
-		ProgramValues.No_Admin_Splash 	:= parsed_debugJSON.settings.no_admin_splash
-	}
+	Load_Debug_JSON()
 
 ;	Data currency
 	FileRead, allCurrency,% ProgramValues.Data_Folder "\Resources\Data\Currency_All.txt"
@@ -188,22 +185,39 @@ Start_Script() {
 	Do_Once()
 	Enable_Hotkeys()
 
+;	Opening different GUIs
+	if (DebugValues.settings.open_stats)
+		Gui_Stats()
+	if (DebugValues.settings.open_settings)
+		Gui_Settings()
+	if (DebugValues.settings.open_about)
+		Gui_About()
+
 	; Pre-rendering Trades-GUI
-	Gui_Trades("CREATE")
+	if !( DebugValues.settings.no_prerender)
+		Gui_Trades("CREATE")
 
 	; Parse debug msgs
-	if (ProgramValues.Debug) {
-		Loop % parsed_debugJSON.chat_logs.MaxIndex()
-			Filter_Logs_Message(parsed_debugJSON.chat_logs[A_Index])
+	if (DebugValues.settings.use_chat_logs) {
+		Loop % DebugValues.chatlogs.MaxIndex()
+			Filter_Logs_Message(DebugValues.chatlogs[A_Index])
 	}
 
 	Gui_Trades_Load_Pending_Backup()
 
-	; Gui_Stats()
-	; Gui_Settings()
-	; Gui_About()
 	Logs_Append("DUMP", localSettings)
 	Monitor_Game_Logs()
+}
+
+Load_Debug_JSON() {
+	global DebugValues
+	if !(A_IsCompiled) {
+		FileRead, debugJSON,% A_ScriptDir "\Debug.json"
+		parsed_debugJSON := JSON.Load(debugJSON)
+
+		DebugValues.settings 		:= parsed_debugJSON.settings
+		DebugValues.chatlogs 		:= parsed_debugJSON.chat_logs
+	}
 }
 
 Update_Skin_Preset() {
@@ -267,7 +281,7 @@ Filter_Logs_Message(message) {
 	Loop, Parse, message, `n ; For each new individual line since last check
 	{
 		; New RegEx pattern matches the trading message, but only from whispers and local chat (for debugging), and specifically ignores global/trade/guild/party chats
-		if ( RegExMatch( A_LoopField, "^(?:[^ ]+ ){6}(\d+)\] (?=[^#$&%]).*@(?:From|De|От кого) (.*?): (.*)", subPat ) )
+		if ( RegExMatch( A_LoopField, "S)^(?:[^ ]+ ){6}(\d+)\] (?=[^#$&%]).*@(?:From|De|От кого) (.*?): (.*)", subPat ) )
 		{
 			; Assigning the sub pattern variables
 			gamePID := subPat1, whispNameFull := subPat2, whispMsg := subPat3
@@ -307,11 +321,11 @@ Filter_Logs_Message(message) {
 						   ,"poeAppRegExStr":poeAppRegExStr
 						   ,"poeAppUnpricedRegexStr":poeAppUnpricedRegexStr}
 			for regExName, regExStr in allRegExStr {
-				if RegExMatch(whisp, "i).*: " regExStr) {
+				if RegExMatch(whisp, "iS).*: " regExStr) {
 					Break
 				}
 			}
-			if RegExMatch(whisp, "i).*: " regExStr, whispPat ) ; Matching pattern found
+			if RegExMatch(whisp, "iS).*: " regExStr, whispPat ) ; Matching pattern found
 			{
 				timeSinceLastTrade := 0
 
@@ -323,14 +337,14 @@ Filter_Logs_Message(message) {
 					whispPat1 := "", whispPat2 := "", whispPat3 := "", whispPat4 := ""
 
 					for id, leagueName in Trading_Leagues {
-						if RegExMatch(endOfWhisper, leagueName "(.*)", endOfWhisperPat) {
+						if RegExMatch(endOfWhisper, "S)" leagueName "(.*)", endOfWhisperPat) {
 							whispLeague 		:= leagueName
 							endOfWhisper 		:= endOfWhisperPat1
 							endOfWhisperPat1 	:= ""
 							Break
 						}
 					}
-					if RegExMatch(endOfWhisper, poeTradeStashRegexStr, stashPat) {
+					if RegExMatch(endOfWhisper, "S)" poeTradeStashRegexStr, stashPat) {
 						whispStash 		:= stashPat1
 						whispStashLeft 	:= stashPat2
 						whispStashTop 	:= stashPat3
@@ -340,7 +354,7 @@ Filter_Logs_Message(message) {
 					else {
 						whispOther2 	:= endOfWhisper
 					}
-					if RegExMatch(whispItem, poTradeQualityRegExStr, itemQualPat) {
+					if RegExMatch(whispItem, "S)" poTradeQualityRegExStr, itemQualPat) {
 						whispItemLevel 	:= itemQualPat1
 						whispItemQual 	:= itemQualPat2
 						whispItemName 	:= itemQualPat3
@@ -359,7 +373,7 @@ Filter_Logs_Message(message) {
 					whispPat1 := "", whispPat2 := "", whispPat3 := ""
 
 					for id, leagueName in Trading_Leagues {
-						if RegExMatch(endOfWhisper, leagueName "(.*)", endOfWhisperPat) {
+						if RegExMatch(endOfWhisper, "S)" leagueName "(.*)", endOfWhisperPat) {
 							whispLeague 		:= leagueName
 							endOfWhisper 		:= endOfWhisperPat1
 							endOfWhisperPat1	:= ""
@@ -367,7 +381,7 @@ Filter_Logs_Message(message) {
 						}
 					}
 
-					if RegExMatch(endOfWhisper, poeTradeStashRegexStr, stashPat) {
+					if RegExMatch(endOfWhisper, "S)" poeTradeStashRegexStr, stashPat) {
 						whispStash 		:= stashPat1
 						whispStashLeft 	:= stashPat2
 						whispStashTop 	:= stashPat3
@@ -378,7 +392,7 @@ Filter_Logs_Message(message) {
 						whispOther2 	:= endOfWhisper
 					}
 
-					if RegExMatch(whispItem, poTradeQualityRegExStr, itemQualPat) {
+					if RegExMatch(whispItem, "S)" poTradeQualityRegExStr, itemQualPat) {
 						whispItemLevel 	:= itemQualPat1
 						whispItemQual 	:= itemQualPat2
 						whispItemName 	:= itemQualPat3
@@ -398,7 +412,7 @@ Filter_Logs_Message(message) {
 					whispPat1 := "", whispPat2 := "", whispPat3 := "", whispPat4 := ""
 
 					for id, leagueName in Trading_Leagues {
-						if RegExMatch(endOfWhisper, leagueName "(.*)", endOfWhisperPat) {
+						if RegExMatch(endOfWhisper, "S)" leagueName "(.*)", endOfWhisperPat) {
 							whispLeague 		:= leagueName
 							endOfWhisper 		:= endOfWhisperPat1
 							endOfWhisperPat1 	:= ""
@@ -406,7 +420,7 @@ Filter_Logs_Message(message) {
 						}
 					}
 
-					if RegExMatch(endOfWhisper, poeTradeStashRegexStr, stashPat) {
+					if RegExMatch(endOfWhisper, "S)" poeTradeStashRegexStr, stashPat) {
 						whispStash 		:= stashPat1
 						whispStashLeft 	:= stashPat2
 						whispStashTop 	:= stashPat3
@@ -430,7 +444,7 @@ Filter_Logs_Message(message) {
 					whispPat1 := "", whispPat2 := "", whispPat3 := "", whispPat4 := ""
 
 					for id, leagueName in Trading_Leagues {
-						if RegExMatch(endOfWhisper, leagueName "(.*)", endOfWhisperPat) {
+						if RegExMatch(endOfWhisper, "S)" leagueName "(.*)", endOfWhisperPat) {
 							whispLeague 		:= leagueName
 							endOfWhisper 		:= endOfWhisperPat1
 							endOfWhisperPat1 	:= ""
@@ -438,7 +452,7 @@ Filter_Logs_Message(message) {
 						}
 					}
 
-					if RegExMatch(endOfWhisper, poeAppStashRegexStr, stashPat) {
+					if RegExMatch(endOfWhisper, "S)" poeAppStashRegexStr, stashPat) {
 						whispStash 		:= stashPat1
 						whispStashLeft 	:= stashPat2
 						whispStashTop 	:= stashPat3
@@ -449,7 +463,7 @@ Filter_Logs_Message(message) {
 						whispOther2 	:= endOfWhisper
 					}
 
-					if RegExMatch(whispItem, poeAppQualityRegExStr, itemQualPat) {
+					if RegExMatch(whispItem, "S)" poeAppQualityRegExStr, itemQualPat) {
 						whispItemName 	:= itemQualPat1
 						whispItemLevel 	:= itemQualPat2
 						whispItemQual 	:= itemQualPat3
@@ -468,7 +482,7 @@ Filter_Logs_Message(message) {
 					whispPat1 := "", whispPat2 := "", whispPat3 := ""
 
 					for id, leagueName in Trading_Leagues {
-						if RegExMatch(endOfWhisper, leagueName "(.*)", endOfWhisperPat) {
+						if RegExMatch(endOfWhisper, "S)" leagueName "(.*)", endOfWhisperPat) {
 							whispLeague 		:= leagueName
 							endOfWhisper 		:= endOfWhisperPat1
 							endOfWhisperPat1 	:= ""
@@ -476,7 +490,7 @@ Filter_Logs_Message(message) {
 						}
 					}
 
-					if RegExMatch(endOfWhisper, poeAppStashRegexStr, stashPat) {
+					if RegExMatch(endOfWhisper, "S)" poeAppStashRegexStr, stashPat) {
 						whispStash 		:= stashPat1
 						whispStashLeft 	:= stashPat2
 						whispStashTop 	:= stashPat3
@@ -487,7 +501,7 @@ Filter_Logs_Message(message) {
 						whispOther2 	:= endOfWhisper
 					}
 
-					if RegExMatch(whispItem, poeAppQualityRegExStr, itemQualPat) {
+					if RegExMatch(whispItem, "S)" poeAppQualityRegExStr, itemQualPat) {
 						whispItemName 	:= itemQualPat1
 						whispItemLevel 	:= itemQualPat2
 						whispItemQual 	:= itemQualPat3
@@ -573,11 +587,11 @@ Filter_Logs_Message(message) {
 			}
 		}
 		; Check if a buyer has joined or left the area 
-		areaRegexStr := (ProgramValues["Debug"])
+		areaRegexStr := (ProgramValues["Debug"]) ; ??
 			? ("^(?:[^ ]+ ){6}(\d+)\](?:.*) : (.*?) (?:has) (joined|left) (?:the area.*)") ; matches ' : {name} has {joined|left} ..' from chat as well 
 			: ("^(?:[^ ]+ ){6}(\d+)\] : (.*?) (?:has) (joined|left) (?:the area.*)") 
 
-		if ( RegExMatch( A_LoopField, areaRegexStr, subPat ) ) {
+		if ( RegExMatch( A_LoopField, "S)" areaRegexStr, subPat ) ) {
 			gamePID := subPat1, whispName := subPat2, areaStatus := subPat3
 			TradesGUI_Values.Last_Whisper := whispName
 			; Check if player has pending trade
@@ -1543,31 +1557,44 @@ Gui_Trades_Minimize_Func(state="", skipAnimation="") {
 	}
 	else {
 		TradesGUI_Values.Is_Minimized := !TradesGUI_Values.Is_Minimized
-		if ( TradesGUI_Values.Is_Minimized ) {
-			tHeight := guiHeight
-			Loop { ; Create the illusion of an animation
-				if ( tHeight = guiHeightMin )
-					Break
-				tHeight := (guiHeightMin<tHeight)?(tHeight-30):(guiHeightMin)
-				tHeight := (tHeight-30<guiHeightMin)?(guiHeightMin):(tHeight)
-				Gui_Trades_Set_Height(tHeight)
-				sleep 1 ; Smoothen up the animation
-			}
-		}
-		else  {
-			tHeight := guiHeightMin
-			Loop {
-				if ( tHeight = guiHeight )
-					Break
-				tHeight := (guiHeight>tHeight)?(tHeight+30):(guiHeight)
-				tHeight := (tHeight+30>guiHeight)?(guiHeight):(tHeight)
-				Gui_Trades_Set_Height(tHeight)
-				sleep 1
-			}
-		}
+		SetTimer, Gui_Trades_Minimize_Animation, -10
 	}
 	sleep 10
 	DetectHiddenWindows, %detectHiddenWin%
+}
+
+Gui_Trades_Minimize_Animation() {
+	static
+	global TradesGUI_Values
+
+	guiHeight := TradesGUI_Values.Height_Full
+	guiHeightMin := TradesGUI_Values.Height_Minimized
+	animationStep := 36
+
+	doingAnimation := (!doingAnimation)?(true):(doingAnimation)
+
+	if (TradesGUI_Values.Is_Minimized) {
+		tHeight := (guiHeightMin<tHeight)?(tHeight-animationStep):(guiHeightMin)
+		tHeight := (tHeight-animationStep<guiHeightMin)?(guiHeightMin):(tHeight)
+
+		Gui_Trades_Set_Height(tHeight)
+		if (tHeight = guiHeightMin) {
+			SetTimer,% A_ThisFunc, Delete
+			doingAnimation := false
+		}
+	}
+	else {
+		tHeight := (guiHeight>tHeight)?(tHeight+animationStep):(guiHeight)
+		tHeight := (tHeight+animationStep>guiHeight)?(guiHeight):(tHeight)
+
+		Gui_Trades_Set_Height(tHeight)
+		if (tHeight = guiHeight) {
+			SetTimer,% A_ThisFunc, Delete
+			doingAnimation := false
+		}
+	}
+	if (doingAnimation)
+		SetTimer,% A_ThisFunc, -1
 }
 
 Gui_Trades_Skinned_Adjust_Tab_Range() {
@@ -2082,12 +2109,12 @@ Gui_Trades_Get_Trades_Infos(tabID){
 }
 
 Gui_Trades_Statistics(mode, tabInfos="") {
-	global ProgramValues
+	global ProgramValues, DebugValues
 
 	historyFile := ProgramValues.Trades_History_File
 
 	if (mode="ADD") {
-		if (ProgramValues.Debug || tabInfos.Buyer = "iSellStuff" )
+		if (DebugValues.settings.use_chat_logs || tabInfos.Buyer = "iSellStuff" )
 			Return
 
 		IniRead, index,% historyFile,% "GENERAL",% "Index"
@@ -5248,7 +5275,7 @@ WM_LBUTTONDBLCLK(wParam, lParam, msg, hwnd) {
 
 WM_MOUSEMOVE(wParam, lParam, msg, hwnd) {
 	static
-	global TradesGUI_Values, ProgramValues, TradesGUI_Controls, ProgramSettings
+	global TradesGUI_Values, ProgramValues, TradesGUI_Controls, ProgramSettings, DebugValues
 
 	programSkinFolderPath := ProgramValues.Skins_Folder
 
@@ -5330,7 +5357,7 @@ WM_MOUSEMOVE(wParam, lParam, msg, hwnd) {
 	}
 
 	else if ( A_GUI = "Settings" ) {
-		timer := (ProgramValues.Debug)?(-100):(-1000)
+		timer := (DebugValues.settings.open_settings)?(-100):(-1000)
 		curControl := A_GuiControl
 		If ( curControl <> prevControl ) {
 			controlTip := Get_Control_ToolTip(curControl)
@@ -6424,18 +6451,21 @@ Create_Tray_Menu() {
 /*
  *			Creates the Tray Menu
 */
-	global ProgramValues, ProgramSettings
+	global ProgramValues, ProgramSettings, DebugValues
 
 	programName := ProgramValues.Name, programVersion := ProgramValues.Version
 
 	Menu, Tray, NoStandard
 	Menu, Tray, DeleteAll
 	Menu, Tray, Tip,% programName " v" programVersion
-	if ( ProgramValues.Debug ) {
-		Menu, Debug, Add,Open game folder,Open_Game_Folder
-		Menu, Debug, Add,Open local folder,Open_Local_Folder
-		Menu, Debug, Add,Delete Preferences file,Delete_Preferences
-		Menu, Debug, Add,Delete entire local folder,Delete_Local_Folder
+	if ( DebugValues.settings.show_tray_menu ) {
+		Menu, Debug, Add,Reload debug JSON, Load_Debug_JSON
+		Menu, Debug, Add,
+		Menu, Debug, Add,Open game folder, Tray_Open_Game_Folder
+		Menu, Debug, Add,Open local folder, Tray_Open_Local_Folder
+		Menu, Debug, Add,
+		Menu, Debug, Add,Delete Preferences file, Tray_Delete_Preferences
+		Menu, Debug, Add,Delete entire local folder, Tray_Delete_Local_Folder
 		Menu, Tray, Add, Debug,:Debug
 	}
 	Menu, Tray, Add,Settings, Gui_Settings
@@ -6454,11 +6484,11 @@ Create_Tray_Menu() {
 	Menu, Tray, Icon
 	Return
 
-	Delete_Preferences:
+	Tray_Delete_Preferences:
 		FileDelete,% ProgramValues.Ini_File
 	Return
 
-	Delete_Local_Folder:
+	Tray_Delete_Local_Folder:
 		MsgBox, 4100, ,% "THIS WILL DELETE THE ENTIRE FOLDER`NMAKE SURE TO BACKUP YOUR FILES BEFORE CONTINUING.`N`NARE YOU SURE?"
 		IfMsgBox, Yes
 		{
@@ -6467,14 +6497,14 @@ Create_Tray_Menu() {
 		}
 	Return
 
-	Open_Game_Folder:
+	Tray_Open_Game_Folder:
 		Run,% ProgramValues.Game_Folder,,UseErrorLevel
 		if (A_LastError) {
 			ErrorMsg := Get_System_Error_Codes(A_LastError)
 		}
 	Return
 
-	Open_Local_Folder:
+	Tray_Open_Local_Folder:
 		Run,% ProgramValues.Local_Folder,,UseErrorLevel
 		if (A_LastError) {
 			ErrorMsg := Get_System_Error_Codes(A_LastError)
@@ -6497,7 +6527,7 @@ Get_System_Error_Codes(Err) {
 Run_As_Admin() {
 /*			If not running with as admin, reload with admin rights. 
 */
-	global ProgramValues, ProgramSettings, RunParameters
+	global ProgramValues, ProgramSettings, RunParameters, DebugValues
 
 	programName := ProgramValues.Name
 
@@ -6517,7 +6547,7 @@ Run_As_Admin() {
 		Gui_AdminWarn()
 		ExitApp
 	}
-	if (!ProgramValues.Debug && !ProgramValues.No_Admin_Splash) {
+	if !(DebugValues.settings.no_admin_splash) { ; only show if disabled
 		funcParams := {  Background_Color:"Green"
 						,Border_Color:"White"
 						,Title_Color:"White"
@@ -6946,7 +6976,7 @@ Tray_Notifications_Show(title, msg, params="") {
  *		Look based on w10 traytip.
 */
 	static
-	global SkinAssets, ProgramSettings
+	global SkinAssets, ProgramSettings, TrayNotifications_Values
 
 	Is_Update := params.Is_Update
 
@@ -6985,7 +7015,12 @@ Tray_Notifications_Show(title, msg, params="") {
 	Gui, TrayNotification:Font, S%guiFontSize% Norm,% guiFontName
 	Gui, TrayNotification:Add, Text,% "xp" " yp+25" " w" guiWidth-40 " BackgroundTrans ca5a5a5 gGui_TrayNotification_OnLeftClick",% msg
 	GuiControl, TrayNotification:Move,% hIcon,% "y" (guiHeight/2) - (24/2)
+
+	Gui, TrayNotification:+LastFound
+	WinSet, Transparent, 255
 	Gui, TrayNotification:Show,% "x" showX " y" showY " w" showW " h" showH " NoActivate"
+
+	TrayNotifications_Values := {"New":1} ; New notification, reset transparency from fade
 
 	SetTimer, Tray_Notifications_Fade, -%fadeTimer%
 	Return
@@ -7003,8 +7038,13 @@ Tray_Notifications_Show(title, msg, params="") {
 }
 
 Tray_Notifications_Fade() {
+	global TrayNotifications_Values
 	static transparency
 
+	if (TrayNotifications_Values.New) { ; Reset transparency to 255, in case old notification did not full fade yet
+		TrayNotifications_Values.New := false
+		transparency := 255
+	}
 	transparency := (!transparency)?(255):(transparency)
 
 	transparency := (0 > transparency)?(0):(transparency-10)
@@ -7089,18 +7129,6 @@ GUI_Trades_Update_Tab_Style(tabId) {
 
 }
 
-
-; For Debugging, pause script and output a  message to MsgBox
-Pause_MSG(msg = "") {
-	if (msg != "") {
-		MsgBox, 0, Paused, % msg
-	}
-	Pause
-}
-if (programValues["Debug"]) {
-	Pause::Pause
-	ScrollLock::Gui_Trades_Update_Tabs()
-}
 
 #Include %A_ScriptDir%/Resources/AHK/
 #Include BinaryEncodingDecoding.ahk

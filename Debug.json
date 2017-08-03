@@ -1,7 +1,14 @@
 {
 	"settings" : {
-	"enable" : true,
-	"no_admin_splash" : "true"
+		"use_chat_logs" : true,
+		"show_tray_menu" : true,
+
+		"no_admin_splash" : true,
+		"no_prerender" : false,
+
+		"open_settings" : false,
+		"open_about" : false,
+		"open_stats" : false
 	},
 
 	"chat_logs": [
