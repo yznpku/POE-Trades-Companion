@@ -1,9 +1,9 @@
 {
 	"settings" : {
-		"use_chat_logs" : true,
-		"show_tray_menu" : true,
+		"use_chat_logs" : false,
+		"show_tray_menu" : false,
 
-		"no_admin_splash" : true,
+		"no_admin_splash" : false,
 		"no_prerender" : false,
 
 		"open_settings" : false,
