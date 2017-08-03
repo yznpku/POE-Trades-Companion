@@ -55,7 +55,7 @@ Start_Script() {
 	global Stats_TradeCurrencyNames 	:= {} ; Abridged currency names from poe.trade
 	global Stats_RealCurrencyNames 		:= {} ; All currency full names
 
-	global Trading_Leagues 				:= Get_Active_Trading_Leagues()
+	global Trading_Leagues 				:= [] ; Contains trading leagues
 
 ;	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	; ProgramValues.Keep_Backup 			:= 1 	; Keep Trades_Backup.ini instead of deleting it on load.
@@ -159,13 +159,17 @@ Start_Script() {
 	Close_Previous_Program_Instance()
 	Tray_Refresh()
 
-;	Updating assets and settings
-	Update_Local_Settings()
+	Update_Local_Settings() ; Updating local settings between versions
+
+;	Extracting assets
 	Extract_Sound_Files()
 	Extract_Skin_Files()
 	Extract_Font_Files()
-	Install_Font_Files()
 	Extract_Data_Files()
+	Extract_Others_Files()
+
+	Install_Font_Files()
+	Manage_Font_Resources("LOAD")
 	Update_Skin_Preset()
 
 	Set_Local_Settings() ; Reset broken settings
@@ -179,11 +183,9 @@ Start_Script() {
 	Delete_Old_Logs_Files(10)
 	Load_Skin_Assets()
 
-	Extract_Others_Files()
-	Manage_Font_Resources("LOAD")
-	Check_Update()
-	Do_Once()
+	Check_Update() 
 	Enable_Hotkeys()
+	Get_Active_Trading_Leagues()
 
 ;	Opening different GUIs
 	if (DebugValues.settings.open_stats)
@@ -278,6 +280,27 @@ Filter_Logs_Message(message) {
  */
 	global ProgramSettings, TradesGUI_Values, Trading_Leagues, programValues
 
+	static poeTradeRegexStr 			:= "(.*)Hi, I would like to buy your (.*) listed for (.*) in (.*)" ; 1: Other, 2: Item, 3: Price, 4: League + Tab + Other
+	static poeTradeUnpricedRegexStr 	:= "(.*)Hi, I would like to buy your (.*) in (.*)" ; 1: Other, 2: Item, 3: League + Tab + Other
+	static poeTradeCurrencyRegexStr		:= "(.*)Hi, I'd like to buy your (.*) for my (.*) in (.*)" ; 1: Other, 2: Currency, 3: Price, 4: League + Tab + Other
+	static poeTradeStashRegexStr 		:= "\(stash tab ""(.*)""; position: left (.*), top (.*)\)(.*)" ; 1: Tab, 2: Left, 3: Top, 4: Other
+	static poTradeQualityRegExStr 		:= "level (.*) (.*)% (.*)" ; 1: Item level, 2: Item quality, 3: Item name
+
+	static poeAppRegExStr 				:= "(.*)wtb (.*) listed for (.*) in (.*)" ; 1: Other, 2: Item, 3: Price, 4: League + Tab + Other
+	static poeAppUnpricedRegexStr 		:= "(.*)wtb (.*) in (.*)" ; 1: Other, 2: Item, 3: League + Tab + Other
+	static poeAppStashRegexStr 			:= "\(stash ""(.*); left (.*), top(.*)\)(.*)" ; 1: Tab, 2: Left, 3: Top, 4: Other
+	static poeAppQualityRegExStr 		:= "(.*) \((.*)/(.*)%\)" ; 1: Item name, 2: Item level, 3: Item quality
+
+	static allRegexStr := {"poeTradeRegexStr":poeTradeRegexStr
+						  ,"poeTradeUnpricedRegexStr":poeTradeUnpricedRegexStr
+						  ,"poeTradeCurrencyRegexStr":poeTradeCurrencyRegexStr
+						  ,"poeAppRegExStr":poeAppRegExStr
+						  ,"poeAppUnpricedRegexStr":poeAppUnpricedRegexStr}
+
+	static areaRegexStr := (ProgramValues["Debug"])?("^(?:[^ ]+ ){6}(\d+)\](?:.*) : (.*?) (?:has) (joined|left) (?:the area.*)") ; matches ' : {name} has {joined|left} ..' from chat as well 
+						  :("^(?:[^ ]+ ){6}(\d+)\] : (.*?) (?:has) (joined|left) (?:the area.*)")
+
+
 	Loop, Parse, message, `n ; For each new individual line since last check
 	{
 		; New RegEx pattern matches the trading message, but only from whispers and local chat (for debugging), and specifically ignores global/trade/guild/party chats
@@ -301,25 +324,7 @@ Filter_Logs_Message(message) {
 			}
 
 			whisp := whispName ": " whispMsg "`n"
-			; poeappRegExStr 				:= "(.*)wtb (.*) listed for (.*) in (?:(.*)\(stash ""(.*)""; left (.*), top (.*)\)|Hardcore (.*?)\W|(.*?)\W)(.*)" ; poeapp
-			; poetradeRegExStr 			:= "(.*)Hi, I(?: would|'d) like to buy your (?:(.*) |(.*))(?:listed for (.*)|for my (.*)|) in (?:(.*)\(stash tab ""(.*)""; position: left (.*), top (.*)\)|Hardcore (.*?)\W|(.*?)\W)(.*)" ; poe.trade
-
-			poeTradeRegexStr 			:= "(.*)Hi, I would like to buy your (.*) listed for (.*) in (.*)" ; 1: Other, 2: Item, 3: Price, 4: League + Tab + Other
-			poeTradeUnpricedRegexStr 	:= "(.*)Hi, I would like to buy your (.*) in (.*)" ; 1: Other, 2: Item, 3: League + Tab + Other
-			poeTradeCurrencyRegexStr	:= "(.*)Hi, I'd like to buy your (.*) for my (.*) in (.*)" ; 1: Other, 2: Currency, 3: Price, 4: League + Tab + Other
-			poeTradeStashRegexStr 		:= "\(stash tab ""(.*)""; position: left (.*), top (.*)\)(.*)" ; 1: Tab, 2: Left, 3: Top, 4: Other
-			poTradeQualityRegExStr 		:= "level (.*) (.*)% (.*)" ; 1: Item level, 2: Item quality, 3: Item name
-
-			poeAppRegExStr 				:= "(.*)wtb (.*) listed for (.*) in (.*)" ; 1: Other, 2: Item, 3: Price, 4: League + Tab + Other
-			poeAppUnpricedRegexStr 		:= "(.*)wtb (.*) in (.*)" ; 1: Other, 2: Item, 3: League + Tab + Other
-			poeAppStashRegexStr 		:= "\(stash ""(.*); left (.*), top(.*)\)(.*)" ; 1: Tab, 2: Left, 3: Top, 4: Other
-			poeAppQualityRegExStr 		:= "(.*) \((.*)/(.*)%\)" ; 1: Item name, 2: Item level, 3: Item quality
-
-			allRegexStr := {"poeTradeRegexStr":poeTradeRegexStr
-						   ,"poeTradeUnpricedRegexStr":poeTradeUnpricedRegexStr
-						   ,"poeTradeCurrencyRegexStr":poeTradeCurrencyRegexStr
-						   ,"poeAppRegExStr":poeAppRegExStr
-						   ,"poeAppUnpricedRegexStr":poeAppUnpricedRegexStr}
+			
 			for regExName, regExStr in allRegExStr {
 				if RegExMatch(whisp, "iS).*: " regExStr) {
 					Break
@@ -586,11 +591,8 @@ Filter_Logs_Message(message) {
 				}
 			}
 		}
-		; Check if a buyer has joined or left the area 
-		areaRegexStr := (ProgramValues["Debug"]) ; ??
-			? ("^(?:[^ ]+ ){6}(\d+)\](?:.*) : (.*?) (?:has) (joined|left) (?:the area.*)") ; matches ' : {name} has {joined|left} ..' from chat as well 
-			: ("^(?:[^ ]+ ){6}(\d+)\] : (.*?) (?:has) (joined|left) (?:the area.*)") 
 
+		; Check if a buyer has joined or left the area 
 		if ( RegExMatch( A_LoopField, "S)" areaRegexStr, subPat ) ) {
 			gamePID := subPat1, whispName := subPat2, areaStatus := subPat3
 			TradesGUI_Values.Last_Whisper := whispName
@@ -639,54 +641,63 @@ Monitor_Game_Logs(mode="") {
 ;			Retrieve the logs file location by adding \Logs\Client.txt to the PoE executable path
 ;			Monitor the logs file, waiting for new whispers
 ;			Upon receiving a poe.trade whisper, pass the trades infos to Gui_Trades()
-	static
-	global RunParameters
-	global POEGameArray
+	global RunParameters, POEGameArray, TradesGUI_Values
 
+	static logsFile, fileObj, sleepTime, timeSinceLastTrade, timer
+
+;	Close file obj when an error occured
 	if (mode = "CLOSE") {
 		fileObj.Close()
 		Return
 	}
 
-	if ( RunParameters.GamePath ) {
-		WinGet, tempExeLocation, ProcessPath,% "ahk_id " element
-		SplitPath,% RunParameters.GamePath, ,directory
-		logsFile := directory "\logs\Client.txt"
-	}
-	else {
-		r := Get_All_Games_Instances()
-		if ( r = "EXE_NOT_FOUND" ) {
-			Gui_Trades_Redraw("EXE_NOT_FOUND", {noSplash:1})
+;	logsFile has not been created yet
+	if (!logsFile || !FileExist(logsFile)) {
+		if ( RunParameters.GamePath ) {
+			WinGet, tempExeLocation, ProcessPath,% "ahk_id " element
+			SplitPath,% RunParameters.GamePath, ,directory
+			logsFile := directory "\logs\Client.txt"
 		}
 		else {
-			logsFile := r
-			try Gui_Trades_Set_Position()
+			r := Get_All_Games_Instances()
+			if ( r = "EXE_NOT_FOUND" ) {
+				Gui_Trades_Redraw("EXE_NOT_FOUND", {noSplash:1})
+			}
+			else {
+				logsFile := r
+				try Gui_Trades_Set_Position()
+			}
 		}
+		Logs_Append(A_ThisFunc, {File:logsFile})
+		fileObj := FileOpen(logsFile, "r")
+		fileObj.Read()
 	}
-	Logs_Append(A_ThisFunc, {File:logsFile})
 
-	fileObj := FileOpen(logsFile, "r")
-	fileObj.pos := fileObj.length
-	Loop {
-		if !FileExist(logsFile) || ( fileObj.pos > fileObj.length ) || ( fileObj.pos = -1 ) {
-			Logs_Append("Monitor_Game_Logs_Break", {Pos:fileObj.pos, Length:fileObj.length})
-			Break
-		}
-		if ( fileObj.pos < fileObj.length ) {
-			lastMessage := fileObj.Read() ; Stores the last message into a variable
-			Filter_Logs_Message(lastMessage)
-		}
-		sleepTime := (timeSinceLastTrade>300)?(500):(100)
-		timeSinceLastTrade += 1*(sleepTime/1000)
-		Sleep %sleepTime%
+;	new line appeared
+	if ( fileObj.pos < fileObj.length ) {
+		newLogs := fileObj.Read()
+		Filter_Logs_Message(newLogs)
 	}
-	Tray_Notifications_Show("An issue with the logs file occured!", "It could be one of the following reasons: "
+;	error occured with logs file
+	else if ( !FileExist(logsFile) || (fileObj.pos > fileObj.length) || (fileObj.pos = -1) ) {
+		Logs_Append("Monitor_Game_Logs_Break", {Pos:fileObj.pos, Length:fileObj.length})
+		Tray_Notifications_Show("An issue with the logs file occured!", "It could be one of the following reasons: "
 		. "`n- The file doesn't exist anymore."
 		. "`n- Content from the file was deleted."
 		. "`n- The file object used by the program was closed."
 		. "`n`nThe logs monitoring function will be restarting in 5 seconds.")
-	sleep 5000
-	Restart_Monitor_Game_Logs()
+		SetTimer, Restart_Monitor_Game_Logs, -5000
+	}
+
+;	set clever timer, based on when the latest trade whisper was received
+	timeSinceLastTrade := A_Now
+	EnvSub, timeSinceLastTrade,% TradesGUI_Values.Last_Trade_Time, Seconds
+	timer := (!timer)?(400) ; Start at this value
+			:( IsBetween(timeSinceLastTrade, 300, 3600) )?(400) ; when no trade received for 5mins
+			:( timeSinceLastTrade > 3600 )?(600) ; when no trade received for over an hour
+			:(200) ; Otherwise, this value
+	SetTimer,% A_ThisFunc, -%timer%
+	Return
 }
 
 ;==================================================================================================================
@@ -1132,6 +1143,9 @@ Gui_Trades(mode="", tradeInfos="") {
 		TradesGUI_Values.Tabs_Count_Reduced 		:= tabsCountReduced
 		TradesGUI_Values.Tabs_Count_Increased 		:= tabsCountIncreased
 		TradesGUI_Values.Tabs_Count_Changed 		:= tabsCountChanged
+
+		if (mode = "UPDATE" && tabsCountIncreased)
+			TradesGUI_Values.Last_Trade_Time := A_Now
 
 ; - - - - - No tab is activated, focus the first tab
 		activeTabID := Gui_Trades_Get_Tab_ID()
@@ -1934,7 +1948,7 @@ Gui_Trades_Redraw(msg, params="") {
 
 	Gui_Trades_Save_Position()
 	if ( !params.noSplash )
-		SplashTextOn, 300, 25,% ProgramValues.Name,% "Re-drawing the interface..."
+		SplashTextOn, 300, 20,% ProgramValues.Name,% "Re-drawing the interface..."
 	allTrades := Gui_Trades_Manage_Trades("GET_ALL")
 	if ( params.preview ) {
 		if !(allTrades.Max_Index) {
@@ -4645,6 +4659,14 @@ Update_Local_Settings() {
 		IniDelete,% iniFile, HOTKEYS, HK%A_Index%_ALT
 		IniDelete,% iniFile, HOTKEYS, HK%A_Index%_SHIFT
 	}
+
+/*	Opening changelogs, after updating
+*/
+	IniRead, openChangelogs,% iniFilePath,PROGRAM,Show_Changelogs, 0
+	if ( openChangelogs = 1 ) {
+		Gui_About()
+		IniWrite, 0,% iniFilePath,PROGRAM,Show_Changelogs
+	}
 }
 
 Get_Local_Settings() {
@@ -5640,9 +5662,11 @@ Get_Active_Trading_Leagues() {
 		Parse them, to keep only non-solo or non-ssf leagues
 		Return the resulting list
 */
-	apiLink := "http://api.pathofexile.com/leagues?type=main&compact=1"
-	excludedWords := "SSF,Solo"
-	activeLeagues := "Beta Standard|Beta Hardcore"
+	global ProgramValues, Trading_Leagues
+
+	apiLink 			:= "http://api.pathofexile.com/leagues?type=main&compact=1"
+	excludedWords 		:= "SSF,Solo"
+	activeLeagues 		:= "Standard,Hardcore,Beta Standard,Beta Hardcore,Harbinger,Hardcore Harbinger" ; In case API is down or does not show them
 
 ;	Retrieve from online API
 	whr := ComObjCreate("WinHttp.WinHttpRequest.5.1")
@@ -5650,17 +5674,26 @@ Get_Active_Trading_Leagues() {
 	whr.Send()
 	whr.WaitForResponse(10) ; 10 seconds
 	leaguesJSON := whr.ResponseText
+	if !(leaguesJSON) {
+		Tray_Notifications_Show(ProgramValues.Name, "Failed to reach Leagues API.`nRetrying in 30s...")
+		SetTimer,% A_ThisFunc, -30000
+		Return
+	}
 
 ;	Parse the leagues (JSON)
 	parsedLeagues := JSON.Load(leaguesJSON)
 	Loop % parsedLeagues.MaxIndex() {
-		arrID := parsedLeagues[A_Index]
-		activeLeagues .= "|" arrID.ID
+		arrID 		:= parsedLeagues[A_Index]
+		leagueName 	:= arrID.ID
+		if leagueName not in %activeLeagues%
+		{
+ 			activeLeagues .= "," leagueName
+		}
 	}
 
 ;	Remove SSF & Solo leagues
 	tradingLeagues := []
-	Loop, Parse, activeLeagues,% "D|" 
+	Loop, Parse, activeLeagues,% "D," 
 	{
 		if A_LoopField not contains %excludedWords%
 		{
@@ -5668,7 +5701,7 @@ Get_Active_Trading_Leagues() {
 		}
 	}
 
-	return tradingLeagues
+	Trading_Leagues := tradingLeagues
 }
 
 
@@ -5755,22 +5788,6 @@ Get_All_Games_Instances() {
 	}
 	r := logsFile
 	return r
-}
-
-Do_Once() {
-/*			
- *			Things that only need to be done ONCE
-*/
-	global ProgramValues
-
-	iniFilePath := ProgramValues.Ini_File
-
-;	Open the changelog menu
-	IniRead, state,% iniFilePath,PROGRAM,Show_Changelogs
-	if ( state = 1 ) {
-		Gui_About()
-		IniWrite, 0,% iniFilePath,PROGRAM,Show_Changelogs
-	}
 }
 
 Get_DPI_Factor() {
