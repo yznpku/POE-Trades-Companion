@@ -5795,47 +5795,52 @@ Logs_Append(funcName, params) {
 	if ( funcName = "DUMP" ) {
 		dpiFactor := ProgramSettings.Screen_DPI
 
-		FileAppend,% ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>`n",% logsFile
-		FileAppend,% ">>> OS SECTION `n",% logsFile
-		FileAppend,% ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>`n",% logsFile	
 		OSbits := (A_Is64bitOS)?("64bits"):("32bits")
-		FileAppend,% "Type: " A_OSType "`n",% logsFile
-		FileAppend,% "Version: " A_OSVersion "(" OSbits ")`n",% logsFile
-		FileAppend,% "DPI: " dpiFactor "`n",% logsFile
-		FileAppend,% "`n",% logsFile
+		IniRead, programSectionContent,% iniFilePath,PROGRAM
 
-		FileAppend,% ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>`n",% logsFile
-		FileAppend,% ">>> TOOL SECTION `n",% logsFile
-		FileAppend,% ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>`n",% logsFile
-		FileAppend,% "Version: " ProgramValues.Version "`n",% logsFile
-		FileAppend,% "Local_Folder: " ProgramValues.Local_Folder "`n",% logsFile
-		FileAppend,% "Game_Folder: " ProgramValues.Game_Folder "`n",% logsFile
-		FileAppend,% "`n",% logsFile
-
-		FileAppend,% ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>`n",% logsFile
-		FileAppend,% ">>> PROGRAM SECTION `n",% logsFile
-		FileAppend,% ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>`n",% logsFile
-		IniRead, content,% iniFilePath,PROGRAM
-		FileAppend,% content "`n",% logsFile
-		FileAppend,% "`n",% logsFile
-
-		FileAppend,% ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>`n",% logsFile
-		FileAppend,% ">>> GAME SETTINGS `n",% logsFile
-		FileAppend,% ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>`n",% logsFile
+		gameSettingsContent := ""
 		for key, element in GameSettings {
-			FileAppend,% key ": """ element """`n",% logsFile
+			gameSettingsContent .= key ": """ element """`n"
 		}
-		FileAppend,% "`n",% logsFile
 
-		FileAppend,% ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>`n",% logsFile
-		FileAppend,% ">>> LOCAL SETTINGS `n",% logsFile
-		FileAppend,% ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>`n",% logsFile
+		paramsKeysContent := ""
 		for key, element in params.KEYS {
-			FileAppend,% params.KEYS[A_Index] ": """ params.VALUES[A_Index] """`n",% logsFile
+			paramsKeysContent .= params.KEYS[A_Index] ": """ params.VALUES[A_Index] """`n"
 		}
-		FileAppend,% "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<`n",% logsFile
-		FileAppend,% "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<`n",% logsFile
-		FileAppend,% "`n",% logsFile
+
+		apppendToFile := ""
+		apppendToFile := ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>`n"
+						. ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>`n"
+						. ">>> OS SECTION `n"
+						. ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>`n"
+						. "Type: " A_OSType "`n"
+						. "Version: " A_OSVersion "(" OSbits ")`n"
+						. "DPI: " dpiFactor "`n"
+						. "`n"
+						. ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>`n"
+						. ">>> TOOL SECTION `n"
+						. ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>`n"
+						. "Version: " ProgramValues.Version "`n"
+						. "Local_Folder: " ProgramValues.Local_Folder "`n"
+						. "Game_Folder: " ProgramValues.Game_Folder "`n"
+						. "`n"
+						. ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>`n"
+						. ">>> PROGRAM SECTION `n"
+						. ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>`n"
+						. programSectionContent "`n"
+						. "`n"
+						. ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>`n"
+						. ">>> GAME SETTINGS `n"
+						. ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>`n"
+						. gameSettingsContent 
+						. "`n"
+						. ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>`n"
+						. ">>> LOCAL SETTINGS `n"
+						. ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>`n"
+						. paramsKeysContent
+						. "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<`n"
+						. "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<`n"
+		FileAppend,% apppendToFile,% logsFile
 	}
 
 	else {
