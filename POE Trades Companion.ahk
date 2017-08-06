@@ -361,7 +361,7 @@ Filter_Logs_Message(message) {
 						itemQualPat1 := "", itemQualPat2 := "", itemQualPat3 := ""
 					}
 
-					newTradeItem 		:= (whispItemName)?(whispItemName " Lvl:" whispItemLevel " / Qual:" whispItemQual "%"):(whispItem)
+					newTradeItem 		:= (whispItemName)?(whispItemName " (Lvl:" whispItemLevel " / Qual:" whispItemQual "%)"):(whispItem)
 					newTradePrice 		:= whispPrice
 					newTradeLocation 	:= (whispStash)?(whispLeague " (Tab:" whispStash " / Pos:" whispStashLeft ";" whispStashTop ")"):(whispLeague)
 					newTradeOther 		:= (whispOther && whispOther2)?(whispOther " " whispOther2):(whispOther . whispOther2)
