@@ -4567,7 +4567,8 @@ Update_Local_Settings() {
 	global ProgramValues
 	iniFile := ProgramValues.Ini_File
 
-	IniRead, priorVer,% iniFile,% "PROGRAM",% "Version",% "UNKNOWN" ; Added on 1.12
+;	This setting is unreliable in cases where the user updates to 1.12 (or higher) then reverts back to pre-1.12 since the setting was only added as of 1.12
+	IniRead, priorVer,% iniFile,% "PROGRAM",% "Version",% "UNKNOWN"
 	priorVerNum := (priorVer="UNKNOWN")?(ProgramValues.Version):(priorVer)
 
 	subVersions := StrSplit(priorVersionNum, ".")
@@ -4610,13 +4611,14 @@ Update_Local_Settings() {
 /*	System Skin
 	1.12: System skin is removed, replaced with a new "White" skin.
 
-	If the active preset or skin is System, we delete the corresponding keys.
-	We also delete the System skin local folder.
+	If the active preset or skin is System, or if updating from a pre-1.12 version:
+	we delete the corresponding keys.
+	We delete the System skin local folder.
 */
 	sect := "CUSTOMIZATION_APPEARANCE"
 	IniRead, activePreset,% iniFile,% sect,% "Active_Preset"
 	IniRead, activeSkin,% iniFile,% sect,% "Active_Skin"
-	if (activePreset = "System" || activeSkin = "System" || activePreset = "User Defined") {
+	if (activePreset = "System" || activeSkin = "System" || priorVer = "UKNOWN") {
 		IniDelete,% iniFile,% sect,% "Active_Preset"
 		IniDelete,% iniFile,% sect,% "Active_Skin"
 	}
