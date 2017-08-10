@@ -178,9 +178,10 @@ Start_Script() {
 	Create_Tray_Menu()
 	Delete_Old_Logs_Files(10)
 	Load_Skin_Assets()
-
-	Check_Update() 
 	Enable_Hotkeys()
+	Logs_Append("START", localSettings)
+
+	Check_Update()
 	Get_Active_Trading_Leagues()
 
 ;	Opening different GUIs
@@ -202,8 +203,6 @@ Start_Script() {
 	}
 
 	Gui_Trades_Load_Pending_Backup()
-
-	Logs_Append("DUMP", localSettings)
 	Monitor_Game_Logs()
 }
 
@@ -1851,9 +1850,18 @@ Gui_Trades_Do_Action_Func(CtrlHwnd, GuiEvent, EventInfo) {
 
 	for keyName, ctrlHandler in TradesGUI_Controls {
 		if (ctrlHandler = CtrlHwnd) {
-			RegExMatch(keyName, "\d+", btnID)
-			btnAction := TradesGUI_Controls[keyName "_Action"]
+			thisButton := keyName, 
+			RegExMatch(thisButton, "\d+", btnID)
+			btnAction := TradesGUI_Controls[thisButton "_Action"]
 		}
+	}
+
+	if (!btnAction || btnAction = "ERROR") {
+		Tray_Notifications_Show(ProgramValue.Name, "No action found for this button."
+											.	"`nPlease report this issue including your logs files located in"
+											.	"`n" ProgramValues.Logs_Folder)
+		Logs_Append(A_ThisFunc, {Button:thisButton, Action:btnAction, Handler:CtrlHwnd})
+		Return
 	}
 
 	messages := Object()
@@ -1904,11 +1912,6 @@ Gui_Trades_Do_Action_Func(CtrlHwnd, GuiEvent, EventInfo) {
 				  :(btnAction="Kick")?("/kick %buyerName%")
 				  :("ERROR")
 			doNotSend := (btnAction="Whisper")?(true):(false)
-
-			if (msg="ERROR") {
-				Logs_Append(A_ThisFunc, {Var_Name:varName, Action:btnAction, Var_Alpha:varAlpha}) ; __TO_BE_UPDATED__
-				Return
-			}
 			Send_InGame_Message({1:msg}, tabInfos, {doNotSend:doNotSend})
 		}
 	}
@@ -4286,45 +4289,73 @@ Check_Update() {
 	if FileExist(ProgramValues.NewVersion_File)
 		FileDelete,% ProgramValues.NewVersion_File
 
-	ComObjError(0)
-
 ;	Changelogs file
-	whr := ComObjCreate("WinHttp.WinHttpRequest.5.1")
-	whr.Open("GET", changeslogsLink, true) ; Using true above and WaitForResponse allows the script to r'emain responsive.
-	whr.Send()
-	whr.WaitForResponse(10) ; 10 seconds
-	changelogsOnline := whr.ResponseText
-	changelogsOnline = %changelogsOnline%
-	if ( changelogsOnline ) && !( RegExMatch(changelogsOnline, "Not(Found| Found)") ){
-		FileRead, changelogsLocal,% ProgramValues.Changelogs_File
-		if ( changelogsLocal != changelogsOnline ) {
-			FileDelete, % ProgramValues.Changelogs_File
-			UrlDownloadToFile, % changeslogsLink,% ProgramValues.Changelogs_File
+	Try {
+		local Changelogs_WinHttpReq := ComObjCreate("WinHttp.WinHttpRequest.5.1")
+		Changelogs_WinHttpReq.SetTimeouts("10000", "10000", "10000", "10000")
+
+		Changelogs_WinHttpReq.Open("GET", changeslogsLink, true) ; Using true above and WaitForResponse allows the script to r'emain responsive.
+		Changelogs_WinHttpReq.Send()
+		Changelogs_WinHttpReq.WaitForResponse(10) ; 10 seconds
+
+		changelogsOnline := Changelogs_WinHttpReq.ResponseText
+		changelogsOnline = %changelogsOnline%
+		if ( changelogsOnline ) && !( RegExMatch(changelogsOnline, "Not(Found| Found)") ){
+			FileRead, changelogsLocal,% ProgramValues.Changelogs_File
+			if ( changelogsLocal != changelogsOnline ) {
+				FileDelete, % ProgramValues.Changelogs_File
+				UrlDownloadToFile, % changeslogsLink,% ProgramValues.Changelogs_File
+			}
 		}
+	}
+	Catch e {
+;		Error Logging
+		Logs_Append("WinHttpRequest", {Obj:e})
+		Tray_Notifications_Show(ProgramValues.Name, "Failed to reach GitHub Changelogs file.`n`nThis will not interfer with the operations of the tool,`nbut changelogs will be unavailable until next launch.")
 	}
 	
 ;	Version.txt on master branch
-	whr := ComObjCreate("WinHttp.WinHttpRequest.5.1")
-	whr.Open("GET", versionLinkStable, true)
-	whr.Send()
-	whr.WaitForResponse(10)
-	versionOnline := whr.ResponseText
-	versionOnline = %versionOnline%
-	if ( versionOnline ) && !( RegExMatch(versionOnline, "Not(Found| Found)") ) { ; couldn't reach the file, cancel update
-		StringReplace, versionOnline, versionOnline, `n,,1 ; remove the 2nd white line
-		versionOnline = %versionOnline% ; remove any whitespace
+	Try {
+		Version_WinHttpReq := ComObjCreate("WinHttp.WinHttpRequest.5.1")
+		Version_WinHttpReq.SetTimeouts("10000", "10000", "10000", "10000")
+
+		Version_WinHttpReq.Open("GET", versionLinkStable, true)
+		Version_WinHttpReq.Send()
+		Version_WinHttpReq.WaitForResponse(10)
+
+		versionOnline := Version_WinHttpReq.ResponseText
+		versionOnline = %versionOnline%
+		if ( versionOnline ) && !( RegExMatch(versionOnline, "Not(Found| Found)") ) { ; couldn't reach the file, cancel update
+			StringReplace, versionOnline, versionOnline, `n,,1 ; remove the 2nd white line
+			versionOnline = %versionOnline% ; remove any whitespace
+		}
+	}
+	Catch e {
+;		Error Logging
+		Logs_Append("WinHttpRequest", {Obj:e})
+		Tray_Notifications_Show(ProgramValues.Name, "Failed to reach GitHub latest stable version file.`n`nThis will not interfer with the operations of the tool,`nbut updating to stable will be unavailable until next launch.")
 	}
 
 ;	Version.txt on dev branch
-	whr := ComObjCreate("WinHttp.WinHttpRequest.5.1")
-	whr.Open("GET", versionLinkBeta, true)
-	whr.Send()
-	whr.WaitForResponse(10)
-	versionOnlineBeta := whr.ResponseText
-	versionOnlineBeta = %versionOnlineBeta%
-	if ( versionOnlineBeta ) && !( RegExMatch(versionOnlineBeta, "Not(Found| Found)") ) { ; couldn't reach the file, cancel update
-		StringReplace, versionOnlineBeta, versionOnlineBeta, `n,,1 ; remove the 2nd white line
-		versionOnlineBeta = %versionOnlineBeta% ; remove any whitespace
+	Try {
+		VersionBeta_WinHttpReq := ComObjCreate("WinHttp.WinHttpRequest.5.1")
+		VersionBeta_WinHttpReq.SetTimeouts("10000", "10000", "10000", "10000")
+
+		VersionBeta_WinHttpReq.Open("GET", versionLinkBeta, true)
+		VersionBeta_WinHttpReq.Send()
+		VersionBeta_WinHttpReq.WaitForResponse(10)
+
+		versionOnlineBeta := VersionBeta_WinHttpReq.ResponseText
+		versionOnlineBeta = %versionOnlineBeta%
+		if ( versionOnlineBeta ) && !( RegExMatch(versionOnlineBeta, "Not(Found| Found)") ) { ; couldn't reach the file, cancel update
+			StringReplace, versionOnlineBeta, versionOnlineBeta, `n,,1 ; remove the 2nd white line
+			versionOnlineBeta = %versionOnlineBeta% ; remove any whitespace
+		}
+	}
+	Catch e {
+;		Error Logging
+		Logs_Append("WinHttpRequest", {Obj:e})
+		Tray_Notifications_Show(ProgramValues.Name, "Failed to reach GitHub latest beta version file.`n`nThis will not interfer with the operations of the tool,`nbut updating to beta will be unavailable until next launch.")
 	}
 
 ;	Set version IDs
@@ -4356,7 +4387,7 @@ Check_Update() {
 			}
 		}
 		else {
-			Tray_Notifications_Show(onlineVersionAvailable " is available!", "Left click on this notification to run the automatic download.`nRight click to dismiss it.", {Is_Update:1, Fade_Timer:10000})
+			Tray_Notifications_Show(onlineVersionAvailable " is available!", "Left click on this notification to run the automatic download.`nRight click to dismiss it.", {Is_Update:1, Fade_Timer:20000})
 		}
 	}
 	SetTimer, Check_Update, -1800000
@@ -5658,21 +5689,49 @@ Get_Active_Trading_Leagues() {
 		Return the resulting list
 */
 	global ProgramValues, Trading_Leagues
+	static timeOuts
 
 	apiLink 			:= "http://api.pathofexile.com/leagues?type=main&compact=1"
 	excludedWords 		:= "SSF,Solo"
 	activeLeagues 		:= "Standard,Hardcore,Beta Standard,Beta Hardcore,Harbinger,Hardcore Harbinger" ; In case API is down or does not show them
 
-;	Retrieve from online API
-	whr := ComObjCreate("WinHttp.WinHttpRequest.5.1")
-	whr.Open("GET", apiLink, true) ; Using true above and WaitForResponse allows the script to r'emain responsive.
-	whr.Send()
-	whr.WaitForResponse(10) ; 10 seconds
-	leaguesJSON := whr.ResponseText
-	if !(leaguesJSON) {
-		Tray_Notifications_Show(ProgramValues.Name, "Failed to reach Leagues API.`nRetrying in 30s...")
-		SetTimer,% A_ThisFunc, -30000
+	attempts++
+	timeOuts := (attempts = 1)?(10000) ; 10s
+			   :(attempts = 2)?(30000) ; 30s
+			   :(60000) ; 60s
+	nextAttempt := (IsBetween(attempts, 1, 2))?(300000) ; 5mins
+				  :(IsBetween(attempts, 3, 4))?(600000) ; 10mins
+				  :(1800000)
+	if (attempts > 1) {
+		Tray_Notifications_Show(ProgramValues.Name, "Now retrying to retrieve leagues from API...")
+	}
+	Try {
+;		Retrieve from online API
+		WinHttpReq := ComObjCreate("WinHttp.WinHttpRequest.5.1")
+		WinHttpReq.SetTimeouts(timeOuts, timeOuts, timeOuts, timeOuts)
+		WinHttpReq.Open("GET", apiLink, true) ; Using true above and WaitForResponse allows the script to r'emain responsive.
+		WinHttpReq.Send()
+		WinHttpReq.WaitForResponse(10) ; 10 seconds
+		leaguesJSON := WinHttpReq.ResponseText
+	}
+	Catch e {
+;		Error logging
+		floatFormat := A_FormatFloat ; Backup of state
+		SetFormat,Float,0 ; remove decimal
+
+		Logs_Append("WinHttpRequest", {Obj:e})
+		Tray_Notifications_Show(ProgramValues.Name, "Failed to reach the Leagues API."
+												.	"`nTemporary leagues such as races may fail to appear correctly."
+												.	"`n`nRetrying in " (nextAttempt/1000)/60 "minutes...", {Fade_Timer:20000})
+		SetTimer,% A_ThisFunc, -%nextAttempt%
+
+		SetFormat,Float,%floatFormat% ; Restore state
 		Return
+	}
+	if (attempts > 1) {
+		Logs_Append("DEBUG", {String: "Successfully retrieved leagues from API on attempt " attempts})
+		Tray_Notifications_Show(ProgramValues.Name, "Successfully retrieved leagues from API on attempt " attempts, {Fade_Timer:20000})
+		attempts := 0
 	}
 
 ;	Parse the leagues (JSON)
@@ -5804,7 +5863,7 @@ Logs_Append(funcName, params) {
 	iniFilePath := ProgramValues.Ini_File
 	logsFile := ProgramValues.Logs_File
 
-	if ( funcName = "DUMP" ) {
+	if ( funcName = "START" ) {
 		dpiFactor := ProgramSettings.Screen_DPI
 
 		OSbits := (A_Is64bitOS)?("64bits"):("32bits")
@@ -5852,60 +5911,81 @@ Logs_Append(funcName, params) {
 						. paramsKeysContent
 						. "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<`n"
 						. "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<`n"
-		FileAppend,% appendToFile,% logsFile
 	}
 
 	else {
-		FileAppend,% "[" A_YYYY "-" A_MM "-" A_DD "_" A_Hour ":" A_Min ":" A_Sec "] ",% logsFile
+		appendToFile := "[" A_YYYY "/" A_MM "/" A_DD " " A_Hour ":" A_Min ":" A_Sec "] "
 
-		if ( funcName = "DEBUG" ) {
-			FileAppend,% params.String,% logsFile
+		if ( funcName = "DEBUG_STRING" ) {
+			appendToFile := params.String
 		}
 
+; - - - - - - - - - 
+;		GUI LOGS
+; - - - - - - - - -
 		else if ( funcName = "GUI_Multiple_Instances" ) {			
-			FileAppend,% "Multiple instances found. Handler: " params.Handler " - Path: " params.Path,% logsFile
+			appendToFile .= "Multiple instances found. Handler: " params.Handler " - Path: " params.Path
 		}
 		else if ( funcName = "GUI_Multiple_Instances_Return" ) {
-			FileAppend,% "Multiple instances found (Return). Handler: " params.Handler,% logsFile
-		}
-
-		else if ( funcName = "Monitor_Game_Logs" ) {
-			FileAppend,% "Monitoring game logs file: " params.File,% logsFile
-		}
-		else if ( funcName = "Monitor_Game_Logs_Break" ) {
-			FileAppend,% "ERROR: Restarting logs monitoring. Pointer Position: " params.Pos " - File Length: " params.Length,% logsFile
-		}
-
-		else if ( funcName = "Gui_Trades_Set_Position" ) {
-			FileAppend,% "Setting Trades GUI Position: x" params.X " y" params.Y,% logsFile
-		}
-
-		else if (funcName = "ShellMessage" ) {
-			FileAppend,% "Trades GUI Hidden: Show_Mode: " params.Show_Mode " - Dock_Window ID: " params.Dock_Window " - Current Win ID: " params.Current_Win_ID "."
-		}
-
-		else if ( funcName = "Gui_Trades_Cycle_Func" ) {
-			FileAppend,% "Docking Trades GUI to ID: " params.Dock_Window " - Total matchs found: " params.Total_Matchs,% logsFile
+			appendToFile .= "Multiple instances found (Return). Handler: " params.Handler
 		}
 
 		else if ( funcName = "GUI_Replace_PID_Return" ) {
-			FileAppend,% "Replacing Trades GUI tab PID with: " params.PID,% logsFile
-		}
-
-		else if ( funcName = "Gui_Trades_Do_Action_Func" ) {
-			FileAppend,% "ERROR: Matching aciton not found for button: Name: " params.Var_Name ", Alpha: " params.Var_Alpha ", Action: " params.Action,% logsFile
+			appendToFile .= "Replacing Trades GUI tab PID with: " params.PID
 		}
 
 		else if ( funcName = "Gui_Stats_Get_Currency_Name" ) {
-			FileAppend,% "ERROR: Unknown currency type: """ params.Currency """"
+			appendToFile .= "[WARNING] Unknown currency type: """ params.Currency """" "."
+		}
+
+		else if ( funcName = "Gui_Trades_Cycle_Func" ) {
+			appendToFile .= "Docking Trades GUI to ID: " params.Dock_Window " - Total matchs found: " params.Total_Matchs
+		}
+
+		else if ( funcName = "Gui_Trades_Do_Action_Func" ) {
+			appendToFile .= "[WARNING]: Matching action not found for button: Name: " params.Button ", Action: " params.Action ", Handler: " params.Handler "."
 		}
 
 		else if ( funcName = "Gui_Trades_Select_Tab" ) {
-			FileAppend,% "ERROR: Could not select tab """ params.Tab_ID """. Action occured: " params.Action ""
+			appendToFile .= "[WARNING] Could not select tab """ params.Tab_ID """ with action: " params.Action "."
 		}
+
+		else if ( funcName = "Gui_Trades_Set_Position" ) {
+			appendToFile .= "Fixing Trades GUI Position to: x" params.X " y" params.Y
+		}
+
+; - - - - - - - - - - - - - 
+;		MONITOR GAME LOGS
+; - - - - - - - - - - - - - 
+		else if ( funcName = "Monitor_Game_Logs" ) {
+			appendToFile .= "Monitoring game logs file: " params.File
+		}
+		else if ( funcName = "Monitor_Game_Logs_Break" ) {
+			appendToFile .= "[WARNING]: Restarting logs monitoring. File: " params.File
+						.	"`n Pointer Position: " params.Pos " - File Length: " params.Length
+		}
+
+; - - - - - - - - - - - - - 
+;		MISC
+; - - - - - - - - - - - - - 
+		else if (funcName = "ShellMessage" ) {
+			appendToFile .= "Trades GUI Hidden: Show_Mode: " params.Show_Mode " - Dock_Window ID: " params.Dock_Window " - Current Win ID: " params.Current_Win_ID "."
+		}
+
+		else if ( funcName = "WinHttpRequest") {
+			httpObj := params.Obj
+			appendToFile .= "[WARNING] WinHttpRequest Error Message: " httpObj.Message "`n"
+		}
+
+		else {
+			appendToFile := ""
+		}
+
 	}
 
-	FileAppend,% "`n",% logsFile
+	if (appendToFile) {
+		FileAppend,% appendToFile "`n",% logsFile
+	}
 }
 
 Delete_Old_Logs_Files(daysOld) {
@@ -6420,6 +6500,10 @@ Create_Tray_Menu() {
 	Menu, Tray, Add,Close, Exit_Func
 	Menu, Tray, Check,% "Mode: " ProgramSettings.Trades_GUI_Mode
 	Menu, Tray, Icon
+	if ( A_IconHidden ) {
+		Menu, Tray, NoIcon
+		Menu, Tray, Icon
+	}
 	Return
 
 	Tray_Delete_Preferences:
@@ -6930,7 +7014,7 @@ Tray_Notifications_Show(title, msg, params="") {
 
 	guiHeight += 50, guiWidth += 20 ; Fitting size
 	borderSize := 1
-	fadeTimer := (params.Fade_Timer)?(params.Fade_Timer):(5000)
+	fadeTimer := (params.Fade_Timer)?(params.Fade_Timer):(8000)
 
 	showX := A_ScreenWidth-guiWidth-15, showY := A_ScreenHeight-guiHeight-60
 	showW := guiWidth, showH := guiHeight
