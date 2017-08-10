@@ -207,14 +207,17 @@ Start_Script() {
 }
 
 Load_Debug_JSON() {
+/*		Only works when using the ahk source
+*/
 	global DebugValues
-	if !(A_IsCompiled) {
-		FileRead, debugJSON,% A_ScriptDir "\Debug.json"
-		parsed_debugJSON := JSON.Load(debugJSON)
+	if (A_IsCompiled)
+		Return
 
-		DebugValues.settings 		:= parsed_debugJSON.settings
-		DebugValues.chatlogs 		:= parsed_debugJSON.chat_logs
-	}
+	FileRead, debugJSON,% A_ScriptDir "\Debug.json"
+	parsed_debugJSON := JSON.Load(debugJSON)
+
+	DebugValues.settings 		:= parsed_debugJSON.settings
+	DebugValues.chatlogs 		:= parsed_debugJSON.chat_logs
 }
 
 Update_Skin_Preset() {
@@ -842,8 +845,25 @@ Gui_Trades(mode="", tradeInfos="") {
 
 		TradesGUI_Values["Max_Tabs_Rendered"] := maxTabsRendered
 
-		txtCtrlSize := Get_Text_Control_Size("WW:WW", fontName, fontSize)
-		timeSlotWidth := txtCtrlSize.W*scaleMult, txtCtrlSize := ""
+;		Keep the size of whichever number is the largest in width
+		timeSlotWidth := 0
+		Loop 9 {
+			txtCtrlSize := Get_Text_Control_Size(A_Index A_Index ":" A_Index A_Index, fontName, fontSize)
+			this_timeSlotWidth := txtCtrlSize.W
+			timeSlotWidth := (this_timeSlotWidth > timeSlotWidth)?(this_timeSlotWidth):(timeSlotWidth)
+		}
+		txtCtrlSize := "", this_timeSlotWidth := ""
+
+;		Title text size
+		txtCtrlSize := Get_Text_Control_Size("POE Trades Companion", fontName, fontSize)
+		; titleTextWidth := txtCtrlSize.W
+		titleTextHeight := txtCtrlSize.H
+		txtCtrlSize := ""
+
+;		Minimize text size
+		txtCtrlSize := Get_Text_Control_Size("MINIMIZE", fontName, fontSize)
+		minimizeTextWidth := txtCtrlSize.W
+		txtCtrlSize := ""
 
 		Gui, Font,S%fontSize% Q%fontQual%,% fontName
 		Gui, Add, Tab2, x0 y0 w0 h0 -Wrap vTabCtrl hWndhTabCtrl,% ""
@@ -859,8 +879,8 @@ Gui_Trades(mode="", tradeInfos="") {
 		Tile_Picture("Trades", hBackground, guiWidth, guiHeight) ; Fill the background
 		Gui, Add, Picture,% "x0 y0 w" guiWidth-borderSize " h" 30*scaleMult " BackgroundTrans Section",% SkinAssets.Misc_Header
 		Gui, Add, Picture,% "x" borderSize+(2*scaleMult) " y" borderSize+(2*scaleMult) " w" 24*scaleMult " h" 24*scaleMult " +BackgroundTrans",% SkinAssets.Misc_Icon
-		Gui, Add, Text,% "x" borderSize+(35*scaleMult) . " y" borderSize+(2*scaleMult) . " w" guiWidth-(100*scaleMult) " h" (30-(2*scaleMult))*scaleMult " hWndhHeaderTitle gGui_Trades_Move c" colorTitleInactive . " BackgroundTrans +0x200",% ProgramValues.Name " - Queued Trades: 0"
-		Gui, Add, Text,% "x" guiWidth-(65*scaleMult) . " yp" . " w" 65*scaleMult " h" (30-(2*scaleMult))*scaleMult " hWndhHeaderMinimize gGui_Trades_Minimize c" colorTitleInactive . " BackgroundTrans +0x200",% "MINIMIZE"
+		Gui, Add, Text,% "x" borderSize+(30*scaleMult) . " y" borderSize . " w" guiWidth-(borderSize+(30*scaleMult))-(minimizeTextWidth*scaleMult)-(5*scaleMult) " h" (30-(2*scaleMult))*scaleMult " hWndhHeaderTitle gGui_Trades_Move c" colorTitleInactive . " BackgroundTrans +0x200",% ProgramValues.Name " - Queued Trades: 0"
+		Gui, Add, Text,% "x" guiWidth-(minimizeTextWidth*scaleMult)-(5*scaleMult) . " yp" . " w" (minimizeTextWidth+5)*scaleMult " h" (30-(2*scaleMult))*scaleMult " hWndhHeaderMinimize gGui_Trades_Minimize c" colorTitleInactive . " BackgroundTrans +0x200",% "MINIMIZE"
 
 		TradesGUI_Controls["Header_Title"]		:= hHeaderTitle
 		TradesGUI_Controls["Header_Minimize"]	:= hHeaderMinimize
@@ -882,7 +902,7 @@ Gui_Trades(mode="", tradeInfos="") {
 
 ; - - - - - Tabs
 		Loop %maxTabsRendered% {
-			btnPos := (A_Index=1)?("x" borderSize*scaleMult " ys+" 30*scaleMult " w" 40*scaleMult " h" 25*scaleMult):(A_Index > maxTabsRow)?("xp yp wp hp"):("xp+40 yp wp hp")
+			btnPos := (A_Index=1)?("x" borderSize*scaleMult " ys+" 30*scaleMult " w" 40*scaleMult " h" 25*scaleMult):(A_Index > maxTabsRow)?("xp yp wp hp"):("xp+" 40*scaleMult " yp wp hp")
 			
 			; Default Tab
 			Gui, Add, Button,%btnPos% gGui_Trades_SetActiveTab vTab%A_Index% hWndhTab%A_Index% Section,% A_Index
@@ -920,10 +940,10 @@ Gui_Trades(mode="", tradeInfos="") {
 		}
 
 ; - - - - - Left / Right arrows and Close
-		Gui, Add, Button,% "xp+" 40*scaleMult " yp w" 25*scaleMult " h" 25*scaleMult " hWndhArrowLeft gGui_Trades_Skinned_Arrow_Left BackgroundTrans",% (SkinAssets.Arrow_Left_Use_Character)?("<"):("")
+		Gui, Add, Button,% "xp+" 40*scaleMult " yp w" 25*scaleMult " h" 25*scaleMult " hWndhArrowLeft gGui_Trades_Arrow_Left BackgroundTrans",% (SkinAssets.Arrow_Left_Use_Character)?("<"):("")
 		if !ImageButton.Create(hArrowLeft, IBStyle_Arrow_Left*)
 			MsgBox, 0, ImageButton Error Left Arrow, % ImageButton.LastError
-		Gui, Add, Button,% "xp+" 25*scaleMult " yp w" 25*scaleMult " h" 25*scaleMult " hWndhArrowRight gGui_Trades_Skinned_Arrow_Right BackgroundTrans",% (SkinAssets.Arrow_Right_Use_Character)?(">"):("")
+		Gui, Add, Button,% "xp+" 25*scaleMult " yp w" 25*scaleMult " h" 25*scaleMult " hWndhArrowRight gGui_Trades_Arrow_Right BackgroundTrans",% (SkinAssets.Arrow_Right_Use_Character)?(">"):("")
 		if !ImageButton.Create(hArrowRight, IBStyle_Arrow_Right*)
 			MsgBox, 0, ImageButton Error Right Arrow, % ImageButton.LastError
 
@@ -959,7 +979,7 @@ Gui_Trades(mode="", tradeInfos="") {
 			Gui, Add, Text,% "xp yp+" 15*scaleMult " wp vPriceSlot" A_Index . " hwndPriceSlot" A_Index "Handler " controlParams " R1",% ""
 			Gui, Add, Text,% "xp yp+" 15*scaleMult " wp vLocationSlot" A_Index . " hwndLocationSlot" A_Index "Handler " controlParams " R1",% ""
 			Gui, Add, Text,% "xp yp+" 15*scaleMult " wp vOtherSlot" A_Index . " hwndOtherSlot" A_Index "Handler " controlParams " R1",% ""
-			Gui, Add, Text,% "x" (guiWidth-timeSlotWidth)-((5*scaleMult)) " ys+" 28*scaleMult " w" timeSlotWidth . " h15 vTimeSlot" A_Index " hwndTimeSlot" A_Index "Handler " controlParams " R1",% ""
+			Gui, Add, Text,% "x" (guiWidth-timeSlotWidth)-(5*scaleMult) " ys+" 28*scaleMult " w" timeSlotWidth . " h15 vTimeSlot" A_Index " hwndTimeSlot" A_Index "Handler " controlParams " R1",% ""
 			Gui, Add, Text,% "x0 y0 w0 h0 vPIDSlot" A_Index " hwndPIDSlot" A_Index "Handler",% ""
 			Gui, Add, Text,% "x0 y0 w0 h0 vDateSlot" A_Index " hwndDateSlot" A_Index "Handler",% ""
 			Gui, Add, Text,% "x0 y0 w0 h0 vGuildSlot" A_Index " hwndGuildSlot" A_Index "Handler",% ""
@@ -1372,10 +1392,10 @@ Gui_Trades_SetActiveTab_Func(tabID) {
 	if (tabsRange.First && tabsRange.Last) {
 		While !( IsBetween(tabID, tabsRange.First, tabsRange.Last) ) {
 			if (tabID > tabsRange.Last) {
-				Gui_Trades_Skinned_Arrow_Right()
+				Gui_Trades_Arrow_Right()
 			}
 			else if (tabID < tabsRange.First) {
-				Gui_Trades_Skinned_Arrow_Left()
+				Gui_Trades_Arrow_Left()
 			}
 			tabsRange := Gui_Trades_Get_Tabs_Range()
 		}
@@ -1414,7 +1434,9 @@ Gui_Trades_Adjust_Tabs() {
 Gui_Trades_Close_Tab(tabID="") {
 /*		Close the currently active tab, or a specified one
 */
-	global TradesGUI_Values, ProgramSettings
+	global TradesGUI_Values, ProgramSettings, DebugValues
+
+	static debugIndex
 
 	currentTabsCount 	:= TradesGUI_Values.Tabs_Count
 	currentActiveTab 	:= Gui_Trades_Get_Tab_ID()
@@ -1424,9 +1446,22 @@ Gui_Trades_Close_Tab(tabID="") {
 	isNotInFirstRow := (tabsRange.Last = currentTabsCount)
 	
 	if (isNotInFirstRow) { ; Hide the tab, before removing it
-		Gui_Trades_Skinned_Arrow_Left()
+		Gui_Trades_Arrow_Left()
 	}
 	tradesMessages := Gui_Trades_Manage_Trades("REMOVE_CURRENT", ,tabToClose)
+
+/*	__TO_BE_FIXED__
+ *	If you receive a new trading whisper at this very moment, it will not be added to the list
+ *		until the GUI is updated again (by closing a tab, or receiving a new trading whisper)
+ *	The reason behind this is very simple: though the whisper is successfully added to the list,
+ *		"tradesMessages" does NOT contain it as it was created BEFORE receiving the whisper
+ *	
+ */
+	if (DebugValues.settings.simulate_new_trade_while_tab_close) {
+		debugIndex++
+		Filter_Logs_Message("2016/10/09 21:44:07 105384166 355 [INFO Client 6416] @From ss3y" debugIndex ": wtb se2hqh (12/0%) listed for hyhgr2p2 in Hardcore")
+	}
+
 	Gui_Trades("UPDATE", tradesMessages)
 	if (currentActiveTab = currentTabsCount) {
 		Gui_Trades_SetActiveTab_Func(currentActiveTab-1)
@@ -1605,14 +1640,14 @@ Gui_Trades_Minimize_Animation() {
 		SetTimer,% A_ThisFunc, -1
 }
 
-Gui_Trades_Skinned_Adjust_Tab_Range() {
+Gui_Trades_Adjust_Tab_Range() {
 /*		Clicks on the left/right arrows based
 		on the difference between active tab and tab range
 */
 	global TradesGUI_Values, TradesGUI_Controls
 
 	activeTab := TradesGUI_Values.Active_Tab
-	tabRange := Gui_Trades_Skinned_Get_Tabs_Images_Range()
+	tabRange := Gui_Trades_Get_Tabs_Images_Range()
 
 	firstID := tabRange.First_Tab
 	lastID := tabRange.Last_Tab
@@ -1626,9 +1661,9 @@ Gui_Trades_Skinned_Adjust_Tab_Range() {
 			   :(0)
 		Loop %diff% {
 			if (isGreaterThanLast)
-				Gui_Trades_Skinned_Arrow_Right()
+				Gui_Trades_Arrow_Right()
 			else if (isLowerThanFirst)
-				Gui_Trades_Skinned_Arrow_Left(7)
+				Gui_Trades_Arrow_Left(7)
 		}
 	}
 }
@@ -1697,7 +1732,7 @@ Gui_Trades_Get_Tabs_Range() {
 	return {First:firstVisible, Last:lastVisible}
 }
 
-Gui_Trades_Skinned_Arrow_Left(val="") {
+Gui_Trades_Arrow_Left(val="") {
 /*		Simulate scrolling through the tabs by:
 		- Retrieving the first and last tab of the row, based on their Visible/Hidden state.
 		- Remove one from these values, since we are moving left.
@@ -1733,8 +1768,8 @@ Gui_Trades_Skinned_Arrow_Left(val="") {
 	GuiControl, Trades:Hide,% TradesGUI_Controls["Tab_" tabMoving] ; Hide the previously latest tab
 }
 
-Gui_Trades_Skinned_Arrow_Right(goFar=0) {
-/*		See Gui_Trades_Skinned_Arrow_Left() for more informations
+Gui_Trades_Arrow_Right(goFar=0) {
+/*		See Gui_Trades_Arrow_Left() for more informations
 */
 	global TradesGUI_Values, TradesGUI_Controls
 
@@ -1765,7 +1800,7 @@ Gui_Trades_Skinned_Arrow_Right(goFar=0) {
 	GuiControl, Trades:Hide,% TradesGUI_Controls["Tab_" tabMoving] ; Hide the previously first tab
 }
 
-Gui_TradeS_Skinned_Get_Tabs_Images_Range() {
+Gui_TradeS_Get_Tabs_Images_Range() {
 	global TradesGUI_Values, TradesGUI_Controls, ProgramSettings, ProgramValues
 
 	GuiControlGet, lastTab, Trades:,% TradesGUI_Controls["Tab_TXT_" TradesGUI_Values.Max_Tabs_Per_Row]
@@ -1774,14 +1809,14 @@ Gui_TradeS_Skinned_Get_Tabs_Images_Range() {
 	return {Last_Tab:lastTab,First_Tab:firstTab}
 }
 
-Gui_Trades_Skinned_Set_Tab_Images_State(arrow="") {
+Gui_Trades_Set_Tab_Images_State(arrow="") {
 	global TradesGUI_Values, TradesGUI_Controls, ProgramSettings, ProgramValues
 
 	previousID := TradesGUI_Values.Previous_Active_Tab
 	currentID := TradesGUI_Values.Active_Tab
 	previousID := (previousID="")?(1):(previousID)
 
-	tabsRange := Gui_TradeS_Skinned_Get_Tabs_Images_Range()
+	tabsRange := Gui_TradeS_Get_Tabs_Images_Range()
 
 	activeTabID := (arrow="LEFT")?(TradesGUI_Values.Active_Tab-tabsRange.First_Tab+1) ; Left arrow pressed
 				  :(arrow="RIGHT")?(TradesGUI_Values.Active_Tab-tabsRange.First_Tab+1) ; Right arrow pressed
@@ -1802,8 +1837,8 @@ Gui_Trades_Skinned_Set_Tab_Images_State(arrow="") {
 	if ( (TradesGUI_Values.Tabs_Count_Reduced && TradesGUI_Values.Active_Tab = TradesGUI_Values.Tabs_Count) || (TradesGUI_Values.Tabs_Count_Reduced && tabsRange.Last_Tab >= TradesGUI_Values.Tabs_Count) ) {
 ;		Highest tab deleted while active - Or tab deleted while fully (or minus one) scrolled to the right
 		TradesGUI_Values.Tabs_Count_Reduced := 0
-		Gui_Trades_Skinned_Arrow_Left() ; Hide the tab that has been removed
-		Gui_Trades_Skinned_Arrow_Right() ; Stay in the same tabs range
+		Gui_Trades_Arrow_Left() ; Hide the tab that has been removed
+		Gui_Trades_Arrow_Right() ; Stay in the same tabs range
 	}
 	TradesGUI_Values.Tabs_Count_Reduced := 0
 	; else if (TradesGUI_Values.Tabs_Count_Reduced && tabsRange.Last_Tab = tabsCount) { 
@@ -1812,7 +1847,7 @@ Gui_Trades_Skinned_Set_Tab_Images_State(arrow="") {
 
 }
 
-Gui_Trades_Skinned_Show_Tab_Content(showTabID="") {
+Gui_Trades_Show_Tab_Content(showTabID="") {
 	global TradesGUI_Values, TradesGUI_Controls, ProgramSettings, ProgramValues
 
 	previousID := TradesGUI_Values.Previous_Active_Tab
@@ -1835,9 +1870,9 @@ Gui_Trades_Skinned_Show_Tab_Content(showTabID="") {
 	}
 
 	TradesGUI_Values.Active_Tab := showTabID
-	Gui_Trades_Skinned_Set_Tab_Images_State()
+	Gui_Trades_Set_Tab_Images_State()
 	TradesGUI_Values.Previous_Active_Tab := showTabID
-	Gui_Trades_Skinned_Adjust_Tab_Range()
+	Gui_Trades_Adjust_Tab_Range()
 }
 
 Gui_Trades_Do_Action_Func(CtrlHwnd, GuiEvent, EventInfo) {
@@ -7152,7 +7187,6 @@ GUI_Trades_Update_Tab_Style(tabId) {
 
 
 }
-
 
 #Include %A_ScriptDir%/Resources/AHK/
 #Include BinaryEncodingDecoding.ahk
