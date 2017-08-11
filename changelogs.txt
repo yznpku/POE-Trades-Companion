@@ -1,6 +1,30 @@
 \\
---1.12.BETA_3/BETA_4--
+--1.12.BETA_6--
+Improvements: 
+- On startup, the tool logs the content of the Preferences.ini, this would slow down the start time as it would write many lines to the logs file.
+Instead of writting each line for every individual setting, we now create a full "block" containing the settings, effectively writting to the file only once.
+- Reading the game logs has been improved.
+Instead of checking the file every 100ms, the timer is set at 400ms on startup.
+Upon receiving a trading whisper, the timer will be reduced to 200ms.
+When you haven't received a trading whisper for 5 minutes, the timer will increase to 400ms.
+When you haven't received a trading whisper for 1 hour, the timer will increase to 600ms.
+- Tray notifications no longer hangs the script during their animation.
+- (Un)Minimizing no longer hangs the scirpt during its animation. The animation speed has also been improved.
+- CPU usage has been reduced when spam-moving the mouse around inside the Trades GUI.
 
+Changes:
+- Assets are now added to the executable dynamically.
+For the user, this does not change much. But for me, that means I will no longer have to include each file manually when adding new skins.
+
+Fixes:
+- Clipboard search with trading whispers from poe.trade containing a gem as item would not function as expected.
+- When using the "User Defined" preset, all settings would be reverted back to default upon next launch.
+- Some elements would appear offset when using a non-default scale multiplier: Time Slot, Minimize, Tabs.
+- The "Minimize" text could clip out of bound with specific font sizes.
+- Potentially fixed an issue where the tray icon would not appear (If you happend to encounter this issue, please report it!)
+//
+\\
+--1.12.BETA_3/BETA_4/BETA_5--
 BETA_5: Fix: Skin assets would be unable to extract.
 BETA_4: Fix: On start, while creating the TradesGUI, switching windows would cause a message box. (Only happens with Mode: Overlay)
 

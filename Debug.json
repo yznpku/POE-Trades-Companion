@@ -2,6 +2,7 @@
 	"settings" : {
 		"use_chat_logs" : false,
 		"show_tray_menu" : false,
+		"simulate_new_trade_while_tab_close": false,
 
 		"no_admin_splash" : false,
 		"no_prerender" : false,
@@ -12,11 +13,13 @@
 	},
 
 	"chat_logs": [
-		"2017/06/04 17:31:02 105384166 355 [INFO Client 6416] @From SushiAssasin: Hi, I would like to buy your Shavronne's Gambit Scholar Boots listed for 13 chaos in Standard (stash tab \"Individual\"; position: left 1, top 8)",
+		"2017/06/04 17:31:02 105384166 355 [INFO Client 6416] @From iSellStuff: Hi, I would like to buy your Shavronne's Gambit Scholar Boots listed for 13 chaos in Standard (stash tab \"Individual\"; position: left 1, top 8)",
 		"2017/06/22 21:22:08 105384166 355 [INFO Client 6416] @From ImbaWind: Hi, I would like to buy your level 19 23% Faster Attacks Support in Standard (stash tab \"UNE PLACEDD\"; position: left 11, top 10)",
 		"2017/06/30 22:25:07 105384166 355 [INFO Client 6416] @From LegacyRaiderOHS: Hi, I'd like to buy your 8000 wisdom for my 250 fusing in Standard.",
+		"2017/06/04 17:31:02 105384166 355 [INFO Client 6416] : LegacyRaiderOHS has joined the area.",
 
 		"2017/06/27 22:45:21 105384166 355 [INFO Client 6416] @From AG_LHC_xx: wtb Shavronne's Gambit Scholar Boots listed for 1 Exalted Orb in hardcore (stash \"~b/o special\"; left 3, top 2)",
+		"2017/06/27 22:45:21 105384166 355 [INFO Client 6416] @From AG_LHC_xx: random whisper passing by",
 		"2017/06/11 03:08:09 105384166 355 [INFO Client 6416] @From NiceeBuild: wtb Faster Attacks Support (20/20%) listed for 1 Exalted Orb in hardcore (stash \"~b/o 1 exa\"; left 8, top 12)",
 		"2017/06/06 02:08:54 105384166 355 [INFO Client 6416] @From MrAnderson: wtb Divine Orb listed for 40 Apprentice Cartographer's Sextants in hardcore (stash \"C3\"; left 2, top 5)"
 	]

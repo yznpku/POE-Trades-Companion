@@ -65,7 +65,7 @@ Start_Script() {
 	MyDocuments 						:= (RunParameters.MyDocuments)?(RunParameters.MyDocuments):(A_MyDocuments)
 
 	ProgramValues.Name 					:= "POE Trades Companion"
-	ProgramValues.Version 				:= "1.12.BETA_5"
+	ProgramValues.Version 				:= "1.12.BETA_6"
 
 	ProgramValues.Updater_File 			:= "POE-TC-Updater.exe"
 	ProgramValues.Updater_Link 			:= "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/Updater_v2.exe"
@@ -4452,12 +4452,12 @@ Gui_About(params="") {
 	Gui, Add, Text, xs+20 ys+40 hwndLastestVersionTextHandler,% "Latest Version (Stable): " A_Tab ProgramValues.Version_Latest
 	Gui, Add, Text, xs+20 ys+55 hwndLastestVersionBetaTextHandler,% "Latest Version (Beta): " A_Tab A_Tab ProgramValues.Version_Latest_Beta
 	if ( isUpdateAvailable ) {
-		GuiControl, About:+cGreen +Redraw,% UpdateAvailableTextHandler
+		GuiControl, About:+cBlue +Redraw,% UpdateAvailableTextHandler
 		if (isUsingBeta) {
 			GuiControl, About:+cBlue +Redraw,% LastestVersionBetaTextHandler
 		}
 		else {
-			GuiControl, About:+cGreen +Redraw,% LastestVersionTextHandler
+			GuiControl, About:+cBlue +Redraw,% LastestVersionTextHandler
 		}
 	}
 	Gui, Add, CheckBox,xs+20 ys+75 vUpdateAutomatically,Enable automatic updates
