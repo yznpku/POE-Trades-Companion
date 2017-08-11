@@ -1015,12 +1015,6 @@ Gui_Trades(mode="", tradeInfos="") {
 				Gui, Add, Button,% "x" btnPos_X " y" btnPos_Y*scaleMult " w" btnPos_W*scaleMult " h" btnPos_H*scaleMult " hWnd" btnHandler " BackgroundTrans gGui_Trades_Do_Action_Func",% fontChars[btnType]
 				if !ImageButton.Create(%btnHandler%, IBStyle_Button_Special*)
 					MsgBox, 0, ImageButton Error Special Buttons, % ImageButton.LastError
-				; Gui, Add, Picture,% "x" btnOrnaLeftPos_X " y" btnOrnaLeftPos_Y " w" btnOrnaLeftPos_W " h" btnOrnaLeftPos_H,% ""
-				; Gui, Add, Picture,% "x" btnOrnaRightPos_X " y" btnOrnaRightPos_Y " w" btnOrnaRightPos_W " h" btnOrnaRightPos_H,% ""
-
-		   		handler :=  "UnicodeBtn" A_Index "Handler", TradesGUI_Controls.Insert("Button_Unicode_" A_Index, %handler% )
-		   		; handler :=  "UnicodeBtn" A_Index "OrnamentLeftHandler", TradesGUI_Controls.Insert("Button_Unicode_" A_Index "_OrnamentLeft", %handler%)
-		   		; handler := "UnicodeBtn" A_Index "OrnamentRightHandler", TradesGUI_Controls.Insert("Button_Unicode_" A_Index "_OrnamentRight", %handler%)
 
 		   		TradesGUI_Controls["Button_Unicode_" A_Index] 				:= %btnHandler%
 		   		TradesGUI_Controls["Button_Unicode_" A_Index "_Action"] 	:= btnType
@@ -1081,11 +1075,8 @@ Gui_Trades(mode="", tradeInfos="") {
 				if !ImageButton.Create(hBtnCustom%A_Index%, IBStyle*)
 					MsgBox, 0, ImageButton Error Custom Buttons %btnSettingsSize%, % ImageButton.LastError
 
-				TradesGUI_Controls.Insert("Button_Custom_" A_Index, hBtnCustom%A_Index%)
-				; TradesGUI_Controls.Insert("Button_Custom_" A_Index "_OrnamentLeft", CustomBtn%A_Index%OrnamentLeftHandler)
-				; TradesGUI_Controls.Insert("Button_Custom_" A_Index "_OrnamentRight", CustomBtn%A_Index%OrnamentRightHandler)
-				; TradesGUI_Controls.Insert("Button_Custom_" A_Index "_Text", CustomBtn%A_Index%TXTHandler)
-				TradesGUI_Controls.Insert("Button_Custom_" A_Index "_Action", btnAction)
+				TradesGUI_Controls["Button_Custom_" A_Index]				:= hBtnCustom%A_Index%
+				TradesGUI_Controls["Button_Custom_" A_Index "_Action"]		:= btnAction
 			}
 		}
 		btnSettingsSize := "", btnSettingsHor := "", btnSettingsVer := "", btnSettingsAction := "", btnSettingsName := ""
@@ -1711,8 +1702,11 @@ Gui_Trades_Set_Height(desiredHeight) {
 	guiHeightMin := TradesGUI_Values.Height_Minimized
 	guiHeightFull := TradesGUI_Values.Height_Full
 	scaleMult := ProgramSettings.Scale_Multiplier
-	
+
+	winDelay := A_WinDelay
+	SetWinDelay, -1	; Fix the slow animation issue with using compiled
 	WinMove,% "ahk_id " TradesGUI_Values.Handler, , , , ,% desiredHeight*dpiFactor
+	SetWinDelay, %winDelay%
 }
 
 Gui_Trades_Get_Tabs_Range() {
@@ -5017,11 +5011,22 @@ Hotkeys_Handler(thisLabel) {
 	}
 	else if ( hotkeyType = "TradesGUI_Custom" || hotkeyType = "TradesGUI_Unicode" ) {
 		WM_Messages_Set_State(0)
-		if ( hotkeyType = "TradesGUI_Custom" )
-			ControlClick,,% "ahk_id " TradesGUI_Controls["Button_Custom_" hotkeyID]
-		else if ( hotkeyType = "TradesGUI_Unicode" )
+		controlDelay := A_ControlDelay
+		SetControlDelay -1
+		if ( hotkeyType = "TradesGUI_Custom" ) {
+			ControlClick,,% "ahk_id " TradesGUI_Controls["Button_Custom_" hotkeyID],,,, NA
+			; if (ErrorLevel) {
+				Logs_Append(A_ThisFunc, {HK:A_ThisHotkey, What_Do:"Click Button: """ TradesGUI_Controls["Button_Custom_" hotkeyID] """"})
+			; }
+		}
+		else if ( hotkeyType = "TradesGUI_Unicode" ) {
 			ControlClick,,% "ahk_id " TradesGUI_Controls["Button_Unicode_" hotkeyID]
+			; if (ErrorLevel) {
+				Logs_Append(A_ThisFunc, {HK:A_ThisHotkey, What_Do:"Click Button: """ TradesGUI_Controls["Button_Unicode_" hotkeyID] """"})
+			; }
+		}
 		WM_Messages_Set_State(1)
+		SetControlDelay %controlDelay%
 	}
 	else if ( hotkeyType = "Special" ){
 		if (hotkeyID = 1)
@@ -5366,16 +5371,11 @@ WM_MOUSEMOVE(wParam, lParam, msg, hwnd) {
 
 	; lastButton := TradesGUI_Values.Last_Hovered_Button
 	; lastPngFilePrefix := TradesGUI_Values.TradesGUI_Last_PNG
-	RegExMatch(A_GuiControl, "\D+", btnType)
-	RegExMatch(A_GuiControl, "\d+", btnID)
 
 	if (A_GUI = "Trades") {
 
-		GuiControlGet, hasNewMsg, Trades:,% TradesGUI_Controls["NewMsg_Slot_" btnID]
-		if (hasNewMsg && btnType = "OtherSlot") {
-			GUI_Trades_Set_NewMsg(btnID, 0)
-			GUI_Trades_Update_Tab_Style(btnId)
-		}
+		RegExMatch(A_GuiControl, "\D+", btnType)
+		RegExMatch(A_GuiControl, "\d+", btnID)
 
 		btnHandler := (btnType="CustomBtn")?(TradesGUI_Controls["Button_Custom_" btnID])
 				     :(btnType="GoRight")?(TradesGUI_Controls["Arrow_Right"])
@@ -5428,6 +5428,13 @@ WM_MOUSEMOVE(wParam, lParam, msg, hwnd) {
 */
 		if btnType in BuyerSlot,ItemSlot,PriceSlot,LocationSlot,OtherSlot
 		{
+			if (btnType = "OtherSlot") {
+				GuiControlGet, hasNewMsg, Trades:,% TradesGUI_Controls["NewMsg_Slot_" btnID]
+				if (hasNewMsg) {
+					GUI_Trades_Set_NewMsg(btnID, 0)
+					GUI_Trades_Update_Tab_Style(btnId)
+				}
+			}
 			CoordMode, ToolTip, Screen
 			GuiControlGet, content,Trades:,% btnHandler
 			ctrlPos := Get_Control_Coords("Trades", btnHandler)
@@ -5470,6 +5477,8 @@ WM_MOUSEMOVE(wParam, lParam, msg, hwnd) {
 			ToolTip
 		return
 	}
+
+	Sleep 10
 
 	; if (btnID)
 	; 	lastBtnID := btnID
@@ -5957,9 +5966,9 @@ Logs_Append(funcName, params) {
 			appendToFile := params.String
 		}
 
-; - - - - - - - - - 
+; - - - - - - - - - - - - - 
 ;		GUI LOGS
-; - - - - - - - - -
+; - - - - - - - - - - - - - 
 		else if ( funcName = "GUI_Multiple_Instances" ) {			
 			appendToFile .= "Multiple instances found. Handler: " params.Handler " - Path: " params.Path
 		}
@@ -5989,6 +5998,13 @@ Logs_Append(funcName, params) {
 
 		else if ( funcName = "Gui_Trades_Set_Position" ) {
 			appendToFile .= "Fixing Trades GUI Position to: x" params.X " y" params.Y
+		}
+
+; - - - - - - - - - - - - - 
+;		HOTKEYS
+; - - - - - - - - - - - - - 
+		else if (funcName = "Hotkeys_Handler") {
+			appendToFile .= "[WARNING]: Failed to use HOTKEY: """ params.HK """ with ACTION: """ params.What_Do """"
 		}
 
 ; - - - - - - - - - - - - - 
