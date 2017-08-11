@@ -65,7 +65,7 @@ Start_Script() {
 	MyDocuments 						:= (RunParameters.MyDocuments)?(RunParameters.MyDocuments):(A_MyDocuments)
 
 	ProgramValues.Name 					:= "POE Trades Companion"
-	ProgramValues.Version 				:= "1.12.BETA_6"
+	ProgramValues.Version 				:= "1.12.BETA_7"
 
 	ProgramValues.Updater_File 			:= "POE-TC-Updater.exe"
 	ProgramValues.Updater_Link 			:= "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/Updater_v2.exe"
@@ -4330,9 +4330,15 @@ Check_Update() {
 		changelogsOnline := Changelogs_WinHttpReq.ResponseText
 		changelogsOnline = %changelogsOnline%
 		if ( changelogsOnline ) && !( RegExMatch(changelogsOnline, "Not(Found| Found)") ){
-			FileRead, changelogsLocal,% ProgramValues.Changelogs_File
+			try 
+				FileRead, changelogsLocal,% ProgramValues.Changelogs_File
+			catch e
+				Logs_Append("DEBUG", {String:"[WARNING]: Failed to read file """ ProgramValues.Changelogs_File """. Does the file exist?"})
 			if ( changelogsLocal != changelogsOnline ) {
-				FileDelete, % ProgramValues.Changelogs_File
+				try
+					FileDelete, % ProgramValues.Changelogs_File
+				catch e
+					Logs_Append("DEBUG", {String:"[WARNING]: Failed to delete file """ ProgramValues.Changelogs_File """. Does the file exist?"})
 				UrlDownloadToFile, % changeslogsLink,% ProgramValues.Changelogs_File
 			}
 		}

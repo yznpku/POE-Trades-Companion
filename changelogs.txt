@@ -1,5 +1,7 @@
 \\
---1.12.BETA_6--
+--1.12.BETA_6/BETA_7--
+BETA_7: Fix: Would fail to write to the changelogs file if the file was non-existent.
+
 Improvements: 
 - On startup, the tool logs the content of the Preferences.ini, this would slow down the start time as it would write many lines to the logs file.
 Instead of writting each line for every individual setting, we now create a full "block" containing the settings, effectively writting to the file only once.
