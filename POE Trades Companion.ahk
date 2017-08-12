@@ -276,7 +276,7 @@ Update_Skin_Preset() {
 
 Filter_Logs_Message(message) {
 /*		Filter the logs message to retrieve the required informations we need
-			and send them to the Trades GUI if it is a trade whisper.
+			and send them to the Trades GUI if it is a trading whisper.
  */
 	global ProgramSettings, TradesGUI_Values, Trading_Leagues, programValues
 
@@ -619,8 +619,8 @@ Filter_Logs_Message(message) {
 						GUI_Trades_Set_InArea(A_Index)
 						GUI_Trades_Update_Tab_Style(A_Index)
 						; Play a sound
-						if ( ProgramSettings.Notification_Joined_Toggle = 1 ) && FileExist(ProgramSettings.Notification_Joined_Path) { ; __TO_BE_ADDED__ Sound notification when area joined
-							SoundPlay,% ProgramSettings.Notification_Joined_Path
+						if ( ProgramSettings.JoinedArea_Toggle = 1 ) && FileExist(ProgramSettings.JoinedArea_Sound_Path) {
+							SoundPlay,% ProgramSettings.JoinedArea_Sound_Path
 						}
 						; Flash the taskbar
 						if !WinActive("ahk_pid " gamePID) {
@@ -698,7 +698,7 @@ Monitor_Game_Logs(mode="") {
 		SetTimer, Restart_Monitor_Game_Logs, -5000
 	}
 
-;	set clever timer, based on when the latest trade whisper was received
+;	set clever timer, based on when the latest trading whisper was received
 	timeSinceLastTrade := A_Now
 	EnvSub, timeSinceLastTrade,% TradesGUI_Values.Last_Trade_Time, Seconds
 	timer := (!timer)?(400) ; Start at this value
@@ -1614,8 +1614,8 @@ Gui_Trades_Minimize_Func(state="", skipAnimation="") {
 }
 
 Gui_Trades_Minimize_Animation() {
-	static
 	global TradesGUI_Values
+	static tHeight, doingAnimation
 
 	guiHeight := TradesGUI_Values.Height_Full
 	guiHeightMin := TradesGUI_Values.Height_Minimized
@@ -1643,8 +1643,9 @@ Gui_Trades_Minimize_Animation() {
 			doingAnimation := false
 		}
 	}
-	if (doingAnimation)
+	if (doingAnimation) {
 		SetTimer,% A_ThisFunc, -1
+	}
 }
 
 Gui_Trades_Adjust_Tab_Range() {
@@ -2023,7 +2024,7 @@ Gui_Trades_Get_Tab_ID() {
 /*		Only used when no skin is applied.
  *		Returns the currently active tab ID.
 */
-	Global TradesGUI_Controls
+	global TradesGUI_Controls
 
 	Gui, Trades:Submit, NoHide
 	GuiControlGet, activeTabID, Trades:,% TradesGUI_Controls.Tab
@@ -2592,13 +2593,11 @@ Gui_Trades_RemoveGuildPrefix(name) {
 Gui_Trades_Set_Position(xpos="UNSPECIFIED", ypos="UNSPECIFIED"){
 /*			Update the Trades GUI position
 */
-	static
 	global TradesGUI_Values, ProgramSettings
 
 	if ( ProgramSettings.Trades_GUI_Mode != "Overlay" )
 		Return
-
-	if !TradesGUI_Values.Created
+	if !(TradesGUI_Values.Created)
 		return
 
 	dpiFactor := ProgramSettings.Screen_DPI
@@ -2670,39 +2669,43 @@ Gui_Settings() {
 	Gui, Add, GroupBox,% "x" GuiXWorkArea " y" GuiYWorkArea-5 " w430 h55" . " c000000 Section Center",About this tab:
 		Gui, Add, Text,xs+10 ys+20 BackgroundTrans,Main settings about how should the tool behave.
 ;		Trades GUI
-		Gui, Add, GroupBox,% " x" guiXWorkArea . " ys+60" . " w430 h280" . " c000000",Main interface
+		Gui, Add, GroupBox,% " x" guiXWorkArea . " ys+60" . " w190 h140" . " c000000",Trades GUI
 		Gui, Add, Radio, xp+10 yp+20 vShowAlways hwndShowAlwaysHandler,Always show
 		Gui, Add, Radio, xp yp+15 vShowInGame hwndShowInGameHandler,Only show while in game
 
-		Gui, Add, Checkbox, xp yp+30 hwndClipTabHandler vClipTab,Clipboard item on tab switch
+		Gui, Add, Checkbox, xp yp+25 hwndClipTabHandler vClipTab,Clipboard item on tab switch
 		Gui, Add, Checkbox,% " xp" . " yp+15 hwndSelectLastTabHandler vSelectLastTab",Focus newly created tabs
 
-		Gui, Add, Checkbox, xp yp+30 hwndAutoMinimizeHandler vAutoMinimize,Minimize when inactive
+		Gui, Add, Checkbox, xp yp+25 hwndAutoMinimizeHandler vAutoMinimize,Minimize when inactive
 		Gui, Add, Checkbox, xp yp+15 hwndAutoUnMinimizeHandler vAutoUnMinimize,Un-Minimize when active
 ;			Transparency
-			Gui, Add, GroupBox,% " x" guiXWorkArea+215 . " y" guiYWorkArea+185 " w205 h140" . " c000000",Transparency
+			Gui, Add, GroupBox,% " x" guiXWorkArea+200 . " ys+60 w220 h140" . " c000000",Transparency
 			Gui, Add, Checkbox, xp+30 yp+25 hwndClickThroughHandler vClickThrough,Click-through while inactive
-			Gui, Add, Text, xp yp+20,Inactive (no trade on queue)
+			Gui, Add, Text, xp+5 yp+20,Inactive (no trade on queue)
 			Gui, Add, Slider, xp+10 yp+15 hwndShowTransparencyHandler gGui_Settings_Transparency vShowTransparency AltSubmit ToolTip Range0-100
 			Gui, Add, Text, xp-10 yp+30,Active (trades are on queue)
 			Gui, Add, Slider, xp+10 yp+15 hwndShowTransparencyActiveHandler gGui_Settings_Transparency vShowTransparencyActive AltSubmit ToolTip Range30-100
 
 ; ;		Notifications
 ;			 Trade Sound Group
-			Gui, Add, GroupBox,% "x" guiXWorkarea+215 . " y" guiYWorkArea+70 . " w205 h110" . " c000000",Notifications
+			Gui, Add, GroupBox,% "x" guiXWorkarea . " ys+210 w220 h125" . " c000000",Notifications
 			Gui, Add, Checkbox, xp+10 yp+20 vNotifyTradeToggle hwndNotifyTradeToggleHandler,Trade
-			Gui, Add, Edit, xp+65 yp-2 w70 h17 vNotifyTradeSound hwndNotifyTradeSoundHandler ReadOnly
+			Gui, Add, Edit, xp+70 yp-2 w70 h17 vNotifyTradeSound hwndNotifyTradeSoundHandler ReadOnly
 			Gui, Add, Button, xp+75 yp-2 h20 vNotifyTradeBrowse gGui_Settings_Notifications_Browse,Browse
 ;			Whisper Sound Group
-			Gui, Add, Checkbox,% "xp-140 yp+25" . " vNotifyWhisperToggle hwndNotifyWhisperToggleHandler",Whisper
-			Gui, Add, Edit, xp+65 yp-2 w70 h17 vNotifyWhisperSound hwndNotifyWhisperSoundHandler ReadOnly
+			Gui, Add, Checkbox, xp-145 yp+25 vNotifyWhisperToggle hwndNotifyWhisperToggleHandler,Whisper
+			Gui, Add, Edit, xp+70 yp-2 w70 h17 vNotifyWhisperSound hwndNotifyWhisperSoundHandler ReadOnly
 			Gui, Add, Button, xp+75 yp-2 h20 vNotifyWhisperBrowse gGui_Settings_Notifications_Browse,Browse
+;			Area joined Sound Group
+			Gui, Add, Checkbox,xp-145 yp+25 vNotifyJoinedAreaToggle hwndNotifyJoinedAreaToggleHandler,Joined
+			Gui, Add, Edit, xp+70 yp-2 w70 h17 vNotifyJoinedAreaSound hwndNotifyJoinedAreaSoundHandler  ReadOnly
+			Gui, Add, Button, xp+75 yp-2 h20 vNotifyJoinedAreaBrowse hwndNotifyJoinedAreaBrowseHandler gGui_Settings_Notifications_Browse,Browse
 ;			Whisper Tray Notification
-			Gui, Add, Checkbox,% "xp-140"   " yp+29 vNotifyWhisperTray hwndNotifyWhisperTrayHandler",Show tray notifications
-			Gui, Add, Checkbox,% "xp"  " yp+14 vNotifyWhisperFlash hwndNotifyWhisperFlashHandler",Flash the taskbar icon
-; ;		Support
-		Gui, Add, GroupBox,% "x" guiXWorkArea+10 " y" guiYWorkArea+240 . " w200 h85" . " c000000",Support
-		Gui, Add, Checkbox, xp+90 yp+20 vMessageSupportToggle hwndMessageSupportToggleHandler
+			Gui, Add, Checkbox,xp-145 yp+29 vNotifyWhisperTray hwndNotifyWhisperTrayHandler,Show tray notifications
+			Gui, Add, Checkbox,xp yp+14 vNotifyWhisperFlash hwndNotifyWhisperFlashHandler,Flash the taskbar icon
+;		Support
+		Gui, Add, GroupBox,% "x" guiXWorkArea+230 " y" guiYWorkArea+205 . " w185 h125" . " c000000",Support
+		Gui, Add, Checkbox, xp+75 yp+35 vMessageSupportToggle hwndMessageSupportToggleHandler
 		Gui, Add, Text, gGUI_Settings_Tick_Case vMessageSupportToggleText xp-55 yp+18,% "Send an additional message`n   containing the thread-id`n     upon closing a trade"
 
 ;	-----------------------
@@ -3274,9 +3277,13 @@ return
 				GuiControl, Settings:,% NotifyTradeSoundHandler,% soundFileName
 				tradesSoundFile := soundFile
 			}
-			if ( A_GuiControl = "NotifyWhisperBrowse" ) {
+			else if ( A_GuiControl = "NotifyWhisperBrowse" ) {
 				GuiControl, Settings:,% NotifyWhisperSoundHandler,% soundFileName
 				whispersSoundFile := soundFile
+			}
+			else if ( A_GuiControl = "NotifyJoinedAreaBrowse" ) {
+				GuiControl, Settings:,% NotifyJoinedAreaSoundHandler,% soundFileName
+				joinedAreaSoundFile := soundFile
 			}
 		}
 	return
@@ -3307,12 +3314,19 @@ return
 		IniWrite,% NotifyTradeSound,% iniFilePath,NOTIFICATIONS,Trade_Sound
 		if ( tradesSoundFile )
 			IniWrite,% tradesSoundFile,% iniFilePath,NOTIFICATIONS,Trade_Sound_Path
+
 		IniWrite,% NotifyWhisperToggle,% iniFilePath,NOTIFICATIONS,Whisper_Toggle
 		IniWrite,% NotifyWhisperSound,% iniFilePath,NOTIFICATIONS,Whisper_Sound
 		if ( whispersSoundFile )
 			IniWrite,% whispersSoundFile,% iniFilePath,NOTIFICATIONS,Whisper_Sound_Path
+
 		IniWrite,% NotifyWhisperTray,% iniFilePath,NOTIFICATIONS,Whisper_Tray
 		IniWrite,% NotifyWhisperFlash,% iniFilePath,NOTIFICATIONS,Whisper_Flash
+
+		IniWrite,% NotifyJoinedAreaToggle,% iniFilePath,NOTIFICATIONS,JoinedArea_Toggle
+		IniWrite,% NotifyJoinedAreaSound,% iniFilePath,NOTIFICATIONS,JoinedArea_Sound
+		if ( joinedAreaSoundFile )
+			IniWrite,% joinedAreaSoundFile,% iniFilePath,NOTIFICATIONS,JoinedArea_Sound_Path
 ;	Support Message
 		IniWrite,% MessageSupportToggle,% iniFilePath,SETTINGS,Support_Text_Toggle
 ;	Hotkeys
@@ -3690,13 +3704,13 @@ Gui_Settings_Get_Settings_Arrays() {
 	}
 
 	returnArray.NOTIFICATIONS_HandlersArray := Object()
-	returnArray.NOTIFICATIONS_HandlersArray.Insert(0, "NotifyTradeToggle", "NotifyTradeSound", "NotifyWhisperToggle", "NotifyWhisperSound", "NotifyWhisperTray", "NotifyWhisperFlash")
+	returnArray.NOTIFICATIONS_HandlersArray.Insert(0, "NotifyTradeToggle", "NotifyTradeSound", "NotifyWhisperToggle", "NotifyWhisperSound", "NotifyWhisperTray", "NotifyWhisperFlash", "NotifyJoinedAreaToggle", "NotifyJoinedAreaSound")
 	returnArray.NOTIFICATIONS_HandlersKeysArray := Object()
-	returnArray.NOTIFICATIONS_HandlersKeysArray.Insert(0, "Trade_Toggle", "Trade_Sound", "Whisper_Toggle", "Whisper_Sound", "Whisper_Tray", "Whisper_Flash")
+	returnArray.NOTIFICATIONS_HandlersKeysArray.Insert(0, "Trade_Toggle", "Trade_Sound", "Whisper_Toggle", "Whisper_Sound", "Whisper_Tray", "Whisper_Flash", "JoinedArea_Toggle", "JoinedArea_Sound")
 	returnArray.NOTIFICATIONS_KeysArray := Object()
-	returnArray.NOTIFICATIONS_KeysArray.Insert(0, "Trade_Toggle", "Trade_Sound", "Trade_Sound_Path", "Whisper_Toggle", "Whisper_Sound", "Whisper_Sound_Path", "Whisper_Tray", "Whisper_Flash")
+	returnArray.NOTIFICATIONS_KeysArray.Insert(0, "Trade_Toggle", "Trade_Sound", "Trade_Sound_Path", "Whisper_Toggle", "Whisper_Sound", "Whisper_Sound_Path", "Whisper_Tray", "Whisper_Flash", "JoinedArea_Toggle", "JoinedArea_Sound", "JoinedArea_Sound_Path")
 	returnArray.NOTIFICATIONS_DefaultValues := Object()
-	returnArray.NOTIFICATIONS_DefaultValues.Insert(0, "1", "WW_MainMenu_Letter.wav", programSFXFolderPath "\WW_MainMenu_Letter.wav", "0", "None", "", "1", "0")
+	returnArray.NOTIFICATIONS_DefaultValues.Insert(0, "1", "WW_MainMenu_Letter.wav", programSFXFolderPath "\WW_MainMenu_Letter.wav", "0", "", "", "1", "0", "0", "", "")
 
 	returnArray.HOTKEYS_ADVANCED_HandlersArray := Object()
 	returnArray.HOTKEYS_ADVANCED_HandlersKeysArray := Object()
@@ -3921,45 +3935,55 @@ Get_Control_ToolTip(controlName) {
 
 	programName := ProgramValues.Name
 
+; - - - - - - -
+;	SETTINGS
+; - - - - - - -
 	ShowInGame_TT := ShowAlways_TT := "Decide when should the GUI show."
-	. "`nAlways show:" A_Tab . A_Tab "The interface will always appear."
-	. "`nOnly show while in game:" A_Tab "The interface will only appear when the game's window is active."
+	. "`nAlways show:" A_Tab . A_Tab "Will always appear."
+	. "`nOnly show while in game:" A_Tab "Will only appear while the game's window is active."
 
-	ClickThrough_TT := "Clicks will go through the interface while it is inactive,"
+	ClickThrough_TT := "Clicks will go through the interface while no trades are on queue,"
 	. "`nallowing you to click any window behind it."
 	ShowTransparency_TT := "Transparency of the interface when no trades are on queue."
 	. "`nSetting the value to 0% will effectively make it invisible."
-	. "`nWhile moving the slider, you can see a preview of the result."
+	. "`n`nWhile moving the slider, you can see a preview of the result."
 	. "`nUpon releasing the slider, it will revert back to its default transparency based on the current active/inactive state."
 	ShowTransparencyActive_TT := "Transparency of the GUI when trades are on queue."
 	. "`nThe minimal value is set to 30% to make sure you can still see the window."
-	. "`nWhile moving the slider, you can see a preview of the result."
+	. "`n`nWhile moving the slider, you can see a preview of the result."
 	. "`nUpon releasing the slider, it will revert back to its default transparency based on the current active/inactive state."
 
-	SelectLastTab_TT := "Always focus the new tab upon receiving a new trade whisper."
+	SelectLastTab_TT := "Always focus the new tab upon receiving a new trading whisper."
 
-	AutoMinimize_TT := "Automatically minimize the Trades GUI when no trades are on queue."
-	AutoUnMinimize_TT := "Automatically un-minimize the Trades GUI upon receiving a trade whisper."
+	AutoMinimize_TT := "Minimize the Trades GUI when no trades are on queue."
+	AutoUnMinimize_TT := "Un-minimize the Trades GUI upon receiving a trading whisper."
 	
-	NotifyTradeBrowse_TT := NotifyTradeSound_TT := NotifyTradeToggle_TT := "Play a sound when you receive a trade whisper."
+	NotifyTradeBrowse_TT := NotifyTradeSound_TT := NotifyTradeToggle_TT := "Play a sound upon receiving a trading whisper."
 	. "`nTick the case to enable."
 	. "`nClick on [Browse] to select a sound file."
 	
-	NotifyWhisperBrowse_TT := NotifyWhisperSound_TT := NotifyWhisperToggle_TT := "Play a sound when you receive a regular whisper"
+	NotifyWhisperBrowse_TT := NotifyWhisperSound_TT := NotifyWhisperToggle_TT := "Play a sound upon receiving a whisper"
+	. "`nTick the case to enable."
+	. "`nClick on [Browse] to select a sound file."
+
+	NotifyJoinedAreaBrowse_TT := NotifyJoinedAreaSound_TT := NotifyJoinedAreaToggle_TT := "Play a sound when one of your buyers has joined your area"
 	. "`nTick the case to enable."
 	. "`nClick on [Browse] to select a sound file."
 	
 	NotifyWhisperTray_TT := "Show a tray notification when you receive"
 	. "`na whisper while the game window is not active."
 
-	NotifyWhisperFlash_TT := "Make the game's window flash when you receive"
-	. "`na whisper while the game window is not active."
+	NotifyWhisperFlash_TT := "Make the game's taskbar icon flash when you receive a whisper"
+	. "`nor a buyer joined your area while the game window is not active."
 	
-	ClipTab_TT := "Automatically put the tab's item in clipboard"
+	ClipTab_TT := "Put the active tab's Item in your Clipboard"
 	. "`nso you can easily CTRL+F CTRL+V in your stash to search for the item."
 
-	MessageSupportToggle_TT := ":)`n`nOnly triggers for ""Send Message + Close Tab"" buttons.", MessageSupportToggleText_TT := "(:`n`nOnly triggers for ""Send Message + Close Tab"" buttons."
+	MessageSupportToggle_TT := ":)`nOnly triggers for ""Send Message + Close Tab"" buttons.", MessageSupportToggleText_TT := "(:`nOnly triggers for ""Send Message + Close Tab"" buttons."
 
+; - - - - - - - - - - - - - - - - - - -
+;	Hotkeys: Basic, Advanced, Special
+; - - - - - - - - - - - - - - - - - - -
 	Hotkey_Toggle_TT := "Tick the case to enable this hotkey."
 	Hotkey_Text_TT := "Message that will be sent upon pressing this hotkey."
 	Hotkey_KEY_TT := "Hotkey to trigger this custom command/message."
@@ -3967,20 +3991,51 @@ Get_Control_ToolTip(controlName) {
 	Hotkey_ALT_TT := "Enable ALT as a modifier for this hotkey."
 	Hotkey_SHIFT_TT := "Enable SHIFT as a modifier for this hotkey."
 
-	HotkeyAdvanced_TT := Hotkey_Toggle_TT
+	HotkeyAdvanced_Toggle_TT := Hotkey_Toggle_TT
 	HotkeyAdvanced_KEY_TT := Hotkey_KEY_TT
 	HotkeyAdvanced_Text_TT := Hotkey_Text_TT
 
+	ChooseNextTabHotkeyToggle_TT := Hotkey_Toggle_TT
+	ChoosePrevTabHotkeyToggle_TT := Hotkey_Toggle_TT
+	CloseCurrentTabHotkeyToggle_TT := Hotkey_Toggle_TT
+	ToggleMinimizeHotkeyToggle_TT := Hotkey_Toggle_TT
+
+	ChooseNextTabHotkey_TT := "Hotkey to trigger this special action."
+	ChoosePrevTabHotkey_TT := ChooseNextTabHotkey_TT
+	CloseCurrentTabHotkey_TT := ChooseNextTabHotkey_TT
+	ToggleMinimizeHotkey_TT := ChooseNextTabHotkey_TT
+
+; - - - - - - - - - - - - - - -
+;	Customization: Appearance
+; - - - - - - - - - - - - - - -
+	ActivePreset_TT := "Available presets."
+	. "`nSelecting a preset will overwrite your settings for this tab."
+
+	ActiveSkin_TT := "Available skins for the Trades GUI."
+	SkinScaling_TT := "Scale multiplier used on the Trades GUI."
+	. "`nA setting higher than 100% may make the GUI appear slightly blurry."
+
+	SelectedFont_TT := "Available fonts for the Trades GUI."
+	FontSize_TT := "Font size used for the Trades GUI."
+	. "`nAutomatic means the font size will be set to the recommended size for this font."
+	. "`nIt also means the size will be increased when using a non-default scale multiplier."
+	FontQuality_TT := "Font quality used for the Trades GUI."
+	. "`nWhen a font does not render correctly, change this setting."
+	. "`nAutomatic means the font quality will be set to the recommended quality for this font."
+
+	FontColors_TT := "Change the font colors for various elements."
+
+; - - - - - - - - - - - - - - - - -
+;	Customization: Custom Buttons
+; - - - - - - - - - - - - - - - - -
 	TradesHPOS_TT := "Horizontal position of the button."
 	. "`nLeft:" A_Tab . A_Tab "The button will be positioned on the left side."
 	. "`nCenter:" A_Tab . A_Tab "The button will be positioned on the center."
 	. "`nRight:" A_Tab . A_Tab "The button will be positioned on the right side."
-
 	TradesVPOS_TT := "Vertical position of the button."
 	. "`nTop:" A_Tab . A_Tab "The button will be positioned on the top row."
 	. "`nCenter:" A_Tab . A_Tab "The button will be positioned on the middle row."
 	. "`nBottom:" A_Tab . A_Tab "The button will be positioned on the bottom row."
-
 	TradesSIZE_TT := "Size of the button."
 	. "`nDisabled:" A_Tab "The button will not appear."
 	. "`nSmall:" A_Tab . A_Tab "The button will take one third of the row."
@@ -3988,16 +4043,15 @@ Get_Control_ToolTip(controlName) {
 	. "`nLarge:" A_Tab . A_Tab "The button will take the whole row."
 
 	TradesLabel_TT := "Name of the button as it will appear on the interface."
-
 	TradesAction_TT := "Action that will be triggered upon clicking the button."
 	. "`nClipboard Item:" A_Tab . A_Tab "Put the current tab's item into the clipboard."
 	. "`nSend Message:" A_Tab . A_Tab "Send all the messages you have set for this button."
 	. "`nClose Tab:" A_Tab . A_Tab "Close the currently active tab."
 	. "`nWrite Message:" A_Tab . A_Tab "Write a single message in chat, without sending it."
-
 	TradesMarkCompleted_TT := "Store the trade's infos in a local file."
 	. "`nCan only be used with Send Message + Close Tab."
-
+	TradesHK_TT := "You can use an hotkey to trigger this button."
+	. "`nFor the hotkey to work, the button must be shown on the GUI."
 	TradesMSG__TT := TradesMsgID_TT := "Cycle between the messages that will be sent upon pressing this button."
 	
 	try
@@ -4322,7 +4376,6 @@ Gui_Stats_Get_Currency_Name(currency) {
 Check_Update() {
 ;			It works by downloading both the new version and the auto-updater
 ;			then closing the current instancie and renaming the new version
-	static
 	global ProgramValues
 
 	IniRead, isUsingBeta,% ProgramValues.Ini_File,PROGRAM,Update_Beta, 0
@@ -6481,7 +6534,6 @@ Gui_Trades_Cycle_Func() {
  *			Once the last match was reached
  *				we reset back to the first match
 */
-	static
 	global ProgramValues, TradesGUI_Values, ProgramSettings
 
 	programName := ProgramValues.Name
@@ -6501,7 +6553,9 @@ Gui_Trades_Cycle_Func() {
 		TradesGUI_Values.Dock_Window_Num := 0
 	}
 	TradesGUI_Values.Insert("Dock_Window", matchHandlers[TradesGUI_Values["Dock_Window_Num"]])
-	try Gui_Trades_Set_Position()
+	try
+		Gui_Trades_Set_Position()
+
 	Logs_Append(A_ThisFunc, {Dock_Window:TradesGUI_Values.Dock_Window, Total_Matchs:matchHandlers.MaxIndex() + 1})
 }
 
