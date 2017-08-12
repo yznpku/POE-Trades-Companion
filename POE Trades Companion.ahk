@@ -7086,6 +7086,13 @@ Tray_Notifications_Show(title, msg, params="") {
 	static
 	global SkinAssets, ProgramSettings, TrayNotifications_Values
 
+	local MonitorCount, MonitorPrimary, MonitorWorkArea
+	local MonitorWorkAreaTop, MonitorWorkAreaBottom, MonitorWorkAreaLeft, MonitorWorkAreaRight
+
+	SysGet, MonitorCount, MonitorCount
+	SysGet, MonitorPrimary, MonitorPrimary
+	SysGet, MonitorWorkArea, MonitorWorkArea,% MonitorPrimary
+
 	Is_Update := params.Is_Update
 
 	guiWidthMax := 350, guiHeightMax := 150
@@ -7102,7 +7109,7 @@ Tray_Notifications_Show(title, msg, params="") {
 	borderSize := 1
 	fadeTimer := (params.Fade_Timer)?(params.Fade_Timer):(8000)
 
-	showX := A_ScreenWidth-guiWidth-15, showY := A_ScreenHeight-guiHeight-60
+	showX := MonitorWorkAreaRight-guiWidth-10, showY := MonitorWorkAreaBottom-guiHeight-10
 	showW := guiWidth, showH := guiHeight
 
 	Gui, TrayNotification:Destroy
