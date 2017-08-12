@@ -1285,7 +1285,7 @@ Gui_Trades(mode="", tradeInfos="") {
 
 		dpiFactor := ProgramSettings.Screen_DPI, showX := guiWidth-49
 
-		TradesGUI_Created := true
+		TradesGUI_Values.Created := true
 	}
 
 ; - - - - - Adjust position, with Overlay mode
