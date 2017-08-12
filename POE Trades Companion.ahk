@@ -204,6 +204,8 @@ Start_Script() {
 
 	Gui_Trades_Load_Pending_Backup()
 	Monitor_Game_Logs()
+	Tray_Notifications_Show(ProgramValues.Name, "Loaded and ready!"
+												. "`nRight click on the tray icon to access the settings.")
 }
 
 Load_Debug_JSON() {
@@ -301,14 +303,14 @@ Filter_Logs_Message(message) {
 	Loop, Parse, message, `n ; For each new individual line since last check
 	{
 		; New RegEx pattern matches the trading message, but only from whispers and local chat (for debugging), and specifically ignores global/trade/guild/party chats
-		if ( RegExMatch( A_LoopField, "S)^(?:[^ ]+ ){6}(\d+)\] (?=[^#$&%]).*@(?:From|De|От кого) (.*?): (.*)", subPat ) )
-		{
-			; Assigning the sub pattern variables
+		if ( RegExMatch( A_LoopField, "S)^(?:[^ ]+ ){6}(\d+)\] (?=[^#$&%]).*@(?:From|De|От кого) (.*?): (.*)", subPat ) ) { ; Whisper found
+;			 Assigning the sub pattern variables
 			gamePID := subPat1, whispNameFull := subPat2, whispMsg := subPat3
 			whispNameFull := Gui_Trades_RemoveGuildPrefix(whispNameFull)
 			whispName := whispNameFull.Name, whispGuild := whispNameFull.Guild
 			TradesGUI_Values.Last_Whisper := whispName
 
+;			Tray notitication & Flashing
 			if !WinActive("ahk_pid " gamePID) {
 				if ( ProgramSettings.Whisper_Tray ) {
 					Tray_Notifications_Show("Whisper from " whispName, whispMsg)
@@ -321,199 +323,205 @@ Filter_Logs_Message(message) {
 			}
 
 			whisp := whispName ": " whispMsg "`n"
-			
+
+;			Retrieve the regEx pattern specific to the whisper type
+			tradeRegExStr := tradeRegExName := ""	
 			for regExName, regExStr in allRegExStr {
-				if RegExMatch(whisp, "iS).*: " regExStr) {
+				if RegExMatch(whisp, "iS).*: " regExStr) { ; Match found
+					tradeRegExStr := regExStr
+					tradeRegExName := regExName
 					Break
 				}
 			}
-			if RegExMatch(whisp, "iS).*: " regExStr, whispPat ) ; Matching pattern found
-			{
-				timeSinceLastTrade := 0
+;			Match found. Retrieve the information from the whisper
+			if (tradeRegExStr) { ; Trading whisper found
+				if RegExMatch(whisp, "iS).*: " tradeRegExStr, whispPat ) {
+					timeSinceLastTrade := 0
 
-				if ( regExName = "poeTradeRegexStr" ) {
-					whispOther 			:= whispPat1
-					whispItem 			:= whispPat2
-					whispPrice 			:= whispPat3
-					endOfWhisper 		:= whispPat4
-					whispPat1 := "", whispPat2 := "", whispPat3 := "", whispPat4 := ""
+					if ( tradeRegExName = "poeTradeRegexStr" ) {
+						whispOther 			:= whispPat1
+						whispItem 			:= whispPat2
+						whispPrice 			:= whispPat3
+						endOfWhisper 		:= whispPat4
+						whispPat1 := "", whispPat2 := "", whispPat3 := "", whispPat4 := ""
 
-					for id, leagueName in Trading_Leagues {
-						if RegExMatch(endOfWhisper, "S)" leagueName "(.*)", endOfWhisperPat) {
-							whispLeague 		:= leagueName
-							endOfWhisper 		:= endOfWhisperPat1
-							endOfWhisperPat1 	:= ""
-							Break
+						for id, leagueName in Trading_Leagues {
+							if RegExMatch(endOfWhisper, "S)" leagueName "(.*)", endOfWhisperPat) {
+								whispLeague 		:= leagueName
+								endOfWhisper 		:= endOfWhisperPat1
+								endOfWhisperPat1 	:= ""
+								Break
+							}
 						}
-					}
-					if RegExMatch(endOfWhisper, "S)" poeTradeStashRegexStr, stashPat) {
-						whispStash 		:= stashPat1
-						whispStashLeft 	:= stashPat2
-						whispStashTop 	:= stashPat3
-						whispOther2 	:= stashPat4
-						stashPat1 := "", stashPat2 := "", stashPat3 := "", stashPat4 := ""
-					}
-					else {
-						whispOther2 	:= endOfWhisper
-					}
-					if RegExMatch(whispItem, "S)" poTradeQualityRegExStr, itemQualPat) {
-						whispItemLevel 	:= itemQualPat1
-						whispItemQual 	:= itemQualPat2
-						whispItemName 	:= itemQualPat3
-						itemQualPat1 := "", itemQualPat2 := "", itemQualPat3 := ""
-					}
-
-					newTradeItem 		:= (whispItemName)?(whispItemName " (Lvl:" whispItemLevel " / Qual:" whispItemQual "%)"):(whispItem)
-					newTradePrice 		:= whispPrice
-					newTradeLocation 	:= (whispStash)?(whispLeague " (Tab:" whispStash " / Pos:" whispStashLeft ";" whispStashTop ")"):(whispLeague)
-					newTradeOther 		:= (whispOther && whispOther2)?(whispOther " " whispOther2):(whispOther . whispOther2)
-				}
-				else if ( regExName = "poeTradeUnpricedRegexStr") {
-					whispOther 			:= whispPat1
-					whispItem 			:= whispPat2
-					endOfWhisper 		:= whispPat3
-					whispPat1 := "", whispPat2 := "", whispPat3 := ""
-
-					for id, leagueName in Trading_Leagues {
-						if RegExMatch(endOfWhisper, "S)" leagueName "(.*)", endOfWhisperPat) {
-							whispLeague 		:= leagueName
-							endOfWhisper 		:= endOfWhisperPat1
-							endOfWhisperPat1	:= ""
-							Break
+						if RegExMatch(endOfWhisper, "S)" poeTradeStashRegexStr, stashPat) {
+							whispStash 		:= stashPat1
+							whispStashLeft 	:= stashPat2
+							whispStashTop 	:= stashPat3
+							whispOther2 	:= stashPat4
+							stashPat1 := "", stashPat2 := "", stashPat3 := "", stashPat4 := ""
 						}
-					}
-
-					if RegExMatch(endOfWhisper, "S)" poeTradeStashRegexStr, stashPat) {
-						whispStash 		:= stashPat1
-						whispStashLeft 	:= stashPat2
-						whispStashTop 	:= stashPat3
-						whispOther2 	:= stashPat4
-						stashPat1 := "", stashPat2 := "", stashPat3 := "", stashPat4 := ""
-					}
-					else {
-						whispOther2 	:= endOfWhisper
-					}
-
-					if RegExMatch(whispItem, "S)" poTradeQualityRegExStr, itemQualPat) {
-						whispItemLevel 	:= itemQualPat1
-						whispItemQual 	:= itemQualPat2
-						whispItemName 	:= itemQualPat3
-						itemQualPat1 := "", itemQualPat2 := "", itemQualPat3 := ""
-					}
-
-					newTradeItem 		:= (whispItemName)?(whispItemName " (Lvl:" whispItemLevel " / Qual:" whispItemQual "%)"):(whispItem)
-					newTradePrice 		:= "Unpriced Item (See Offer)"
-					newTradeLocation 	:= (whispStash)?(whispLeague " (Tab:" whispStash " / Pos:" whispStashLeft ";" whispStashTop ")"):(whispLeague)
-					newTradeOther 		:= (whispOther && whispOther2)?(whispOther " " whispOther2):(whispOther . whispOther2)
-				}
-				else if ( regExName = "poeTradeCurrencyRegexStr" ) {
-					whispOther 			:= whispPat1
-					whispItem 			:= whispPat2
-					whispPrice 			:= whispPat3
-					endOfWhisper 		:= whispPat4
-					whispPat1 := "", whispPat2 := "", whispPat3 := "", whispPat4 := ""
-
-					for id, leagueName in Trading_Leagues {
-						if RegExMatch(endOfWhisper, "S)" leagueName "(.*)", endOfWhisperPat) {
-							whispLeague 		:= leagueName
-							endOfWhisper 		:= endOfWhisperPat1
-							endOfWhisperPat1 	:= ""
-							Break
+						else {
+							whispOther2 	:= endOfWhisper
 						}
-					}
-
-					if RegExMatch(endOfWhisper, "S)" poeTradeStashRegexStr, stashPat) {
-						whispStash 		:= stashPat1
-						whispStashLeft 	:= stashPat2
-						whispStashTop 	:= stashPat3
-						whispOther2 	:= stashPat4
-						stashPat1 := "", stashPat2 := "", stashPat3 := "", stashPat4 := ""
-					}
-					else {
-						whispOther2 	:= endOfWhisper
-					}
-
-					newTradeItem 		:= whispItem
-					newTradePrice 		:= whispPrice
-					newTradeLocation 	:= whispLeague
-					newTradeOther 		:= (whispOther && whispOther2)?(whispOther " " whispOther2):(whispOther . whispOther2)
-				}
-				else if ( regExName = "poeAppRegExStr" ) {
-					whispOther 			:= whispPat1
-					whispItem 			:= whispPat2
-					whispPrice 			:= whispPat3
-					endOfWhisper 		:= whispPat4
-					whispPat1 := "", whispPat2 := "", whispPat3 := "", whispPat4 := ""
-
-					for id, leagueName in Trading_Leagues {
-						if RegExMatch(endOfWhisper, "S)" leagueName "(.*)", endOfWhisperPat) {
-							whispLeague 		:= leagueName
-							endOfWhisper 		:= endOfWhisperPat1
-							endOfWhisperPat1 	:= ""
-							Break
+						if RegExMatch(whispItem, "S)" poTradeQualityRegExStr, itemQualPat) {
+							whispItemLevel 	:= itemQualPat1
+							whispItemQual 	:= itemQualPat2
+							whispItemName 	:= itemQualPat3
+							itemQualPat1 := "", itemQualPat2 := "", itemQualPat3 := ""
 						}
-					}
 
-					if RegExMatch(endOfWhisper, "S)" poeAppStashRegexStr, stashPat) {
-						whispStash 		:= stashPat1
-						whispStashLeft 	:= stashPat2
-						whispStashTop 	:= stashPat3
-						whispOther2 	:= stashPat4
-						stashPat1 := "", stashPat2 := "", stashPat3 := "", stashPat4 := ""
+						newTradeItem 		:= (whispItemName)?(whispItemName " (Lvl:" whispItemLevel " / Qual:" whispItemQual "%)"):(whispItem)
+						newTradePrice 		:= whispPrice
+						newTradeLocation 	:= (whispStash)?(whispLeague " (Tab:" whispStash " / Pos:" whispStashLeft ";" whispStashTop ")"):(whispLeague)
+						newTradeOther 		:= (whispOther && whispOther2)?(whispOther " " whispOther2):(whispOther . whispOther2)
 					}
-					else {
-						whispOther2 	:= endOfWhisper
-					}
+					else if ( tradeRegExName = "poeTradeUnpricedRegexStr") {
+						whispOther 			:= whispPat1
+						whispItem 			:= whispPat2
+						endOfWhisper 		:= whispPat3
+						whispPat1 := "", whispPat2 := "", whispPat3 := ""
 
-					if RegExMatch(whispItem, "S)" poeAppQualityRegExStr, itemQualPat) {
-						whispItemName 	:= itemQualPat1
-						whispItemLevel 	:= itemQualPat2
-						whispItemQual 	:= itemQualPat3
-						itemQualPat1 := "", itemQualPat2 := "", itemQualPat3 := ""
-					}
-
-					newTradeItem 		:= (whispItemName)?(whispItemName " (Lvl:" whispItemLevel " / Qual:" whispItemQual "%)"):(whispItem)
-					newTradePrice 		:= whispPrice
-					newTradeLocation 	:= (whispStash)?(whispLeague " (Tab:" whispStash " / Pos:" whispStashLeft ";" whispStashTop ")"):(whispLeague)
-					newTradeOther 		:= (whispOther && whispOther2)?(whispOther " " whispOther2):(whispOther . whispOther2)
-				}
-				else if ( regExName = "poeAppUnpricedRegexStr") {
-					whispOther 			:= whispPat1
-					whispItem 			:= whispPat2
-					endOfWhisper 		:= whispPat3
-					whispPat1 := "", whispPat2 := "", whispPat3 := ""
-
-					for id, leagueName in Trading_Leagues {
-						if RegExMatch(endOfWhisper, "S)" leagueName "(.*)", endOfWhisperPat) {
-							whispLeague 		:= leagueName
-							endOfWhisper 		:= endOfWhisperPat1
-							endOfWhisperPat1 	:= ""
-							Break
+						for id, leagueName in Trading_Leagues {
+							if RegExMatch(endOfWhisper, "S)" leagueName "(.*)", endOfWhisperPat) {
+								whispLeague 		:= leagueName
+								endOfWhisper 		:= endOfWhisperPat1
+								endOfWhisperPat1	:= ""
+								Break
+							}
 						}
-					}
 
-					if RegExMatch(endOfWhisper, "S)" poeAppStashRegexStr, stashPat) {
-						whispStash 		:= stashPat1
-						whispStashLeft 	:= stashPat2
-						whispStashTop 	:= stashPat3
-						whispOther2 	:= stashPat4
-						stashPat1 := "", stashPat2 := "", stashPat3 := "", stashPat4 := ""
-					}
-					else {
-						whispOther2 	:= endOfWhisper
-					}
+						if RegExMatch(endOfWhisper, "S)" poeTradeStashRegexStr, stashPat) {
+							whispStash 		:= stashPat1
+							whispStashLeft 	:= stashPat2
+							whispStashTop 	:= stashPat3
+							whispOther2 	:= stashPat4
+							stashPat1 := "", stashPat2 := "", stashPat3 := "", stashPat4 := ""
+						}
+						else {
+							whispOther2 	:= endOfWhisper
+						}
 
-					if RegExMatch(whispItem, "S)" poeAppQualityRegExStr, itemQualPat) {
-						whispItemName 	:= itemQualPat1
-						whispItemLevel 	:= itemQualPat2
-						whispItemQual 	:= itemQualPat3
-						itemQualPat1 := "", itemQualPat2 := "", itemQualPat3 := ""
-					}
+						if RegExMatch(whispItem, "S)" poTradeQualityRegExStr, itemQualPat) {
+							whispItemLevel 	:= itemQualPat1
+							whispItemQual 	:= itemQualPat2
+							whispItemName 	:= itemQualPat3
+							itemQualPat1 := "", itemQualPat2 := "", itemQualPat3 := ""
+						}
 
-					newTradeItem 		:= (whispItemName)?(whispItemName " (Lvl:" whispItemLevel " / Qual:" whispItemQual "%)"):(whispItem)
-					newTradePrice 		:= "Unpriced Item (See Offer)"
-					newTradeLocation 	:= (whispStash)?(whispLeague " (Tab:" whispStash " / Pos:" whispStashLeft ";" whispStashTop ")"):(whispLeague)
-					newTradeOther 		:= (whispOther && whispOther2)?(whispOther " " whispOther2):(whispOther . whispOther2)
+						newTradeItem 		:= (whispItemName)?(whispItemName " (Lvl:" whispItemLevel " / Qual:" whispItemQual "%)"):(whispItem)
+						newTradePrice 		:= "Unpriced Item (See Offer)"
+						newTradeLocation 	:= (whispStash)?(whispLeague " (Tab:" whispStash " / Pos:" whispStashLeft ";" whispStashTop ")"):(whispLeague)
+						newTradeOther 		:= (whispOther && whispOther2)?(whispOther " " whispOther2):(whispOther . whispOther2)
+					}
+					else if ( tradeRegExName = "poeTradeCurrencyRegexStr" ) {
+						whispOther 			:= whispPat1
+						whispItem 			:= whispPat2
+						whispPrice 			:= whispPat3
+						endOfWhisper 		:= whispPat4
+						whispPat1 := "", whispPat2 := "", whispPat3 := "", whispPat4 := ""
+
+						for id, leagueName in Trading_Leagues {
+							if RegExMatch(endOfWhisper, "S)" leagueName "(.*)", endOfWhisperPat) {
+								whispLeague 		:= leagueName
+								endOfWhisper 		:= endOfWhisperPat1
+								endOfWhisperPat1 	:= ""
+								Break
+							}
+						}
+
+						if RegExMatch(endOfWhisper, "S)" poeTradeStashRegexStr, stashPat) {
+							whispStash 		:= stashPat1
+							whispStashLeft 	:= stashPat2
+							whispStashTop 	:= stashPat3
+							whispOther2 	:= stashPat4
+							stashPat1 := "", stashPat2 := "", stashPat3 := "", stashPat4 := ""
+						}
+						else {
+							whispOther2 	:= endOfWhisper
+						}
+
+						newTradeItem 		:= whispItem
+						newTradePrice 		:= whispPrice
+						newTradeLocation 	:= whispLeague
+						newTradeOther 		:= (whispOther && whispOther2)?(whispOther " " whispOther2):(whispOther . whispOther2)
+					}
+					else if ( tradeRegExName = "poeAppRegExStr" ) {
+						whispOther 			:= whispPat1
+						whispItem 			:= whispPat2
+						whispPrice 			:= whispPat3
+						endOfWhisper 		:= whispPat4
+						whispPat1 := "", whispPat2 := "", whispPat3 := "", whispPat4 := ""
+
+						for id, leagueName in Trading_Leagues {
+							if RegExMatch(endOfWhisper, "S)" leagueName "(.*)", endOfWhisperPat) {
+								whispLeague 		:= leagueName
+								endOfWhisper 		:= endOfWhisperPat1
+								endOfWhisperPat1 	:= ""
+								Break
+							}
+						}
+
+						if RegExMatch(endOfWhisper, "S)" poeAppStashRegexStr, stashPat) {
+							whispStash 		:= stashPat1
+							whispStashLeft 	:= stashPat2
+							whispStashTop 	:= stashPat3
+							whispOther2 	:= stashPat4
+							stashPat1 := "", stashPat2 := "", stashPat3 := "", stashPat4 := ""
+						}
+						else {
+							whispOther2 	:= endOfWhisper
+						}
+
+						if RegExMatch(whispItem, "S)" poeAppQualityRegExStr, itemQualPat) {
+							whispItemName 	:= itemQualPat1
+							whispItemLevel 	:= itemQualPat2
+							whispItemQual 	:= itemQualPat3
+							itemQualPat1 := "", itemQualPat2 := "", itemQualPat3 := ""
+						}
+
+						newTradeItem 		:= (whispItemName)?(whispItemName " (Lvl:" whispItemLevel " / Qual:" whispItemQual "%)"):(whispItem)
+						newTradePrice 		:= whispPrice
+						newTradeLocation 	:= (whispStash)?(whispLeague " (Tab:" whispStash " / Pos:" whispStashLeft ";" whispStashTop ")"):(whispLeague)
+						newTradeOther 		:= (whispOther && whispOther2)?(whispOther " " whispOther2):(whispOther . whispOther2)
+					}
+					else if ( tradeRegExName = "poeAppUnpricedRegexStr") {
+						whispOther 			:= whispPat1
+						whispItem 			:= whispPat2
+						endOfWhisper 		:= whispPat3
+						whispPat1 := "", whispPat2 := "", whispPat3 := ""
+
+						for id, leagueName in Trading_Leagues {
+							if RegExMatch(endOfWhisper, "S)" leagueName "(.*)", endOfWhisperPat) {
+								whispLeague 		:= leagueName
+								endOfWhisper 		:= endOfWhisperPat1
+								endOfWhisperPat1 	:= ""
+								Break
+							}
+						}
+
+						if RegExMatch(endOfWhisper, "S)" poeAppStashRegexStr, stashPat) {
+							whispStash 		:= stashPat1
+							whispStashLeft 	:= stashPat2
+							whispStashTop 	:= stashPat3
+							whispOther2 	:= stashPat4
+							stashPat1 := "", stashPat2 := "", stashPat3 := "", stashPat4 := ""
+						}
+						else {
+							whispOther2 	:= endOfWhisper
+						}
+
+						if RegExMatch(whispItem, "S)" poeAppQualityRegExStr, itemQualPat) {
+							whispItemName 	:= itemQualPat1
+							whispItemLevel 	:= itemQualPat2
+							whispItemQual 	:= itemQualPat3
+							itemQualPat1 := "", itemQualPat2 := "", itemQualPat3 := ""
+						}
+
+						newTradeItem 		:= (whispItemName)?(whispItemName " (Lvl:" whispItemLevel " / Qual:" whispItemQual "%)"):(whispItem)
+						newTradePrice 		:= "Unpriced Item (See Offer)"
+						newTradeLocation 	:= (whispStash)?(whispLeague " (Tab:" whispStash " / Pos:" whispStashLeft ";" whispStashTop ")"):(whispLeague)
+						newTradeOther 		:= (whispOther && whispOther2)?(whispOther " " whispOther2):(whispOther . whispOther2)
+					}
 				}
 
 				newTradeItem 		= %newTradeItem%
@@ -523,7 +531,7 @@ Filter_Logs_Message(message) {
 				newTradeOther 		:= StrReplace(newTradeOther, "`n", "")
 				newTradeOther 		:= ( newTradeOther && (newTradeOther = "." || newTradeOther = "`n" || newTradeOther = " ") )?("-"):(!newTradeOther)?("-"):(newTradeOther)
 
-				; Do not add the trade if the same is already in queue
+;				Check if exact same trade is already in queue
 				tradesExists := 0
 				tradesInfos := Gui_Trades_Manage_Trades("GET_ALL")
 				Loop % tradesInfos.Max_Index {
@@ -533,7 +541,7 @@ Filter_Logs_Message(message) {
 					}
 				}
 
-				; Trade does not already exist
+;				Trade does not already exist. We can add it
 				if (tradesExists = 0) {
 					newTradesInfos := {Buyer:whispName
 									  ,Item:newTradeItem
@@ -549,17 +557,20 @@ Filter_Logs_Message(message) {
 					messagesArray := Gui_Trades_Manage_Trades("ADD_NEW", newTradesInfos)
 					Gui_Trades("UPDATE", messagesArray)
 
-					if ( ProgramSettings.Trade_Toggle = 1 ) && FileExist(ProgramSettings.Trade_Sound_Path) { ; Play the sound set for trades
+;					Play the trade received sound notification
+					if ( ProgramSettings.Trade_Toggle = 1 ) && FileExist(ProgramSettings.Trade_Sound_Path) {
 						SoundPlay,% ProgramSettings.Trade_Sound_Path
 					}
-					else if ( ProgramSettings.Whisper_Toggle = 1 ) && FileExist(ProgramSettings.Whisper_Sound_Path) { ; Play the sound set for whispers{
+;					Play the whisper received sound notification
+					else if ( ProgramSettings.Whisper_Toggle = 1 ) && FileExist(ProgramSettings.Whisper_Sound_Path) {
 						SoundPlay,% ProgramSettings.Whisper_Sound_Path
 					}
 				}
 				whispName := "", whispGuild := "", newTradeItem := "", newTradePrice := "", newTradeLocation := "", newTradeOther := "", gamePID := ""
-			}
-			else {
-				; Check existing tabs for same buyer, and add to the "Other:" slot
+			} ; End of trading whisper found
+
+			else { ; No trading whisper match found.
+;				Check for existing tabs for the same guy
 				tradesInfos := Gui_Trades_Manage_Trades("GET_ALL")
 				Loop % tradesInfos.Max_Index {
 					if (whispName = tradesInfos[A_Index "_Buyer"]) {
@@ -576,23 +587,26 @@ Filter_Logs_Message(message) {
 						else { ; Does not contains text, do not include previous text
 							otherText := "(Hover to see all messages)`n" "[" A_Hour ":" A_Min "] " whispMsg
 						}
+
 						setInfos := { OTHER:otherText, TabID:A_Index }
 						Gui_Trades_Set_Trades_Infos(setInfos)
 						GUI_Trades_Set_NewMsg(A_Index)
 						GUI_Trades_Update_Tab_Style(A_Index)
 					}
 				}
-				
+
+;				Play the whisper sound notification
 				if ( ProgramSettings.Whisper_Toggle = 1 ) && FileExist(ProgramSettings.Whisper_Sound_Path) { ; Play the sound set for whispers
 					SoundPlay,% ProgramSettings.Whisper_Sound_Path
 				}
 			}
-		}
+		} ; End of whisper found
 
-		; Check if a buyer has joined or left the area 
+;		Check if a buyer has joined or left the area 
 		if ( RegExMatch( A_LoopField, "S)" areaRegexStr, subPat ) ) {
 			gamePID := subPat1, whispName := subPat2, areaStatus := subPat3
 			TradesGUI_Values.Last_Whisper := whispName
+
 			; Check if player has pending trade
 			tradesInfos := Gui_Trades_Manage_Trades("GET_ALL")
 			updateCount := 0
@@ -601,31 +615,29 @@ Filter_Logs_Message(message) {
 
 					; Check if the player is already in the area
 					if ( areaStatus = "joined" && !tradesInfos[A_Index "_InArea"]) {
+						; Set tab style
 						GUI_Trades_Set_InArea(A_Index)
 						GUI_Trades_Update_Tab_Style(A_Index)
-						; Play sound and alert
-						; if ( ProgramSettings.Joined_Toggle = 1 ) && FileExist(ProgramSettings.Joined_Sound_Path) { 
-						; 	SoundPlay,% ProgramSettings.Joined_Sound_Path
-						; }
-						; if ( ProgramSettings.Trade_Toggle = 1 ) && FileExist(ProgramSettings.Trade_Sound_Path) { ; Play the sound set for trades
-						; 	SoundPlay,% ProgramSettings.Trade_Sound_Path
-						; }
+						; Play a sound
+						if ( ProgramSettings.Notification_Joined_Toggle = 1 ) && FileExist(ProgramSettings.Notification_Joined_Path) { ; __TO_BE_ADDED__ Sound notification when area joined
+							SoundPlay,% ProgramSettings.Notification_Joined_Path
+						}
+						; Flash the taskbar
 						if !WinActive("ahk_pid " gamePID) {
 							if ( ProgramSettings.Whisper_Flash ) {
-							gameHwnd := WinExist("ahk_pid " gamePID)
-							DllCall("FlashWindow", UInt, gameHwnd, Int, 1)
+								gameHwnd := WinExist("ahk_pid " gamePID)
+								DllCall("FlashWindow", UInt, gameHwnd, Int, 1)
 							}
 						}
-					} else if (areaStatus = "left" && tradesInfos[A_Index "_InArea"] = 1) {
+					}
+					else if (areaStatus = "left" && tradesInfos[A_Index "_InArea"] = 1) {
 						GUI_Trades_Set_InArea(A_Index, 0)
 						GUI_Trades_Update_Tab_Style(A_Index)
 					}
 				}
 			}
-
-		}
-		; End of area joined
-	}
+		} ; End of area joined
+	} ; End of message parsing
 }
 
 Restart_Monitor_Game_Logs() {
@@ -727,11 +739,11 @@ Gui_Trades(mode="", tradeInfos="") {
 			   :(fontQualAuto)
 
 	maxTabsRow := 8
-	maxTabsStage1 := 25
-	maxTabsStage2 := 50
-	maxTabsStage3 := 75
-	maxTabsStage4 := 100
-	maxTabsStage5 := 250
+	maxTabsStage1 := 26
+	maxTabsStage2 := 51
+	maxTabsStage3 := 76
+	maxTabsStage4 := 101
+	maxTabsStage5 := 251
 	TradesGUI_Values["Max_Tabs_Per_Row"] := maxTabsRow
 
 	Loop {
@@ -822,13 +834,15 @@ Gui_Trades(mode="", tradeInfos="") {
 		ProgramValues.IBStyle_Tab_Whisper := IBStyle_Tab_Whisper
 		ProgramValues.IBStyle_Tab_Joined := IBStyle_Tab_Joined
 
+		defaultGUI := A_DefaultGUI
 		Gui, Trades:Destroy
 		Gui, Trades:New, +ToolWindow +AlwaysOnTop -Border +hwndGuiTradesHandler +LabelGui_Trades_ +LastFound -SysMenu -Caption
 		Gui, Trades:Default
+		TradesGUI_Values.Handler := GuiTradesHandler
+
 		Gui, Color, %pngTransColor%
 		Gui, Margin, 0, 0
 		Gui, +OwnDialogs
-		TradesGUI_Values.Handler := GuiTradesHandler
 
 		tabHeight := Gui_Trades_Get_Tab_Height(), tabWidth := 390*scaleMult
 		guiWidth := 401*scaleMult, guiHeight := Floor((tabHeight+39)*scaleMult), guiHeightMin := 30*scaleMult ; 30 = banner size
@@ -838,10 +852,6 @@ Gui_Trades(mode="", tradeInfos="") {
 		TradesGUI_Values.Insert("Height_Minimized", guiHeightMin)
 
 		maxTabsRendered := (!maxTabsRendered)?(maxTabsStage1):(maxTabsRendered)
-
-		if ( maxTabsRendered > maxTabsStage2 ) { 
-			Tray_Notifications_Show(ProgramValues.Name, "Current tabs limit reached." . "`nRendering more tabs")
-		}
 
 		TradesGUI_Values["Max_Tabs_Rendered"] := maxTabsRendered
 
@@ -1176,7 +1186,7 @@ Gui_Trades(mode="", tradeInfos="") {
 			GuiControl, Trades:,% GuildSlot%A_Index%Handler,% tradeInfos[A_Index "_Guild"]
 			GuiControl, Trades:,% InAreaSlot%A_Index%Handler,% tradeInfos[A_Index "_InArea"]
 			GuiControl, Trades:,% NewMsgSlot%A_Index%Handler,% tradeInfos[A_Index "_NewMsg"]
-			GuiControl,,% TradesGUI_Controls["Tab_" A_Index],% A_Index
+			GuiControl, Trades:,% TradesGUI_Controls["Tab_" A_Index],% A_Index
 			GUI_Trades_Update_Tab_Style(A_Index)
 		}
 		Gui_Trades_Adjust_Tabs() ; Hide or show tabs controls, based on tabsCount
@@ -1230,18 +1240,23 @@ Gui_Trades(mode="", tradeInfos="") {
 
 ; - - - - - Increase tabs limit
 		if (tabsCount >= maxTabsRendered-1 && maxTabsRendered != maxTabsStage5) { ;	Tabs limit almost reached.
+			currentTabsLimit := maxTabsRendered
 			maxTabsRendered := (maxTabsRendered=maxTabsStage1)?(maxTabsStage2)
 							  :(maxTabsRendered=maxTabsStage2)?(maxTabsStage3)
 							  :(maxTabsRendered=maxTabsStage3)?(maxTabsStage4)
 							  :(maxTabsRendered=maxTabsStage4)?(maxTabsStage5)
 							  :(maxTabsStage2)
+			nextTabsLimit := maxTabsRendered
 
+			Tray_Notifications_Show(ProgramValues.Name, "Maximal tabs limit reached (" currentTabsLimit-1 ").`nRendering more tabs... (" nextTabsLimit-1 ")")
+			currentTabsLimit := "", nextTabsLimit := ""
 			previousTabID := Gui_Trades_Get_Tab_ID()
 			Gui_Trades_Redraw("CREATE", {noSplash:1})
 			Gui_Trades_SetActiveTab_Func(previousTabID)
 		}
 ; - - - - - Reset tabs limit
 		if (tabsCount=0 && maxTabsRendered>maxTabsStage1) && (mode!="CREATE") { ; Tabs limit higher than default, and no tab on queue. We can reset to default limit.
+			Tray_Notifications_Show(ProgramValues.Name, "All tabs were closed.`nReverting to the default tabs limit... (" maxTabsStage1-1 ")")
 			maxTabsRendered := maxTabsStage1
 			Gui_Trades_Redraw("CREATE", {noSplash:1})
 		}
@@ -1286,6 +1301,7 @@ Gui_Trades(mode="", tradeInfos="") {
 		dpiFactor := ProgramSettings.Screen_DPI, showX := guiWidth-49
 
 		TradesGUI_Values.Created := true
+		Gui, %defaultGUI%:Default
 	}
 
 ; - - - - - Adjust position, with Overlay mode
@@ -1874,6 +1890,10 @@ Gui_Trades_Do_Action_Func(CtrlHwnd, GuiEvent, EventInfo) {
 
 	if ( TradesGUI_Values.Cancel_Action ) {
 		TradesGUI_Values.Cancel_Action := 0
+		Return
+	}
+
+	if ( TradesGUI_Values.Active_Tab = 0 ) { ; User most likely used an hotkey while tabs count was 0
 		Return
 	}
 
@@ -2617,7 +2637,8 @@ Gui_Settings() {
 	programName := ProgramValues.Name, iniFilePath := ProgramValues.Ini_File, programSFXFolderPath := ProgramValues.SFX_Folder
 
 	guiCreated := 0
-	
+
+	defaultGUI := A_DefaultGUI
 	Gui, Settings:Destroy
 	Gui, Settings:New, +AlwaysOnTop +SysMenu -MinimizeBox -MaximizeBox +OwnDialogs +LabelGui_Settings_ hwndSettingsHandler,% programName " - Settings"
 	Gui, Settings:Default
@@ -2719,7 +2740,7 @@ Gui_Settings() {
 		Gui, Add, ListBox,% "xp+10" . " yp+20" . " w190" . " vSelectedSkin hwndSelectedSkinHandler R4" . " gGui_Settings_Set_Custom_Preset",% skinsList
 
 		scalingList := "50%|75%|100%|125%|150%|175%|200%"
-		Gui, Add, Text,% "xp+200" . " yp+3",Scale: 
+		Gui, Add, Text,% "xp+205" . " yp+3",Scale: 
 		Gui, Add, DropDownList,% "xp+40" . " yp-3" . " w145" . " vSkinScaling hwndSkinScalingHandler" . " gGui_Settings_Set_Custom_Preset",% scalingList
 
 	Gui, Add, GroupBox,% "x" guiXWorkArea . " y" guiYWorkArea+145 . " w430 h85" . " c000000",Font
@@ -2733,12 +2754,12 @@ Gui_Settings() {
 		Sleep 1
 		Gui, Add, ListBox,% "xp+10" . " yp+20" . " w190" . " vSelectedFont hwndSelectedFontHandler R4" . " gGui_Settings_Set_Custom_Preset",% fontsList
 		Gui, Add, Text,% "xp+200" . " yp+3",Size:
-		Gui, Add, DropDownList,% "xp+40" . " yp-3" . " w100" . " vFontSize hwndFontSizeHandler" . " gGui_Settings_Set_Custom_Preset",% "Automatic|Custom"
+		Gui, Add, DropDownList,% "xp+45" . " yp-3" . " w100" . " vFontSize hwndFontSizeHandler" . " gGui_Settings_Set_Custom_Preset",% "Automatic|Custom"
 		Gui, Add, Edit,% "xp+100" . " yp" . " w50" . " ReadOnly"
 		Gui, Add, UpDown, vFontSizeCustom hwndFontSizeCustomHandler gGui_Settings_Set_Custom_Preset
 
-		Gui, Add, Text,% "xp-140" . " yp+33",Quality:
-		Gui, Add, DropDownList,% "xp+40" . " yp-3" . " w100" . " vFontQuality hwndFontQualityHandler" . " gGui_Settings_Set_Custom_Preset",% "Automatic|Custom"
+		Gui, Add, Text,% "xp-145" . " yp+33",Quality:
+		Gui, Add, DropDownList,% "xp+45" . " yp-3" . " w100" . " vFontQuality hwndFontQualityHandler" . " gGui_Settings_Set_Custom_Preset",% "Automatic|Custom"
 		Gui, Add, Edit,% "xp+100" . " yp" . " w50" . " ReadOnly"
 		Gui, Add, UpDown, vFontQualityCustom hwndFontQualityCustomHandler gGui_Settings_Set_Custom_Preset
 
@@ -2792,7 +2813,7 @@ Gui_Settings() {
 			Gui, Add, Text, xp+170 yp+3 vTradesHK%index%Text hwndTradesHK%index%TextHandler Hidden,Hotkey:
 			Gui, Add, Hotkey, xp+50 yp-3 vTradesHK%index% hwndTradesHK%index%Handler Hidden,
 
-			Gui, Add, Text,% "xp-270" . " yp+33" . " hwndTradesAction" index "TextHandler",Action:
+			Gui, Add, Text,% "xp-270" . " yp+33" . " hwndTradesAction" index "TextHandler Hidden",Action:
 			Gui, Add, DropDownList, xp+50 yp-3 w160 vTradesAction%index% hwndTradesAction%index%Handler gGui_Settings_Custom_Label Hidden,% "Clipboard Item|Send Message|Send Message + Close Tab|Write Message"
 			Gui, Add, CheckBox,xp+170 yp vTradesMarkCompleted%index% hwndTradesMarkCompleted%index%Handler Center Hidden,Save the trade infos locally?`n(for personnal statistics purposes)
 
@@ -2939,6 +2960,7 @@ Gui_Settings() {
 	Gui, Settings:Show
 	GuiControl, Settings:Choose,% TabHandler,1
 	guiCreated := 1
+	Gui, %defaultGUI%:Default
 return
 
 	Gui_Settings_Fonts_Color_Preview:
@@ -3260,8 +3282,8 @@ return
 	return
 	
 	Gui_Settings_Btn_Apply:
-		Gui, +OwnDialogs
-		Gui, Submit, NoHide
+		Gui, Settings:+OwnDialogs
+		Gui, Settings:Submit, NoHide
 		SplashTextOn, 300, 20,% ProgramValues.Name,% "Saving your settings..."
 ;	Trades GUI
 		trans := ( ShowTransparency / 100 ) * 255 ; ( value - percentage ) * max // Convert percentage to 0-255 range
@@ -4091,7 +4113,7 @@ Gui_Stats() {
 
     Gui_Stats_Filter:
     	Gui, Stats:Submit, NoHide
-    	Gui Stats:+OwnDialogs
+    	Gui, Stats:+OwnDialogs
 
 	    LV_Delete()
 	    Loop % allStats.Max_Index
@@ -4320,7 +4342,7 @@ Check_Update() {
 
 ;	Changelogs file
 	Try {
-		local Changelogs_WinHttpReq := ComObjCreate("WinHttp.WinHttpRequest.5.1")
+		Changelogs_WinHttpReq := ComObjCreate("WinHttp.WinHttpRequest.5.1")
 		Changelogs_WinHttpReq.SetTimeouts("10000", "10000", "10000", "10000")
 
 		Changelogs_WinHttpReq.Open("GET", changeslogsLink, true) ; Using true above and WaitForResponse allows the script to r'emain responsive.
@@ -4445,6 +4467,7 @@ Gui_About(params="") {
 	IniRead, isUsingBeta,% iniFilePath,PROGRAM,Update_Beta
 	IniRead, isAutoUpdateEnabled,% iniFilePath,PROGRAM,AutoUpdate
 
+	defaultGUI := A_DefaultGUI
 	Gui, About:Destroy
 	Gui, About:New, +HwndaboutGuiHandler +AlwaysOnTop +SysMenu -MinimizeBox -MaximizeBox +OwnDialogs +LabelGui_About_,% programName " by lemasato v" verCurrent
 	Gui, About:Default
@@ -4499,12 +4522,13 @@ Gui_About(params="") {
 	Gui, Add, Picture,% "gPaypal_Link xs+" 500-74 " ys-3 w74 h21",% ProgramValues.Others_Folder "\DonatePaypal.png"
 
 	Gui, Show, AutoSize
+	Gui, %defaultGUI%:Default
 	return
 	
 	Version_Change:
-		Gui, Submit, NoHide
-		GuiControl, ,%ChangesTextHandler%,% allChanges[verNum]
-		Gui, Show, AutoSize
+		Gui, About:Submit, NoHide
+		GuiControl, About:,%ChangesTextHandler%,% allChanges[verNum]
+		Gui, About:Show, AutoSize
 	return
 
 	Reddit_Link:
@@ -5217,15 +5241,15 @@ GUI_Replace_PID(handlersArray, gamePIDArray) {
 	ypos := 30
 	for key, element in handlersArray {
 		index := A_Index - 1
-		Gui, Add, Text, x10 yp+30,Executable:
+		Gui, ReplacePID:Add, Text, x10 yp+30,Executable:
 		WinGet, pName, ProcessName,ahk_id %element%
-		Gui, Add, Edit, xp+55 yp-3 ReadOnly w150,% pName
-		Gui, Add, Button,xp+155 yp-2 gGUI_Replace_PID_Continue vContinue%index%,Continue with this one
-		Gui, Add, Text, x10 yp+32,Path:
+		Gui, ReplacePID:Add, Edit, xp+55 yp-3 ReadOnly w150,% pName
+		Gui, ReplacePID:Add, Button,xp+155 yp-2 gGUI_Replace_PID_Continue vContinue%index%,Continue with this one
+		Gui, ReplacePID:Add, Text, x10 yp+32,Path:
 		WinGet, pPath, ProcessPath,ahk_id %element%
-		Gui, Add, Edit, xp+55 yp-3 ReadOnly,% pPath
+		Gui, ReplacePID:Add, Edit, xp+55 yp-3 ReadOnly,% pPath
 		if ( index != handlersArray.MaxIndex() ) ; Put a 10px margin if it's not the last element
-			Gui, Add, Text, w0 h0 xp yp+10
+			Gui, ReplacePID:Add, Text, w0 h0 xp yp+10
 	}
 	Gui, ReplacePID:Show,NoActivate,% programName " - Replace PID"
 	WinWait, ahk_id %GUIInstancesHandler%
@@ -5255,15 +5279,15 @@ GUI_Multiple_Instances(handlersArray) {
 	ypos := 30
 	for key, element in handlersArray {
 		index := A_Index - 1
-		Gui, Add, Text, x10 yp+30,Executable:
+		Gui, Instances:Add, Text, x10 yp+30,Executable:
 		WinGet, pName, ProcessName,ahk_id %element%
-		Gui, Add, Edit, xp+55 yp-3 ReadOnly w150,% pName
-		Gui, Add, Button,xp+155 yp-2 gGUI_Multiple_Instances_Continue vContinue%index%,Continue with this one
-		Gui, Add, Text, x10 yp+32,Path:
+		Gui, Instances:Add, Edit, xp+55 yp-3 ReadOnly w150,% pName
+		Gui, Instances:Add, Button,xp+155 yp-2 gGUI_Multiple_Instances_Continue vContinue%index%,Continue with this one
+		Gui, Instances:Add, Text, x10 yp+32,Path:
 		WinGet, pPath, ProcessPath,ahk_id %element%
-		Gui, Add, Edit, xp+55 yp-3 ReadOnly,% pPath
+		Gui, Instances:Add, Edit, xp+55 yp-3 ReadOnly,% pPath
 		if ( index != handlersArray.MaxIndex() ) ; Put a 10px margin if it's not the last element
-			Gui, Add, Text, w0 h0 xp yp+10
+			Gui, Instances:Add, Text, w0 h0 xp yp+10
 		Logs_Append(A_ThisFunc, {Handler:element, Path:pPath})
 	}
 	Gui, Instances:Show,NoActivate,% programName " - Multiple instances found"
@@ -6672,6 +6696,7 @@ GUI_Beautiful_Warning(params) {
 
 	static WarnTextHandler
 
+	defaultGUI := A_DefaultGUI
 	Gui, BeautifulWarn:Destroy
 	Gui, BeautifulWarn:New, +AlwaysOnTop +ToolWindow -Caption -Border +LabelGui_Beautiful_Warning_ hwndGuiBeautifulWarningHandler,% ProgramValues.Name
 	Gui, BeautifulWarn:Default
@@ -6751,6 +6776,7 @@ Gui_AdminWarn() {
 	global ProgramValues
 	static UnlockBtn
 
+	defaultGUI := A_DefaultGUI
 	Gui, AdminWarn:Destroy
 	Gui, AdminWarn:New, +AlwaysOnTop -SysMenu -MinimizeBox -MaximizeBox +LabelGui_AdminWarn_ hwndGuiAdminWarnHandler,% ProgramValues.Name
 	Gui, AdminWarn:Default
@@ -6765,15 +6791,16 @@ Gui_AdminWarn() {
 	. "`n`nThe tool will exit upon closing this window."
 	Gui, Add, Button, xs w460 h30 Disabled vUnlockBtn gGui_AdminWarn_Accept,% "This button will be unlocked in 10..."
 	Gui, Show
+	Gui, %defaultGUI%:Default
 	WinWait,% "ahk_id " GuiAdminWarnHandler
 	count := 10
 	Loop %count% {
 		Sleep 1000
 		count--
-		GuiControl, , UnlockBtn,% "This button will be unlocked in " count "..."
+		GuiControl, AdminWarn:, UnlockBtn,% "This button will be unlocked in " count "..."
 	}
-	GuiControl, , UnlockBtn,% "Alright, got it!"
-	GuiControl, Enable, UnlockBtn
+	GuiControl, AdminWarn:, UnlockBtn,% "Alright, got it!"
+	GuiControl, AdminWarn:Enable, UnlockBtn
 	WinWaitClose,% "ahk_id " GuiAdminWarnHandler
 	Return
 
@@ -7080,7 +7107,7 @@ Tray_Notifications_Show(title, msg, params="") {
 
 	Gui, TrayNotification:Destroy
 	Gui, TrayNotification:New, +ToolWindow +AlwaysOnTop -Border +LastFound -SysMenu -Caption +LabelGui_TrayNotification_
-	Gui, TrayNotification:Default
+
 	Gui, TrayNotification:Margin, 0, 0
 	Gui, TrayNotification:Color, 1f1f1f
 
