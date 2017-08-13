@@ -65,7 +65,7 @@ Start_Script() {
 	MyDocuments 						:= (RunParameters.MyDocuments)?(RunParameters.MyDocuments):(A_MyDocuments)
 
 	ProgramValues.Name 					:= "POE Trades Companion"
-	ProgramValues.Version 				:= "1.12.BETA_7"
+	ProgramValues.Version 				:= "1.12.BETA_8"
 
 	ProgramValues.Updater_File 			:= "POE-TC-Updater.exe"
 	ProgramValues.Updater_Link 			:= "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/Updater_v2.exe"
@@ -2630,7 +2630,7 @@ Gui_Trades_Set_Position(xpos="UNSPECIFIED", ypos="UNSPECIFIED"){
 
 Gui_Settings() {
 	static
-	global ProgramSettings, ProgramValues, ProgramFonts, TradesGUI_Values
+	global ProgramSettings, ProgramValues, ProgramFonts, TradesGUI_Values, GUISettingsHandler
 	global Hotkey1_KEYHandler, Hotkey2_KEYHandler, Hotkey3_KEYHandler, Hotkey4_KEYHandler, Hotkey5_KEYHandler, Hotkey6_KEYHandler
 
 	programName := ProgramValues.Name, iniFilePath := ProgramValues.Ini_File, programSFXFolderPath := ProgramValues.SFX_Folder
@@ -2639,7 +2639,7 @@ Gui_Settings() {
 
 	defaultGUI := A_DefaultGUI
 	Gui, Settings:Destroy
-	Gui, Settings:New, +AlwaysOnTop +SysMenu -MinimizeBox -MaximizeBox +OwnDialogs +LabelGui_Settings_ hwndSettingsHandler,% programName " - Settings"
+	Gui, Settings:New, +AlwaysOnTop +SysMenu -MinimizeBox -MaximizeBox +OwnDialogs +LabelGui_Settings_ hwndGUISettingsHandler,% programName " - Settings"
 	Gui, Settings:Default
 
 	Gui, Font, ,Segoe UI
@@ -3197,13 +3197,8 @@ return
 	Gui_Settings_Trades_Preview:
 		GoSub, Gui_Settings_Btn_Apply
 
-		Backup_isMin := TradesGUI_Values.Is_Minimized, Backup_autoMin := ProgramSettings.Trades_Auto_Minimize
-		TradesGUI_Values.Is_Minimized := 0, ProgramSettings.Trades_Auto_Minimize := 0
-
 		Gui_Trades_Redraw("CREATE", {preview:1})
-
-		TradesGUI_Values.Is_Minimized := Backup_isMin, ProgramSettings.Trades_Auto_Minimize := Backup_autoMin
-		Backup_isMin := "", Backup_autoMin := ""
+		Gui_Trades_Minimize_Func("FULL", 1)
 	Return
 
 	Gui_Settings_Custom_Label:
@@ -5098,15 +5093,15 @@ Hotkeys_Handler(thisLabel) {
 		SetControlDelay -1
 		if ( hotkeyType = "TradesGUI_Custom" ) {
 			ControlClick,,% "ahk_id " TradesGUI_Controls["Button_Custom_" hotkeyID],,,, NA
-			; if (ErrorLevel) {
+			if (ErrorLevel) {
 				Logs_Append(A_ThisFunc, {HK:A_ThisHotkey, What_Do:"Click Button: """ TradesGUI_Controls["Button_Custom_" hotkeyID] """"})
-			; }
+			}
 		}
 		else if ( hotkeyType = "TradesGUI_Unicode" ) {
 			ControlClick,,% "ahk_id " TradesGUI_Controls["Button_Unicode_" hotkeyID]
-			; if (ErrorLevel) {
+			if (ErrorLevel) {
 				Logs_Append(A_ThisFunc, {HK:A_ThisHotkey, What_Do:"Click Button: """ TradesGUI_Controls["Button_Unicode_" hotkeyID] """"})
-			; }
+			}
 		}
 		WM_Messages_Set_State(1)
 		SetControlDelay %controlDelay%
@@ -5644,7 +5639,7 @@ ShellMessage(wParam,lParam) {
  *			Is used to correctly position the Trades GUI while in Overlay mode
 */
 	global ProgramValues, ProgramSettings, TradesGUI_Values
-	global POEGameList
+	global POEGameList, GUISettingsHandler
 
 	programSkinFolderPath := ProgramValues.Skins_Folder
 
@@ -5671,17 +5666,20 @@ ShellMessage(wParam,lParam) {
 		WinGet, winID, ID, ahk_id %lParam%
 		if ( ProgramSettings.Show_Mode = "InGame" ) {
 			if ( TradesGUI_Values.Width ) { ; TradesGUI exists
-				if POEGameList not contains %winEXE%
+				if POEGameList contains %winEXE%
 				{
-					Gui, Trades:Show, NoActivate Hide
+					Gui, Trades:Show, NoActivate
+				}
+				else if (winID = GUISettingsHandler ) { 
+					Gui, Trades:Show, NoActivate
 				}
 				else {
-					Gui, Trades:Show, NoActivate
+					Gui, Trades:Show, NoActivate Hide
 				}
 			}
 		}
 		else
-			Gui, Trades:Show, NoActivate ; Always Shwo
+			Gui, Trades:Show, NoActivate ; Always Show
 
 		if ( ProgramSettings.Trades_GUI_Mode = "Overlay")
 			try Gui_Trades_Set_Position() ; Re-position the GUI

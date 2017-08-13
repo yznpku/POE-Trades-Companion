@@ -1,4 +1,20 @@
 \\
+--1.12.BETA_8--
+Added:
+- You can now choose to play a sound when a buyer joins your area.
+- Nine new sound effects have been added.
+- Currency names for the new shards and orbs (Used by the "My Stats" tray menu).
+
+Changes:
+- The tray notifications position is now based on your start bar position. 10px above, and 10px from the right border of your monitor.
+- Minor changes to the Settings tab from the Settings GUI.
+
+Fixes:
+- "Only show while in game" would not work as it should.
+- Upon reaching the initial tabs limit (25), the GUI would fail to allocate more tabs.
+- When using an hotkey bound to a "Custom Button", an error would be logged even if the hotkey succeeded.
+//
+\\
 --1.12.BETA_6/BETA_7--
 BETA_7: Fix: Would fail to write to the changelogs file if the file was non-existent.
 
