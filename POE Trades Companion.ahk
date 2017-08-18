@@ -67,14 +67,14 @@ Start_Script() {
 	ProgramValues.Name 					:= "POE Trades Companion"
 	ProgramValues.Version 				:= "1.12.BETA_8"
 
-	ProgramValues.Updater_File 			:= "POE-TC-Updater.exe"
+	ProgramValues.Updater_File 			:= A_ScriptDir "\POE-TC-Updater.exe"
 	ProgramValues.Updater_Link 			:= "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/Updater_v2.exe"
 	ProgramValues.Updater_Link_Beta 	:= "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/dev/Updater_v2.exe"
 
 	ProgramValues.Version_Link 			:= "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/version.txt"
 	ProgramValues.Version_Link_Beta  	:= "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/dev/version.txt"
 
-	ProgramValues.NewVersion_File		:= "POE-TC-NewVersion.exe"
+	ProgramValues.NewVersion_File		:= A_ScriptDir "\POE-TC-NewVersion.exe"
 	ProgramValues.NewVersion_Link 		:= "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/POE Trades Companion.exe"
 	ProgramValues.NewVersion_Link_Beta	:= "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/dev/POE Trades Companion.exe"
 
@@ -108,6 +108,8 @@ Start_Script() {
 	ProgramSettings.Support_Message 	:= "@%buyerName% " ProgramValues.Name ": view-thread/1755148"
 
 	ProgramValues.PID 					:= DllCall("GetCurrentProcessId")
+
+	SetWorkingDir,% ProgramValues.Local_Folder
 
 ;	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	GroupAdd, POEGame, ahk_exe PathOfExile.exe
@@ -180,10 +182,10 @@ Start_Script() {
 	Enable_Hotkeys()
 	Logs_Append("START", localSettings)
 
-	if !(DebugValues.settings.no_online_check) {
-		Check_Update()
-		Get_Active_Trading_Leagues()
-	}
+	; if !(DebugValues.settings.no_online_check) {
+	; 	Check_Update()
+	; 	Get_Active_Trading_Leagues()
+	; }
 
 ;	Opening different GUIs
 	if (DebugValues.settings.open_stats)
@@ -194,8 +196,8 @@ Start_Script() {
 		Gui_About()
 
 	; Pre-rendering Trades-GUI
-	if !( DebugValues.settings.no_prerender)
-		Gui_Trades("CREATE")
+	; if !( DebugValues.settings.no_prerender)
+		; Gui_Trades("CREATE")
 
 	; Parse debug msgs
 	if (DebugValues.settings.use_chat_logs) {
@@ -310,6 +312,9 @@ Filter_Logs_Message(message) {
 			whispNameFull := Gui_Trades_RemoveGuildPrefix(whispNameFull)
 			whispName := whispNameFull.Name, whispGuild := whispNameFull.Guild
 			TradesGUI_Values.Last_Whisper := whispName
+
+			whispMsg := StrReplace(whispMsg, "`r", "")
+			whispMsg := StrReplace(whispMsg, "`n", "")
 
 ;			Tray notitication & Flashing
 			if !WinActive("ahk_pid " gamePID) {
@@ -690,6 +695,7 @@ Monitor_Game_Logs(mode="") {
 	}
 ;	error occured with logs file
 	else if ( !FileExist(logsFile) || (fileObj.pos > fileObj.length) || (fileObj.pos = -1) ) {
+		SetTimer,%A_ThisFunc%, Delete
 		Logs_Append("Monitor_Game_Logs_Break", {Pos:fileObj.pos, Length:fileObj.length})
 		Tray_Notifications_Show("An issue with the logs file occured!", "It could be one of the following reasons: "
 		. "`n- The file doesn't exist anymore."
@@ -697,6 +703,7 @@ Monitor_Game_Logs(mode="") {
 		. "`n- The file object used by the program was closed."
 		. "`n`nThe logs monitoring function will be restarting in 5 seconds.")
 		SetTimer, Restart_Monitor_Game_Logs, -5000
+		Return
 	}
 
 ;	set clever timer, based on when the latest trading whisper was received
@@ -7124,12 +7131,14 @@ Get_Text_Control_Size(txt, fontName, fontSize, maxWidth="") {
 /*		Create a control with the specified text to retrieve
  *		the space (width/height) it would normally take
 */
+	Gui, GetTextSize:Destroy
 	Gui, GetTextSize:Font, S%fontSize%,% fontName
 	if (maxWidth) 
 		Gui, GetTextSize:Add, Text,x0 y0 +Wrap w%maxWidth% hwndTxtHandler,% txt
 	else 
 		Gui, GetTextSize:Add, Text,x0 y0 hwndTxtHandler,% txt
 	coords := Get_Control_Coords("GetTextSize", TxtHandler)
+	; Gui, GetTextSize:Show, w500
 	Gui, GetTextSize:Destroy
 
 	return coords
@@ -7154,98 +7163,236 @@ Get_Text_Control_Size(txt, fontName, fontSize, maxWidth="") {
 */
 }
 
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+ *			TRAY NOTIFICATIONS														*
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+*/
+
+Tray_Notifications_Adjust(fromNum, creationOrder) {
+	global TrayNotifications_Handles
+
+	RegExMatch(fromNum, "\d", fromNum)
+
+	Loop, Parse, creationOrder,% ","
+	{
+		reverse := A_LoopField "," reverse
+	}
+
+	Loop, Parse, reverse,% "," 
+	{
+		if (A_LoopField) {
+			
+			if (gotem) {
+				
+				WinGetPos, , pY, , pH,% "ahk_id " TrayNotifications_Handles[previous]
+				WinGetPos, , tY, , tH,% "ahk_id " TrayNotifications_Handles[A_LoopField]
+				formula := (previous = fromNum)?(pY-(tH-pH)):(py-tH-10)
+				; msgbox Moving %A_Loopfield% to %previous% - %creationOrder% - %reverse%
+				WinMove,% "ahk_id " TrayNotifications_Handles[A_LoopField], , ,% formula
+			}
+			if (A_LoopField = fromNum)
+				gotEm := true
+			else {
+				newOrder .= A_Loopfield ","
+			}
+
+			previous := A_Loopfield
+		}
+	}
+
+	creationOrder := StrReplace(creationOrder, fromNum, "", "")
+	Loop, Parse, creationOrder,% ","
+	{
+		if (A_LoopField)
+			finalOrder .= A_LoopField ","
+	}
+
+	Return finalOrder
+}
+
 Tray_Notifications_Show(title, msg, params="") {
 /*		Show a notification.
  *		Look based on w10 traytip.
 */
 	static
-	global SkinAssets, ProgramSettings, TrayNotifications_Values
+	global SkinAssets, ProgramSettings, ProgramValues
+	global TrayNotifications_Handles
 
+;	Monitor infos
 	local MonitorCount, MonitorPrimary, MonitorWorkArea
 	local MonitorWorkAreaTop, MonitorWorkAreaBottom, MonitorWorkAreaLeft, MonitorWorkAreaRight
-
 	SysGet, MonitorCount, MonitorCount
 	SysGet, MonitorPrimary, MonitorPrimary
 	SysGet, MonitorWorkArea, MonitorWorkArea,% MonitorPrimary
 
-	Is_Update := params.Is_Update
-
-	guiWidthMax := 350, guiHeightMax := 150
+	; Calculating GUI size, based on content
+	titleWidthMax := 310, textWidthMax := 330
 	guiFontName := "Segoe UI", guiFontSize := "9", guiTitleFontSize := "10"
-	textSize := Get_Text_Control_Size(msg, guiFontName, guiFontSize, guiWidthMax)
+	titleSize := Get_Text_Control_Size(title, guiFontName, guiTitleFontSize, titleWidthMax)
+	textSize := Get_Text_Control_Size(msg, guiFontName, guiFontSize, textWidthMax)
 
-	guiWidth := (textSize.W > guiWidthMax)?(guiWidthMax):(textSize.W)
-	guiHeight := (textSize.H > guiHeightMax)?(guiHeightMax):(textSize.H)
 
-	; Fixing DPI size
+	; Declaring gui size
+	guiWidth 	:= 350
+	guiHeight 	:= (titleSize.H+5) + (textSize.H+20) ; 5=top margin, 20=title/msg margin
+	borderSize 	:= 1
+
+	; Fixing DPI Size
 	guiHeight := guiHeight * ProgramSettings.Screen_DPI
+	
+	; Get first avaialble notification to replace
+	index := 1
+	Loop 5 {
+		local winHandle := TrayNotifications_Handles[A_Index]
+		if WinExist("ahk_id " winHandle) {
+			index++
+		}
+		else Break
+	}
+	; Create a list of order of creation, as long as we didnt reach the max of 5 notifications
+	if !(index > 5) {
+		creationOrder .= index ","
+	}
+	; We reached the max. So we replace the oldest available notification.
+	else {
+		index := SubStr(creationOrder,1,1)
+		StringTrimLeft, creationOrder, creationOrder, 2
+		creationOrder .= index ","
+	}
+	; Make sure the list doesn't go beyond 10 chars (5 number and 5 comma)
+	len := StrLen(creationOrder)
+	if (len > 10) {
+		StringTrimRight, creationOrder, creationOrder,% len-10
+	}
 
-	guiHeight += 50, guiWidth += 20 ; Fitting size
-	borderSize := 1
+	; Parameters
 	fadeTimer := (params.Fade_Timer)?(params.Fade_Timer):(8000)
+	_label := (params.Is_Update)?("Gui_TrayNotification_OnLeftClick_Updater"):("Gui_TrayNotification_OnLeftClick")
 
-	showX := MonitorWorkAreaRight-guiWidth-10, showY := MonitorWorkAreaBottom-guiHeight-10
+
+	Gui, TrayNotification%index%:Destroy
+	Gui, TrayNotification%index%:New, +ToolWindow +AlwaysOnTop -Border +LastFound -SysMenu -Caption +LabelGui_TrayNotification_ +hwndhGuiTrayNotification%index%
+
+	if !(TrayNotifications_Handles)
+		TrayNotifications_Handles := {}
+	TrayNotifications_Handles[index] := hGuiTrayNotification%index%
+	
+
+	Gui, TrayNotification%index%:Margin, 0, 0
+	Gui, TrayNotification%index%:Color, 1f1f1f
+
+	Gui, TrayNotification%index%:Add, Progress, x0 y0 w%guiWidth% h%borderSize% Background484848 ; Top
+	Gui, TrayNotification%index%:Add, Progress, x0 y0 w%borderSize% h%guiHeight% Background484848 ; Left
+	Gui, TrayNotification%index%:Add, Progress,% "x" guiWidth-borderSize " y0" " w" borderSize " h" guiHeight " Background484848" ; Right
+	Gui, TrayNotification%index%:Add, Progress,% "x" 0 " y" guiHeight-borderSize " w" guiWidth " h" borderSize " Background484848" ; Bottom
+	Gui, TrayNotification%index%:Add, Text,% "x0 y0 w" guiWidth " h" guiHeight " BackgroundTrans g" _label,% ""
+
+	Gui, TrayNotification%index%:Font, S%guiTitleFontSize% Bold,% guiFontName
+	Gui, TrayNotification%index%:Add, Text,% "xm+35" " ym+9" " w" titleWidthMax " BackgroundTrans cFFFFFF",% title
+	Gui, TrayNotification%index%:Font, S%guiFontSize% Norm,% guiFontName
+	Gui, TrayNotification%index%:Add, Text,% "xm+10" " ym+35" " w" textWidthMax " BackgroundTrans ca5a5a5",% msg
+	Gui, TrayNotification%index%:Add, Picture, x5 y5 w24 h24 hwndhIcon,% SkinAssets.Misc_Icon
+
+	showX := MonitorWorkAreaRight-guiWidth-10
+	showY := MonitorWorkAreaBottom-guiHeight-10
 	showW := guiWidth, showH := guiHeight
+	Gui, TrayNotification%index%:Show,% "x" showX " y" showY " w" showW " h" showH " NoActivate"
 
-	Gui, TrayNotification:Destroy
-	Gui, TrayNotification:New, +ToolWindow +AlwaysOnTop -Border +LastFound -SysMenu -Caption +LabelGui_TrayNotification_
+	Loop 5 {
+		if (A_Index != index ) {
+			local winHandle := TrayNotifications_Handles[A_Index]
+			if WinExist("ahk_id " winHandle) {
+				WinGetPos, , _y, , _h, ahk_id %winHandle%
+				WinMove, ahk_id %winHandle%, , ,% _y-guiHeight-10
+			}
+		}
+	}
 
-	Gui, TrayNotification:Margin, 0, 0
-	Gui, TrayNotification:Color, 1f1f1f
+	Tray_Notifications_Fade(index, true)
+	SetTimer, Gui_TrayNotification_Fade_%index%, -%fadeTimer%
+	Return
 
-	Gui, TrayNotification:Add, Progress, x0 y0 w%guiWidth% h%borderSize% Background484848 ; Top
-	Gui, TrayNotification:Add, Progress, x0 y0 w%borderSize% h%guiHeight% Background484848 ; Left
-	Gui, TrayNotification:Add, Progress,% "x" guiWidth-borderSize " y0" " w" borderSize " h" guiHeight " Background484848" ; Right
-	Gui, TrayNotification:Add, Progress,% "x" 0 " y" guiHeight-borderSize " w" guiWidth " h" borderSize " Background484848" ; Bottom
-	Gui, TrayNotification:Add, Text,% "x0 y0 w" guiWidth " h" guiHeight " BackgroundTrans gGui_TrayNotification_OnLeftClick",% ""
-
-	Gui, TrayNotification:Add, Picture, x5 y5 w24 h24 hwndhIcon,% SkinAssets.Misc_Icon
-	Gui, TrayNotification:Font, S%guiTitleFontSize% Bold,% guiFontName
-	Gui, TrayNotification:Add, Text,% "xp+35" " yp+5" " w" guiWidth-20 " BackgroundTrans cFFFFFF gGui_TrayNotification_OnLeftClick",% title
-	Gui, TrayNotification:Font, S%guiFontSize% Norm,% guiFontName
-	Gui, TrayNotification:Add, Text,% "xp" " yp+25" " w" guiWidth-40 " BackgroundTrans ca5a5a5 gGui_TrayNotification_OnLeftClick",% msg
-	GuiControl, TrayNotification:Move,% hIcon,% "y" (guiHeight/2) - (24/2)
-
-	Gui, TrayNotification:+LastFound
-	WinSet, Transparent, 255
-	Gui, TrayNotification:Show,% "x" showX " y" showY " w" showW " h" showH " NoActivate"
-
-	TrayNotifications_Values := {"New":1} ; New notification, reset transparency from fade
-
-	SetTimer, Tray_Notifications_Fade, -%fadeTimer%
+	Gui_TrayNotification_Fade_1:
+		ret1 := Tray_Notifications_Fade(1)
+		if (ret1) {
+			SetTimer, %A_ThisLabel%, -50
+		}
+		else {
+			creationOrder := Tray_Notifications_Adjust(1, creationOrder)
+			Gui, TrayNotification1:Destroy
+		}
+	Return
+	Gui_TrayNotification_Fade_2:
+		ret2 := Tray_Notifications_Fade(2)
+		if (ret2) {
+			SetTimer, %A_ThisLabel%, -50
+		}
+		else {
+			creationOrder := Tray_Notifications_Adjust(2, creationOrder)
+			Gui, TrayNotification2:Destroy
+		}
+	Return
+	Gui_TrayNotification_Fade_3:
+		ret3 := Tray_Notifications_Fade(3)
+		if (ret3) {
+			SetTimer, %A_ThisLabel%, -50
+		}
+		else {
+			creationOrder := Tray_Notifications_Adjust(3, creationOrder)
+			Gui, TrayNotification3:Destroy
+		}
+	Return
+	Gui_TrayNotification_Fade_4:
+		ret4 := Tray_Notifications_Fade(4)
+		if (ret4) {
+			SetTimer, %A_ThisLabel%, -50
+		}
+		else {
+			creationOrder := Tray_Notifications_Adjust(4, creationOrder)
+			Gui, TrayNotification4:Destroy
+		}
+	Return
+	Gui_TrayNotification_Fade_5:
+		ret5 := Tray_Notifications_Fade(5)
+		if (ret5) {
+			SetTimer, %A_ThisLabel%, -50
+		}
+		else {
+			creationOrder := Tray_Notifications_Adjust(5, creationOrder)
+			Gui, TrayNotification5:Destroy
+		}
 	Return
 
 	Gui_TrayNotification_ContextMenu: ; Launched whenever the user right-clicks anywhere in the window except the title bar and menu bar.
-		Gui, TrayNotification:Destroy
+		creationOrder := Tray_Notifications_Adjust(A_Gui, creationOrder)
+		Gui, %A_GUI%:Destroy
 	Return
 
 	Gui_TrayNotification_OnLeftClick:
-		Gui, TrayNotification:Destroy
-		if (Is_Update) {
-			Download_Updater()
-		}
+		creationOrder := Tray_Notifications_Adjust(A_Gui, creationOrder)
+		Gui, %A_Gui%:Destroy
+	Return
+
+	Gui_TrayNotification_OnLeftClick_Updater:
+		creationOrder := Tray_Notifications_Adjust(A_Gui, creationOrder)
+		Gui, %A_Gui%:Destroy
+		Download_Updater()
 	Return
 }
 
-Tray_Notifications_Fade() {
-	global TrayNotifications_Values
-	static transparency
+Tray_Notifications_Fade(index="", start=false) {
+	static
 
-	if (TrayNotifications_Values.New) { ; Reset transparency to 255, in case old notification did not full fade yet
-		TrayNotifications_Values.New := false
-		transparency := 255
+	if (start) {
+		transparency%index% := 240 ; Set initial transparency
+		; Return
 	}
-	transparency := (!transparency)?(255):(transparency)
 
-	transparency := (0 > transparency)?(0):(transparency-10)
-	Gui, TrayNotification:+LastFound
-	WinSet, Transparent,% transparency
-	if (!transparency) {
-		Gui, TrayNotification:Destroy
-		SetTimer,% A_ThisFunc, Delete
-	}
-	else
-		SetTimer,% A_ThisFunc, -50
+	transparency%index% := (0 > transparency%index%)?(0):(transparency%index%-15)
+	
+	Gui, TrayNotification%index%:+LastFound
+	WinSet, Transparent,% transparency%index%
+	return transparency%index%
 }
 
 Download_Updater() {
@@ -7264,7 +7411,7 @@ Download_Updater() {
 	if (!ErrorLevel) {
 		Run,% ProgramValues.Updater_File 
 		. " /Name=""" ProgramValues.Name  """"
-		. " /File_Name=""" ProgramValues.Name ".exe" """"
+		. " /File_Name=""" A_ScriptDir "\ProgramValues.Name ".exe" """"
 		. " /Local_Folder=""" ProgramValues.Local_Folder """"
 		. " /Ini_File=""" ProgramValues.Ini_File """"
 		. " /NewVersion_Link=""" newVersionLink """"
