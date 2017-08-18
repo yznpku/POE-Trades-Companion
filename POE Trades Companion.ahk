@@ -110,7 +110,6 @@ Start_Script() {
 	ProgramValues.PID 					:= DllCall("GetCurrentProcessId")
 
 ;	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
 	GroupAdd, POEGame, ahk_exe PathOfExile.exe
 	GroupAdd, POEGame, ahk_exe PathOfExile_x64.exe
 	GroupAdd, POEGame, ahk_exe PathOfExileSteam.exe
@@ -181,8 +180,10 @@ Start_Script() {
 	Enable_Hotkeys()
 	Logs_Append("START", localSettings)
 
-	Check_Update()
-	Get_Active_Trading_Leagues()
+	if !(DebugValues.settings.no_online_check) {
+		Check_Update()
+		Get_Active_Trading_Leagues()
+	}
 
 ;	Opening different GUIs
 	if (DebugValues.settings.open_stats)
@@ -4797,10 +4798,10 @@ Update_Local_Settings() {
 
 /*	Opening changelogs, after updating
 */
-	IniRead, openChangelogs,% iniFilePath,PROGRAM,Show_Changelogs, 0
+	IniRead, openChangelogs,% iniFile,PROGRAM,Show_Changelogs, 0
 	if ( openChangelogs = 1 ) {
 		Gui_About()
-		IniWrite, 0,% iniFilePath,PROGRAM,Show_Changelogs
+		IniWrite, 0,% iniFile,PROGRAM,Show_Changelogs
 	}
 }
 
@@ -4894,7 +4895,7 @@ Set_Local_Settings(){
 			keyName := element
 			value := %sectionName%_DefaultValues[key]
 			IniRead, var,% iniFilePath,% sectionName,% keyName
-			if ( var = "ERROR" || var = "" || var = "0.00" ) {
+			if ( var = "ERROR" || var = "0.00" ) {
 				IniWrite,% value,% iniFilePath,% sectionName,% keyName
 			}
 		}
@@ -6156,6 +6157,7 @@ Send_InGame_Message(allMessages, tabInfos="", specialEvent="") {
 	messageRaw1 := allMessages[1], messageRaw2 := allMessages[2], messageRaw3 := allMessages[3]
 	message1 := allMessages[1], message2 := allMessages[2], message3 := allMessages[3]
 
+;	Retrieve the virtual key id for chat opening
 	chatVK := GameSettings.Chat_VK
 	if (!chatVK) {
 		MsgBox, 4096,% programName " - Operation Cancelled.",% "Could not detect the chat key!"
@@ -6166,32 +6168,43 @@ Send_InGame_Message(allMessages, tabInfos="", specialEvent="") {
 		Return 1
 	}
 
-	Loop 3 { ; Include the trade variable content into the variables.
+;	Include the trade variables content
+	Loop 3 {
 		StringReplace, message%A_Index%, message%A_Index%, `%buyerName`%, %buyerName%, 1
 		StringReplace, message%A_Index%, message%A_Index%, `%itemName`%, %itemName%, 1
 		StringReplace, message%A_Index%, message%A_Index%, `%itemPrice`%, %itemPrice%, 1
 		StringReplace, message%A_Index%, message%A_Index%, `%lastWhisper`%,% TradesGUI_Values.Last_Whisper, 1
 	}
 
+
+;	Hotkey press
 	if ( specialEvent.isHotkey ) {
 		messageToSend := message1
+		; Advanced hotkey, send inputs as specified
 		if ( specialEvent.isAdvanced ) {
 			SendInput,%messageToSend%
 		}
+		; Regular hotkey, open chat and send input as raw
 		else {
-			firstChar := SubStr(messageToSend, 1, 1) ; Returns abc
+			clipBackup := ClipboardAll
+			firstChar := SubStr(messageToSend, 1, 1) ; Get first char, to compare if its a special chat command
 
-			SendInput,{VK%chatVK%}
+			SendInput,{VK%chatVK%} ; Open the chat
 			Sleep 10
+			Clipboard := messageToSend
+			tooltip % clipboard " `n " messageToSend
 
-			if firstChar not in /,`%,&,#,@
-				SendInput, /{BackSpace} ; Send in local chat
-			SendInput,{Raw}%messageToSend%
-			SendInput,{Enter}
+			if firstChar not in /,`%,&,#,@  ; Not a command. We send / then remove it to make sure chat is empty
+				SendInput, {/}{BackSpace}
+			SendEvent,^{v}{Enter}
+			Sleep 10
+			Clipboard := clipBackup
 		}
 		Return
 	}
+;	Button press
 	else {
+		; if PID is not POE, need to replace it
 		if !WinExist("ahk_pid " gamePID " ahk_group POEGame") {
 			PIDArray := Get_Matching_Windows_Infos("PID")
 			handlersArray := Get_Matching_Windows_Infos("ID")
@@ -6206,16 +6219,19 @@ Send_InGame_Message(allMessages, tabInfos="", specialEvent="") {
 				gamePID := newPID
 			}
 		}
+		; Activate game window
 		titleMatchMode := A_TitleMatchMode
-		SetTitleMatchMode, RegEx
+		SetTitleMatchMode, RegEx ; RegEx = Fix some case where specifying only the pid does not work
 		WinActivate,[a-zA-Z0-9_] ahk_pid %gamePID%
 		WinWaitActive,[a-zA-Z0-9_] ahk_pid %gamePID%, ,5
 		if (!ErrorLevel) {
 			Loop 3 {
 				messageToSend := message%A_Index%
-				if ( !messagetoSend )
+				if ( !messagetoSend ) {
 					Break
+				}
 				else {
+					clipBackup := ClipboardAll ; Backup clipboard
 					Sleep 10
 					if chatVK in 0x1,0x2,0x4,0x5,0x6,0x9C,0x9D,0x9E,0x9F ; Mouse buttons
 					{
@@ -6224,23 +6240,24 @@ Send_InGame_Message(allMessages, tabInfos="", specialEvent="") {
 						ControlSend, ,{VK%keyVK%}, [a-zA-Z0-9_] ahk_pid %gamePID% ; Mouse buttons tend to activate the window under the cursor.
 																				  ; Therefore, we need to send the key to the actual game window.
   						SetKeyDelay,% keyDelay,% keyDuration
-						Sleep 10
 					}
 					else
 						SendInput,{VK%chatVK%}
+					Sleep 10
 
-					firstChar := SubStr(messageToSend, 1, 1) ; Returns abc
-					if firstChar not in /,`%,&,#,@
-						SendInput,/{BackSpace}
-					SendInput,{Raw}%messageToSend%
+					firstChar := SubStr(messageToSend, 1, 1) ; Get first char, to compare if its a special chat command
+					if firstChar not in /,`%,&,#,@ ; Not a command. We send / then remove it to make sure chat is empty
+						SendInput,{/}{BackSpace}
+					Sleep 10
+					Clipboard := messageToSend ; Clipboard msg and send it
+					SendEvent,^{v}
 					if !( specialEvent.doNotSend )
 						SendInput,{Enter}
 					Sleep 10
+					Clipboard := clipBackup ; Revert clipboard
 				}
 			}
 		}
-
-		BlockInput, Off
 	}
 }
 
