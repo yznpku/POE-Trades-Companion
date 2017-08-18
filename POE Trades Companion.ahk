@@ -1895,7 +1895,7 @@ Gui_Trades_Do_Action_Func(CtrlHwnd, GuiEvent, EventInfo) {
 		Return
 	}
 
-	if ( TradesGUI_Values.Active_Tab = 0 ) { ; User most likely used an hotkey while tabs count was 0
+	if ( !TradesGUI_Values.Active_Tab || !TradesGUI_Values.Tabs_Count ) { ; User most likely used an hotkey while tabs count was 0
 		Return
 	}
 
@@ -1918,7 +1918,7 @@ Gui_Trades_Do_Action_Func(CtrlHwnd, GuiEvent, EventInfo) {
 	messages := Object()
 	tabInfos := Gui_Trades_Get_Trades_Infos(TradesGUI_Values.Active_Tab)
 	if (!tabInfos.Buyer && btnAction != "Close_Tab") {
-		Tray_Notifications_Show(ProgramValues.Name, "No buyer found for tab """ TradesGUI_Values.Active_Tab """`nOperation cancelled. Please report this issue.")
+		Tray_Notifications_Show(ProgramValues.Name, "No buyer found for tab """ TradesGUI_Values.Active_Tab " - Count:""" TradesGUI_Values.Tabs_Count """`nOperation cancelled. Please report this issue.")
 		Return
 	}
 
@@ -6196,13 +6196,12 @@ Send_InGame_Message(allMessages, tabInfos="", specialEvent="") {
 			clipBackup := ClipboardAll
 			firstChar := SubStr(messageToSend, 1, 1) ; Get first char, to compare if its a special chat command
 
-			SendInput,{VK%chatVK%} ; Open the chat
-			Sleep 10
 			Clipboard := messageToSend
-			tooltip % clipboard " `n " messageToSend
+			Sleep 10
+			SendEvent,{VK%chatVK%}
 
 			if firstChar not in /,`%,&,#,@  ; Not a command. We send / then remove it to make sure chat is empty
-				SendInput, {/}{BackSpace}
+				SendEvent, {/}{BackSpace}
 			SendEvent,^{v}{Enter}
 			Sleep 10
 			Clipboard := clipBackup
