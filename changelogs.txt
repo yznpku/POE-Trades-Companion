@@ -1,4 +1,22 @@
 \\
+--1.12.BETA_9--
+Added:
+- Send Message + Minimize action. This allows you to send a message, then put the GUI into its minimized state.
+
+Improvements:
+- Tray notifications have been improved. Up to 5 notifications can appear at the same time.
+- Sending message should now be more reliable, as it makes use of the clipboard.
+This also fixes an issue where people could get kicked out of the game, due to the message being sent too fast after opening the chat.
+
+Fixes:
+- Emptying a message slot would revert its content back to default on next launch.
+- On start, until a trading whisper would be received, a warning would be shown when trying to use an hotkey linked to a button.
+- A file using some weird characters could appear in the folder you are running the application from.
+If you happen to have this file, it can safely be deleted.
+The origin of this file was due to an invalid path to the local .ini file, which would result in the location defaulting to the tool's folder.
+Also, if in the future this issue re-appear, the file will be placed in the application's local folder instead (\My Documents\Autohotkey\POE Trades Companion\), in order to avoid any trouble.
+//
+\\
 --1.12.BETA_8--
 Added:
 - You can now choose to play a sound when a buyer joins your area.
