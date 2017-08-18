@@ -1951,6 +1951,12 @@ Gui_Trades_Do_Action_Func(CtrlHwnd, GuiEvent, EventInfo) {
 		}
 		Gui_Trades_Close_Tab()
 	}
+	if btnAction contains Minimize
+	{
+		if (RegExMatch(btnAction,"Send_Message"))
+			if !(TradesGUI_Values.Is_Minimized)
+				Gui_Trades_Minimize_Func("MIN")
+	}
 	else if btnAction in Clipboard_Item,Clipboard,Whisper,Trade,Invite,Kick
 	{
 		if (btnAction="Clipboard" || btnAction="Clipboard_Item") {
@@ -2818,7 +2824,7 @@ Gui_Settings() {
 			Gui, Add, Hotkey, xp+50 yp-3 vTradesHK%index% hwndTradesHK%index%Handler Hidden,
 
 			Gui, Add, Text,% "xp-270" . " yp+33" . " hwndTradesAction" index "TextHandler Hidden",Action:
-			Gui, Add, DropDownList, xp+50 yp-3 w160 vTradesAction%index% hwndTradesAction%index%Handler gGui_Settings_Custom_Label Hidden,% "Clipboard Item|Send Message|Send Message + Close Tab|Write Message"
+			Gui, Add, DropDownList, xp+50 yp-3 w160 vTradesAction%index% hwndTradesAction%index%Handler gGui_Settings_Custom_Label Hidden,% "Clipboard Item|Send Message|Send Message + Close Tab|Send Message + Minimize|Write Message"
 			Gui, Add, CheckBox,xp+170 yp vTradesMarkCompleted%index% hwndTradesMarkCompleted%index%Handler Center Hidden,Save the trade infos locally?`n(for personnal statistics purposes)
 
 			Gui, Add, Edit,% "x" guiXWorkarea+10 . " yp+30 w50" . " hwndTradesMsgEditID" index "Handler" . " ReadOnly Limit1 Hidden",1|2|3
@@ -3782,7 +3788,7 @@ Gui_Settings_Get_Settings_Arrays() {
 				 :("[Undefined]")
 
 		btnAction := (index=1)?("Clipboard Item")
-				  :(index=2)?("Send Message")
+				  :(index=2)?("Send Message + Minimize")
 				  :(index=3)?("Send Message")
 				  :(index=4)?("Send Message + Close Tab")
 				  :(index=5)?("Send Message + Close Tab")
@@ -4043,6 +4049,7 @@ Get_Control_ToolTip(controlName) {
 	. "`nClipboard Item:" A_Tab . A_Tab "Put the current tab's item into the clipboard."
 	. "`nSend Message:" A_Tab . A_Tab "Send all the messages you have set for this button."
 	. "`nClose Tab:" A_Tab . A_Tab "Close the currently active tab."
+	. "`nMinimize:" A_Tab A_TAb "Put the GUI into its minimized state."
 	. "`nWrite Message:" A_Tab . A_Tab "Write a single message in chat, without sending it."
 	TradesMarkCompleted_TT := "Store the trade's infos in a local file."
 	. "`nCan only be used with Send Message + Close Tab."
@@ -5093,13 +5100,13 @@ Hotkeys_Handler(thisLabel) {
 		controlDelay := A_ControlDelay
 		SetControlDelay -1
 		if ( hotkeyType = "TradesGUI_Custom" ) {
-			ControlClick,,% "ahk_id " TradesGUI_Controls["Button_Custom_" hotkeyID],,,, NA
+			ControlClick,,% "ahk_id " TradesGUI_Values.Handler " ahk_id " TradesGUI_Controls["Button_Custom_" hotkeyID],,,, NA
 			if (ErrorLevel) {
 				Logs_Append(A_ThisFunc, {HK:A_ThisHotkey, What_Do:"Click Button: """ TradesGUI_Controls["Button_Custom_" hotkeyID] """"})
 			}
 		}
 		else if ( hotkeyType = "TradesGUI_Unicode" ) {
-			ControlClick,,% "ahk_id " TradesGUI_Controls["Button_Unicode_" hotkeyID]
+			ControlClick,,% "ahk_id " TradesGUI_Values.Handler " ahk_id " TradesGUI_Controls["Button_Unicode_" hotkeyID]
 			if (ErrorLevel) {
 				Logs_Append(A_ThisFunc, {HK:A_ThisHotkey, What_Do:"Click Button: """ TradesGUI_Controls["Button_Unicode_" hotkeyID] """"})
 			}
