@@ -5835,7 +5835,8 @@ Get_Active_Trading_Leagues() {
 
 	apiLink 			:= "http://api.pathofexile.com/leagues?type=main&compact=1"
 	excludedWords 		:= "SSF,Solo"
-	activeLeagues 		:= "Standard,Hardcore,Beta Standard,Beta Hardcore,Harbinger,Hardcore Harbinger" ; In case API is down or does not show them
+	activeLeagues 		:= "Standard,Hardcore,Beta Standard,Beta Hardcore,Harbinger,Hardcore Harbinger" 
+	tradingLeagues 		:= ["Standard","Hardcore","Beta Standard","Beta Hardcore","Harbinger","Hardcore Harbinger"] ; In case API is down or does not show them
 
 	attempts++
 	timeOuts := (attempts = 1)?(10000) ; 10s
@@ -5856,7 +5857,7 @@ Get_Active_Trading_Leagues() {
 		WinHttpReq.WaitForResponse(10) ; 10 seconds
 		leaguesJSON := WinHttpReq.ResponseText
 	}
-	Catch e {
+	Catch e { ; Cannot reach. Use internal leagues instead.
 ;		Error logging
 		floatFormat := A_FormatFloat ; Backup of state
 		SetFormat,Float,0 ; remove decimal
@@ -5868,6 +5869,8 @@ Get_Active_Trading_Leagues() {
 		SetTimer,% A_ThisFunc, -%nextAttempt%
 
 		SetFormat,Float,%floatFormat% ; Restore state
+
+		Trading_Leagues := tradingLeagues
 		Return
 	}
 	if (attempts > 1) {
@@ -6244,8 +6247,20 @@ Send_InGame_Message(allMessages, tabInfos="", specialEvent="") {
 					Break
 				}
 				else {
-					clipBackup := ClipboardAll ; Backup clipboard
+					if (A_Index > 1)
+						Sleep 1
+
+					; Backup clip, make it empty for using of ClipWait
+					clipBackup := ClipboardAll
+					Clipboard := 
+					Sleep 1
+
+					; Set msg as new clipboard
+					Clipboard := messageToSend
+					ClipWait, 2
 					Sleep 10
+
+					; Opening the chat window
 					if chatVK in 0x1,0x2,0x4,0x5,0x6,0x9C,0x9D,0x9E,0x9F ; Mouse buttons
 					{
 						keyDelay := A_KeyDelay, keyDuration := A_KeyDuration
@@ -6255,19 +6270,20 @@ Send_InGame_Message(allMessages, tabInfos="", specialEvent="") {
   						SetKeyDelay,% keyDelay,% keyDuration
 					}
 					else
-						SendInput,{VK%chatVK%}
+						SendEvent,{VK%chatVK%}
 					Sleep 10
 
+					; Sending the message
 					firstChar := SubStr(messageToSend, 1, 1) ; Get first char, to compare if its a special chat command
 					if firstChar not in /,`%,&,#,@ ; Not a command. We send / then remove it to make sure chat is empty
-						SendInput,{/}{BackSpace}
-					Sleep 10
-					Clipboard := messageToSend ; Clipboard msg and send it
+						SendEvent,{/}{BackSpace}
 					SendEvent,^{v}
 					if !( specialEvent.doNotSend )
-						SendInput,{Enter}
-					Sleep 10
-					Clipboard := clipBackup ; Revert clipboard
+						SendEvent,{Enter}
+
+					; Reverting clipboard
+					Sleep 1 ; Prevent rare issue where setting the clipboard value too close to a Send will send that value instead of the current value. Increase this Sleep when using SendInput
+					Clipboard := clipBackup
 				}
 			}
 		}
