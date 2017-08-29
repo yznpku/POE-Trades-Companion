@@ -1897,6 +1897,8 @@ Gui_Trades_Show_Tab_Content(showTabID="") {
 Gui_Trades_Do_Action_Func(CtrlHwnd, GuiEvent, EventInfo) {
 	global TradesGUI_Values, ProgramSettings, TradesGUI_Controls, ProgramValues
 
+	Thread, NoTimers
+
 	if ( TradesGUI_Values.Cancel_Action ) {
 		TradesGUI_Values.Cancel_Action := 0
 		Return
@@ -6174,6 +6176,8 @@ Send_InGame_Message(allMessages, tabInfos="", specialEvent="") {
 	messageRaw1 := allMessages[1], messageRaw2 := allMessages[2], messageRaw3 := allMessages[3]
 	message1 := allMessages[1], message2 := allMessages[2], message3 := allMessages[3]
 
+	Thread, NoTimers
+
 ;	Retrieve the virtual key id for chat opening
 	chatVK := GameSettings.Chat_VK
 	if (!chatVK) {
@@ -6193,7 +6197,6 @@ Send_InGame_Message(allMessages, tabInfos="", specialEvent="") {
 		StringReplace, message%A_Index%, message%A_Index%, `%lastWhisper`%,% TradesGUI_Values.Last_Whisper, 1
 	}
 
-
 ;	Hotkey press
 	if ( specialEvent.isHotkey ) {
 		messageToSend := message1
@@ -6203,16 +6206,31 @@ Send_InGame_Message(allMessages, tabInfos="", specialEvent="") {
 		}
 		; Regular hotkey, open chat and send input as raw
 		else {
-			clipBackup := ClipboardAll
 			firstChar := SubStr(messageToSend, 1, 1) ; Get first char, to compare if its a special chat command
 
-			Clipboard := messageToSend
+			; Clip backup
+			clipBackup := ClipboardAll
+			Clipboard :=
 			Sleep 10
+
+			; Set msg as new clipboard
+			Clipboard := messageToSend
+			ClipWait, 2, 1
+			Sleep 1
+
 			SendEvent,{VK%chatVK%}
 
 			if firstChar not in /,`%,&,#,@  ; Not a command. We send / then remove it to make sure chat is empty
 				SendEvent, {/}{BackSpace}
-			SendEvent,^{v}{Enter}
+
+			; Pasting the message, and send
+			SendEvent,{Ctrl Down} ; Separating the inputs fixes an issue where ^v could fail (rarely, but stil happened)
+			Sleep 10
+			SendEvent,{v}
+			Sleep 10
+			SendEvent,{Ctrl Up}
+			SendEvent,{Enter}
+
 			Sleep 10
 			Clipboard := clipBackup
 		}
@@ -6241,24 +6259,23 @@ Send_InGame_Message(allMessages, tabInfos="", specialEvent="") {
 		WinActivate,[a-zA-Z0-9_] ahk_pid %gamePID%
 		WinWaitActive,[a-zA-Z0-9_] ahk_pid %gamePID%, ,5
 		if (!ErrorLevel) {
+			; Backup clipboard
+			clipBackup := ClipboardAll
+			Clipboard :=
+			Sleep 10
+
 			Loop 3 {
 				messageToSend := message%A_Index%
 				if ( !messagetoSend ) {
 					Break
 				}
 				else {
-					if (A_Index > 1)
-						Sleep 1
-
-					; Backup clip, make it empty for using of ClipWait
-					clipBackup := ClipboardAll
-					Clipboard := 
-					Sleep 1
+					firstChar := SubStr(messageToSend, 1, 1) ; Get first char, to compare if its a special chat command
 
 					; Set msg as new clipboard
 					Clipboard := messageToSend
-					ClipWait, 2
-					Sleep 10
+					ClipWait, 2, 1
+					Sleep 1
 
 					; Opening the chat window
 					if chatVK in 0x1,0x2,0x4,0x5,0x6,0x9C,0x9D,0x9E,0x9F ; Mouse buttons
@@ -6271,21 +6288,24 @@ Send_InGame_Message(allMessages, tabInfos="", specialEvent="") {
 					}
 					else
 						SendEvent,{VK%chatVK%}
-					Sleep 10
 
-					; Sending the message
-					firstChar := SubStr(messageToSend, 1, 1) ; Get first char, to compare if its a special chat command
+					; Clearing chat
 					if firstChar not in /,`%,&,#,@ ; Not a command. We send / then remove it to make sure chat is empty
 						SendEvent,{/}{BackSpace}
-					SendEvent,^{v}
+
+					; Pasting the message, and send
+					SendEvent,{Ctrl Down} ; Separating the inputs fixes an issue where ^v could fail (rarely, but stil happened)
+					Sleep 10
+					SendEvent,{v}
+					Sleep 10
+					SendEvent,{Ctrl Up}
 					if !( specialEvent.doNotSend )
 						SendEvent,{Enter}
-
-					; Reverting clipboard
-					Sleep 1 ; Prevent rare issue where setting the clipboard value too close to a Send will send that value instead of the current value. Increase this Sleep when using SendInput
-					Clipboard := clipBackup
 				}
 			}
+			; Restore clipboard
+			Sleep 10
+			Clipboard := clipBackup
 		}
 	}
 }
