@@ -6705,6 +6705,8 @@ Create_Tray_Menu() {
 		Menu, Tray, NoIcon
 		Menu, Tray, Icon
 	}
+	if ( !A_IsCompiled && FileExist(A_ScriptDir "\icon.ico") )
+		Menu, Tray, Icon,% A_ScriptDir "\icon.ico"
 	Return
 
 	Tray_Delete_Preferences:
