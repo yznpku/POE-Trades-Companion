@@ -837,6 +837,14 @@ Gui_Trades(mode="", tradeInfos="") {
 				              			, [0, SkinAssets.Close_Tab_Hover, "", colorButtonHover, "", pngTransColor]
 				    	      			, [0, SkinAssets.Close_Tab_Press, "", colorButtonPress, "", pngTransColor] ]
 
+		IBStyle_Minimize 			:=	[ [0, SkinAssets.Minimize_Normal, "", colorButtonNormal, "", pngTransColor]
+				              			, [0, SkinAssets.Minimize_Hover, "", colorButtonHover, "", pngTransColor]
+				    	      			, [0, SkinAssets.Minimize_Press, "", colorButtonPress, "", pngTransColor] ]
+
+		IBStyle_Maximize 			:=	[ [0, SkinAssets.Maximize_Normal, "", colorButtonNormal, "", pngTransColor]
+				              			, [0, SkinAssets.Maximize_Hover, "", colorButtonHover, "", pngTransColor]
+				    	      			, [0, SkinAssets.Maximize_Press, "", colorButtonPress, "", pngTransColor] ]
+
 		; Add Tab Styles to ProgramValues for later use
 		ProgramValues.IBStyle_Tab := IBStyle_Tab
 		ProgramValues.IBStyle_Tab_Whisper := IBStyle_Tab_Whisper
@@ -878,11 +886,6 @@ Gui_Trades(mode="", tradeInfos="") {
 		titleTextHeight := txtCtrlSize.H
 		txtCtrlSize := ""
 
-;		Minimize text size
-		txtCtrlSize := Get_Text_Control_Size("MINIMIZE", fontName, fontSize)
-		minimizeTextWidth := txtCtrlSize.W
-		txtCtrlSize := ""
-
 		Gui, Font,S%fontSize% Q%fontQual%,% fontName
 		Gui, Add, Tab2, x0 y0 w0 h0 -Wrap vTabCtrl hWndhTabCtrl,% ""
 		TradesGUI_Controls["Tab"] := hTabCtrl
@@ -897,11 +900,19 @@ Gui_Trades(mode="", tradeInfos="") {
 		Tile_Picture("Trades", hBackground, guiWidth, guiHeight) ; Fill the background
 		Gui, Add, Picture,% "x0 y0 w" guiWidth-borderSize " h" 30*scaleMult " BackgroundTrans Section",% SkinAssets.Misc_Header
 		Gui, Add, Picture,% "x" borderSize+(2*scaleMult) " y" borderSize+(2*scaleMult) " w" 24*scaleMult " h" 24*scaleMult " +BackgroundTrans",% SkinAssets.Misc_Icon
-		Gui, Add, Text,% "x" borderSize+(30*scaleMult) . " y" borderSize . " w" guiWidth-(borderSize+(30*scaleMult))-(minimizeTextWidth*scaleMult)-(5*scaleMult) " h" (30-(2*scaleMult))*scaleMult " hWndhHeaderTitle gGui_Trades_Move c" colorTitleInactive . " BackgroundTrans +0x200",% ProgramValues.Name " - Queued Trades: 0"
-		Gui, Add, Text,% "x" guiWidth-(minimizeTextWidth*scaleMult)-(5*scaleMult) . " yp" . " w" (minimizeTextWidth+5)*scaleMult " h" (30-(2*scaleMult))*scaleMult " hWndhHeaderMinimize gGui_Trades_Minimize c" colorTitleInactive . " BackgroundTrans +0x200",% "MINIMIZE"
+
+		Gui, Add, Button,% "x" guiWidth-(20*scaleMult)-borderSize-4 " y" borderSize+4 " w20 h20 gGui_Trades_Minimize hwndhHeaderMinimize",% ""
+		if !ImageButton.Create(hHeaderMinimize, IBStyle_Minimize*)
+			MsgBox, 0, ImageButton Error Minimize, % ImageButton.LastError
+		Gui, Add, Button,% "x" guiWidth-(20*scaleMult)-borderSize-4 " y" borderSize+4 " w20 h20 gGui_Trades_Minimize hwndhHeaderMaximize",% ""
+		if !ImageButton.Create(hHeaderMaximize, IBStyle_Maximize*)
+			MsgBox, 0, ImageButton Error Maximize, % ImageButton.LastError
+
+		Gui, Add, Text,% "x" borderSize+(24*scaleMult) . " y" borderSize . " w" guiWidth-(borderSize+(30*scaleMult))-(borderSize-4+(20*scaleMult)) " h" (30-(2*scaleMult))*scaleMult " hWndhHeaderTitle gGui_Trades_Move c" colorTitleInactive . " BackgroundTrans +0x200 Center",% ProgramValues.Name
 
 		TradesGUI_Controls["Header_Title"]		:= hHeaderTitle
 		TradesGUI_Controls["Header_Minimize"]	:= hHeaderMinimize
+		TradesGUI_Controls["Header_Maximize"]	:= hHeaderMaximize
 ; - - - - - Borders
 		Gui, Tab
 		Gui, Add, Progress,% "x" 0 . " y" 0 . " w" guiWidth . " h" borderSize . " hWndhBorderTop Background" colorBorder ; Top
@@ -1204,14 +1215,14 @@ Gui_Trades(mode="", tradeInfos="") {
 			showOrHide := "Show"
 			GuiControl, Trades:Hide,% ErrorMsgTextHandler
 			GuiControl, Trades: +c%colorTitleActive%,% TradesGUI_Controls.Header_Title
-			GuiControl, Trades: +c%colorTitleActive%,% TradesGUI_Controls.Header_Minimize
+			; GuiControl, Trades: +c%colorTitleActive%,% TradesGUI_Controls.Header_Minimize
 		}
 		else {
 			showOrHide := "Hide"
 			GuiControl, Trades:,% ErrorMsgTextHandler,% noTradeMsg
 			GuiControl, Trades:Show,% ErrorMsgTextHandler
 			GuiControl, Trades: +c%colorTitleInactive%,% TradesGUI_Controls.Header_Title
-			GuiControl, Trades: +c%colorTitleInactive%,% TradesGUI_Controls.Header_Minimize
+			; GuiControl, Trades: +c%colorTitleInactive%,% TradesGUI_Controls.Header_Minimize
 			GuiControl, Trades:ChooseString,% TradesGUI_Controls["Tab"],% "No Trades On Queue"
 		}
 
@@ -1223,7 +1234,8 @@ Gui_Trades(mode="", tradeInfos="") {
 										   ; After testings, it creates another issue where it sets the transparency to the game's window
 										   ; It seems that activating another window prior to applying the transparency allows us to use the handler.
 										   ; Using +LastFound and WinSet without any specified window seems to be the most reliable way to detect the GUI handler.
-		GuiControl, Trades:Text,% TradesGUI_Controls["Header_Title"],% ProgramValues.Name " - Queued Trades: " tabsCount ; Update the title
+		local titleText := (tabsCount)?(ProgramValues.Name " - Queued Trades: " tabsCount):(ProgramValues.Name)
+		GuiControl, Trades:Text,% TradesGUI_Controls["Header_Title"],% titleText ; Update the title
 
 ; - - - - - Hide or show controls, based on tabs count
 		Loop 9 {
@@ -1297,7 +1309,7 @@ Gui_Trades(mode="", tradeInfos="") {
 		showX := (IsNum(showX))?(showX):(showXDefault) ; Prevent unassigned or incorrect value
 		showY := (IsNum(showY))?(showY):(showYDefault) ; Prevent unassigned or incorrect value
 		SystemParametersInfo(False)
-		Gui, Trades:Show,% "NoActivate w" showWidth " h" showHeight " x" showX " y" showY,% ProgramValues.Name " - Queued Trades"
+		Gui, Trades:Show,% "NoActivate w" showWidth " h" showHeight " x" showX " y" showY
 		GuiControl, Trades:ChooseString,% TradesGUI_Controls["Tab"],% "|No Trades On Queue"
 		if (ProgramSettings.Trades_Auto_Minimize)
 			Gui_Trades_Minimize_Func("MIN", 1)
@@ -1359,6 +1371,7 @@ Gui_Trades(mode="", tradeInfos="") {
 		}
 		KeyWait, LButton, Up
 		Gui_Trades_Save_Position()
+		Gui_Trades_RemoveButtonFocus()
 	Return 
 
 	Gui_Trades_Size:
@@ -1591,7 +1604,7 @@ Trades_GUI_Exists() {
 }
 
 Gui_Trades_Minimize_Func(state="", skipAnimation="") {
-	global TradesGUI_Values
+	global TradesGUI_Values, TradesGUI_Controls
 
 	detectHiddenWin := A_DetectHiddenWindows
 	DetectHiddenWindows, On
@@ -1617,8 +1630,24 @@ Gui_Trades_Minimize_Func(state="", skipAnimation="") {
 		TradesGUI_Values.Is_Minimized := !TradesGUI_Values.Is_Minimized
 		SetTimer, Gui_Trades_Minimize_Animation, -10
 	}
-	sleep 10
+
+	if (TradesGUI_Values.Is_Minimized) {
+		GuiControl,Trades:Show,% TradesGUI_Controls["Header_Maximize"]
+		GuiControl,Trades:Hide,% TradesGUI_Controls["Header_Minimize"]
+	}
+	else {
+		GuiControl,Trades:Show,% TradesGUI_Controls["Header_Minimize"]
+		GuiControl,Trades:Hide,% TradesGUI_Controls["Header_Maximize"]		
+	}
+	Gui_Trades_RemoveButtonFocus()
+	
+	Sleep 10
 	DetectHiddenWindows, %detectHiddenWin%
+}
+
+Gui_Trades_RemoveButtonFocus() {
+	global TradesGUI_Values
+	ControlFocus,,% "ahk_id " TradesGUI_Values.Handler ; Remove focus
 }
 
 Gui_Trades_Minimize_Animation() {
@@ -1981,6 +2010,7 @@ Gui_Trades_Do_Action_Func(CtrlHwnd, GuiEvent, EventInfo) {
 			Send_InGame_Message({1:msg}, tabInfos, {doNotSend:doNotSend})
 		}
 	}
+	Gui_Trades_RemoveButtonFocus()
 
 }
 
@@ -5800,7 +5830,7 @@ Load_Skin_Assets() {
 	SkinAssets 			:= {}
 	skinFolder 			:= ProgramValues.Skins_Folder "\" ProgramSettings.Active_Skin
 	assetsFile 		 	:= skinFolder "\Assets.ini"
-	sections := ["Arrow_Left","Arrow_Right","Button_OneThird","Button_TwoThird","Button_ThreeThird","Button_Special","Close_Tab","Tab","Tab_Joined","Tab_Whisper","Misc"]
+	sections := ["Arrow_Left","Arrow_Right","Button_OneThird","Button_TwoThird","Button_ThreeThird","Button_Special","Close_Tab","Minimize", "Maximize", "Tab","Tab_Joined","Tab_Whisper","Misc"]
 	for id, sectName in sections {
 		keysInThisSection := []
 		IniRead, keysAndValue,% assetsFile,% sectName
