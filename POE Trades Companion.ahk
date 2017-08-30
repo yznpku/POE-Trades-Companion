@@ -861,7 +861,7 @@ Gui_Trades(mode="", tradeInfos="") {
 		Gui, +OwnDialogs
 
 		tabHeight := Gui_Trades_Get_Tab_Height(), tabWidth := 390*scaleMult
-		guiWidth := 401*scaleMult, guiHeight := Floor((tabHeight+39)*scaleMult), guiHeightMin := 30*scaleMult ; 30 = banner size
+		guiWidth := 401*scaleMult, guiHeight := Floor((tabHeight+39)*scaleMult), guiHeightMin := 31*scaleMult ; 30 = banner size, 1 = border
 
 		borderSize := 1
 		TradesGUI_Values.Insert("Height_Full", guiHeight)
@@ -898,7 +898,7 @@ Gui_Trades(mode="", tradeInfos="") {
 		Gui, Tab
 		Gui, Add, Picture,% "x0 y0 hWndhBackground BackgroundTrans",% SkinAssets.Misc_Background
 		Tile_Picture("Trades", hBackground, guiWidth, guiHeight) ; Fill the background
-		Gui, Add, Picture,% "x0 y0 w" guiWidth-borderSize " h" 30*scaleMult " BackgroundTrans Section",% SkinAssets.Misc_Header
+		Gui, Add, Picture,% "x" borderSize " y" borderSize " w" guiWidth-(borderSize*2) " h" (30*scaleMult) " BackgroundTrans Section",% SkinAssets.Misc_Header
 		Gui, Add, Picture,% "x" borderSize+(2*scaleMult) " y" borderSize+(2*scaleMult) " w" 24*scaleMult " h" 24*scaleMult " +BackgroundTrans",% SkinAssets.Misc_Icon
 
 		Gui, Add, Button,% "x" guiWidth-(20*scaleMult)-borderSize-4 " y" borderSize+4 " w20 h20 gGui_Trades_Minimize hwndhHeaderMinimize",% ""
@@ -908,7 +908,7 @@ Gui_Trades(mode="", tradeInfos="") {
 		if !ImageButton.Create(hHeaderMaximize, IBStyle_Maximize*)
 			MsgBox, 0, ImageButton Error Maximize, % ImageButton.LastError
 
-		Gui, Add, Text,% "x" borderSize+(24*scaleMult) . " y" borderSize . " w" guiWidth-(borderSize+(30*scaleMult))-(borderSize-4+(20*scaleMult)) " h" (30-(2*scaleMult))*scaleMult " hWndhHeaderTitle gGui_Trades_Move c" colorTitleInactive . " BackgroundTrans +0x200 Center",% ProgramValues.Name
+		Gui, Add, Text,% "x" borderSize+(24*scaleMult) . " y" borderSize . " w" guiWidth-(borderSize+(32*scaleMult))-(borderSize-4+(20*scaleMult)) " h" (30-(2*scaleMult))*scaleMult " hWndhHeaderTitle gGui_Trades_Move c" colorTitleInactive . " BackgroundTrans +0x200 Center",% ProgramValues.Name
 
 		TradesGUI_Controls["Header_Title"]		:= hHeaderTitle
 		TradesGUI_Controls["Header_Minimize"]	:= hHeaderMinimize
