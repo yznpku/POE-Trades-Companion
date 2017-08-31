@@ -66,17 +66,19 @@ Start_Script() {
 
 	ProgramValues.Name 					:= "POE Trades Companion"
 	ProgramValues.Version 				:= "1.12.BETA_10"
-
-	ProgramValues.Updater_File 			:= A_ScriptDir "\POE-TC-Updater.exe"
-	ProgramValues.Updater_Link 			:= "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/Updater_v2.exe"
-	ProgramValues.Updater_Link_Beta 	:= "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/dev/Updater_v2.exe"
+	ProgramValues.Github_User 			:= "lemasato"
+	ProgramValues.GitHub_Repo 			:= "POE-Trades-Companion"
 
 	ProgramValues.Version_Link 			:= "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/version.txt"
 	ProgramValues.Version_Link_Beta  	:= "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/dev/version.txt"
 
+	ProgramValues.Download_FallBack			:= "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/POE Trades Companion.exe"
+	ProgramValues.Download_FallBack_Beta	:= "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/dev/POE Trades Companion.exe"
+
 	ProgramValues.NewVersion_File		:= A_ScriptDir "\POE-TC-NewVersion.exe"
-	ProgramValues.NewVersion_Link 		:= "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/POE Trades Companion.exe"
-	ProgramValues.NewVersion_Link_Beta	:= "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/dev/POE Trades Companion.exe"
+	ProgramValues.Updater_File 			:= A_ScriptDir "\POE-TC-Updater.exe"
+	ProgramValues.Updater_Link 			:= "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/Updater_v2.exe"
+	ProgramValues.Updater_Link_Beta 	:= "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/dev/Updater_v2.exe"
 
 	ProgramValues.Changelogs_Link 		:= "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/changelogs.txt"
 	ProgramValues.Changelogs_Link_Beta	:= "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/dev/changelogs.txt"
@@ -4423,6 +4425,7 @@ Check_Update() {
 	IniRead, isUsingBeta,% ProgramValues.Ini_File,PROGRAM,Update_Beta, 0
 	IniRead, isAutoUpdateEnabled,% ProgramValues.Ini_File,PROGRAM,AutoUpdate, 0
 	IniRead, lastTimeUpdated,% ProgramValues.Ini_File,PROGRAM,LastUpdate,% A_Now
+	IniRead, lastTimeChecked,% ProgramValues.Ini_File,PROGRAM,LastUpdateCheck,% 1994042612310000
 
 	changeslogsLink 		:= (isUsingBeta)?(ProgramValues.Changelogs_Link_Beta):(ProgramValues.Changelogs_Link)
 	versionLinkStable 		:= ProgramValues.Version_Link
@@ -4434,6 +4437,30 @@ Check_Update() {
 		FileDelete,% ProgramValues.Updater_File
 	if FileExist(ProgramValues.NewVersion_File)
 		FileDelete,% ProgramValues.NewVersion_File
+
+	timeDif := A_Now
+	timeDif -= lastTimeChecked, Minutes 
+	if !(timeDif > 35) { ; Only check once every 30mins
+		IniRead, valStableTag,% ProgramValues.Ini_File,PROGRAM,Version_Stable
+		IniRead, valStableDL,% ProgramValues.Ini_File,PROGRAM,Version_Stable_DL
+		IniRead, valBetaTag,% ProgramValues.Ini_File,PROGRAM,Version_Beta
+		IniRead, valBetaDL,% ProgramValues.Ini_File,PROGRAM,Version_Beta_DL
+		ProgramValues.Version_Latest 					:= valStableTag
+		ProgramValues.Version_Latest_Download 			:= valStableDL
+		ProgramValues.Version_Latest_Beta 				:= valBetaTag
+		ProgramValues.Version_Latest_Beta_Download 		:= valBetaDL
+		ProgramValues.Version_Online 					:= (isUsingBeta)?(valBetaTag):(valStableTag)
+		ProgramValues.Version_Online_Download 			:= (isUsingBeta)?(valBetaDL):(valStableDL)
+
+		isUpdateAvailable := (isUsingBeta && valBetaTag != "ERROR" && valBetaTag != currentVersion)?(true)
+						    :(!isUsingBeta && valStableTag != "ERROR" && valStableTag != currentVersion)?(true)
+						    :(false)	
+		ProgramValues.Update_Available	:= isUpdateAvailable
+
+		if (isUpdateAvailable)
+			Tray_Notifications_Show(ProgramValues.Version_Online " is available!", "Left click on this notification to run the automatic download.`nRight click to dismiss it.", {Is_Update:1, Fade_Timer:20000})
+		Return
+	} 
 
 ;	Changelogs file
 	Try {
@@ -4465,8 +4492,8 @@ Check_Update() {
 		Logs_Append("WinHttpRequest", {Obj:e})
 		Tray_Notifications_Show(ProgramValues.Name, "Failed to reach GitHub Changelogs file.`n`nThis will not interfer with the operations of the tool,`nbut changelogs will be unavailable until next launch.")
 	}
-	
-;	Version.txt on master branch
+
+; Version.txt master
 	Try {
 		Version_WinHttpReq := ComObjCreate("WinHttp.WinHttpRequest.5.1")
 		Version_WinHttpReq.SetTimeouts("10000", "10000", "10000", "10000")
@@ -4475,74 +4502,138 @@ Check_Update() {
 		Version_WinHttpReq.Send()
 		Version_WinHttpReq.WaitForResponse(10)
 
-		versionOnline := Version_WinHttpReq.ResponseText
-		versionOnline = %versionOnline%
-		if ( versionOnline ) && !( RegExMatch(versionOnline, "Not(Found| Found)") ) { ; couldn't reach the file, cancel update
-			StringReplace, versionOnline, versionOnline, `n,,1 ; remove the 2nd white line
-			versionOnline = %versionOnline% ; remove any whitespace
+		stableOnline := Version_WinHttpReq.ResponseText
+		stableOnline = %stableOnline%
+		if (stableOnline) && !StringIn(stableOnline, "Not,Found,Error") {
+			StringReplace, stableOnline, stableOnline,`n,1
+			StringReplace, stableOnline, stableOnline,`r,1
+			stableOnline = %stableOnline%
 		}
+		else 
+			stableOnline := "ERROR"
 	}
 	Catch e {
 ;		Error Logging
 		Logs_Append("WinHttpRequest", {Obj:e})
-		Tray_Notifications_Show(ProgramValues.Name, "Failed to reach GitHub latest stable version file.`n`nThis will not interfer with the operations of the tool,`nbut updating to stable will be unavailable until next launch.")
+		Tray_Notifications_Show(ProgramValues.Name, "Failed to reach GitHub latest stable version file.`n`nThis will not interfer with the operations of the tool,`nbut updating to stable will be unavailable.")
 	}
-
-;	Version.txt on dev branch
+; Version.txt dev
 	Try {
-		VersionBeta_WinHttpReq := ComObjCreate("WinHttp.WinHttpRequest.5.1")
-		VersionBeta_WinHttpReq.SetTimeouts("10000", "10000", "10000", "10000")
+		Version_WinHttpReq := ComObjCreate("WinHttp.WinHttpRequest.5.1")
+		Version_WinHttpReq.SetTimeouts("10000", "10000", "10000", "10000")
 
-		VersionBeta_WinHttpReq.Open("GET", versionLinkBeta, true)
-		VersionBeta_WinHttpReq.Send()
-		VersionBeta_WinHttpReq.WaitForResponse(10)
+		Version_WinHttpReq.Open("GET", versionLinkBeta, true)
+		Version_WinHttpReq.Send()
+		Version_WinHttpReq.WaitForResponse(10)
 
-		versionOnlineBeta := VersionBeta_WinHttpReq.ResponseText
-		versionOnlineBeta = %versionOnlineBeta%
-		if ( versionOnlineBeta ) && !( RegExMatch(versionOnlineBeta, "Not(Found| Found)") ) { ; couldn't reach the file, cancel update
-			StringReplace, versionOnlineBeta, versionOnlineBeta, `n,,1 ; remove the 2nd white line
-			versionOnlineBeta = %versionOnlineBeta% ; remove any whitespace
+		betaOnline := Version_WinHttpReq.ResponseText
+		betaOnline = %betaOnline%
+		if (betaOnline) && !StringIn(betaOnline, "Not,Found,Error") {
+			StringReplace, betaOnline, betaOnline,`n,1
+			StringReplace, betaOnline, betaOnline,`r,1
+			betaOnline = %betaOnline%
 		}
+		else
+			betaOnline := "ERROR"
 	}
 	Catch e {
 ;		Error Logging
 		Logs_Append("WinHttpRequest", {Obj:e})
-		Tray_Notifications_Show(ProgramValues.Name, "Failed to reach GitHub latest beta version file.`n`nThis will not interfer with the operations of the tool,`nbut updating to beta will be unavailable until next launch.")
+		Tray_Notifications_Show(ProgramValues.Name, "Failed to reach GitHub latest stable version file.`n`nThis will not interfer with the operations of the tool,`nbut updating to stable will be unavailable.")
+	}
+
+; Releases API Pre-Release
+	Try {
+		AllReleases_WinHttpReq := ComObjCreate("WinHttp.WinHttpRequest.5.1")
+		AllReleases_WinHttpReq.SetTimeouts("10000", "10000", "10000", "10000")
+
+		Loop 2 { ; 2 pages
+			AllReleases_WinHttpReq.Open("GET", "https://api.github.com/repos/" ProgramValues.Github_User "/" ProgramValues.GitHub_Repo "/releases?page=" A_Index, true)
+			AllReleases_WinHttpReq.Send()
+			AllReleases_WinHttpReq.WaitForResponse(10)
+
+			releasesJSON := AllReleases_WinHttpReq.ResponseText
+			parsedReleases := JSON.Load(releasesJSON)
+			Loop { ; All resutls from this page
+				if !(parsedReleases[A_Index]["tag_name"]) {
+					Break
+				}
+				if (parsedReleases[A_Index]["prerelease"] = true && !latestBetaTag) {
+					latestBetaTag := parsedReleases[A_Index]["tag_name"]
+					latestBetaDownload := parsedReleases[A_Index]["assets"][1]["browser_download_url"]
+				}
+				if (parsedReleases[A_Index]["prerelease"] = false && !latestReleaseTag) {
+					latestReleaseTag := parsedReleases[A_Index]["tag_name"]
+					latestReleaseDownload := parsedReleases[A_Index]["assets"][1]["browser_download_url"]
+				}
+				if (latestBetaTag && latestReleaseTag) {
+					Break
+				}
+			}
+			if (latestBetaTag && latestReleaseTag)
+				Break
+		}
+	}
+	Catch e {
+		Logs_Append("WinHttpRequest", {Obj:e})
+		Tray_Notifications_Show(ProgramValues.Name, "Failed to reach GitHub API.`n`nThis will not interfer with the operations of the tool,`nbut updating will be unavailable.")
+
+		latestBetaTag 		:= "ERROR"
+		latestBetaDownload 	:= ""
 	}
 
 ;	Set version IDs
-	latestStableVersion 	:= (versionOnline)?(versionOnline):("ERROR")
-	latestStableVersion = %latestStableVersion%
+	if latestReleaseTag contains Not,Found,Error
+		apiError := true
+	else if !latestReleaseTag
+		apiError := true
 
-	latestBetaVersion 		:= (versionOnlineBeta)?(versionOnlineBeta):("ERROR")
-	latestBetaVersion = %latestBetaVersion%
+	dlFallback := "https://github.com/" ProgramValues.GitHub_User "/" ProgramValue.GitHub_Repo "/releases/download/" latestReleaseTag "/POE-Trades-Companion.exe"
 
-	ProgramValues.Version_Latest 		:= latestStableVersion
-	ProgramValues.Version_Latest_Beta	:= latestBetaVersion
+	latestReleaseTag 			:= (apiError)?("ERROR"):(latestReleaseTag)
+	latestReleaseTag 			:= (latestReleaseTag="ERROR" && stableOnline != "ERROR")?(stableOnline):(latestReleaseTag) ; version.txt fallback
+	latestReleaseDownload 		:= (apiError)?("ERROR"):(latestReleaseDownload)
+	latestReleaseDownload 		:= (latestReleaseDownload="ERROR")?(ProgramValues.Download_FallBack):(latestReleaseDownload) ; fallback download
+	
+	latestBetaTag 				:= (apiError)?("ERROR"):(latestBetaTag)
+	latestBetaTag 				:= (latestBetaTag="ERROR" && betaOnline != "ERROR")?(betaOnline):(latestBetaTag)
+	latestBetaDownload 			:= (apiError)?("ERROR"):(latestBetaDownload)
+	latestBetaDownload 			:= (latestBetaDownload="ERROR")?(ProgramValues.Download_FallBack_Beta):(latestBetaDownload)
 
-	onlineVersionAvailable	 		:= (isUsingBeta)?(ProgramValues.Version_Latest_Beta):(ProgramValues.Version_Latest)
-	ProgramValues.Version_Online 	:= onlineVersionAvailable
+	isUpdateAvailable 			:= (isUsingBeta && latestBetaTag != "ERROR" && latestBetaTag != currentVersion)?(true)
+								  :(!isUsingBeta && latestReleaseTag != "ERROR" && latestReleaseTag != currentVersion)?(true)
+								  :(false)							  
 
-;	Set new version number and notify about update
-	isUpdateAvailable := (!isUsingBeta && latestStableVersion != "ERROR" && latestStableVersion != currentVersion)?(1)
-						:(isUsingBeta && latestBetaVersion != "ERROR" && latestBetaVersion != currentVersion)?(1)
-						:(0)
-	ProgramValues.Update_Available := isUpdateAvailable
+	ProgramValues.Version_Latest 					:= latestReleaseTag
+	ProgramValues.Version_Latest_Download 			:= latestReleaseDownload
+	ProgramValues.Version_Latest_Beta				:= latestBetaTag
+	ProgramValues.Version_Latest_Beta_Download 		:= latestBetaDownload
+
+	ProgramValues.Version_Online 					:= (isUsingBeta)?(latestBetaTag):(latestReleaseTag)
+	ProgramValues.Version_Online_Download 			:= (isUsingBeta)?(latestBetaDownload):(latestReleaseDownload)
+
+	ProgramValues.Update_Available 					:= isUpdateAvailable
+
+	IniWrite,% latestReleaseTag,% ProgramValues.Ini_File,PROGRAM,Version_Stable
+	IniWrite,% """" latestReleaseDownload """",% ProgramValues.Ini_File,PROGRAM,Version_Stable_DL
+	IniWrite,% latestBetaTag,% ProgramValues.Ini_File,PROGRAM,Version_Beta
+	IniWrite,% """" latestBetaDownload """",% ProgramValues.Ini_File,PROGRAM,Version_Beta_DL
+	IniWrite,% A_Now,% ProgramValues.Ini_File,PROGRAM,LastUpdateCheck
 
 	if ( isUpdateAvailable ) {
 		if (isAutoUpdateEnabled = 1) {
 			timeDif := A_Now
 			EnvSub, timeDif,% lastTimeUpdated, Seconds
 			if (timeDif > 61 || !timeDif) { ; !timeDif means var was not in YYYYMMDDHH24MISS format 
-				Tray_Notifications_Show(onlineVersionAvailable " is available!", "Auto-updating is enabled. Downloading the updater...")
+				Tray_Notifications_Show(ProgramValues.Version_Online " is available!", "Auto-updating is enabled. Downloading the updater...")
 				Download_Updater()
 			}
 		}
 		else {
-			Tray_Notifications_Show(onlineVersionAvailable " is available!", "Left click on this notification to run the automatic download.`nRight click to dismiss it.", {Is_Update:1, Fade_Timer:20000})
+			Tray_Notifications_Show(ProgramValues.Version_Online " is available!", "Left click on this notification to run the automatic download.`nRight click to dismiss it.", {Is_Update:1, Fade_Timer:20000})
 		}
 	}
-	SetTimer, Check_Update, -1800000
+	SetTimer, Check_Update, -8400000
 }
 
 ;==================================================================================================================
@@ -4551,7 +4642,7 @@ Check_Update() {
 ;
 ;==================================================================================================================
 
-Gui_About(params="") {
+Gui_About() {
 	static
 	global ProgramValues
 
@@ -4571,18 +4662,25 @@ Gui_About(params="") {
 	groupText := (isUpdateAvailable)?("Update v" onlineVersionAvailable " available."):("No update available.")
 	Gui, Add, GroupBox, w500 h100 xm Section c000000 hwndUpdateAvailableTextHandler,% groupText
 	Gui, Add, Text, xs+20 ys+20,% "Current version: " A_Tab A_Tab verCurrent
-	if (isUpdateAvailable)
-		Gui, Add, Button,x+25 yp-5 w80 h20 gGui_About_Update,Update
+
+	Gui, Add, Button,x+20 yp-5 w80 h20 gGui_About_Check_Update,Check Update
+	IniRead, lastTimeChecked,% iniFilePath,PROGRAM,LastUpdateCheck
+	timeDif := A_Now
+	timeDif -= lastTimeChecked, Minutes 
+	Gui, Add, Text,x+5 yp+3,(%timeDif% mins ago)
+
 	Gui, Add, Text, xs+20 ys+40 hwndLastestVersionTextHandler,% "Latest Version (Stable): " A_Tab ProgramValues.Version_Latest
+	if (isUpdateAvailable && !isUsingBeta) {
+		GuiControl, About:+cBlue +Redraw,% LastestVersionTextHandler
+		Gui, Add, Button,x+25 yp-5 w80 h20 gGui_About_Update,Update
+	}
 	Gui, Add, Text, xs+20 ys+55 hwndLastestVersionBetaTextHandler,% "Latest Version (Beta): " A_Tab A_Tab ProgramValues.Version_Latest_Beta
+	if (isUpdateAvailable && isUsingBeta) {
+		GuiControl, About:+cBlue +Redraw,% LastestVersionBetaTextHandler
+		Gui, Add, Button,x+25 yp-5 w80 h20 gGui_About_Update,Update
+	}
 	if ( isUpdateAvailable ) {
 		GuiControl, About:+cBlue +Redraw,% UpdateAvailableTextHandler
-		if (isUsingBeta) {
-			GuiControl, About:+cBlue +Redraw,% LastestVersionBetaTextHandler
-		}
-		else {
-			GuiControl, About:+cBlue +Redraw,% LastestVersionTextHandler
-		}
 	}
 	Gui, Add, CheckBox,xs+20 ys+75 vUpdateAutomatically,Enable automatic updates
 	Gui, Add, CheckBox,xp+200 yp vUpdateBeta,Enable BETA (Requires reloading)
@@ -4642,6 +4740,21 @@ Gui_About(params="") {
 		Run,% ProgramValues.Paypal
 	Return
 
+	Gui_About_Check_Update:
+		autoUpdateBak := isAutoUpdateEnabled
+		IniWrite,% 1994042612310000,% iniFilePath,PROGRAM,LastUpdateCheck
+		if (autoUpdateBak) {
+			IniWrite,0,% iniFilePath,PROGRAM,AutoUpdate
+			UpdateAutomatically := 0
+		}
+		GoSub Gui_About_Close
+		Check_Update()
+		Gui_About()
+		if (autoUpdateBak)
+			IniWrite,1,% iniFilePath,PROGRAM,AutoUpdate
+		autoUpdateBak := 
+	Return
+
 	Gui_About_Update:
 		Download_Updater()
 	Return
@@ -4650,6 +4763,8 @@ Gui_About(params="") {
 		Gui, About:Submit
 		IniWrite,% UpdateAutomatically,% iniFilePath,PROGRAM,AutoUpdate
 		IniWrite,% UpdateBeta,% iniFilePath,PROGRAM,Update_Beta
+		if (isUsingBeta != UpdateBeta) ; Reset check update
+			IniWrite,% 1994042612310000,% iniFilePath,PROGRAM,LastUpdateCheck
 	Return
 }
 
@@ -4910,6 +5025,8 @@ Set_Local_Settings(){
 ;	Set beta state, if version contains BETA
 	if ProgramValues.Version contains BETA
 		IniWrite, 1,% iniFilePath,% "PROGRAM",% "Update_Beta"
+	else
+		IniWrite, 0,% iniFilePath,% "PROGRAM",% "Update_Beta"
 
 ;	Retrieve the settings arrays
 	settingsArray := Gui_Settings_Get_Settings_Arrays()
@@ -7187,6 +7304,16 @@ Exit_Func(ExitReason, ExitCode) {
 DoNothing:
 return
 
+StringIn(string, _list) {
+	if string in %_list%
+		return true
+}
+
+StringContains(string, match) {
+	if string contains %match%
+		return true
+}
+
 SetUnicodeText(ByRef ptrUnicodeText,hWnd) {
 /*		Original function author: derRaphael (nli)
  *		autohotkey.com/board/topic/28591-displaying-non-supported-characters-and-letters-in-gui/?p=183128
@@ -7471,7 +7598,7 @@ Download_Updater() {
 	IniRead, isUsingBeta,% ProgramValues.Ini_File,PROGRAM,Update_Beta, 0
 
 	updaterLink 		:= (isUsingBeta)?(ProgramValues.Updater_Link_Beta):(ProgramValues.Updater_Link)
-	newVersionLink 		:= (isUsingBeta)?(ProgramValues.NewVersion_Link_Beta):(ProgramValues.NewVersion_Link)
+	newVersionLink 		:= ProgramValues.Version_Online_Download
 
 	IniWrite,% A_Now,% ProgramValues.Ini_File,PROGRAM,LastUpdate
 	UrlDownloadToFile,% updaterLink,% ProgramValues.Updater_File
