@@ -1,4 +1,4 @@
-﻿/*
+/*
 *	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
 *					POE Trades Companion																															*
 *					See all the information about the trade request upon receiving a poe.trade whisper															*
@@ -65,7 +65,7 @@ Start_Script() {
 	MyDocuments 						:= (RunParameters.MyDocuments)?(RunParameters.MyDocuments):(A_MyDocuments)
 
 	ProgramValues.Name 					:= "POE Trades Companion"
-	ProgramValues.Version 				:= "1.12.BETA_10"
+	ProgramValues.Version 				:= "1.12.BETA_11"
 	ProgramValues.Github_User 			:= "lemasato"
 	ProgramValues.GitHub_Repo 			:= "POE-Trades-Companion"
 
@@ -4961,6 +4961,7 @@ Update_Local_Settings() {
 */
 	IniRead, openChangelogs,% iniFile,PROGRAM,Show_Changelogs, 0
 	if ( openChangelogs = 1 ) {
+		Check_Update()
 		Gui_About()
 		IniWrite, 0,% iniFile,PROGRAM,Show_Changelogs
 	}
