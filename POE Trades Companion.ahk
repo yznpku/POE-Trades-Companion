@@ -1,4 +1,4 @@
-/*
+﻿/*
 *	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
 *					POE Trades Companion																															*
 *					See all the information about the trade request upon receiving a poe.trade whisper															*
@@ -308,7 +308,7 @@ Filter_Logs_Message(message) {
 	Loop, Parse, message, `n ; For each new individual line since last check
 	{
 		; New RegEx pattern matches the trading message, but only from whispers and local chat (for debugging), and specifically ignores global/trade/guild/party chats
-		if ( RegExMatch( A_LoopField, "S)^(?:[^ ]+ ){6}(\d+)\] (?=[^#$&%]).*@(?:From|De|От кого) (.*?): (.*)", subPat ) ) { ; Whisper found
+		if ( RegExMatch( A_LoopField, "S)^(?:[^ ]+ ){6}(\d+)\] (?=[^#$&%]).*@(?:From|De|От кого|จาก) (.*?): (.*)", subPat ) ) { ; Whisper found
 ;			 Assigning the sub pattern variables
 			gamePID := subPat1, whispNameFull := subPat2, whispMsg := subPat3
 			whispNameFull := Gui_Trades_RemoveGuildPrefix(whispNameFull)
