@@ -83,10 +83,10 @@ Start_Script() {
 	ProgramValues.Changelogs_Link 		:= "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/changelogs.txt"
 	ProgramValues.Changelogs_Link_Beta	:= "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/dev/changelogs.txt"
 
-	ProgramValues.Reddit 				:= "https://redd.it/57oo3h"
-	ProgramValues.GGG 					:= "https://www.pathofexile.com/forum/view-thread/1755148/"
-	ProgramValues.GitHub 				:= "https://github.com/lemasato/POE-Trades-Companion"
-	ProgramValues.Paypal 				:= "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=BSWU76BLQBMCU"
+	ProgramValues.Link_Reddit 			:= "https://redd.it/57oo3h"
+	ProgramValues.Link_GGG 				:= "https://www.pathofexile.com/forum/view-thread/1755148/"
+	ProgramValues.Link_GitHub 			:= "https://github.com/lemasato/POE-Trades-Companion"
+	ProgramValues.Link_Support 			:= "https://github.com/lemasato/POE-Trades-Companion/wiki/Support"
 
 	ProgramValues.Local_Folder 			:= MyDocuments "\AutoHotkey\" ProgramValues.Name
 	ProgramValues.SFX_Folder 			:= ProgramValues.Local_Folder "\SFX"
@@ -165,7 +165,9 @@ Start_Script() {
 	Update_Local_Settings() ; Updating local settings between versions
 
 ;	Extracting assets
-	Extract_Assets()
+	if !(DebugValues.settings.no_assets_extracting) {
+		Extract_Assets()
+	}
 
 	Install_Font_Files()
 	Manage_Font_Resources("LOAD")
@@ -4643,6 +4645,9 @@ Check_Update() {
 ;==================================================================================================================
 
 Gui_About() {
+/*		Lastest versions and changelogs
+		Hall of Fame
+*/
 	static
 	global ProgramValues
 
@@ -4653,37 +4658,44 @@ Gui_About() {
 	IniRead, isUsingBeta,% iniFilePath,PROGRAM,Update_Beta
 	IniRead, isAutoUpdateEnabled,% iniFilePath,PROGRAM,AutoUpdate
 
-	defaultGUI := A_DefaultGUI
+	guiWidth := 520
+	guiHeight := 425
+
+	tab1Width := guiWidth, tab1Height := guiheight
+	tab2width := guiWidth, tab2Height := 350
+
 	Gui, About:Destroy
 	Gui, About:New, +HwndaboutGuiHandler +AlwaysOnTop +SysMenu -MinimizeBox -MaximizeBox +OwnDialogs +LabelGui_About_,% programName " by lemasato v" verCurrent
-	Gui, About:Default
-	Gui, Font, ,Consolas
+	Gui, About:Font, ,Consolas
+
+	Gui, About:Add, Tab3,% "x0 y0 w" guiWidth+2 " h" guiHeight+1 " vTab hwndhTab gGui_About_OnTabSwitch",Updates|Hall of Fame
+	Gui, About:Tab, Updates
 
 	groupText := (isUpdateAvailable)?("Update v" onlineVersionAvailable " available."):("No update available.")
-	Gui, Add, GroupBox, w500 h100 xm Section c000000 hwndUpdateAvailableTextHandler,% groupText
-	Gui, Add, Text, xs+20 ys+20,% "Current version: " A_Tab A_Tab verCurrent
+	Gui, About:Add, GroupBox, w500 h100 xm y+10 Section c000000 hwndUpdateAvailableTextHandler,% groupText
+	Gui, About:Add, Text, xs+20 ys+20,% "Current version: " A_Tab A_Tab verCurrent
 
-	Gui, Add, Button,x+20 yp-5 w80 h20 gGui_About_Check_Update,Check Update
+	Gui, About:Add, Button,x+20 yp-5 w80 h20 gGui_About_Check_Update,Check Update
 	IniRead, lastTimeChecked,% iniFilePath,PROGRAM,LastUpdateCheck
 	timeDif := A_Now
 	timeDif -= lastTimeChecked, Minutes 
-	Gui, Add, Text,x+5 yp+3,(%timeDif% mins ago)
+	Gui, About:Add, Text,x+5 yp+3,(%timeDif% mins ago)
 
-	Gui, Add, Text, xs+20 ys+40 hwndLastestVersionTextHandler,% "Latest Version (Stable): " A_Tab ProgramValues.Version_Latest
+	Gui, About:Add, Text, xs+20 ys+40 hwndLastestVersionTextHandler,% "Latest Version (Stable): " A_Tab ProgramValues.Version_Latest
 	if (isUpdateAvailable && !isUsingBeta) {
 		GuiControl, About:+cBlue +Redraw,% LastestVersionTextHandler
-		Gui, Add, Button,x+25 yp-5 w80 h20 gGui_About_Update,Update
+		Gui, About:Add, Button,x+25 yp-5 w80 h20 gGui_About_Update,Update
 	}
-	Gui, Add, Text, xs+20 ys+55 hwndLastestVersionBetaTextHandler,% "Latest Version (Beta): " A_Tab A_Tab ProgramValues.Version_Latest_Beta
+	Gui, About:Add, Text, xs+20 ys+55 hwndLastestVersionBetaTextHandler,% "Latest Version (Beta): " A_Tab A_Tab ProgramValues.Version_Latest_Beta
 	if (isUpdateAvailable && isUsingBeta) {
 		GuiControl, About:+cBlue +Redraw,% LastestVersionBetaTextHandler
-		Gui, Add, Button,x+25 yp-5 w80 h20 gGui_About_Update,Update
+		Gui, About:Add, Button,x+25 yp-5 w80 h20 gGui_About_Update,Update
 	}
 	if ( isUpdateAvailable ) {
 		GuiControl, About:+cBlue +Redraw,% UpdateAvailableTextHandler
 	}
-	Gui, Add, CheckBox,xs+20 ys+75 vUpdateAutomatically,Enable automatic updates
-	Gui, Add, CheckBox,xp+200 yp vUpdateBeta,Enable BETA (Requires reloading)
+	Gui, About:Add, CheckBox,xs+20 ys+75 vUpdateAutomatically,Enable automatic updates
+	Gui, About:Add, CheckBox,xp+200 yp vUpdateBeta,Enable BETA (Requires reloading)
 	if ( isAutoUpdateEnabled = 1 )
 		GuiControl, About:,UpdateAutomatically,1
 	if ( isUsingBeta = 1 )
@@ -4702,42 +4714,100 @@ Gui_About() {
 		else
 			break
 	}
-	Gui, Add, DropDownList, xm Section w500 gVersion_Change AltSubmit vVerNum hwndVerNumHandler R10,%allVersions%
-	Gui, Add, Edit, Section xs vChangesText hwndChangesTextHandler wp R15 ReadOnly,An internet connection is required
-	GuiControl, Choose,%VerNumHandler%,1
-	GoSub, Version_Change
-	Gui, Add, Text, xm Section ,See on:
-	Gui, Add, Link, gGitHub_Link ys,% "<a href="""">GitHub</a>"
-	Gui, Add, Text, ys,% "-"
-	Gui, Add, Link, gReddit_Link ys,% "<a href="""">Reddit</a>"
-	Gui, Add, Text, ys,% "-"
-	Gui, Add, Link, gGGG_Link ys,% "<a href="""">GGG</a>"
-	Gui, Add, Picture,% "gPaypal_Link xs+" 500-74 " ys-3 w74 h21",% ProgramValues.Others_Folder "\DonatePaypal.png"
+	Gui, About:Add, DropDownList, xm y+20 Section w500 gVersion_Change AltSubmit vVerNum hwndVerNumHandler R10,%allVersions%
+	Gui, About:Add, Edit, Section xs vChangesText hwndChangesTextHandler wp R15 ReadOnly,% "Retrieving the changelogs..."
+	GuiControl, About:Choose,%VerNumHandler%,1
+	
+	Gui, About:Add, Text, xm y+35 Section ,See on:
+	Gui, About:Add, Link, gGitHub_Link ys,% "<a href="""">GitHub</a>"
+	Gui, About:Add, Text, ys,% "-"
+	Gui, About:Add, Link, gReddit_Link ys,% "<a href="""">Reddit</a>"
+	Gui, About:Add, Text, ys,% "-"
+	Gui, About:Add, Link, gGGG_Link ys,% "<a href="""">GGG</a>"
 
-	Gui, Show, AutoSize
-	Gui, %defaultGUI%:Default
+	Gui, About:Add, Picture,% "gSupport_Link x400 ys-25 hwndhIMG_Paypal",% ProgramValues.Others_Folder "\DonatePaypal.png"
+	local coords := Get_Control_Coords("About", hIMG_Paypal)
+	GuiControl, About:Move,% hIMG_Paypal,% "x" guiWidth-coords.W-10
+
+	Gui, About:Tab, Hall of Fame
+	Gui, About:Add, GroupBox, w500 h50 xm y+10 Section c000000,% "The Hall of Fame"
+	Gui, About:Add, Text, xp ys+20 wp Center BackgroundTrans,% "Thank you for your support!"
+	Gui, About:Add, Edit, xm y+25 vEDIT_Supporters hwndhEDIT_Supporters w500 R15 ReadOnly,% "Retrieving the Hall of Fame..."
+
+	Gui, About:Add, Text, xm y+35 Section ,See on:
+	Gui, About:Add, Link, gGitHub_Link ys,% "<a href="""">GitHub</a>"
+	Gui, About:Add, Text, ys,% "-"
+	Gui, About:Add, Link, gReddit_Link ys,% "<a href="""">Reddit</a>"
+	Gui, About:Add, Text, ys,% "-"
+	Gui, About:Add, Link, gGGG_Link ys,% "<a href="""">GGG</a>"
+	
+	Gui, About:Add, Picture,% "gSupport_Link x400 ys-25 hwndhIMG_Paypal2",% ProgramValues.Others_Folder "\DonatePaypal.png"
+	local coords := Get_Control_Coords("About", hIMG_Paypal2)
+	GuiControl, About:Move,% hIMG_Paypal2,% "x" guiWidth-coords.W-10
+
+	Gui, About:Show, w%guiWidth% h%guiHeight%
+
+	GoSub, Version_Change
+	GoSub Get_Donators
 	return
+
+	Gui_About_OnTabSwitch:
+		Gui, About:Submit, NoHide
+		if (Tab = "Updates")
+			Gui, About:Show, w%tab1Width% h%tab1Height%
+		else if (Tab = "Hall of Fame")
+			Gui, About:Show, w%tab2Width% h%tab2Height%
+	Return
+
+	Get_Donators:
+	Try {
+;		Retrieve from online API
+		local WinHttpReq := ComObjCreate("WinHttp.WinHttpRequest.5.1")
+		WinHttpReq.SetTimeouts(10000, 10000, 10000, 10000)
+		WinHttpReq.Open("GET", "https://github.com/lemasato/POE-Trades-Companion/wiki/Support", true) ; Using true above and WaitForResponse allows the script to r'emain responsive.
+		WinHttpReq.Send()
+		WinHttpReq.WaitForResponse(10) ; 10 seconds
+		local html := WinHttpReq.ResponseText
+
+		if RegExMatch(html,"\<table\>(.*)\<\/table\>", match) {
+			Loop, Parse, match,`n
+			{
+				local supporter
+				if RegExMatch(A_LoopField,"\<td\>(.*?)\<\/td\>", supporter) {
+					supporter := StrReplace(supporter, "<td>")
+					supporter := StrReplace(supporter, "</td>")
+					local supporters .= supporter "`n"
+				}
+			}
+		}
+		Sort, supporters, D`n
+		GuiControl, About:,% hEDIT_Supporters,% supporters
+	}
+	Catch e { ; Cannot reach. Use internal leagues instead.
+		Logs_Append("WinHttpRequest", {Obj:e})
+		Tray_Notifications_Show(ProgramValues.Name, "Failed to retrieve the Hall of Fame")
+	}
+	Return
 	
 	Version_Change:
 		Gui, About:Submit, NoHide
 		GuiControl, About:,%ChangesTextHandler%,% allChanges[verNum]
-		Gui, About:Show, AutoSize
 	return
 
 	Reddit_Link:
-		Run,% ProgramValues.Reddit
+		Run,% ProgramValues.Link_Reddit
 	Return
 
 	Github_Link:
-		Run,% ProgramValues.GitHub
+		Run,% ProgramValues.Link_GitHub
 	Return
 
 	GGG_Link:
-		Run,% ProgramValues.GGG
+		Run,% ProgramValues.Link_GGG
 	Return
 
-	Paypal_Link:
-		Run,% ProgramValues.Paypal
+	Support_Link:
+		Run,% ProgramValues.Link_Support
 	Return
 
 	Gui_About_Check_Update:
