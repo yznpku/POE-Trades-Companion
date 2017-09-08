@@ -2680,17 +2680,15 @@ Gui_Settings() {
 
 	guiCreated := 0
 
-	defaultGUI := A_DefaultGUI
 	Gui, Settings:Destroy
 	Gui, Settings:New, +AlwaysOnTop +SysMenu -MinimizeBox -MaximizeBox +OwnDialogs +LabelGui_Settings_ hwndGUISettingsHandler,% programName " - Settings"
-	Gui, Settings:Default
 
-	Gui, Font, ,Segoe UI
+	Gui, Settings:Font, ,Segoe UI
 
 	tabsList := "Settings|Customization|Customization Appearance|Customization Custom Buttons|Customization Smaller Buttons|Hotkeys|Hotkeys Basic|Hotkeys Advanced|Hotkeys Special"
 
 	guiXWorkArea := 150, guiYWorkArea := 10
-	Gui, Add, TreeView, x10 y10 h380 w130 -0x4 -Buttons gGui_Settings_OnTabSiwtch
+	Gui, Settings:Add, TreeView, x10 y10 h380 w130 -0x4 -Buttons gGui_Settings_OnTabSiwtch
     P1 := TV_Add("Settings","", "Expand")
     P2 := TV_Add("Customization","","Expand")
     P2C1 := TV_Add("Appearance", P2, "Expand")
@@ -2701,79 +2699,79 @@ Gui_Settings() {
     P3C2 := TV_Add("Advanced", P3, "Expand")
     P3C3 := TV_Add("Special", P3, "Expand")
 
-    Gui, Add, Button,% "x" GuiXWorkArea " y325 w430 h25 hWndhSettingsPreview gGui_Settings_Trades_Preview Hidden",% "Save and preview your changes"
-	Gui, Add, Text,% "x" guiXWorkarea . " y" 360,% "Settings will be saved upon closing this window."
-	Gui, Add, Link,% "x" guiXWorkarea . " y" 375 . " vWikiBtn gGui_Settings_Btn_WIKI",% "Keep the cursor above a control to know more about it. You may also <a href="""">Visit the Wiki</a>"
+    Gui, Settings:Add, Button,% "x" GuiXWorkArea " y325 w430 h25 hWndhSettingsPreview gGui_Settings_Trades_Preview Hidden",% "Save and preview your changes"
+	Gui, Settings:Add, Text,% "x" guiXWorkarea . " y" 360,% "Settings will be saved upon closing this window."
+	Gui, Settings:Add, Link,% "x" guiXWorkarea . " y" 375 . " vWikiBtn gGui_Settings_Btn_WIKI",% "Keep the cursor above a control to know more about it. You may also <a href="""">Visit the Wiki</a>"
 
-	Gui, Add, Tab2, x10 y10 w0 h0 vTab hwndTabHandler,% tabsList
+	Gui, Settings:Add, Tab2, x10 y10 w0 h0 vTab hwndTabHandler,% tabsList
 ;---------------------------
-	Gui, Tab, Settings
+	Gui, Settings:Tab, Settings
 ;	Settings Tab
-	Gui, Add, GroupBox,% "x" GuiXWorkArea " y" GuiYWorkArea-5 " w430 h55" . " c000000 Section Center",About this tab:
-		Gui, Add, Text,xs+10 ys+20 BackgroundTrans,Main settings about how should the tool behave.
+	Gui, Settings:Add, GroupBox,% "x" GuiXWorkArea " y" GuiYWorkArea-5 " w430 h55" . " c000000 Section Center",About this tab:
+		Gui, Settings:Add, Text,xs+10 ys+20 BackgroundTrans,Main settings about how should the tool behave.
 ;		Trades GUI
-		Gui, Add, GroupBox,% " x" guiXWorkArea . " ys+60" . " w190 h140" . " c000000",Trades GUI
-		Gui, Add, Radio, xp+10 yp+20 vShowAlways hwndShowAlwaysHandler,Always show
-		Gui, Add, Radio, xp yp+15 vShowInGame hwndShowInGameHandler,Only show while in game
+		Gui, Settings:Add, GroupBox,% " x" guiXWorkArea . " ys+60" . " w190 h140" . " c000000",Trades GUI
+		Gui, Settings:Add, Radio, xp+10 yp+20 vShowAlways hwndShowAlwaysHandler,Always show
+		Gui, Settings:Add, Radio, xp yp+15 vShowInGame hwndShowInGameHandler,Only show while in game
 
-		Gui, Add, Checkbox, xp yp+25 hwndClipTabHandler vClipTab,Clipboard item on tab switch
-		Gui, Add, Checkbox,% " xp" . " yp+15 hwndSelectLastTabHandler vSelectLastTab",Focus newly created tabs
+		Gui, Settings:Add, Checkbox, xp yp+25 hwndClipTabHandler vClipTab,Clipboard item on tab switch
+		Gui, Settings:Add, Checkbox,% " xp" . " yp+15 hwndSelectLastTabHandler vSelectLastTab",Focus newly created tabs
 
-		Gui, Add, Checkbox, xp yp+25 hwndAutoMinimizeHandler vAutoMinimize,Minimize when inactive
-		Gui, Add, Checkbox, xp yp+15 hwndAutoUnMinimizeHandler vAutoUnMinimize,Un-Minimize when active
+		Gui, Settings:Add, Checkbox, xp yp+25 hwndAutoMinimizeHandler vAutoMinimize,Minimize when inactive
+		Gui, Settings:Add, Checkbox, xp yp+15 hwndAutoUnMinimizeHandler vAutoUnMinimize,Un-Minimize when active
 ;			Transparency
-			Gui, Add, GroupBox,% " x" guiXWorkArea+200 . " ys+60 w220 h140" . " c000000",Transparency
-			Gui, Add, Checkbox, xp+30 yp+25 hwndClickThroughHandler vClickThrough,Click-through while inactive
-			Gui, Add, Text, xp+5 yp+20,Inactive (no trade on queue)
-			Gui, Add, Slider, xp+10 yp+15 hwndShowTransparencyHandler gGui_Settings_Transparency vShowTransparency AltSubmit ToolTip Range0-100
-			Gui, Add, Text, xp-10 yp+30,Active (trades are on queue)
-			Gui, Add, Slider, xp+10 yp+15 hwndShowTransparencyActiveHandler gGui_Settings_Transparency vShowTransparencyActive AltSubmit ToolTip Range30-100
+			Gui, Settings:Add, GroupBox,% " x" guiXWorkArea+200 . " ys+60 w220 h140" . " c000000",Transparency
+			Gui, Settings:Add, Checkbox, xp+30 yp+25 hwndClickThroughHandler vClickThrough,Click-through while inactive
+			Gui, Settings:Add, Text, xp+5 yp+20,Inactive (no trade on queue)
+			Gui, Settings:Add, Slider, xp+10 yp+15 hwndShowTransparencyHandler gGui_Settings_Transparency vShowTransparency AltSubmit ToolTip Range0-100
+			Gui, Settings:Add, Text, xp-10 yp+30,Active (trades are on queue)
+			Gui, Settings:Add, Slider, xp+10 yp+15 hwndShowTransparencyActiveHandler gGui_Settings_Transparency vShowTransparencyActive AltSubmit ToolTip Range30-100
 
 ; ;		Notifications
 ;			 Trade Sound Group
-			Gui, Add, GroupBox,% "x" guiXWorkarea . " ys+210 w220 h125" . " c000000",Notifications
-			Gui, Add, Checkbox, xp+10 yp+20 vNotifyTradeToggle hwndNotifyTradeToggleHandler,Trade
-			Gui, Add, Edit, xp+70 yp-2 w70 h17 vNotifyTradeSound hwndNotifyTradeSoundHandler ReadOnly
-			Gui, Add, Button, xp+75 yp-2 h20 vNotifyTradeBrowse gGui_Settings_Notifications_Browse,Browse
+			Gui, Settings:Add, GroupBox,% "x" guiXWorkarea . " ys+210 w220 h125" . " c000000",Notifications
+			Gui, Settings:Add, Checkbox, xp+10 yp+20 vNotifyTradeToggle hwndNotifyTradeToggleHandler,Trade
+			Gui, Settings:Add, Edit, xp+70 yp-2 w70 h17 vNotifyTradeSound hwndNotifyTradeSoundHandler ReadOnly
+			Gui, Settings:Add, Button, xp+75 yp-2 h20 vNotifyTradeBrowse gGui_Settings_Notifications_Browse,Browse
 ;			Whisper Sound Group
-			Gui, Add, Checkbox, xp-145 yp+25 vNotifyWhisperToggle hwndNotifyWhisperToggleHandler,Whisper
-			Gui, Add, Edit, xp+70 yp-2 w70 h17 vNotifyWhisperSound hwndNotifyWhisperSoundHandler ReadOnly
-			Gui, Add, Button, xp+75 yp-2 h20 vNotifyWhisperBrowse gGui_Settings_Notifications_Browse,Browse
+			Gui, Settings:Add, Checkbox, xp-145 yp+25 vNotifyWhisperToggle hwndNotifyWhisperToggleHandler,Whisper
+			Gui, Settings:Add, Edit, xp+70 yp-2 w70 h17 vNotifyWhisperSound hwndNotifyWhisperSoundHandler ReadOnly
+			Gui, Settings:Add, Button, xp+75 yp-2 h20 vNotifyWhisperBrowse gGui_Settings_Notifications_Browse,Browse
 ;			Area joined Sound Group
-			Gui, Add, Checkbox,xp-145 yp+25 vNotifyJoinedAreaToggle hwndNotifyJoinedAreaToggleHandler,Joined
-			Gui, Add, Edit, xp+70 yp-2 w70 h17 vNotifyJoinedAreaSound hwndNotifyJoinedAreaSoundHandler  ReadOnly
-			Gui, Add, Button, xp+75 yp-2 h20 vNotifyJoinedAreaBrowse hwndNotifyJoinedAreaBrowseHandler gGui_Settings_Notifications_Browse,Browse
+			Gui, Settings:Add, Checkbox,xp-145 yp+25 vNotifyJoinedAreaToggle hwndNotifyJoinedAreaToggleHandler,Joined
+			Gui, Settings:Add, Edit, xp+70 yp-2 w70 h17 vNotifyJoinedAreaSound hwndNotifyJoinedAreaSoundHandler  ReadOnly
+			Gui, Settings:Add, Button, xp+75 yp-2 h20 vNotifyJoinedAreaBrowse hwndNotifyJoinedAreaBrowseHandler gGui_Settings_Notifications_Browse,Browse
 ;			Whisper Tray Notification
-			Gui, Add, Checkbox,xp-145 yp+29 vNotifyWhisperTray hwndNotifyWhisperTrayHandler,Show tray notifications
-			Gui, Add, Checkbox,xp yp+14 vNotifyWhisperFlash hwndNotifyWhisperFlashHandler,Flash the taskbar icon
+			Gui, Settings:Add, Checkbox,xp-145 yp+29 vNotifyWhisperTray hwndNotifyWhisperTrayHandler,Show tray notifications
+			Gui, Settings:Add, Checkbox,xp yp+14 vNotifyWhisperFlash hwndNotifyWhisperFlashHandler,Flash the taskbar icon
 ;		Support
-		Gui, Add, GroupBox,% "x" guiXWorkArea+230 " y" guiYWorkArea+205 . " w185 h125" . " c000000",Support
-		Gui, Add, Checkbox, xp+75 yp+35 vMessageSupportToggle hwndMessageSupportToggleHandler
-		Gui, Add, Text, gGUI_Settings_Tick_Case vMessageSupportToggleText xp-55 yp+18,% "Send an additional message`n   containing the thread-id`n     upon closing a trade"
+		Gui, Settings:Add, GroupBox,% "x" guiXWorkArea+230 " y" guiYWorkArea+205 . " w185 h125" . " c000000",Support
+		Gui, Settings:Add, Checkbox, xp+75 yp+35 vMessageSupportToggle hwndMessageSupportToggleHandler
+		Gui, Settings:Add, Text, gGUI_Settings_Tick_Case vMessageSupportToggleText xp-55 yp+18,% "Send an additional message`n   containing the thread-id`n     upon closing a trade"
 
 ;	-----------------------
-	Gui, Tab, Customization
+	Gui, Settings:Tab, Customization
 
-	Gui, Add, GroupBox,% "x" GuiXWorkArea " y" GuiYWorkArea-5 " w430 h55" . " c000000 Section Center",Appearance:
-		Gui, Add, Text,xs+10 ys+20 BackgroundTrans,Choose a skin preset or customize it to your liking.
+	Gui, Settings:Add, GroupBox,% "x" GuiXWorkArea " y" GuiYWorkArea-5 " w430 h55" . " c000000 Section Center",Appearance:
+		Gui, Settings:Add, Text,xs+10 ys+20 BackgroundTrans,Choose a skin preset or customize it to your liking.
 
-	Gui, Add, GroupBox, x%GuiXWorkArea% yp+40 w430 h55 c000000 Section Center,Custom Buttons:
-		Gui, Add, Text,xp+10 yp+20 BackgroundTrans,Rename and define button's actions or positions.
+	Gui, Settings:Add, GroupBox, x%GuiXWorkArea% yp+40 w430 h55 c000000 Section Center,Custom Buttons:
+		Gui, Settings:Add, Text,xp+10 yp+20 BackgroundTrans,Rename and define button's actions or positions.
 
-	Gui, Add, GroupBox, x%GuiXWorkArea% yp+40 w430 h55 c000000 Section Center,Smaller Buttons:
-		Gui, Add, Text,xp+10 yp+20 BackgroundTrans,Choose to bind the buttons to an hotkey.
+	Gui, Settings:Add, GroupBox, x%GuiXWorkArea% yp+40 w430 h55 c000000 Section Center,Smaller Buttons:
+		Gui, Settings:Add, Text,xp+10 yp+20 BackgroundTrans,Choose to bind the buttons to an hotkey.
 ;	--------------------
-	Gui, Tab, Customization Appearance
-	Gui, Add, GroupBox,% "x" guiXWorkarea . " y" guiYWorkArea-5 . " w430 h55" . " c000000",Preset
+	Gui, Settings:Tab, Customization Appearance
+	Gui, Settings:Add, GroupBox,% "x" guiXWorkarea . " y" guiYWorkArea-5 . " w430 h55" . " c000000",Preset
 		presetsList := "User Defined"
 		Loop, Files,% ProgramValues.Skins_Folder "\*", D
 		{
 			presetsList .= "|" A_LoopFileName
 		}
 		Sort, presetsList,D|
-		Gui, Add, DropDownList,% "x" guiXWorkarea+10 . " y" guiYWorkArea+15 . " w400" . " vActivePreset hwndActivePresetHandler gGui_Settings_Presets",% presetsList
+		Gui, Settings:Add, DropDownList,% "x" guiXWorkarea+10 . " y" guiYWorkArea+15 . " w400" . " vActivePreset hwndActivePresetHandler gGui_Settings_Presets",% presetsList
 
-	Gui, Add, GroupBox,% "x" guiXWorkArea . " y" guiYWorkArea+55 . " w430 h85" . " c000000",Skin
+	Gui, Settings:Add, GroupBox,% "x" guiXWorkArea . " y" guiYWorkArea+55 . " w430 h85" . " c000000",Skin
 
 		skinsList := ""
 		Loop, Files,% ProgramValues.Skins_Folder "\*", D
@@ -2783,13 +2781,13 @@ Gui_Settings() {
 		}
 		Sort, skinsList,D|
 		Sleep 1
-		Gui, Add, ListBox,% "xp+10" . " yp+20" . " w190" . " vSelectedSkin hwndSelectedSkinHandler R4" . " gGui_Settings_Set_Custom_Preset",% skinsList
+		Gui, Settings:Add, ListBox,% "xp+10" . " yp+20" . " w190" . " vSelectedSkin hwndSelectedSkinHandler R4" . " gGui_Settings_Set_Custom_Preset",% skinsList
 
 		scalingList := "50%|75%|100%|125%|150%|175%|200%"
-		Gui, Add, Text,% "xp+205" . " yp+3",Scale: 
-		Gui, Add, DropDownList,% "xp+40" . " yp-3" . " w145" . " vSkinScaling hwndSkinScalingHandler" . " gGui_Settings_Set_Custom_Preset",% scalingList
+		Gui, Settings:Add, Text,% "xp+205" . " yp+3",Scale: 
+		Gui, Settings:Add, DropDownList,% "xp+40" . " yp-3" . " w145" . " vSkinScaling hwndSkinScalingHandler" . " gGui_Settings_Set_Custom_Preset",% scalingList
 
-	Gui, Add, GroupBox,% "x" guiXWorkArea . " y" guiYWorkArea+145 . " w430 h85" . " c000000",Font
+	Gui, Settings:Add, GroupBox,% "x" guiXWorkArea . " y" guiYWorkArea+145 . " w430 h85" . " c000000",Font
 
 		fontsList := "System"
 		for fontFile, fontTitle in ProgramFonts {
@@ -2798,21 +2796,21 @@ Gui_Settings() {
 		}
 		Sort, fontsList,D|
 		Sleep 1
-		Gui, Add, ListBox,% "xp+10" . " yp+20" . " w190" . " vSelectedFont hwndSelectedFontHandler R4" . " gGui_Settings_Set_Custom_Preset",% fontsList
-		Gui, Add, Text,% "xp+200" . " yp+3",Size:
-		Gui, Add, DropDownList,% "xp+45" . " yp-3" . " w100" . " vFontSize hwndFontSizeHandler" . " gGui_Settings_Set_Custom_Preset",% "Automatic|Custom"
-		Gui, Add, Edit,% "xp+100" . " yp" . " w50" . " ReadOnly"
-		Gui, Add, UpDown, vFontSizeCustom hwndFontSizeCustomHandler gGui_Settings_Set_Custom_Preset
+		Gui, Settings:Add, ListBox,% "xp+10" . " yp+20" . " w190" . " vSelectedFont hwndSelectedFontHandler R4" . " gGui_Settings_Set_Custom_Preset",% fontsList
+		Gui, Settings:Add, Text,% "xp+200" . " yp+3",Size:
+		Gui, Settings:Add, DropDownList,% "xp+45" . " yp-3" . " w100" . " vFontSize hwndFontSizeHandler" . " gGui_Settings_Set_Custom_Preset",% "Automatic|Custom"
+		Gui, Settings:Add, Edit,% "xp+100" . " yp" . " w50" . " ReadOnly"
+		Gui, Settings:Add, UpDown, vFontSizeCustom hwndFontSizeCustomHandler gGui_Settings_Set_Custom_Preset
 
-		Gui, Add, Text,% "xp-145" . " yp+33",Quality:
-		Gui, Add, DropDownList,% "xp+45" . " yp-3" . " w100" . " vFontQuality hwndFontQualityHandler" . " gGui_Settings_Set_Custom_Preset",% "Automatic|Custom"
-		Gui, Add, Edit,% "xp+100" . " yp" . " w50" . " ReadOnly"
-		Gui, Add, UpDown, vFontQualityCustom hwndFontQualityCustomHandler gGui_Settings_Set_Custom_Preset
+		Gui, Settings:Add, Text,% "xp-145" . " yp+33",Quality:
+		Gui, Settings:Add, DropDownList,% "xp+45" . " yp-3" . " w100" . " vFontQuality hwndFontQualityHandler" . " gGui_Settings_Set_Custom_Preset",% "Automatic|Custom"
+		Gui, Settings:Add, Edit,% "xp+100" . " yp" . " w50" . " ReadOnly"
+		Gui, Settings:Add, UpDown, vFontQualityCustom hwndFontQualityCustomHandler gGui_Settings_Set_Custom_Preset
 
-	Gui, Add, GroupBox,% "x" guiXWorkArea . " y" guiYWorkArea+235 . " w430 h75" . " c000000",Colors
+	Gui, Settings:Add, GroupBox,% "x" guiXWorkArea . " y" guiYWorkArea+235 . " w430 h75" . " c000000",Colors
 
-		Gui, Add, Text,% "xp+10 yp+23",% "Select an element:"
-		Gui, Add, DropDownList,% "xp+100 yp-3 w150 vFontsColors hwndFontsColorsHandler gGui_Settings_Fonts_Color_DropDownList AltSubmit",% "Border|Button (Normal)|Button (Hover)|Button (Press)"
+		Gui, Settings:Add, Text,% "xp+10 yp+23",% "Select an element:"
+		Gui, Settings:Add, DropDownList,% "xp+100 yp-3 w150 vFontsColors hwndFontsColorsHandler gGui_Settings_Fonts_Color_DropDownList AltSubmit",% "Border|Button (Normal)|Button (Hover)|Button (Press)"
 																						. "|Title (Active)|Title (Inactive)|Trade Infos (1)|Trade Infos (2)"
 																						. "|Tab (Active)|Tab (Inactive)|Tab (Hover)|Tab (Press)"
 																						. "|Tab Joined (Active)|Tab Joined (Inactive)|Tab Joined (Hover)|Tab Joined (Press)"
@@ -2826,48 +2824,48 @@ Gui_Settings() {
 						   ,"TabWhisperActiveColor","TabWhisperInactiveColor","TabWhisperHoverColor","TabWhisperPressColor"]
 			if (!ctrlVars[A_Index])
 				Break
-			Gui, Add, Edit,% ctrlPos " v" ctrlVars[A_Index] " hwnd" ctrlVars[A_Index] "Handler gGui_Settings_Fonts_Color_Preview Hidden Limit6"
+			Gui, Settings:Add, Edit,% ctrlPos " v" ctrlVars[A_Index] " hwnd" ctrlVars[A_Index] "Handler gGui_Settings_Fonts_Color_Preview Hidden Limit6"
 		}
 		ctrlPos := "", ctrlVars := ""
-		Gui, Add, Progress,% "xp+70 yp w22 h22 Background000000 vFontsColorsPreview hwndFontsColorPreviewHandler Hidden"
-		Gui, Add, Text,% "xp-330 yp+25 R2 w400 vFontsColorsTip hwndFontsColorsTipsHandler",% "Description of the selected element will appear here."
+		Gui, Settings:Add, Progress,% "xp+70 yp w22 h22 Background000000 vFontsColorsPreview hwndFontsColorPreviewHandler Hidden"
+		Gui, Settings:Add, Text,% "xp-330 yp+25 R2 w400 vFontsColorsTip hwndFontsColorsTipsHandler",% "Description of the selected element will appear here."
 
-		Gui, Add, Link,% "x" guiXWorkArea + 80 . " y" guiYWorkArea+235,% "(<a href=""http://hslpicker.com/"">HSL Color Picker</a> - Get the 6 chars code starting with #) "
+		Gui, Settings:Add, Link,% "x" guiXWorkArea + 80 . " y" guiYWorkArea+235,% "(<a href=""http://hslpicker.com/"">HSL Color Picker</a> - Get the 6 chars code starting with #) "
 
 ;	-------------------------
-	Gui, Tab, Customization Custom Buttons
+	Gui, Settings:Tab, Customization Custom Buttons
 	DynamicGUIHandlersArray := Object()
 
-		Gui, Add, GroupBox,% "x" guiXWorkarea . " y" guiYWorkArea-5 . " w430 h110" . " c000000",Buttons
+		Gui, Settings:Add, GroupBox,% "x" guiXWorkarea . " y" guiYWorkArea-5 . " w430 h110" . " c000000",Buttons
 	Loop 9 {
 		index := A_Index
 		xpos := (index=1||index=4||index=7)?(guiXWorkArea+32):(index=2||index=5||index=8)?(guiXWorkArea+152):(index=3||index=6||index=9)?(guiXWorkArea+272):("ERROR")
 		ypos := (index=1||index=2||index=3)?(guiYWorkArea+20):(index=4||index=5||index=6)?(guiYWorkArea+45):(index=7||index=8||index=9)?(guiYWorkArea+70):("ERROR")
-		Gui, Add, Button, x%xpos% y%ypos% w120 h25 vTradesBtn%index% hwndTradesBtn%index%Handler gGui_Settings_Custom_Label,% "Custom " index
+		Gui, Settings:Add, Button, x%xpos% y%ypos% w120 h25 vTradesBtn%index% hwndTradesBtn%index%Handler gGui_Settings_Custom_Label,% "Custom " index
 
-		Gui, Add, GroupBox,% "x" guiXWorkArea . " y" guiYWorkArea+110 . " w430 h85" . " c000000",Positioning
-			Gui, Add, Text,% "xp+10" . " yp+20" . " hwndTradesHPOS" index "TextHandler Hidden",Horizontal:
-			Gui, Add, ListBox, w70 xp+55 yp vTradesHPOS%index% hwndTradesHPOS%index%Handler R3 Hidden,% "Left|Center|Right"
-			Gui, Add, Text, xp+75 yp hwndTradesVPOS%index%TextHandler Hidden,Vertical:
-			Gui, Add, ListBox, w70 xp+45 yp vTradesVPOS%index% hwndTradesVPOS%index%Handler R3 Hidden,% "Top|Middle|Bottom"
-			Gui, Add, Text, xp+75 yp hwndTradesSIZE%index%TextHandler Hidden,Size:
-			Gui, Add, ListBox, w70 xp+30 yp vTradesSIZE%index% hwndTradesSIZE%index%Handler R4 Hidden,% "Disabled|Small|Medium|Large"
+		Gui, Settings:Add, GroupBox,% "x" guiXWorkArea . " y" guiYWorkArea+110 . " w430 h85" . " c000000",Positioning
+			Gui, Settings:Add, Text,% "xp+10" . " yp+20" . " hwndTradesHPOS" index "TextHandler Hidden",Horizontal:
+			Gui, Settings:Add, ListBox, w70 xp+55 yp vTradesHPOS%index% hwndTradesHPOS%index%Handler R3 Hidden,% "Left|Center|Right"
+			Gui, Settings:Add, Text, xp+75 yp hwndTradesVPOS%index%TextHandler Hidden,Vertical:
+			Gui, Settings:Add, ListBox, w70 xp+45 yp vTradesVPOS%index% hwndTradesVPOS%index%Handler R3 Hidden,% "Top|Middle|Bottom"
+			Gui, Settings:Add, Text, xp+75 yp hwndTradesSIZE%index%TextHandler Hidden,Size:
+			Gui, Settings:Add, ListBox, w70 xp+30 yp vTradesSIZE%index% hwndTradesSIZE%index%Handler R4 Hidden,% "Disabled|Small|Medium|Large"
 
-		Gui, Add, GroupBox,% "x" guiXWorkarea . " y" guiYWorkArea+200 . " w430 h110" . " c000000",Behaviour
-			Gui, Add, Text,% "xp+10" . " yp+20" . " hwndTradesLabel" index "TextHandler Hidden",Label:
-			Gui, Add, Edit, xp+50 yp-3 w160 vTradesLabel%index% hwndTradesLabel%index%Handler gGui_Settings_Custom_Label Hidden,
-			Gui, Add, Text, xp+170 yp+3 vTradesHK%index%Text hwndTradesHK%index%TextHandler Hidden,Hotkey:
-			Gui, Add, Hotkey, xp+50 yp-3 vTradesHK%index% hwndTradesHK%index%Handler Hidden,
+		Gui, Settings:Add, GroupBox,% "x" guiXWorkarea . " y" guiYWorkArea+200 . " w430 h110" . " c000000",Behaviour
+			Gui, Settings:Add, Text,% "xp+10" . " yp+20" . " hwndTradesLabel" index "TextHandler Hidden",Label:
+			Gui, Settings:Add, Edit, xp+50 yp-3 w160 vTradesLabel%index% hwndTradesLabel%index%Handler gGui_Settings_Custom_Label Hidden,
+			Gui, Settings:Add, Text, xp+170 yp+3 vTradesHK%index%Text hwndTradesHK%index%TextHandler Hidden,Hotkey:
+			Gui, Settings:Add, Hotkey, xp+50 yp-3 vTradesHK%index% hwndTradesHK%index%Handler Hidden,
 
-			Gui, Add, Text,% "xp-270" . " yp+33" . " hwndTradesAction" index "TextHandler Hidden",Action:
-			Gui, Add, DropDownList, xp+50 yp-3 w160 vTradesAction%index% hwndTradesAction%index%Handler gGui_Settings_Custom_Label Hidden,% "Clipboard Item|Send Message|Send Message + Close Tab|Send Message + Minimize|Write Message"
-			Gui, Add, CheckBox,xp+170 yp vTradesMarkCompleted%index% hwndTradesMarkCompleted%index%Handler Center Hidden,Save the trade infos locally?`n(for personnal statistics purposes)
+			Gui, Settings:Add, Text,% "xp-270" . " yp+33" . " hwndTradesAction" index "TextHandler Hidden",Action:
+			Gui, Settings:Add, DropDownList, xp+50 yp-3 w160 vTradesAction%index% hwndTradesAction%index%Handler gGui_Settings_Custom_Label Hidden,% "Clipboard Item|Send Message|Send Message + Close Tab|Send Message + Minimize|Write Message"
+			Gui, Settings:Add, CheckBox,xp+170 yp vTradesMarkCompleted%index% hwndTradesMarkCompleted%index%Handler Center Hidden,Save the trade infos locally?`n(for personnal statistics purposes)
 
-			Gui, Add, Edit,% "x" guiXWorkarea+10 . " yp+30 w50" . " hwndTradesMsgEditID" index "Handler" . " ReadOnly Limit1 Hidden",1|2|3
-			Gui, Add, UpDown,% " vTradesMsgID" index " hwndTradesMsgID" index "Handler" . " Range1-3 gGui_Settings_Cycle_Messages Hidden"
-			Gui, Add, Edit, xp+50 yp w355 vTradesMsg1_%index% hwndTradesMsg1_%index%Handler Hidden,
-			Gui, Add, Edit, xp yp w355 vTradesMsg2_%index% hwndTradesMsg2_%index%Handler Hidden,
-			Gui, Add, Edit, xp yp w355 vTradesMsg3_%index% hwndTradesMsg3_%index%Handler Hidden,
+			Gui, Settings:Add, Edit,% "x" guiXWorkarea+10 . " yp+30 w50" . " hwndTradesMsgEditID" index "Handler" . " ReadOnly Limit1 Hidden",1|2|3
+			Gui, Settings:Add, UpDown,% " vTradesMsgID" index " hwndTradesMsgID" index "Handler" . " Range1-3 gGui_Settings_Cycle_Messages Hidden"
+			Gui, Settings:Add, Edit, xp+50 yp w355 vTradesMsg1_%index% hwndTradesMsg1_%index%Handler Hidden,
+			Gui, Settings:Add, Edit, xp yp w355 vTradesMsg2_%index% hwndTradesMsg2_%index%Handler Hidden,
+			Gui, Settings:Add, Edit, xp yp w355 vTradesMsg3_%index% hwndTradesMsg3_%index%Handler Hidden,
 
 		DynamicGUIHandlersArray["Btn" index] := TradesBtn%index%Handler
 		DynamicGUIHandlersArray["HPOS" index] := TradesHPOS%index%Handler
@@ -2891,11 +2889,11 @@ Gui_Settings() {
 	}
 ;------------------------------
 ;	Smaller Buttons
-	Gui, Tab, Customization Smaller Buttons
+	Gui, Settings:Tab, Customization Smaller Buttons
 
-	Gui, Add, GroupBox,% "x" GuiXWorkArea " y" GuiYWorkArea-5 " w430 h55" . " c000000 Section Center",About this tab:
-		Gui, Add, Text,xs+10 ys+15 BackgroundTrans,Allows to bind hotkeys to these buttons.
-		Gui, Add, Text,xp yp+15 BackgroundTrans,Disabling all Custom Buttons will effectively show only this row.
+	Gui, Settings:Add, GroupBox,% "x" GuiXWorkArea " y" GuiYWorkArea-5 " w430 h55" . " c000000 Section Center",About this tab:
+		Gui, Settings:Add, Text,xs+10 ys+15 BackgroundTrans,Allows to bind hotkeys to these buttons.
+		Gui, Settings:Add, Text,xp yp+15 BackgroundTrans,Disabling all Custom Buttons will effectively show only this row.
 
 	hexCodes := ["0", "1", "2", "3", "4"]
 	ctrlActions := ["Clipboard" , "Whisper", "Invite", "Trade", "Kick"]
@@ -2907,42 +2905,42 @@ Gui_Settings() {
 			   :(ypos)
 		width := 210, height := 80
 
-		Gui, Font,% "S" 20,% "TC_Symbols"
-		Gui, Add, GroupBox,% "x" xpos " y" ypos " w" width " h" height . " c000000 hwndUnicodeBtn" A_Index "Handler",% ""
+		Gui, Settings:Font,% "S" 20,% "TC_Symbols"
+		Gui, Settings:Add, GroupBox,% "x" xpos " y" ypos " w" width " h" height . " c000000 hwndUnicodeBtn" A_Index "Handler",% ""
 			handler := "UnicodeBtn" A_Index "Handler"
 			ConvertesChars := Hex2Bin(nString, element) ; Convert hex code into its corresponding unicode character
 		   	SetUnicodeText(nString, %handler%) ; Replace the control's content with the unicode character
-		   	Gui, Font
-		   	Gui, Add, Text,% "xp+50 yp+7",% "(" ctrlActions[key] ")"
-		   	Gui, Add, Text,% "x" xpos+10 " yp+22",Position: 
-		   	Gui, Add, DropDownList,% "xp+60" " yp-2" " w" width-80 " R6" " vUnicodeBtn" A_Index "Position" " hwndUnicodeBtn" A_Index "PositionHandler",% "Disabled|1|2|3|4|5"
-		   	Gui, Add, CheckBox,% "x" xpos+10 " yp+27" . " vUnicodeBtn" A_Index "HotkeyToggle" " hwndUnicodeBtn" A_Index "HotkeyToggleHandler", Hotkey:
-		   	Gui, Add, Hotkey,% "xp+60" " yp-3" " w" width-80 . " vUnicodeBtn" A_Index "Hotkey" " hwndUnicodeBtn" A_Index "HotkeyHandler"
+		   	Gui, Settings:Font
+		   	Gui, Settings:Add, Text,% "xp+50 yp+7",% "(" ctrlActions[key] ")"
+		   	Gui, Settings:Add, Text,% "x" xpos+10 " yp+22",Position: 
+		   	Gui, Settings:Add, DropDownList,% "xp+60" " yp-2" " w" width-80 " R6" " vUnicodeBtn" A_Index "Position" " hwndUnicodeBtn" A_Index "PositionHandler",% "Disabled|1|2|3|4|5"
+		   	Gui, Settings:Add, CheckBox,% "x" xpos+10 " yp+27" . " vUnicodeBtn" A_Index "HotkeyToggle" " hwndUnicodeBtn" A_Index "HotkeyToggleHandler", Hotkey:
+		   	Gui, Settings:Add, Hotkey,% "xp+60" " yp-3" " w" width-80 . " vUnicodeBtn" A_Index "Hotkey" " hwndUnicodeBtn" A_Index "HotkeyHandler"
 		   	index := A_Index
 	}
 	key := "", element := "", hexCodes := "", xpos := "", ypos := "", handler := "", ConvertesChars := "", nString := ""
 
 ;------------------------------
 ;	Hotkeys Tab
-	Gui, Tab, Hotkeys
+	Gui, Settings:Tab, Hotkeys
 
-	Gui, Add, GroupBox,% "x" GuiXWorkArea " y" GuiYWorkArea-5 " w430 h55" . " c000000 Section Center",Basic:
-		Gui, Add, Text,xs+10 ys+15 BackgroundTrans,Allows to bind an hotkey to send a single message or command.
-		Gui, Add, Text,xp yp+15 BackgroundTrans,Some keys such as Space or Escape can only be bound in Advanced.
+	Gui, Settings:Add, GroupBox,% "x" GuiXWorkArea " y" GuiYWorkArea-5 " w430 h55" . " c000000 Section Center",Basic:
+		Gui, Settings:Add, Text,xs+10 ys+15 BackgroundTrans,Allows to bind an hotkey to send a single message or command.
+		Gui, Settings:Add, Text,xp yp+15 BackgroundTrans,Some keys such as Space or Escape can only be bound in Advanced.
 
-	Gui, Add, GroupBox, x%GuiXWorkArea% yp+30 w430 h55 c000000 Section Center,Advanced:
-		Gui, Add, Text,xs+10 ys+15 BackgroundTrans,Allows to bind an hotkey to send multiple messages.
-		Gui, Add, Text,xp yp+15 BackgroundTrans,Please refer to the Wiki to find out how to correctly set them up.
+	Gui, Settings:Add, GroupBox, x%GuiXWorkArea% yp+30 w430 h55 c000000 Section Center,Advanced:
+		Gui, Settings:Add, Text,xs+10 ys+15 BackgroundTrans,Allows to bind an hotkey to send multiple messages.
+		Gui, Settings:Add, Text,xp yp+15 BackgroundTrans,Please refer to the Wiki to find out how to correctly set them up.
 
-	Gui, Add, GroupBox, x%GuiXWorkArea% yp+30 w430 h55 c000000 Section Center,Special:
-		Gui, Add, Text,xs+10 ys+15 BackgroundTrans,Allows to bind an hotkey to special actions.
+	Gui, Settings:Add, GroupBox, x%GuiXWorkArea% yp+30 w430 h55 c000000 Section Center,Special:
+		Gui, Settings:Add, Text,xs+10 ys+15 BackgroundTrans,Allows to bind an hotkey to special actions.
 
 ;------------------------------
-	Gui, Tab, Hotkeys Basic
+	Gui, Settings:Tab, Hotkeys Basic
 
-	Gui, Add, GroupBox,% "x" GuiXWorkArea " y" GuiYWorkArea-5 " w430 h55" . " c000000 Section Center",About this tab:
-		Gui, Add, Text,xs+10 ys+15 BackgroundTrans,Allows to bind an hotkey to send a single message or command.
-		Gui, Add, Text,xp yp+15 BackgroundTrans,Some keys such as Space or Escape can only be bound in Advanced.
+	Gui, Settings:Add, GroupBox,% "x" GuiXWorkArea " y" GuiYWorkArea-5 " w430 h55" . " c000000 Section Center",About this tab:
+		Gui, Settings:Add, Text,xs+10 ys+15 BackgroundTrans,Allows to bind an hotkey to send a single message or command.
+		Gui, Settings:Add, Text,xp yp+15 BackgroundTrans,Some keys such as Space or Escape can only be bound in Advanced.
 
 	xpos := guiXWorkArea, ypos := guiYWorkArea+55
 	Loop 8 {
@@ -2951,17 +2949,17 @@ Gui_Settings() {
 			ypos += 70
 		else if (btnID = 5)
 			xpos := guiXWorkArea+220, ypos := guiYWorkArea+55
-		Gui, Add, GroupBox, x%xpos% y%ypos% w210 h70 hwndHotkey%btnID%_GroupBox c000000
-		Gui, Add, Checkbox, xp+10 yp+31 vHotkey%btnID%_Toggle hwndHotkey%btnID%_ToggleHandler
-		Gui, Add, Edit, xp+30 yp-17 w150 vHotkey%btnID%_Text hwndHotkey%btnID%_TextHandler,
-		Gui, Add, Hotkey, xp yp+25 w150 vHotkey%btnID%_KEY hwndHotkey%btnID%_KEYHandler,
+		Gui, Settings:Add, GroupBox, x%xpos% y%ypos% w210 h70 hwndHotkey%btnID%_GroupBox c000000
+		Gui, Settings:Add, Checkbox, xp+10 yp+31 vHotkey%btnID%_Toggle hwndHotkey%btnID%_ToggleHandler
+		Gui, Settings:Add, Edit, xp+30 yp-17 w150 vHotkey%btnID%_Text hwndHotkey%btnID%_TextHandler,
+		Gui, Settings:Add, Hotkey, xp yp+25 w150 vHotkey%btnID%_KEY hwndHotkey%btnID%_KEYHandler,
 	}
 ;-----------------------------------
-	Gui, Tab, Hotkeys Advanced
+	Gui, Settings:Tab, Hotkeys Advanced
 
-	Gui, Add, GroupBox,% "x" GuiXWorkArea " y" GuiYWorkArea-5 " w430 h55" . " c000000 Section Center",About this tab:
-		Gui, Add, Text,xs+10 ys+15 BackgroundTrans,Allows to bind an hotkey to send multiple messages.
-		Gui, Add, Text,xp yp+15 BackgroundTrans,Please refer to the Wiki to find out how to correctly set them up.
+	Gui, Settings:Add, GroupBox,% "x" GuiXWorkArea " y" GuiYWorkArea-5 " w430 h55" . " c000000 Section Center",About this tab:
+		Gui, Settings:Add, Text,xs+10 ys+15 BackgroundTrans,Allows to bind an hotkey to send multiple messages.
+		Gui, Settings:Add, Text,xp yp+15 BackgroundTrans,Please refer to the Wiki to find out how to correctly set them up.
 
 	xpos := guiXWorkArea, ypos := guiYWorkArea+55
 	Loop 16 {
@@ -2970,16 +2968,16 @@ Gui_Settings() {
 			ypos += 35
 		else if ( btnID = 9 )
 			xpos := guiXWorkArea+220, ypos := guiYWorkArea+55
-		Gui, Add, GroupBox, x%xpos% y%ypos% w210 h35 c000000
-		Gui, Add, Checkbox, xp+7 yp+13 w15 h15 vHotkeyAdvanced%btnID%_Toggle hwndHotkeyAdvanced%btnID%_ToggleHandler
-		Gui, Add, Edit, xp+30 yp-3 w60 vHotkeyAdvanced%btnID%_KEY hwndHotkeyAdvanced%btnID%_KEYHandler
-		Gui, Add, Edit, xp+65 yp w100 gGui_Settings_Hotkeys_Tooltip vHotkeyAdvanced%btnID%_Text hwndHotkeyAdvanced%btnID%_TextHandler
+		Gui, Settings:Add, GroupBox, x%xpos% y%ypos% w210 h35 c000000
+		Gui, Settings:Add, Checkbox, xp+7 yp+13 w15 h15 vHotkeyAdvanced%btnID%_Toggle hwndHotkeyAdvanced%btnID%_ToggleHandler
+		Gui, Settings:Add, Edit, xp+30 yp-3 w60 vHotkeyAdvanced%btnID%_KEY hwndHotkeyAdvanced%btnID%_KEYHandler
+		Gui, Settings:Add, Edit, xp+65 yp w100 gGui_Settings_Hotkeys_Tooltip vHotkeyAdvanced%btnID%_Text hwndHotkeyAdvanced%btnID%_TextHandler
 	}
 ;-----------------------------------
-	Gui, Tab, Hotkeys Special
+	Gui, Settings:Tab, Hotkeys Special
 
-	Gui, Add, GroupBox, x%GuiXWorkArea% y%GuiYWorkArea% w430 h55 c000000 Section Center,About this tab:
-		Gui, Add, Text,xs+10 ys+15 BackgroundTrans,Allows to bind an hotkey to special actions.
+	Gui, Settings:Add, GroupBox, x%GuiXWorkArea% y%GuiYWorkArea% w430 h55 c000000 Section Center,About this tab:
+		Gui, Settings:Add, Text,xs+10 ys+15 BackgroundTrans,Allows to bind an hotkey to special actions.
 
 	ctrlNames := ["Choose Next Tab" , "Choose Previous Tab", "Close Current Tab", "Toggle Minimize State"]
 	ctrlVars := ["ChooseNextTab", "ChoosePrevTab", "CloseCurrentTab", "ToggleMinimize"]
@@ -2991,10 +2989,10 @@ Gui_Settings() {
 			   :(ypos)
 		width := 210, height := 60
 
-		Gui, Add, GroupBox,% "x" xpos " y" ypos " w" width " h" height . " c000000",% ctrlNames[A_Index]
-		   	Gui, Add, CheckBox,% "x" xpos+10 " yp+25 w15 h15" . " v" ctrlVars[A_Index] "HotkeyToggle" " hwnd" ctrlVars[A_Index] "HotkeyToggleHandler"
-		   	Gui, Add, Text,% "x" xpos+27 " yp+1",Hotkey:
-		   	Gui, Add, Hotkey,% "xp+45" " yp-3" " w" width-80 . " v" ctrlVars[A_Index] "Hotkey" " hwnd" ctrlVars[A_Index] "HotkeyHandler"
+		Gui, Settings:Add, GroupBox,% "x" xpos " y" ypos " w" width " h" height . " c000000",% ctrlNames[A_Index]
+		   	Gui, Settings:Add, CheckBox,% "x" xpos+10 " yp+25 w15 h15" . " v" ctrlVars[A_Index] "HotkeyToggle" " hwnd" ctrlVars[A_Index] "HotkeyToggleHandler"
+		   	Gui, Settings:Add, Text,% "x" xpos+27 " yp+1",Hotkey:
+		   	Gui, Settings:Add, Hotkey,% "xp+45" " yp-3" " w" width-80 . " v" ctrlVars[A_Index] "Hotkey" " hwnd" ctrlVars[A_Index] "HotkeyHandler"
 	}
 
 
@@ -3006,7 +3004,6 @@ Gui_Settings() {
 	Gui, Settings:Show
 	GuiControl, Settings:Choose,% TabHandler,1
 	guiCreated := 1
-	Gui, %defaultGUI%:Default
 return
 
 	Gui_Settings_Fonts_Color_Preview:
@@ -3088,7 +3085,7 @@ return
 
 		btnID := RegExReplace(A_GuiControl, "\D")
 		ctrlHandler := DynamicGUIHandlersArray["MsgID" btnId]
-		GuiControlGet, currentMsgID,,% ctrlHandler
+		GuiControlGet, currentMsgID,Settings:,% ctrlHandler
 
 		GuiControl, Settings: Hide,% DynamicGUIHandlersArray["Msg1" btnID]
 		GuiControl, Settings: Hide,% DynamicGUIHandlersArray["Msg2" btnID]
@@ -3132,7 +3129,7 @@ return
 
 		; Enable/Disable the control, preventing the user to change the value
 		state := (FontSize="Custom")?("Enable"):("Disable")
-		GuiControl,% "Settings:" state,% FontSizeCustomHandler
+		GuiControl, Settings:%state%,% FontSizeCustomHandler
 		state := (FontQuality="Custom")?("Enable"):("Disable")
 		GuiControl, Settings:%state%,% FontQualityCustomHandler
 	Return
