@@ -4116,7 +4116,6 @@ Gui_Stats() {
 
 	allStats := Gui_Trades_Statistics("GET")
 
-	defaultGUI := A_DefaultGui
 	Gui, Stats:Destroy
 	Gui, Stats:New, +HwndGuiStatsHandler +SysMenu -MinimizeBox -MaximizeBox +Resize +OwnDialogs +MinSize670x360 +LabelGui_Stats_,% ProgramValues.Name " - My Stats"
 	Gui, Stats: Margin, 0, 0
@@ -7014,39 +7013,34 @@ GUI_Beautiful_Warning(params) {
 
 	closeOnClick := params.Close_On_Click
 
-	defaultGui := A_DefaultGUI
-
 	if (condition = "Previous_Instance_Close") {
 		SetTimer, GUI_Beautiful_Warning_Instance_WaitClose, 1000
 	}
 
 	static WarnTextHandler
 
-	defaultGUI := A_DefaultGUI
 	Gui, BeautifulWarn:Destroy
 	Gui, BeautifulWarn:New, +AlwaysOnTop +ToolWindow -Caption -Border +LabelGui_Beautiful_Warning_ hwndGuiBeautifulWarningHandler,% ProgramValues.Name
-	Gui, BeautifulWarn:Default
-	Gui, Margin, 0, 0
-	Gui, Color,% backgroundCol
-	Gui, Font,% "S" guiFontSize,% guiFontName
-	Gui, Add, Progress,% "x0" . " y0" . " h" borderSize . " w" guiWidth . " Background" borderColor ; Top
-	Gui, Add, Text,% "x" xOffset " ym+5 w" guiWidth-(xOffset*2) " c" warnTitleColor " Center BackgroundTrans Section",% ProgramValues.Name
+	Gui, BeautifulWarn: Margin, 0, 0
+	Gui, BeautifulWarn: Color,% backgroundCol
+	Gui, BeautifulWarn: Font,% "S" guiFontSize,% guiFontName
+	Gui, BeautifulWarn: Add, Progress,% "x0" . " y0" . " h" borderSize . " w" guiWidth . " Background" borderColor ; Top
+	Gui, BeautifulWarn: Add, Text,% "x" xOffset " ym+5 w" guiWidth-(xOffset*2) " c" warnTitleColor " Center BackgroundTrans Section",% ProgramValues.Name
 	if (warnTitle) {
-		Gui, Add, Text,% "x" xOffset " w" guiWidth-(xOffset*2) " c" warnTitleColor "  Center BackgroundTrans Section",% warnTitle
-		Gui, Add, Progress,% "x" xOffset . " y+5 h" borderSize . " w" guiWidth-(xOffset*2) . " Background" borderColor " Section" ; Underline
+		Gui, BeautifulWarn: Add, Text,% "x" xOffset " w" guiWidth-(xOffset*2) " c" warnTitleColor "  Center BackgroundTrans Section",% warnTitle
+		Gui, BeautifulWarn: Add, Progress,% "x" xOffset . " y+5 h" borderSize . " w" guiWidth-(xOffset*2) . " Background" borderColor " Section" ; Underline
 	}
-	Gui, Add, Progress,% "x" guiWidth-borderSize . " y0" . " h" guiHeight . " w" borderSize . " Background" borderColor ; Right
-	Gui, Add, Progress,% "x0" . " y" guiHeight-borderSize . " h" borderSize . " w" guiWidth . " Background" borderColor ; Bot
-	Gui, Add, Progress,% "x0" . " y0" . " h" guiHeight . " w" borderSize . " Background" borderColor ; Left
-	Gui, Add, Text,% "x" xOffset " ys+" yOffset " w" guiWidth-(xOffset*2) " hwndWarnTextHandler c" warnTextColor " Center BackgroundTrans",% warnText
+	Gui, BeautifulWarn: Add, Progress,% "x" guiWidth-borderSize . " y0" . " h" guiHeight . " w" borderSize . " Background" borderColor ; Right
+	Gui, BeautifulWarn: Add, Progress,% "x0" . " y" guiHeight-borderSize . " h" borderSize . " w" guiWidth . " Background" borderColor ; Bot
+	Gui, BeautifulWarn: Add, Progress,% "x0" . " y0" . " h" guiHeight . " w" borderSize . " Background" borderColor ; Left
+	Gui, BeautifulWarn: Add, Text,% "x" xOffset " ys+" yOffset " w" guiWidth-(xOffset*2) " hwndWarnTextHandler c" warnTextColor " Center BackgroundTrans",% warnText
 	if (condition = "Reload_Timer") {
 		GoSub GUI_Beautiful_Warning_Reload_Timer
 		SetTimer, GUI_Beautiful_Warning_Reload_Timer, 1000
 	}
 
-	Gui, Add, Text,x0 y0 w%guiWidth% h%guiHeight% BackgroundTrans gGUI_Beautiful_Warning_OnLeftClick,% ""
-	Gui, Show, w%guiWidth% h%guiHeight%
-	Gui, %defaultGUI%:Default
+	Gui, BeautifulWarn: Add, Text,x0 y0 w%guiWidth% h%guiHeight% BackgroundTrans gGUI_Beautiful_Warning_OnLeftClick,% ""
+	Gui, BeautifulWarn: Show, w%guiWidth% h%guiHeight%
 
 	WinWait,% "ahk_id " GuiBeautifulWarningHandler
 	WinWaitClose,% "ahk_id " GuiBeautifulWarningHandler
@@ -7102,22 +7096,19 @@ Gui_AdminWarn() {
 	global ProgramValues
 	static UnlockBtn
 
-	defaultGUI := A_DefaultGUI
 	Gui, AdminWarn:Destroy
 	Gui, AdminWarn:New, +AlwaysOnTop -SysMenu -MinimizeBox -MaximizeBox +LabelGui_AdminWarn_ hwndGuiAdminWarnHandler,% ProgramValues.Name
-	Gui, AdminWarn:Default
-	Gui, Font, ,Consolas
-	Gui, Font, Bold
-	Gui, Add, GroupBox, xm ym cRed w460 h140 Center Section c000000,% "IMPORTANT INFORMATIONS, PLEASE READ"
-	Gui, Add, Text,xs+15 ys+25 Center,% ProgramValues.Name " was unable to start with admin rights previously."
+	Gui, AdminWarn: Font, ,Consolas
+	Gui, AdminWarn: Font, Bold
+	Gui, AdminWarn: Add, GroupBox, xm ym cRed w460 h140 Center Section c000000,% "IMPORTANT INFORMATIONS, PLEASE READ"
+	Gui, AdminWarn: Add, Text,xs+15 ys+25 Center,% ProgramValues.Name " was unable to start with admin rights previously."
 	. "`nTry right clicking the executable and choose ""Run as Administrator""."
 	. "`n`nIf for some reason you prefer not to use admin elevation, please use"
 	. "`nthe shorcut that has been placed in the same folder as the executable."
 	. "`nPlease be aware that unexpected behaiour may happen."
 	. "`n`nThe tool will exit upon closing this window."
-	Gui, Add, Button, xs w460 h30 Disabled vUnlockBtn gGui_AdminWarn_Accept,% "This button will be unlocked in 10..."
-	Gui, Show
-	Gui, %defaultGUI%:Default
+	Gui, AdminWarn: Add, Button, xs w460 h30 Disabled vUnlockBtn gGui_AdminWarn_Accept,% "This button will be unlocked in 10..."
+	Gui, AdminWarn: Show
 	WinWait,% "ahk_id " GuiAdminWarnHandler
 	count := 10
 	Loop %count% {
