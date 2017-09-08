@@ -4119,23 +4119,22 @@ Gui_Stats() {
 	defaultGUI := A_DefaultGui
 	Gui, Stats:Destroy
 	Gui, Stats:New, +HwndGuiStatsHandler +SysMenu -MinimizeBox -MaximizeBox +Resize +OwnDialogs +MinSize670x360 +LabelGui_Stats_,% ProgramValues.Name " - My Stats"
-	Gui, Stats:Default
-	Gui, Margin, 0, 0
-	Gui, Font,,Segoe UI
-	Gui, Add, GroupBox,% "x10 y10 w" guiWidth-20 " h100 hwndFilteringGroupBoxHandler c000000 Section", Filtering Options
-	Gui, Add, Text,xs+15 ys+25,Buyer:
-	Gui, Add, DropDownList,xp+50 yp-2 w150 vBuyersFilter hwndBuyersFilterHandler gGui_Stats_Filter
-	Gui, Add, Text,xs+15 ys+55,Guild:
-	Gui, Add, DropDownList,xp+50 yp-2 w150 vGuildsFilter hwndGuildsFilterHandler gGui_Stats_Filter
-	Gui, Add, Text,xs+225 ys+25,Item:
-	Gui, Add, DropDownList,xp+50 yp-2 w150 vItemsFilter hwndItemsFilterHandler gGui_Stats_Filter
-	Gui, Add, Text,xs+225 ys+55,Currency:
-	Gui, Add, DropDownList,xp+50 yp-2 w150 vCurrenciesFilter hwndCurrenciesFilterHandler gGui_Stats_Filter
-	Gui, Add, Text,xs+430 ys+25,League:
-	Gui, Add, DropDownList,xp+50 yp-2 w150 vLeaguesFilter hwndLeaguesFilterHandler gGui_Stats_Filter
-	Gui, Add, Text,xs+430 ys+55,Tab:
-	Gui, Add, DropDownList,xp+50 yp-2 w150 vTabsFilter hwndTabsFilterHandler gGui_Stats_Filter
-	Gui, Add, ListView, x0 y120 w%guiWidth% hwndListV h300 gGui_Stats_OnListViewClick AltSubmit,#|Date (YYYY-MM-DD)|Time|Guild|Buyer|Item|Price|League|Tab|Other
+	Gui, Stats: Margin, 0, 0
+	Gui, Stats: Font,,Segoe UI
+	Gui, Stats: Add, GroupBox,% "x10 y10 w" guiWidth-20 " h100 hwndFilteringGroupBoxHandler c000000 Section", Filtering Options
+	Gui, Stats: Add, Text,xs+15 ys+25,Buyer:
+	Gui, Stats: Add, DropDownList,xp+50 yp-2 w150 vBuyersFilter hwndBuyersFilterHandler gGui_Stats_Filter
+	Gui, Stats: Add, Text,xs+15 ys+55,Guild:
+	Gui, Stats: Add, DropDownList,xp+50 yp-2 w150 vGuildsFilter hwndGuildsFilterHandler gGui_Stats_Filter
+	Gui, Stats: Add, Text,xs+225 ys+25,Item:
+	Gui, Stats: Add, DropDownList,xp+50 yp-2 w150 vItemsFilter hwndItemsFilterHandler gGui_Stats_Filter
+	Gui, Stats: Add, Text,xs+225 ys+55,Currency:
+	Gui, Stats: Add, DropDownList,xp+50 yp-2 w150 vCurrenciesFilter hwndCurrenciesFilterHandler gGui_Stats_Filter
+	Gui, Stats: Add, Text,xs+430 ys+25,League:
+	Gui, Stats: Add, DropDownList,xp+50 yp-2 w150 vLeaguesFilter hwndLeaguesFilterHandler gGui_Stats_Filter
+	Gui, Stats: Add, Text,xs+430 ys+55,Tab:
+	Gui, Stats: Add, DropDownList,xp+50 yp-2 w150 vTabsFilter hwndTabsFilterHandler gGui_Stats_Filter
+	Gui, Stats: Add, ListView, x0 y120 w%guiWidth% hwndListV h300 gGui_Stats_OnListViewClick AltSubmit,#|Date (YYYY-MM-DD)|Time|Guild|Buyer|Item|Price|League|Tab|Other
 ;	keys := ["Buyer","Guild","Date_YYYYMMDD","Item","Item_Level","Item_Name","Item_Quality","Location","Location_League","Location_Position","Location_Tab","Other","Price","Time"]
 
 	otherMsgs := {}
@@ -4181,8 +4180,7 @@ Gui_Stats() {
 
 	Gosub, Gui_Stats_Parse
 
-	Gui, Show, AutoSize NoActivate
-    Gui, %defaultGUI%:Default
+	Gui, Stats: Show, AutoSize NoActivate
     Return
 
     Gui_Stats_OnListViewClick:
