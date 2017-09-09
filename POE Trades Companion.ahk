@@ -1013,7 +1013,7 @@ Gui_Trades(mode="", tradeInfos="") {
 			Gui, Trades:Add, Text,% "x0 y0 w0 h0 vGuildSlot" A_Index " hwndGuildSlot" A_Index "Handler",% ""
 			Gui, Trades:Add, Text,% "x0 y0 w0 h0 vInAreaSlot" A_Index " hwndInAreaSlot" A_Index "Handler",% ""
 			Gui, Trades:Add, Text,% "x0 y0 w0 h0 vNewMsgSlot" A_Index " hwndNewMsgSlot" A_Index "Handler",% ""
-      Gui, Trades:Add, Text,% "x0 y0 w0 h0 vWithdrawTallySlot" A_Index " hwndWithdrawTallySlot" A_Index "Handler",% ""
+			Gui, Trades:Add, Text,% "x0 y0 w0 h0 vWithdrawTallySlot" A_Index " hwndWithdrawTallySlot" A_Index "Handler",% ""
 
 			TradesGUI_Controls["Buyer_Slot_" A_Index] 			:= BuyerSlot%A_Index%Handler
 			TradesGUI_Controls["Item_Slot_" A_Index] 			:= ItemSlot%A_Index%Handler
@@ -1026,12 +1026,12 @@ Gui_Trades(mode="", tradeInfos="") {
 			TradesGUI_Controls["Guild_Slot_" A_Index] 			:= GuildSlot%A_Index%Handler
 			TradesGUI_Controls["InArea_Slot_" A_Index] 			:= InAreaSlot%A_Index%Handler
 			TradesGUI_Controls["NewMsg_Slot_" A_Index] 			:= NewMsgSlot%A_Index%Handler
-			TradesGUI_Controls["WithdrawTally_Slot_" A_Index] 			:= WithdrawTallySlot%A_Index%Handler
+			TradesGUI_Controls["WithdrawTally_Slot_" A_Index] 	:= WithdrawTallySlot%A_Index%Handler
 		}
 
 ; - - - - - TC_Symbols buttons
 		Gui, Trades:Tab
-		Gui, Trades:Font,% "S" 20*scaleMult,% "TC_Symbols"
+		Gui, Trades:Font,% "S" 12*scaleMult,% "TC_Symbols"
 		fontChars := {Clipboard:"0", Whisper:"1", Invite:"2", Trade:"3", Kick:"4"}
 		fontCharsID := {1:"Clipboard",2:"Whisper",3:"Invite",4:"Trade",5:"Kick"}
 		for btnID, btnType in fontCharsID {
