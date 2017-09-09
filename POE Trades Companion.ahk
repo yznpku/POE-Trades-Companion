@@ -7897,8 +7897,7 @@ ShowToolTip(_tip, tipX=0, tipY=0, radiusX=10, radiusY=10) {
 		previousTipExists := false
 		ToolTip
 		SetTimer, %A_ThisFunc%_Remove, Delete
-		;	Revert CoordMode settings
-		CoordMode(coordSettings)
+		CoordMode(coordSettings) ;	Revert CoordMode settings
 		Return
 	}
 
@@ -7931,20 +7930,6 @@ ShowToolTip(_tip, tipX=0, tipY=0, radiusX=10, radiusY=10) {
 		previousTipExists := true
 		MouseGetPos, currentX, currentY
 
-		; tooltip % ""
-		; . previousTip
-		; . "`n"
-		; . "`nMouseX: " mouseX
-		; . "`nCurrenX: " currentX
-		; . "`nMinus: " currentX - mouseX
-		; . "`n"
-		; . "`nMouseY: " mouseY
-		; . "`nCurrentY: " currentY
-		; . "`nMinus: " currentY - mouseY
-		; . "`n"
-		; . "`nXRadius: " tipRadiusX 
-		; . "`nYRadius: " tipRadiusY
-
 		outOfXRadius := (currentX - mouseX) ** 2 > tipRadiusX ** 2
 		outOfYRadius := (currentY - mouseY) ** 2 > tipRadiusY ** 2
 		if (outOfXRadius || outOfYRadius)	{ ; Out of radius. Remove Tip.
@@ -7960,8 +7945,6 @@ ShowToolTip(_tip, tipX=0, tipY=0, radiusX=10, radiusY=10) {
 		CoordMode(coordSettings)
 	return
 }
-
-numpad1::RemoveToolTip()
 
 #Include %A_ScriptDir%/Resources/AHK/
 #Include BinaryEncodingDecoding.ahk
