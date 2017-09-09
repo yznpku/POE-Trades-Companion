@@ -3296,7 +3296,7 @@ return
 		ctrlHandler := (btnID=1)?(HotkeyAdvanced1_TextHandler):(btnID=2)?(HotkeyAdvanced2_TextHandler):(btnID=3)?(HotkeyAdvanced3_TextHandler):(btnID=4)?(HotkeyAdvanced4_TextHandler):(btnID=5)?(HotkeyAdvanced5_TextHandler):(btnID=6)?(HotkeyAdvanced6_TextHandler):(btnID=7)?(HotkeyAdvanced7_TextHandler):(btnID=8)?(HotkeyAdvanced8_TextHandler):(btnID=9)?(HotkeyAdvanced9_TextHandler):(btnID=10)?(HotkeyAdvanced10_TextHandler):(btnID=11)?(HotkeyAdvanced11_TextHandler):(btnID=12)?(HotkeyAdvanced12_TextHandler):(btnID=13)?(HotkeyAdvanced13_TextHandler):(btnID=14)?(HotkeyAdvanced14_TextHandler):(btnID=15)?(HotkeyAdvanced15_TextHandler):(btnID=16)?(HotkeyAdvanced16_TextHandler):("ERROR")
 		GuiControlGet, ctrlContent, Settings:,% ctrlHandler
 		try 
-			ToolTip,% ctrlContent
+			ShowToolTip(ctrlContent)
 	Return
 
 
@@ -3707,13 +3707,6 @@ Gui_Settings_Custom_Label_Func(type, controlsArray, btnID, action, label) {
 		GuiControl,Settings:%enableOrDisable%,% controlsArray["MarkCompleted" btnID]
 	}
 }
-
-Show_Tooltip(ctrlName, ctrlHandler) {
-	RegExMatch(ctrlName, "\d+", btnID)
-	GuiControlGet, ctrlVar, Settings:,% ctrlHandler
-	ToolTip,% ctrlVar
-}
-
 
 Gui_Settings_Get_Settings_Arrays() {
 ;			Contains all the section/handlers/keys/defaut values for the Settings GUI
@@ -4140,7 +4133,7 @@ Get_Control_ToolTip(controlName) {
 
 Gui_Stats() {
 	static
-	global ProgramValues, Remove_ToolTip_OnMouseMove_Values
+	global ProgramValues
 
 	ProgramValues.Trades_History_File
 
@@ -4223,10 +4216,7 @@ Gui_Stats() {
 			LV_GetText(columnTitle, 0 ,Column)
 			if (columnTitle = "Other") {
 				LV_GetText(rowID, Row)
-				MouseGetPos, mouseX, mouseY
-				Remove_ToolTip_OnMouseMove_Values := {X:mouseX, Y:mouseY, Treshold_X:30, Treshold_Y:10}
-				ToolTip,% otherMsgs[rowID "_Other"]
-				SetTimer, Remove_Tooltip_OnMouseMove, 100
+				ShowToolTip(otherMsgs[rowID "_Other"],,,30,10)
 			}
    		}
     return
@@ -5767,14 +5757,28 @@ WM_MOUSEMOVE(wParam, lParam, msg, hwnd) {
 					GUI_Trades_Update_Tab_Style(btnId)
 				}
 			}
-			CoordMode, ToolTip, Screen
+			; Ctrl Content
 			GuiControlGet, content,Trades:,% btnHandler
-			ctrlPos := Get_Control_Coords("Trades", btnHandler)
-			WinGetPos, tradesXPOS, tradesYPOS
-			ToolTip, % content,% tradesXPOS+ctrlPOS.X,% tradesYPOS+ctrlPOS.Y
-			MouseGetPos, mouseX, mouseY
-			global Remove_ToolTip_OnMouseMove_Values := {X:mouseX, Y:mouseY, Treshold_X:100, Treshold_Y:10}
-			SetTimer, Remove_Tooltip_OnMouseMove, 100
+
+			; Mouse X POS
+			local coordSettings := CoordMode()
+			CoordMode({Mouse:"Client"})
+			MouseGetPos, mouseX
+			CoordMode(coordSettings)
+
+			; Ctrl X/Y POS ... Trades GUI X/Y POS
+			ctrlPOS := Get_Control_Coords("Trades", btnHandler)
+			WinGetPos, tradesXPOS, tradesYPOS	
+
+			radiusW := (ctrlPOS.X+ctrlPOS.W)-mouseX
+			ShowToolTip(content,tradesXPOS+ctrlPOS.X,tradesYPOS+ctrlPOS.Y,radiusW,15)
+			wasPreviousSlot := true
+		}
+		else {
+			if (wasPreviousSlot) {
+				RemoveToolTip()
+				wasPreviousSlot := false
+			}
 		}
 		; if !A_GuiControl ; No control hovered, reset the value
 			; TradesGUI_Values.Last_Hovered_Button := ""
@@ -5783,30 +5787,30 @@ WM_MOUSEMOVE(wParam, lParam, msg, hwnd) {
 	else if ( A_GUI = "Settings" ) {
 		timer := (DebugValues.settings.open_settings)?(-100):(-1000)
 		curControl := A_GuiControl
-		If ( curControl <> prevControl ) {
+		If ( curControl != prevControl ) {
 			controlTip := Get_Control_ToolTip(curControl)
 			if ( controlTip )
-				SetTimer, Display_ToolTip,% timer
+				SetTimer, WM_MOUSEMOVE_DisplayToolTip,% timer
 			Else
-				Gosub, Remove_ToolTip
+				Gosub, WM_MOUSEMOVE_RemoveToolTip
 			prevControl := curControl
 		}
 		return
 		
-		Display_ToolTip:
+		WM_MOUSEMOVE_DisplayToolTip:
 			controlTip := Get_Control_ToolTip(curControl)
 			if ( controlTip ) {
 				try
-					ToolTip,% controlTip
-				SetTimer, Remove_ToolTip, -20000
+					ShowToolTip(controlTip)
+				SetTimer, WM_MOUSEMOVE_RemoveToolTip, -20000
 			}
 			else {
-				ToolTip,
+				RemoveToolTip()
 			}
 		return
 		
-		Remove_ToolTip:
-			ToolTip
+		WM_MOUSEMOVE_RemoveToolTip:
+			RemoveToolTip()
 		return
 	}
 
@@ -6170,25 +6174,6 @@ LV_SubitemHitTest(HLV) {
    ; Get the corresponding subitem (column)
    Subitem := NumGet(LVHITTESTINFO, 16, "Int") + 1
    Return Subitem
-}
-
-Remove_Tooltip_OnMouseMove() {
-/*		Credits to POE-TradeMacro for the original function
-		https://github.com/PoE-TradeMacro/POE-TradeMacro
-*/
-	global Remove_ToolTip_OnMouseMove_Values
-	RemoveTT := Remove_ToolTip_OnMouseMove_Values
-
-	MouseGetPos, currentX, currentY
-
-	mouseMovedH := (currentX - RemoveTT.X) ** 2 > RemoveTT.Treshold_X ** 2
-	mouseMovedV := (currentY - RemoveTT.Y) ** 2 > RemoveTT.Treshold_Y ** 2
-	if (mouseMovedV || mouseMovedH)	{
-		SetTimer, Remove_Tooltip_OnMouseMove, Off
-		Remove_ToolTip_OnMouseMove_Values := ""
-		ToolTip
-	}
-	return
 }
 
 Get_All_Games_Instances() {
@@ -7747,10 +7732,10 @@ GUI_Trades_Update_Tab_Style(tabId) {
 }
 
 StackClick() {
-	global TradesGUI_Values, ProgramSettings
+	global TradesGUI_Values, ProgramSettings, ProgramValues
 	static lastAvailable
 
-	clipboard = ; Clear CLipboard
+	Clipboard := ; Clear CLipboard
 	SendInput {Shift Up}^c
 
 	; wait .01 second for the clipboard and do nothing if it fails 
@@ -7758,7 +7743,7 @@ StackClick() {
 	if (ErrorLevel) {
 		return
 	}
-	clip := clipboard
+	clip := Clipboard
 
 	tabId := TradesGUI_Values.Active_Tab
 	tabInfo := Gui_Trades_Get_Trades_Infos(tabId)
@@ -7777,136 +7762,206 @@ StackClick() {
 			tipInfo := "Stack size hasn't changed since your last click. `n"
 			tipInfo .= "This is normaly caused by latency issues but `n"
 			tipInfo .= "could mean the macro has run into problems"
-			Gosub showToolTip 
+			Gosub %A_ThisFunc%_ShowToolTip
 			return
 		}
 		; Don't do anything if we've already withdrawn all we need
 		if ((required - withdrawn) <= 0) {
 			tipInfo := "You've already withdrawn the required amount."
-			Gosub showToolTip
+			Gosub %A_ThisFunc%_ShowToolTip
 			return
 		}
 
 		if ((withdrawn + amount) < required) {
-			Gosub CtrlClick
+			Gosub %A_ThisFunc%_CtrlClick
 		} else if ((withdrawn + amount) = required) {
-			Gosub CtrlClick
-			Gosub Finished
+			Gosub %A_ThisFunc%_CtrlClick
+			Gosub %A_ThisFunc%_Finished
 		} else {
 			amount := required - withdrawn
-			Gosub ShiftClickPlus
-			Gosub Finished
+			Gosub %A_ThisFunc%_ShiftClickPlus
+			Gosub %A_ThisFunc%_Finished
 		}
 		GUI_Trades_Inc_WithdrawTally(tabId, amount)
 		withdrawn := withdrawn + amount ;update for tooltip
-		Gosub showToolTip
+		Gosub %A_ThisFunc%_ShowToolTip
 		; If transfering individual stacks, add a 250ms delay to account for lag and remove lastAvailable. Otherwise next click will do nothing
 		if (available == stackSize) {
-			sleep 250
+			Sleep 250
 			lastAvailable := 0
 		} else {
 			lastAvailable := available
 		}
 	} else {
-		Gosub CtrlClick
+		Gosub %A_ThisFunc%_CtrlClick
 	}
 	return
 
 	; Using these because ^{LButton} was finicky, sometimes including shifts or not executing properly
-	CtrlClick:
-		Gosub GetKeyStates
+	StackClick_CtrlClick:
+		Gosub %A_ThisFunc%_GetKeyStates
 		SendInput {Ctrl Down}{Shift Up}{Lbutton Up}{Ctrl Up}
-		Gosub ReturnKeyStates
+		Gosub %A_ThisFunc%_ReturnKeyStates
 		return
-	ShiftClickPlus:
-		Gosub GetKeyStates
+	StackClick_ShiftClickPlus:
+		Gosub %A_ThisFunc%_GetKeyStates
 		SendInput {Shift Down}{Ctrl Up}{LButton Up}{Shift Up}
 		SendInput, %amount%{Enter}
-		Gosub ReturnKeyStates
+		Gosub %A_ThisFunc%_ReturnKeyStates
 		return
-	GetKeyStates:
+	StackClick_GetKeyStates:
 		shiftState := (GetKeyState("Shift"))?("Down"):("Up")
 		ctrlState := (GetKeyState("Shift"))?("Down"):("Up")
 		Hotkey, *Shift, DoNothing, On
 		Hotkey, *Ctrl, DoNothing, On
 		sleep 10
 		return
-	ReturnKeyStates:
+	StackClick_ReturnKeyStates:
 		sleep 10
 		Hotkey, *Shift, DoNothing, Off
 		Hotkey, *Ctrl, DoNothing, Off
 		Send {Shift %shiftState%}{Ctrl %ctrlState%} ; Restore ctrl/shift state
 		return
-	Finished: 
-		SoundPlay,% ProgramSettings.Whisper_Sound_Path
+	StackClick_Finished: 
 		lastAvailable := 0
 		tipInfo := "Finished. You should have withdrawn the required amount."
 		return
-	ShowToolTip:
-		tip := "POE Trades Companion `n"
-		tip .= "===============================`n"
-		tip .= item.Name "`n"
-		tip .= "Required: " required " | Withdrawn: "  withdrawn "`n"
+	StackClick_ShowToolTip:
+		_tip := ProgramValues.Name " `n"
+		_tip .= "===============================`n"
+		_tip .= item.Name "`n"
+		_tip .= "Required: " required " | Withdrawn: "  withdrawn "`n"
 		if (tipInfo) {
-			tip .= "===============================`n"
-			tip .= tipInfo
+			_tip .= "===============================`n"
+			_tip .= tipInfo
 		}
-		mouseTooltip(tip)
+		ShowToolTip(_tip)
 		return
 }
 
-ShiftClickPlus() {
-	global TradesGUI_Values, ProgramSettings
-
-	clipboard = ; Clear CLipboard
-	SendInput {Shift Up}^c
-
-	; wait for clipboard to be populated and do nothing if it fails
-	ClipWait, .2
-	if (ErrorLevel) {
-		return
-	}
-	clip := clipboard
-
-	tabId := TradesGUI_Values.Active_Tab
-	tabInfo := Gui_Trades_Get_Trades_Infos(tabId)
-	item := Gui_Stats_Get_Currency_Name(tabInfo.item)
-
-	if (item.name && RegExMatch(clip, "i)(?:" item.name ")[\s\S]*: (\d+(?:[,.]\d+)*)\/(\d+(?:[,.]\d+)*)", match)) {
-		available := RegexReplace(match1, "[,.]")
-		stackSize := RegexReplace(match2, "[,.]")
-
-		;amount = remainder of required/stacksize
-		RegExMatch(tabinfo.item, "\d+", required)
-		amount := Mod(required, stackSize) 
-
-		SendInput {Shift Down}{Ctrl Up}{LButton Up}{Shift Up}
-		SendInput, %amount%{Enter}
-	}
-	return
+RemoveToolTip() {
+/*	Reset ShowToolTip() parameters used to detect previous tip and previous tip existence, and remove ToolTip.
+*/
+	ShowToolTip("",0,0,0,0)
 }
 
-mouseTooltip(tip, posX = 0, posY = 0) {
-	static mouseX, mouseY
+CoordMode(obj="") {
+/*	Param1
+ *	ToolTip: Affects ToolTip.
+ *	Pixel: Affects PixelGetColor, PixelSearch, and ImageSearch.
+ *	Mouse: Affects MouseGetPos, Click, and MouseMove/Click/Drag.
+ *	Caret: Affects the built-in variables A_CaretX and A_CaretY.
+ *	Menu: Affects the Menu Show command when coordinates are specified for it.
+
+ *	Param2
+ *	If Param2 is omitted, it defaults to Screen.
+ *	Screen: Coordinates are relative to the desktop (entire screen).
+ *	Relative: Coordinates are relative to the active window.
+ *	Window [v1.1.05+]: Synonymous with Relative and recommended for clarity.
+ *	Client [v1.1.05+]: Coordinates are relative to the active window's client area, which excludes the window's title bar, menu (if it has a standard one) and borders. Client coordinates are less dependent on OS version and theme.
+*/
+	if !(obj) { ; No param specified. Return current settings
+		CoordMode_Settings := {}
+
+		CoordMode_Settings.ToolTip 	:= A_CoordModeToolTip
+		CoordMode_Settings.Pixel 	:= A_CoordModePixel
+		CoordMode_Settings.Mouse 	:= A_CoordModeMouse
+		CoordMode_Settings.Caret 	:= A_CoordModeCaret
+		CoordMode_Settings.Menu 	:= A_CoordModeMenu
+
+		return CoordMode_Settings
+	}
+
+	for param1, param2 in obj { ; Apply specified settings.
+		if param1 not in ToolTip,Pixel,Mouse,Caret,Menu
+			MsgBox, Wrong Param1 for CoordMode: %param1%
+		else if param2 not in Screen,Relative,Window,Client
+			Msgbox, Wrong Param2 for CoordMode: %param2%
+		else
+			CoordMode,%param1%,%param2%
+	}
+}
+
+ShowToolTip(_tip, tipX=0, tipY=0, radiusX=10, radiusY=10) {
+/*	Show a tooltip at the cursor position, unless specified.
+	Tooltip disappears upon moving the mouse outside specified radius.
+*/
+	static mouseX, mouseY, tipRadiusX, tipRadiusY, previousTip, previousTipExists
+
+;	Get current CoordMode settings and set CoordMode
+	CoordMode({Mouse:"Screen",ToolTip:"Screen"})
+
+;	RemoveToolTip()
+	if (!_tip && _tip != 0) {
+		previousTip := 
+		previousTipExists := false
+		ToolTip
+		SetTimer, %A_ThisFunc%_Remove, Delete
+		;	Revert CoordMode settings
+		CoordMode(coordSettings)
+		Return
+	}
+
+;	Radius and mouse position. Used for removal on mouse move out of radius.
+	tipRadiusX := radiusX, tipRadiusY := radiusY ; Backup of parameters, so we can declare as static.
 	MouseGetPos, mouseX, mouseY
-	posX := (posX) ? posX : mouseX +20 ;So the tooltip isnt coverd by your mouse
-	posY := (posY) ? posY : mouseY
 
-	ToolTip ; Removes the old tooltip, otherwise I get underlined fonts for some reason
-	ToolTip, % tip, posX, posY
-	SetTimer, RemoveTT, 100
+;	Showing the ToolTip
+	if (previousTip != _tip || !previousTipExists) {
+		ToolTip ; Reset tooltip. Avoid uninteded tooltip style such as underline.
+		if (tipX || tipY) { ; Show tip at specified position.
+			ToolTip,% _tip,% tipX,% tipY 
+		}
+		else { ; Let AHK handle position.
+			ToolTip,% _tip
+		}
+	}
+
+	previousTip := _tip ; Avoid replacing previous tip, when previous still exists.
+	GoSub, %A_ThisFunc%_Remove ; Run "out of radius" timer.
 	return
 
-	RemoveTT:
+	ShowToolTip_Remove:
+	/*	Remove the tooltip once the mouse exists the square radius.
+	*/
+	;	Get current CoordMode settings and set CoordMode
+		coordSettings := CoordMode()
+		CoordMode({Mouse:"Screen",ToolTip:"Screen"})
+
+		previousTipExists := true
 		MouseGetPos, currentX, currentY
-		movedX := (currentX - mouseX) ** 2 > 100
-		movedY := (currentY - mouseY) ** 2 > 100
-		if (movedX || movedY)	{
-			SetTimer, RemoveTT, Off
-			ToolTip
+
+		; tooltip % ""
+		; . previousTip
+		; . "`n"
+		; . "`nMouseX: " mouseX
+		; . "`nCurrenX: " currentX
+		; . "`nMinus: " currentX - mouseX
+		; . "`n"
+		; . "`nMouseY: " mouseY
+		; . "`nCurrentY: " currentY
+		; . "`nMinus: " currentY - mouseY
+		; . "`n"
+		; . "`nXRadius: " tipRadiusX 
+		; . "`nYRadius: " tipRadiusY
+
+		outOfXRadius := (currentX - mouseX) ** 2 > tipRadiusX ** 2
+		outOfYRadius := (currentY - mouseY) ** 2 > tipRadiusY ** 2
+		if (outOfXRadius || outOfYRadius)	{ ; Out of radius. Remove Tip.
+			SetTimer, %A_ThisLabel%, Delete
+			RemoveToolTip()
+			previousTipExists := false
 		}
-		return
+		else {
+			SetTimer, %A_ThisLabel%, -100
+		}
+
+	;	Revert CoordMode settings
+		CoordMode(coordSettings)
+	return
 }
+
+numpad1::RemoveToolTip()
 
 #Include %A_ScriptDir%/Resources/AHK/
 #Include BinaryEncodingDecoding.ahk
