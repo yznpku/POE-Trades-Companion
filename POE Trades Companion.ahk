@@ -127,7 +127,7 @@ Start_Script() {
 	Load_Debug_JSON()
 
 ;	Data currency
-	FileRead, allCurrency,% ProgramValues.Data_Folder "\Resources\Data\Currency_All.txt"
+	FileRead, allCurrency,% ProgramValues.Data_Folder "\Currency_All.txt"
 	Loop, Parse, allCurrency, `n`r
 	{
 		if ( A_LoopField ) {
@@ -137,7 +137,7 @@ Start_Script() {
 	StringTrimRight, Stats_RealCurrencyNames, Stats_RealCurrencyNames, 1 ; Remove last comma
 
 ;	Data currency names converter
-	FileRead, JSONFile,% ProgramValues.Data_Folder "\Resources\Data\currencyTradeNames.json"
+	FileRead, JSONFile,% ProgramValues.Data_Folder "\currencyTradeNames.json"
 	parsedJSON := JSON.Load(JSONFile)
 	Stats_TradeCurrencyNames := parsedJSON.currencyNames.eng
 
@@ -563,7 +563,8 @@ Filter_Logs_Message(message) {
 									  ,Date:A_YYYY "-" A_MM "-" A_DD
 									  ,Guild:whispGuild
 									  ,InArea:0
-									  ,NewMsg:0}
+									  ,NewMsg:0
+									  ,WithdrawTally:0}
 					messagesArray := Gui_Trades_Manage_Trades("ADD_NEW", newTradesInfos)
 					Gui_Trades("UPDATE", messagesArray)
 
@@ -1012,6 +1013,7 @@ Gui_Trades(mode="", tradeInfos="") {
 			Gui, Trades:Add, Text,% "x0 y0 w0 h0 vGuildSlot" A_Index " hwndGuildSlot" A_Index "Handler",% ""
 			Gui, Trades:Add, Text,% "x0 y0 w0 h0 vInAreaSlot" A_Index " hwndInAreaSlot" A_Index "Handler",% ""
 			Gui, Trades:Add, Text,% "x0 y0 w0 h0 vNewMsgSlot" A_Index " hwndNewMsgSlot" A_Index "Handler",% ""
+      Gui, Trades:Add, Text,% "x0 y0 w0 h0 vWithdrawTallySlot" A_Index " hwndWithdrawTallySlot" A_Index "Handler",% ""
 
 			TradesGUI_Controls["Buyer_Slot_" A_Index] 			:= BuyerSlot%A_Index%Handler
 			TradesGUI_Controls["Item_Slot_" A_Index] 			:= ItemSlot%A_Index%Handler
@@ -1024,6 +1026,7 @@ Gui_Trades(mode="", tradeInfos="") {
 			TradesGUI_Controls["Guild_Slot_" A_Index] 			:= GuildSlot%A_Index%Handler
 			TradesGUI_Controls["InArea_Slot_" A_Index] 			:= InAreaSlot%A_Index%Handler
 			TradesGUI_Controls["NewMsg_Slot_" A_Index] 			:= NewMsgSlot%A_Index%Handler
+			TradesGUI_Controls["WithdrawTally_Slot_" A_Index] 			:= WithdrawTallySlot%A_Index%Handler
 		}
 
 ; - - - - - TC_Symbols buttons
@@ -1203,6 +1206,7 @@ Gui_Trades(mode="", tradeInfos="") {
 			GuiControl, Trades:,% GuildSlot%A_Index%Handler,% tradeInfos[A_Index "_Guild"]
 			GuiControl, Trades:,% InAreaSlot%A_Index%Handler,% tradeInfos[A_Index "_InArea"]
 			GuiControl, Trades:,% NewMsgSlot%A_Index%Handler,% tradeInfos[A_Index "_NewMsg"]
+			GuiControl, Trades:,% WithdrawTallySlot%A_Index%Handler,% tradeInfos[A_Index "_WithdrawTally"]
 			GuiControl, Trades:,% TradesGUI_Controls["Tab_" A_Index],% A_Index
 			GUI_Trades_Update_Tab_Style(A_Index)
 		}
@@ -2180,6 +2184,7 @@ Gui_Trades_Get_Trades_Infos(tabID){
 	GuiControlGet, tabGuild, Trades:,% TradesGUI_Controls["Guild_Slot_" tabID]
 	GuiControlGet, tabInArea, Trades:,% TradesGUI_Controls["InArea_Slot_" tabID]
 	GuiControlGet, tabNewMsg, Trades:,% TradesGUI_Controls["NewMsg_Slot_" tabID]
+	GuiControlGet, tabWithdrawTally, Trades:,% TradesGUI_Controls["WithdrawTally_Slot_" tabID]
 
 	if RegExMatch(tabLocation, "(.*)\(Tab:(.*) / Pos:(.*)\)", tabLocationPat) 
 		leagueName := tabLocationPat1, stashName := tabLocationPat2, stashPos := tabLocationPat3
@@ -2208,7 +2213,8 @@ Gui_Trades_Get_Trades_Infos(tabID){
 				,Date_YYYYMMDD:tabDate
 				,TabID:tabID
 				,InArea:tabInArea
-				,NewMsg:tabNewMsg}
+				,NewMsg:tabNewMsg
+				,WithdrawTally:tabWithdrawTally}
 
 	return tabInfos
 }
@@ -2420,6 +2426,15 @@ Gui_Trades_Manage_Trades(mode, newItemInfos="", activeTabID=""){
 			}
 			else break
 		}
+	;	___WithdrawTally___
+		Loop {
+			withdrawTallyCount := A_Index
+			GuiControlGet, content, Trades:,% TradesGUI_Controls["WithdrawTally_Slot_" A_Index]
+			if ( content != "" ) {
+				returnArray.Insert(A_Index "_WithdrawTally", content)
+			}
+			else break
+		}
 	
 		returnArray.Insert("Max_Index", actualTabsCount)
 	}
@@ -2436,6 +2451,7 @@ Gui_Trades_Manage_Trades(mode, newItemInfos="", activeTabID=""){
 		returnArray.Insert(guildsCount "_Guild", newItemInfos.Guild)
 		returnArray.Insert(inAreaCount "_InArea", newItemInfos.InArea)
 		returnArray.Insert(newMsgCount "_NewMsg", newItemInfos.NewMsg)
+		returnArray.Insert(withdrawTallyCount "_WithdrawTally", newItemInfos.WithdrawTally)
 		returnArray.Insert("Max_Index", bCount)
 	}
 
@@ -2616,6 +2632,23 @@ Gui_Trades_Manage_Trades(mode, newItemInfos="", activeTabID=""){
 		}
 		counter--
 		GuiControl,Trades:,% TradesGUI_Controls["NewMsg_Slot_" counter],% ""
+
+;	___WithdrawTally___
+		Loop {
+			if ( A_Index < btnID )
+				counter := A_Index
+			else if ( A_Index >= btnID )
+				counter := A_Index+1
+			GuiControlGet, content, Trades:,% TradesGUI_Controls["WithdrawTally_Slot_" counter]
+			if ( content != "") {
+				index := A_Index
+				returnArray.Insert(index "_WithdrawTally", content)
+			}
+			else break
+		}
+		counter--
+		GuiControl,Trades:,% TradesGUI_Controls["WithdrawTally_Slot_" counter],% ""
+
 
 	}
 
@@ -4362,7 +4395,6 @@ Gui_Stats_Get_Currency_Name(currency) {
 		When the string is plural, check if the full list of currencies contains its non-plural counterpart.
  */
 	global Stats_RealCurrencyNames, Stats_TradeCurrencyNames
-
 	if RegExMatch(currency, "See Offer") {
 		isCurrencyListed := False
 		Return {Name:currency, Is_Listed:isCurrencyListed}
@@ -7676,7 +7708,12 @@ GUI_Trades_Set_InArea(tabId, value = 1) {
 	global TradesGUI_Controls
 	GuiControl,Trades:,% TradesGUI_Controls["InArea_Slot_" tabId],% value
 }
-
+GUI_Trades_Inc_WithdrawTally(tabId, value) {
+	global TradesGUI_Controls
+	GuiControlGet, tabWithdrawTally, Trades:,% TradesGUI_Controls["WithdrawTally_Slot_" tabID]
+	tabWithdrawTally := (tabWithdrawTally) ? tabWithdrawTally + value : value
+	GuiControl,Trades:,% TradesGUI_Controls["WithdrawTally_Slot_" tabId],% tabWithdrawTally
+}
 Gui_Trades_Update_Tabs() {
 	global TradesGui_Values, TradesGui_Controls, ProgramSettings
 	tabsCount  := TradesGui_Values.Tabs_Count
@@ -7709,8 +7746,173 @@ GUI_Trades_Update_Tab_Style(tabId) {
 	}
 }
 
+StackClick() {
+	global TradesGUI_Values, ProgramSettings
+	static lastAvailable
+
+	clipboard = ; Clear CLipboard
+	SendInput {Shift Up}^c
+
+	; wait .01 second for the clipboard and do nothing if it fails 
+	ClipWait, .1
+	if (ErrorLevel) {
+		return
+	}
+	clip := clipboard
+
+	tabId := TradesGUI_Values.Active_Tab
+	tabInfo := Gui_Trades_Get_Trades_Infos(tabId)
+	item := Gui_Stats_Get_Currency_Name(tabInfo.item)
+
+	if (item.name && RegExMatch(clip, "i)(?:" item.name ")[\s\S]*: (\d+(?:[,.]\d+)*)\/(\d+(?:[,.]\d+)*)", match)) {
+		available := RegexReplace(match1, "[,.]")
+		stackSize := RegexReplace(match2, "[,.]")
+
+		RegExMatch(tabinfo.item, "\d+", required) ; get required amount
+		withdrawn := tabInfo.withdrawTally
+		amount := (available >= stackSize) ? stackSize : available
+
+		; if available amount hasn't changed, it's likely the previous click hasn't gone through yet
+		if (available = lastAvailable) {
+			tipInfo := "Stack size hasn't changed since your last click. `n"
+			tipInfo .= "This is normaly caused by latency issues but `n"
+			tipInfo .= "could mean the macro has run into problems"
+			Gosub showToolTip 
+			return
+		}
+		; Don't do anything if we've already withdrawn all we need
+		if ((required - withdrawn) <= 0) {
+			tipInfo := "You've already withdrawn the required amount."
+			Gosub showToolTip
+			return
+		}
+
+		if ((withdrawn + amount) < required) {
+			Gosub CtrlClick
+		} else if ((withdrawn + amount) = required) {
+			Gosub CtrlClick
+			Gosub Finished
+		} else {
+			amount := required - withdrawn
+			Gosub ShiftClickPlus
+			Gosub Finished
+		}
+		GUI_Trades_Inc_WithdrawTally(tabId, amount)
+		withdrawn := withdrawn + amount ;update for tooltip
+		Gosub showToolTip
+		; If transfering individual stacks, add a 250ms delay to account for lag and remove lastAvailable. Otherwise next click will do nothing
+		if (available == stackSize) {
+			sleep 250
+			lastAvailable := 0
+		} else {
+			lastAvailable := available
+		}
+	} else {
+		Gosub CtrlClick
+	}
+	return
+
+	; Using these because ^{LButton} was finicky, sometimes including shifts or not executing properly
+	CtrlClick:
+		Gosub GetKeyStates
+		SendInput {Ctrl Down}{Shift Up}{Lbutton Up}{Ctrl Up}
+		Gosub ReturnKeyStates
+		return
+	ShiftClickPlus:
+		Gosub GetKeyStates
+		SendInput {Shift Down}{Ctrl Up}{LButton Up}{Shift Up}
+		SendInput, %amount%{Enter}
+		Gosub ReturnKeyStates
+		return
+	GetKeyStates:
+		shiftState := (GetKeyState("Shift"))?("Down"):("Up")
+		ctrlState := (GetKeyState("Shift"))?("Down"):("Up")
+		Hotkey, *Shift, DoNothing, On
+		Hotkey, *Ctrl, DoNothing, On
+		sleep 10
+		return
+	ReturnKeyStates:
+		sleep 10
+		Hotkey, *Shift, DoNothing, Off
+		Hotkey, *Ctrl, DoNothing, Off
+		Send {Shift %shiftState%}{Ctrl %ctrlState%} ; Restore ctrl/shift state
+		return
+	Finished: 
+		SoundPlay,% ProgramSettings.Whisper_Sound_Path
+		lastAvailable := 0
+		tipInfo := "Finished. You should have withdrawn the required amount."
+		return
+	ShowToolTip:
+		tip := "POE Trades Companion `n"
+		tip .= "===============================`n"
+		tip .= item.Name "`n"
+		tip .= "Required: " required " | Withdrawn: "  withdrawn "`n"
+		if (tipInfo) {
+			tip .= "===============================`n"
+			tip .= tipInfo
+		}
+		mouseTooltip(tip)
+		return
+}
+
+ShiftClickPlus() {
+	global TradesGUI_Values, ProgramSettings
+
+	clipboard = ; Clear CLipboard
+	SendInput {Shift Up}^c
+
+	; wait for clipboard to be populated and do nothing if it fails
+	ClipWait, .2
+	if (ErrorLevel) {
+		return
+	}
+	clip := clipboard
+
+	tabId := TradesGUI_Values.Active_Tab
+	tabInfo := Gui_Trades_Get_Trades_Infos(tabId)
+	item := Gui_Stats_Get_Currency_Name(tabInfo.item)
+
+	if (item.name && RegExMatch(clip, "i)(?:" item.name ")[\s\S]*: (\d+(?:[,.]\d+)*)\/(\d+(?:[,.]\d+)*)", match)) {
+		available := RegexReplace(match1, "[,.]")
+		stackSize := RegexReplace(match2, "[,.]")
+
+		;amount = remainder of required/stacksize
+		RegExMatch(tabinfo.item, "\d+", required)
+		amount := Mod(required, stackSize) 
+
+		SendInput {Shift Down}{Ctrl Up}{LButton Up}{Shift Up}
+		SendInput, %amount%{Enter}
+	}
+	return
+}
+
+mouseTooltip(tip, posX = 0, posY = 0) {
+	static mouseX, mouseY
+	MouseGetPos, mouseX, mouseY
+	posX := (posX) ? posX : mouseX +20 ;So the tooltip isnt coverd by your mouse
+	posY := (posY) ? posY : mouseY
+
+	ToolTip ; Removes the old tooltip, otherwise I get underlined fonts for some reason
+	ToolTip, % tip, posX, posY
+	SetTimer, RemoveTT, 100
+	return
+
+	RemoveTT:
+		MouseGetPos, currentX, currentY
+		movedX := (currentX - mouseX) ** 2 > 100
+		movedY := (currentY - mouseY) ** 2 > 100
+		if (movedX || movedY)	{
+			SetTimer, RemoveTT, Off
+			ToolTip
+		}
+		return
+}
+
 #Include %A_ScriptDir%/Resources/AHK/
 #Include BinaryEncodingDecoding.ahk
 #Include JSON.ahk
 #Include Class_ImageButton.ahk  
 #Include BetaFuncs.ahk
+
+#IfWinActive ahk_group POEGame
+^+LButton::StackClick()
