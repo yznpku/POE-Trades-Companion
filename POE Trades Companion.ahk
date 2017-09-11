@@ -6443,12 +6443,12 @@ Send_InGame_Message(allMessages, tabInfos="", specialEvent="") {
 			SendEvent,{VK%chatVK%}
 
 			if firstChar not in /,`%,&,#,@  ; Not a command. We send / then remove it to make sure chat is empty
-				SendEvent, {/}{BackSpace}
+				SendEvent, {sc035}{BackSpace} ; Slash
 
 			; Pasting the message, and send
 			SendEvent,{Ctrl Down} ; Separating the inputs fixes an issue where ^v could fail (rarely, but stil happened)
 			Sleep 10
-			SendEvent,{v}
+			SendEvent,{sc02F} ; Ctrl+V
 			Sleep 10
 			SendEvent,{Ctrl Up}
 			SendEvent,{Enter}
@@ -6513,12 +6513,12 @@ Send_InGame_Message(allMessages, tabInfos="", specialEvent="") {
 
 					; Clearing chat
 					if firstChar not in /,`%,&,#,@ ; Not a command. We send / then remove it to make sure chat is empty
-						SendEvent,{/}{BackSpace}
+						SendEvent,{sc035}{BackSpace} ; Slash
 
 					; Pasting the message, and send
 					SendEvent,{Ctrl Down} ; Separating the inputs fixes an issue where ^v could fail (rarely, but stil happened)
 					Sleep 10
-					SendEvent,{v}
+					SendEvent,{sc02F} ; Ctrl+V
 					Sleep 10
 					SendEvent,{Ctrl Up}
 					if !( specialEvent.doNotSend )
@@ -7736,7 +7736,7 @@ StackClick() {
 	static lastAvailable
 
 	Clipboard := ; Clear CLipboard
-	SendInput {Shift Up}^c
+	SendInput {Shift Up}^{sc02E} ; Ctrl+C
 
 	; wait .01 second for the clipboard and do nothing if it fails 
 	ClipWait, .1
