@@ -6622,7 +6622,7 @@ StringToHex(String) {
 	Return HexString
 }
 
-Install_Font_Files() {
+Install_Font_Files(doAgain=false) {
 /*		Compare local and installed fonts file size
 		If any font is not installed or is different, run FontReg.
 */
@@ -6671,21 +6671,37 @@ Install_Font_Files() {
 		if (fontName)
 			fontsNeedInstall_Index++, fontsNeedsInstall_Names .= fontName ","
 	}
+	StringTrimRight, fontsNeedsInstall_Names, fontsNeedsInstall_Names, 1 ; Remove latest comma
 
 ;	All fonts are already installed.
 	if (!fontsNeedInstall_Index)
 		Return
 
 ;	Not running as admin. We need UAC to install a font.
-	if (!A_IsAdmin || RunParameters.NoAdmin) {
+	if ( (!A_IsAdmin || RunParameters.NoAdmin) && !doAgain) {
 		MsgBox, 4096,% ProgramValues.Name " - Missing admin rights.",% "Fonts need to be installed on your system for the tool to work correctly."
-										. "`nThe following fonts will be installed on your system (" fontsNeedInstall_Index "): " fontsNeedsInstall_Names
+										. "`nThe following fonts will be installed on your system (" fontsNeedInstall_Index "): "
+										. "`n" fontsNeedsInstall_Names
+										. "`n"
 										. "`nPlease allow the next UAC prompt."
 										. "`n(Rebooting may be neccessary after installing the fonts)"
 	}
+;	Some fonts are still missing. Require user to install them manually.
+	if (doAgain) {
+		MsgBox, 4096,% ProgramValues.Name " - Missing fonts.",% "The following fonts failed to be installed on your system (" fontsNeedInstall_Index "):"
+															.	"`n" fontsNeedsInstall_Names
+															. 	"`n"
+															. 	"`nThe folder containing these fonts will be opened upon closing this box."
+															. 	"`nPlease close this tool then install the fonts manually before starting the tool again."
+															.   "`n(Rebooting may be neccessary after installing the fonts)"
+		Run,% fontsFolder
+	}
 
 ;	Run FontReg with /Copy to install fonts.
-	try Run,% fontsFolder "/FontReg.exe /Copy",% fontsFolder
+	if !(doAgain) {
+		try RunWait,% fontsFolder "/FontReg.exe /Copy",% fontsFolder
+		%A_ThisFunc%(true)
+	}
 }
 
 Extract_Assets() {
