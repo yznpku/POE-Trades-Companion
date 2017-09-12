@@ -889,6 +889,8 @@ Gui_Trades(mode="", tradeInfos="") {
 		Gui, Trades:Add, Tab2, x0 y0 w0 h0 -Wrap vTabCtrl hWndhTabCtrl,% ""
 		TradesGUI_Controls["Tab"] := hTabCtrl
 
+		local imageBtnError := 
+
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * * * * * * * * * *			S K I N N I N G			* * * * * * * * * *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -902,10 +904,10 @@ Gui_Trades(mode="", tradeInfos="") {
 
 		Gui, Trades:Add, Button,% "x" guiWidth-(20*scaleMult)-borderSize-4 " y" borderSize+4 " w20 h20 gGui_Trades_Minimize hwndhHeaderMinimize",% ""
 		if !ImageButton.Create(hHeaderMinimize, IBStyle_Minimize*)
-			MsgBox, 0, ImageButton Error Minimize, % ImageButton.LastError
+			imageBtnError .= "`nMinimize: " ImageButton.LastError
 		Gui, Trades:Add, Button,% "x" guiWidth-(20*scaleMult)-borderSize-4 " y" borderSize+4 " w20 h20 gGui_Trades_Minimize hwndhHeaderMaximize",% ""
 		if !ImageButton.Create(hHeaderMaximize, IBStyle_Maximize*)
-			MsgBox, 0, ImageButton Error Maximize, % ImageButton.LastError
+			imageBtnError .= "`nMaximize: " ImageButton.LastError
 
 		Gui, Trades:Add, Text,% "x" borderSize+(24*scaleMult) . " y" borderSize . " w" guiWidth-(borderSize+(32*scaleMult))-(borderSize-4+(20*scaleMult)) " h" (30-(2*scaleMult))*scaleMult " hWndhHeaderTitle gGui_Trades_Move c" colorTitleInactive . " BackgroundTrans +0x200 Center",% ProgramValues.Name
 
@@ -935,7 +937,7 @@ Gui_Trades(mode="", tradeInfos="") {
 			; Default Tab
 			Gui, Trades:Add, Button,%btnPos% gGui_Trades_SetActiveTab vTab%A_Index% hWndhTab%A_Index% Section,% A_Index
 			if !ImageButton.Create(hTab%A_Index%, IBStyle_Tab*)
-				MsgBox, 0, ImageButton Error Tab%A_Index% Default, % ImageButton.LastError
+				imageBtnError .= "`nTab Default " A_Index ": " ImageButton.LastError
 
 			GuiControl,Trades:Hide,% hTab%A_Index%
 			TradesGUI_Controls["TabDefault_" A_Index] := hTab%A_Index%
@@ -944,7 +946,7 @@ Gui_Trades(mode="", tradeInfos="") {
 			btnPos := "xp yp wp hp"
 			Gui, Trades:Add, Button,%btnPos% gGui_Trades_SetActiveTab vTabJoined%A_Index% hWndhTabJoined%A_Index% Section,% A_Index
 			if !ImageButton.Create(hTabJoined%A_Index%, IBStyle_Tab_Joined*)
-				MsgBox, 0, ImageButton Error Tab%A_Index% Joined, % ImageButton.LastError
+				imageBtnError .= "`nTab Joined " A_Index ": " ImageButton.LastError
 
 			GuiControl,Trades:Hide,% hTabJoined%A_Index%
 			TradesGUI_Controls["TabJoined_" A_Index] := hTabJoined%A_Index%
@@ -952,7 +954,7 @@ Gui_Trades(mode="", tradeInfos="") {
 			; Whisper tab
 			Gui, Trades:Add, Button,%btnPos% gGui_Trades_SetActiveTab vTabMsg%A_Index% hWndhTabMsg%A_Index% Section,% A_Index
 			if !ImageButton.Create(hTabMsg%A_Index%, IBStyle_Tab_Whisper*)
-				MsgBox, 0, ImageButton Error Tab%A_Index% Whisper, % ImageButton.LastError
+				imageBtnError .= "`nTab Whisper " A_Index ": " ImageButton.LastError
 
 			GuiControl,Trades:Hide,% hTabMsg%A_Index%
 			TradesGUI_Controls["TabMsg_" A_Index] := hTabMsg%A_Index%
@@ -970,14 +972,14 @@ Gui_Trades(mode="", tradeInfos="") {
 ; - - - - - Left / Right arrows and Close
 		Gui, Trades:Add, Button,% "xp+" 40*scaleMult " yp w" 25*scaleMult " h" 25*scaleMult " hWndhArrowLeft gGui_Trades_Arrow_Left BackgroundTrans",% (SkinAssets.Arrow_Left_Use_Character)?("<"):("")
 		if !ImageButton.Create(hArrowLeft, IBStyle_Arrow_Left*)
-			MsgBox, 0, ImageButton Error Left Arrow, % ImageButton.LastError
+			imageBtnError .= "`nArow Left: " ImageButton.LastError
 		Gui, Trades:Add, Button,% "xp+" 25*scaleMult " yp w" 25*scaleMult " h" 25*scaleMult " hWndhArrowRight gGui_Trades_Arrow_Right BackgroundTrans",% (SkinAssets.Arrow_Right_Use_Character)?(">"):("")
 		if !ImageButton.Create(hArrowRight, IBStyle_Arrow_Right*)
-			MsgBox, 0, ImageButton Error Right Arrow, % ImageButton.LastError
+			imageBtnError .= "`nArrow Right: " ImageButton.LastError
 
 		Gui, Trades:Add, Button,% "xp+" 26*scaleMult " yp w" 27*scaleMult " h" 25*scaleMult " hWndhBtnCloseTab gGui_Trades_Close_Tab_Label Section",% (SkinAssets.Close_Tab_Use_Character)?("X"):("")
 		if !ImageButton.Create(hBtnCloseTab, IBStyle_Close_Tab*)
-			MsgBox, 0, ImageButton Error Close Tab, % ImageButton.LastError
+			imageBtnError .= "`nClose Tab: " ImageButton.LastError
 
 		TradesGUI_Controls["Arrow_Left"]			:= hArrowLeft
 		TradesGUI_Controls["Arrow_Right"]			:= hArrowRight
@@ -1044,7 +1046,7 @@ Gui_Trades(mode="", tradeInfos="") {
 
 				Gui, Trades:Add, Button,% "x" btnPos_X " y" btnPos_Y*scaleMult " w" btnPos_W*scaleMult " h" btnPos_H*scaleMult " hWnd" btnHandler " BackgroundTrans gGui_Trades_Do_Action_Func",% fontChars[btnType]
 				if !ImageButton.Create(%btnHandler%, IBStyle_Button_Special*)
-					MsgBox, 0, ImageButton Error Special Buttons, % ImageButton.LastError
+					imageBtnError .= "`nButton Special " A_Index ": " ImageButton.LastError
 
 		   		TradesGUI_Controls["Button_Unicode_" A_Index] 				:= %btnHandler%
 		   		TradesGUI_Controls["Button_Unicode_" A_Index "_Action"] 	:= btnType
@@ -1103,7 +1105,7 @@ Gui_Trades(mode="", tradeInfos="") {
 			if ( btnW != "ERROR" && btnX != "ERROR" && btnY != "ERROR" && btnAction != "" && btnAction != "ERROR" ) {
 				Gui, Trades:Add, Button,% "x" btnX " y" btnY*scaleMult " w" btnW " h" btnH*scaleMult " hWndhBtnCustom" A_Index " gGui_Trades_Do_Action_Func BackgroundTrans",% btnName
 				if !ImageButton.Create(hBtnCustom%A_Index%, IBStyle*)
-					MsgBox, 0, ImageButton Error Custom Buttons %btnSettingsSize%, % ImageButton.LastError
+					imageBtnError .= "`nButton Custom " A_Index ": " ImageButton.LastError
 
 				TradesGUI_Controls["Button_Custom_" A_Index]				:= hBtnCustom%A_Index%
 				TradesGUI_Controls["Button_Custom_" A_Index "_Action"]		:= btnAction
@@ -1319,6 +1321,10 @@ Gui_Trades(mode="", tradeInfos="") {
 		OnMessage(0x201, "WM_LBUTTONDOWN")
 		OnMessage(0x203, "WM_LBUTTONDBLCLK")
 		OnMessage(0x204, "WM_RBUTTONDOWN")
+
+		if (imageBtnError) {
+			Gui_ErrorLog(imageBtnError)
+		}
 
 		dpiFactor := ProgramSettings.Screen_DPI, showX := guiWidth-49
 
@@ -5518,6 +5524,34 @@ Enable_Hotkeys() {
 ;
 ;==================================================================================================================
 
+Gui_ErrorLog(errorStr) {
+	; static hGuiErrorLog
+	global ProgramValues
+
+	guiName := "ErrorLog"
+
+;	Remove first char if linefeed
+	firstChar := SubStr(errorStr, 1, 1)
+	if (firstChar = "`n")
+		StringTrimLeft, errorStr, errorStr, 1
+
+	Gui, %guiName%:New, +AlwaysOnTop +SysMenu -MinimizeBox -MaximizeBox +hwndhGuiErrorLog,% ProgramValues.Name " - Error(s) Logged"
+	Gui, %guiName%:Add, GroupBox, x10 y10 w350 h90 c000000 BackgroundTrans
+	Gui, %guiName%:Add, Text, xp yp+15 wp Center BackgroundTrans,% "One or multiple error(s) occured while creating Trades GUI.`nIf it keeps happening, please provide the following content.`n`nLinks to GitHub / GGG Forums and Reddit`ncan be found in the tray ""About?"" menu."
+	Gui, %guiName%:Add, Edit, x10 w350 R10 ReadOnly,% errorStr
+	Gui, %guiName%:Add, Button, x10 wp gGUI_%guiName%_Clipboard,Copy to clipboard
+	Gui, %guiName%:Show
+
+	ControlFocus,,% "ahk_id " hGuiErrorLog ; Remove focus
+	WinWait, ahk_id %hGuiErrorLog%
+	WinWaitClose, ahk_id %hGuiErrorLog%
+	Return
+
+	GUI_ErrorLog_Clipboard:
+		Clipboard := errorStr
+	Return
+}
+
 GUI_ChooseInstance(_type, arr) {
 	static
 	global ProgramValues
@@ -5528,7 +5562,7 @@ GUI_ChooseInstance(_type, arr) {
 ;	Initiate GUI
 	Controls := {}
 	guiName := "ChooseInstance"
-	Gui, %guiName%:New, +ToolWindow +AlwaysOnTop -SysMenu +hwndhGUIChooseInstance,% ProgramValues.Name
+	Gui, %guiName%:New, +AlwaysOnTop +SysMenu -MinimizeBox -MaximizeBox +hwndhGUIChooseInstance,% ProgramValues.Name
 	Gui, %guiName%:Font,S8,Segoe UI
 
 ;	Progress to simulate "selected" on click
