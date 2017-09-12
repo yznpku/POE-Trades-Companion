@@ -4430,7 +4430,7 @@ Gui_Stats_Get_Currency_Name(currency) {
 
 Check_Update() {
 ;			It works by downloading both the new version and the auto-updater
-;			then closing the current instancie and renaming the new version
+;			then closing the current instance and renaming the new version
 	global ProgramValues
 
 	IniRead, isUsingBeta,% ProgramValues.Ini_File,PROGRAM,Update_Beta, 0
@@ -5518,81 +5518,117 @@ Enable_Hotkeys() {
 ;
 ;==================================================================================================================
 
-GUI_Replace_PID(handlersArray, gamePIDArray) {
-;		GUI used when clicking one of the Trades GUI buttons and the PID is not associated with POE anymore
-;		Provided two array containing all the POE handlers and PID, it allows the user to choose which PID to use as a replacement
+GUI_ChooseInstance(_type, arr) {
 	static
 	global ProgramValues
 
-	programName := ProgramValues.Name
+	if WinExist("ahk_id " hGUIChooseInstance) ; Cancel if GUI already exists.
+		Return
 
-	Gui, ReplacePID:Destroy
-	Gui, ReplacePID:New, +ToolWindow +AlwaysOnTop -SysMenu +hwndGUIInstancesHandler
-	Gui, ReplacePID:Add, Text, x10 y10,% "The previous PID is no longer associated to a POE instance."
-	Gui, ReplacePID:Add, Text, x10 y25,% "Please, select the new one you would like to use!"
-	ypos := 30
-	for key, element in handlersArray {
-		index := A_Index - 1
-		Gui, ReplacePID:Add, Text, x10 yp+30,Executable:
-		WinGet, pName, ProcessName,ahk_id %element%
-		Gui, ReplacePID:Add, Edit, xp+55 yp-3 ReadOnly w150,% pName
-		Gui, ReplacePID:Add, Button,xp+155 yp-2 gGUI_Replace_PID_Continue vContinue%index%,Continue with this one
-		Gui, ReplacePID:Add, Text, x10 yp+32,Path:
-		WinGet, pPath, ProcessPath,ahk_id %element%
-		Gui, ReplacePID:Add, Edit, xp+55 yp-3 ReadOnly,% pPath
-		if ( index != handlersArray.MaxIndex() ) ; Put a 10px margin if it's not the last element
-			Gui, ReplacePID:Add, Text, w0 h0 xp yp+10
+;	Initiate GUI
+	Controls := {}
+	guiName := "ChooseInstance"
+	Gui, %guiName%:New, +ToolWindow +AlwaysOnTop -SysMenu +hwndhGUIChooseInstance,% ProgramValues.Name
+	Gui, %guiName%:Font,S8,Segoe UI
+
+;	Progress to simulate "selected" on click
+	Loop 4 {
+		local i := A_Index, w := (i=1||i=2)?(50):(2), h := (i=1||i=2)?(2):(50)
+
+		Gui, %guiName%:Add, Progress, x0 y0 w%w% h%h% Hidden hwndhProgress%i% BackgroundBlue
+		Controls["Border_" i] := hProgress%i%
 	}
-	Gui, ReplacePID:Show,NoActivate,% programName " - Replace PID"
-	WinWait, ahk_id %GUIInstancesHandler%
-	WinWaitClose, ahk_id %GUIInstancesHandler%
-	return r
 
-	GUI_Replace_PID_Continue:
-		btnID := RegExReplace(A_GuiControl, "\D")
-		r := gamePIDArray[btnID]
-		Gui, ReplacePID:Destroy
-		Logs_Append("GUI_Replace_PID_Return", {PID:r})
+;	Top message
+	local msg := (_type="multiple")?("Multiple instances running in different folders were detected.`nPlease select which one you would like to monitor.")
+		  :(_type="replace")?("The game instance for this tab does not exist anymore.`nPlease select which existing instance should replace it.")
+		  :("Unknown. Please report.")
+	msg .= "`n`nThe following icons correspond to game instances.`nClicking on them will help you dinstinguish them."
+
+	Gui, %guiName%:Add, GroupBox, x10 y10 w350 h90 c000000 BackgroundTrans
+	Gui, %guiName%:Add, Text, xp yp+15 wp Center BackgroundTrans,% msg
+
+;	Icon for each instance
+	for key, handle in arr {
+		local thisRowContains
+		local isNewRow := (thisRowContains >= 6)?(true):(false) ; Start new row on 7th item. 6 items per row.
+		thisRowContains := (isNewRow)?(0):(thisRowContains)
+		local x := (isNewRow || A_Index = 1)?("x15"):("x+10")
+
+		Gui, %guiName%:Add, Picture,% x " w48 h48 g" guiName "_OnSelect vPIC_" key " hwndhPIC_" key " BackgroundTrans",% ProgramValues.Others_Folder "/POE.ico"
+		Controls["PIC_" key] := hPIC_%key%
+		thisRowContains++
+	}
+	key := handle := 
+
+	Gui, %guiName%:Add, Text,x10 y+10,Location: 
+	Gui, %guiName%:Add, Edit,x+5 yp-3 w297 hwndhEDIT_Location ReadOnly
+	Controls["EDIT_Location"] := hEDIT_Location
+
+	Gui, %guiName%:Add, Button, x10 y+5 w280 h30 g%guiName%_Accept,Accept
+	Gui, %guiName%:Add, Button, xp+280 yp w70 h30 g%guiName%_Cancel,Cancel
+
+;	Showing the GUI
+	Gui, %guiName%:Show, NoActivate
+	WinWait, ahk_id %hGUIChooseInstance%
+	WinWaitClose, ahk_id %hGUIChooseInstance%
+	Return selected
+
+	ChooseInstance_OnSelect:
+	/*	Select the clicked instance icon,
+	 *	 make its taskbar button blink and set as return value
+	*/
+		RegExMatch(A_GuiControl, "\d+", btnID)
+		selected := arr[btnID]
+
+		; Simulate "selected"
+		coords := Get_Control_Coords(A_Gui,Controls[A_GuiControl])
+		Loop 4 {
+			local i := A_Index, x := (i=1||i=2)?(coords.X):(i=3)?(coords.X-2):(i=4)?(coords.X+coords.W):(0), y := (i=1||i=3||i=4)?(coords.Y):(i=2)?(coords.Y+coords.H):(0)
+
+			GuiControl, %guiName%:Show,% Controls["Border_" i]
+			GuiControl, %guiName%:Move,% Controls["Border_" i],% "x" x " y" y
+		}
+
+		; Set "location:"
+		local path
+		WinGet, path, ProcessPath, ahk_id %selected%
+		GuiControl, %guiName%:,% Controls["EDIT_Location"],% path
+
+		; This make the taskbar button flash once then stop since the window is still active
+		DllCall("FlashWindow", UInt, selected, Int, 1)
+		WinActivate, ahk_id %selected%
+	Return
+
+	ChooseInstance_Accept:
+		if (selected)
+			Gui,%guiName%:Destroy
+	Return
+	ChooseInstance_Cancel:
+		selected := 
+		Gui,%guiName%:Destroy
 	Return
 }
 
-GUI_Multiple_Instances(handlersArray) {
-;		GUI used when multiple instances of POE running in different folders have been found upon running the Monitor_Logs() function
-;		Provided an array containing all the POE handlers, it allows the user to choose which logs file to monitor
-	static
-	global ProgramValues
+GUI_Replace_PID(handles) {
+/*	Used when when clicking one of the Trades GUI buttons and the PID is not associated with POE anymore
+*/
+	chosen := GUI_ChooseInstance("replace", handles)
+	if (chosen)
+		WinGet, chosenPID, PID, ahk_id %chosen%
 
-	programName := ProgramValues.Name
+	Logs_Append("GUI_Replace_PID_Return", {PID:chosenPID})
+	return chosenPID
+}
 
-	Gui, Instances:Destroy
-	Gui, Instances:New, +ToolWindow +AlwaysOnTop -SysMenu +hwndGUIInstancesHandler
-	Gui, Instances:Add, Text, x10 y10,% "Detected instances are using different logs file."
-	Gui, Instances:Add, Text, x10 y25,% "Please, select the one you would like to use!"
-	ypos := 30
-	for key, element in handlersArray {
-		index := A_Index - 1
-		Gui, Instances:Add, Text, x10 yp+30,Executable:
-		WinGet, pName, ProcessName,ahk_id %element%
-		Gui, Instances:Add, Edit, xp+55 yp-3 ReadOnly w150,% pName
-		Gui, Instances:Add, Button,xp+155 yp-2 gGUI_Multiple_Instances_Continue vContinue%index%,Continue with this one
-		Gui, Instances:Add, Text, x10 yp+32,Path:
-		WinGet, pPath, ProcessPath,ahk_id %element%
-		Gui, Instances:Add, Edit, xp+55 yp-3 ReadOnly,% pPath
-		if ( index != handlersArray.MaxIndex() ) ; Put a 10px margin if it's not the last element
-			Gui, Instances:Add, Text, w0 h0 xp yp+10
-		Logs_Append(A_ThisFunc, {Handler:element, Path:pPath})
-	}
-	Gui, Instances:Show,NoActivate,% programName " - Multiple instances found"
-	WinWait, ahk_id %GUIInstancesHandler%
-	WinWaitClose, ahk_id %GUIInstancesHandler%
-	return r
+GUI_Multiple_Instances(handles) {
+/*	GUI used when multiple instances of POE running in different folders have been found upon running the Monitor_Logs() function
+*/
 
-	GUI_Multiple_Instances_Continue:
-		btnID := RegExReplace(A_GuiControl, "\D")
-		r := handlersArray[btnID]
-		Gui, Instances:Destroy
-		Logs_Append("GUI_Multiple_Instances_Return", {Handler:r})
-	Return
+	chosen := GUI_ChooseInstance("multiple", handles)
+
+	Logs_Append("GUI_Multiple_Instances_Return", {Handler:chosen})
+	return chosen
 }
 
 ;==================================================================================================================
@@ -6462,14 +6498,13 @@ Send_InGame_Message(allMessages, tabInfos="", specialEvent="") {
 	else {
 		; if PID is not POE, need to replace it
 		if !WinExist("ahk_pid " gamePID " ahk_group POEGame") {
-			PIDArray := Get_Matching_Windows_Infos("PID")
 			handlersArray := Get_Matching_Windows_Infos("ID")
 			if ( handlersArray.MaxIndex() = "" ) {
 				Tray_Notifications_Show(programName, "The PID assigned to the tab does not belong to a POE instance, and no POE instance was found!`n`nPlease click the button again after restarting the game.")
 				Return 1
 			}
 			else {
-				newPID := GUI_Replace_PID(handlersArray, PIDArray)
+				newPID := GUI_Replace_PID(handlersArray)
 				setInfos := Object(), setInfos.NewPID := newPID, setInfos.OldPID := gamePID, setInfos.TabID := tabInfos.TabID
 				Gui_Trades_Set_Trades_Infos(setInfos)
 				gamePID := newPID
@@ -6705,7 +6740,7 @@ Extract_Assets() {
 
 ;	OTHERS
 	resFolder := A_ScriptDir "\Resources\Others"
-	allowedFiles := "DonatePaypal.png,Icon.png"
+	allowedFiles := "DonatePaypal.png,Icon.png,POE.ico"
 	appendToFile .= "`n; OTHERS`n"
 
 	appendToFile .= "if !( InStr(FileExist(ProgramValues.Others_Folder), ""D"") )`n"
@@ -7342,6 +7377,15 @@ Manage_Font_Resources(mode) {
 			}
 		}
 	}
+}
+
+IsInteger(str) {
+	str2 := Round(str)
+	str := (str=str2)?(str2):(str) ; Fix trailing zeroes
+	
+	if str is integer
+		return true
+	return false
 }
 
 IsNum(str) {
