@@ -169,6 +169,7 @@ Start_Script() {
 		Extract_Assets()
 	}
 
+	Manage_Font_Resources("UNLOAD")
 	Install_Font_Files()
 	Manage_Font_Resources("LOAD")
 	Update_Skin_Preset()
@@ -1323,6 +1324,7 @@ Gui_Trades(mode="", tradeInfos="") {
 		OnMessage(0x204, "WM_RBUTTONDOWN")
 
 		if (imageBtnError) {
+			imageBtnError := StrReplace(imageBtnError, "Couldn't get button's font!", "Couldn't get button's font! Computer restart required.")
 			Gui_ErrorLog(imageBtnError)
 		}
 
@@ -5537,7 +5539,11 @@ Gui_ErrorLog(errorStr) {
 
 	Gui, %guiName%:New, +AlwaysOnTop +SysMenu -MinimizeBox -MaximizeBox +hwndhGuiErrorLog,% ProgramValues.Name " - Error(s) Logged"
 	Gui, %guiName%:Add, GroupBox, x10 y10 w350 h90 c000000 BackgroundTrans
-	Gui, %guiName%:Add, Text, xp yp+15 wp Center BackgroundTrans,% "One or multiple error(s) occured while creating Trades GUI.`nIf it keeps happening, please provide the following content.`n`nLinks to GitHub / GGG Forums and Reddit`ncan be found in the tray ""About?"" menu."
+	Gui, %guiName%:Add, Text, xp yp+15 wp Center BackgroundTrans,% "One or multiple error(s) occured while creating Trades GUI."
+																.  "`nIf it keeps happening, please provide the following content."
+																.  "`n"
+																.  "`nLinks to GitHub / GGG Forums and Reddit"
+																.  "`ncan be found in the tray ""About?"" menu."
 	Gui, %guiName%:Add, Edit, x10 w350 R10 ReadOnly,% errorStr
 	Gui, %guiName%:Add, Button, x10 wp gGUI_%guiName%_Clipboard,Copy to clipboard
 	Gui, %guiName%:Show
