@@ -1,4 +1,12 @@
 \\
+--1.12.BETA_13--
+If you are having the "Couldn't get button's font" issue, restarting your computer will fix it.
+
+Changes:
+- TradesGUI: When failing to create an ImageButton, the error messages will be shown after the TradesGUI is created.
+This change has been made so you do not have to click through dozen of message boxes anymore, in case an error happens.
+//
+\\
 --1.12.BETA_12--
 Added:
 - Ctrl+Shift+Left Click Hotkey.
