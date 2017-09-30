@@ -200,6 +200,7 @@ Start_Script() {
 	if (DebugValues.settings.open_about)
 		Gui_About()
 
+	ImageButton_TestDelay()
 	; Pre-rendering Trades-GUI
 	if !( DebugValues.settings.no_prerender)
 		Gui_Trades("CREATE")
@@ -6104,6 +6105,66 @@ FGP_Value(FilePath, Property) {
 ;
 ;==================================================================================================================
 
+ImageButton_TestDelay() {
+/*		Check how long it takes to create ImageButtons.
+
+		Under W10, with more than 720 installed fonts, it can take over a second to process ImageButton.Create()
+		This function is meant to retrieve the font count, and check the delay if we have over 720 fonts.
+*/
+	global SystemFonts, ProgramValues
+
+	; Retrieving installed fonts count
+	SystemFonts := []
+	try EnumFonts()
+	if !(SystemFonts.MaxIndex() > 700) { ; Less than 700 fonts, no test needed
+		SystemFonts :=
+		Return
+	}
+	
+	; Creating ImageButtons, retrieving the delay
+	IBClrStyles := [ [0, 0x80FFFFFF, , 0xD3000000, 0, , 0x80FFFFFF, 1]      ; normal
+			   , [0, 0x80E6E6E6, , 0xD3000000, 0, , 0x80E6E6E6, 1]      ; hover
+			   , [0, 0x80CCCCCC, , 0xD3000000, 0, , 0x80CCCCCC, 1]      ; pressed
+			   , [0, 0x80F3F3F3, , 0x000078D7, 0, , 0x80F3F3F3, 1] ]    ; disabled (defaulted)
+			   
+	Gui, TestDelay:New
+	startTime := A_TickCount
+	Loop 2 {
+		Gui, TestDelay:Add, Button,hWndHBtn%A_Index%,% A_Index
+		ImageButton.Create(HBtn%A_Index%, IBClrStyles*)
+	}
+	imageButtonDelay := A_TickCount-StartTime
+
+	Gui, TestDelay:Destroy
+	SystemFonts :=
+	
+	; Took over a second to create two buttons, tell the user about it
+	if (imageButtonDelay > 1001) {
+		Tray_Notifications_Show(ProgramValues.Name " - Too many fonts","Your system has more than 720 fonts installed."
+																	.  "`nOn Win10, it is known to noticeably slow the tool startup."
+																	. "`n"
+																	. "`nIf the tool takes a long time (one minute and above) to start, it is recommended to uninstall fonts (" A_WinDir "\Fonts) until you have 720 or less fonts."
+																	,{Fade_Timer:15000})
+	}
+}
+
+EnumFonts() {
+	global SystemFonts := []
+	
+    hDC := DllCall("GetDC", "UInt", DllCall("GetDesktopWindow"))
+    Callback := RegisterCallback("EnumFontsCallback", "F")
+    DllCall("EnumFontFamilies", "UInt", hDC, "UInt", 0, "Ptr", Callback, "UInt", lParam := 0)
+    DllCall("ReleaseDC", "UInt", hDC)
+}
+
+EnumFontsCallback(lpelf) {
+	global SystemFonts
+
+    SystemFonts.Push(StrGet(lpelf + 28, 32))
+    Return True
+}
+
+
 IsBetween(value, first, last) {
    if value between %first% and %last%
       return true
@@ -6184,7 +6245,7 @@ Get_Active_Trading_Leagues() {
 		Logs_Append("WinHttpRequest", {Obj:e})
 		Tray_Notifications_Show(ProgramValues.Name, "Failed to reach the Leagues API."
 												.	"`nTemporary leagues such as races may fail to appear correctly."
-												.	"`n`nRetrying in " (nextAttempt/1000)/60 "minutes...", {Fade_Timer:20000})
+												.	"`n`nRetrying in " (nextAttempt/1000)/60 "minutes...", {Fade_Timer:10000})
 		SetTimer,% A_ThisFunc, -%nextAttempt%
 
 		SetFormat,Float,%floatFormat% ; Restore state
@@ -6194,7 +6255,7 @@ Get_Active_Trading_Leagues() {
 	}
 	if (attempts > 1) {
 		Logs_Append("DEBUG", {String: "Successfully retrieved leagues from API on attempt " attempts})
-		Tray_Notifications_Show(ProgramValues.Name, "Successfully retrieved leagues from API on attempt " attempts, {Fade_Timer:20000})
+		Tray_Notifications_Show(ProgramValues.Name, "Successfully retrieved leagues from API on attempt " attempts, {Fade_Timer:10000})
 		attempts := 0
 	}
 
