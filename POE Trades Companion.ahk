@@ -22,6 +22,8 @@ SetWinDelay, 0
 DetectHiddenWindows, Off
 ListLines, Off
 
+if ( !A_IsCompiled && FileExist(A_ScriptDir "\icon.ico") )
+	Menu, Tray, Icon,% A_ScriptDir "\icon.ico"
 Menu,Tray,Tip,POE Trades Companion
 Menu,Tray,NoStandard
 Menu,Tray,Add,Close,Exit_Func
