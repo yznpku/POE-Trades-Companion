@@ -4474,8 +4474,8 @@ Check_Update() {
 		ProgramValues.Version_Online 					:= (isUsingBeta)?(valBetaTag):(valStableTag)
 		ProgramValues.Version_Online_Download 			:= (isUsingBeta)?(valBetaDL):(valStableDL)
 
-		isUpdateAvailable := (isUsingBeta && valBetaTag != "ERROR" && valBetaTag != currentVersion)?(true)
-						    :(!isUsingBeta && valStableTag != "ERROR" && valStableTag != currentVersion)?(true)
+		isUpdateAvailable := (isUsingBeta && valBetaTag && valBetaTag != "ERROR" && valBetaTag != currentVersion)?(true)
+						    :(!isUsingBeta && valStableTag && valStableTag != "ERROR" && valStableTag != currentVersion)?(true)
 						    :(false)	
 		ProgramValues.Update_Available	:= isUpdateAvailable
 
@@ -4622,8 +4622,8 @@ Check_Update() {
 	latestBetaDownload 			:= (apiError)?("ERROR"):(latestBetaDownload)
 	latestBetaDownload 			:= (latestBetaDownload="ERROR")?(ProgramValues.Download_FallBack_Beta):(latestBetaDownload)
 
-	isUpdateAvailable 			:= (isUsingBeta && latestBetaTag != "ERROR" && latestBetaTag != currentVersion)?(true)
-								  :(!isUsingBeta && latestReleaseTag != "ERROR" && latestReleaseTag != currentVersion)?(true)
+	isUpdateAvailable 			:= (isUsingBeta && latestBetaTag && latestBetaTag != "ERROR" && latestBetaTag != currentVersion)?(true)
+								  :(!isUsingBeta && latestReleaseTag && latestReleaseTag != "ERROR" && latestReleaseTag != currentVersion)?(true)
 								  :(false)							  
 
 	ProgramValues.Version_Latest 					:= latestReleaseTag
@@ -7823,13 +7823,16 @@ Tray_Notifications_Fade(index="", start=false) {
 Download_Updater() {
 	global ProgramValues
 
-	Gui_Trades_Save_Pending_Backup()
-
 	IniRead, isUsingBeta,% ProgramValues.Ini_File,PROGRAM,Update_Beta, 0
-
 	updaterLink 		:= (isUsingBeta)?(ProgramValues.Updater_Link_Beta):(ProgramValues.Updater_Link)
 	newVersionLink 		:= ProgramValues.Version_Online_Download
 
+	if !(newVersionLink) { ; Cancel updating if no link, this can happen when network card is offline
+		Tray_Notifications_Show("New version link not found.", "Could not find the link to download the new version.`nPlease try again later, or try updating manually.")
+		Return
+	}
+
+	Gui_Trades_Save_Pending_Backup()
 	IniWrite,% A_Now,% ProgramValues.Ini_File,PROGRAM,LastUpdate
 	UrlDownloadToFile,% updaterLink,% ProgramValues.Updater_File
 	Sleep 10
