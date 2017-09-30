@@ -761,10 +761,10 @@ Gui_Trades(mode="", tradeInfos="") {
 	maxTabsStage5 := 251
 	TradesGUI_Values["Max_Tabs_Per_Row"] := maxTabsRow
 
-	Loop {
+	Loop 5 { ; Checking if SB are used
 		local btnUnicodePos := ProgramSettings["Button_Unicode_" A_Index "_Position"]
 		local useSmallerButtons := (btnUnicodePos != "Disabled")?(true):(false)
-		if ( useSmallerButtons = true || btnUnicodePos = "ERROR" )
+		if (useSmallerButtons = true || btnUnicodePos = "ERROR" || !btnUnicodePos )
 			Break
 	}
 	TradesGUI_Values.Use_Smaller_Buttons := useSmallerButtons
