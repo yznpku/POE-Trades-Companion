@@ -1,10 +1,11 @@
-# Testing tools and ideas that cannot work.
+# Testing tools
 /_DebugTools/*
 /_ScrappedIdeas/*
 /_Testings/*
 Verpatch.*
 *_Old*
 
+# EXE builder / Resources path file
 _Convert_Release.ahk
 File_Install.ahk
 
