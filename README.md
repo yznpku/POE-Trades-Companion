@@ -59,6 +59,7 @@ You can access the Settings menu by right clicking the tray icon and choosing "S
 <br>Click to show a picture showcasing the settings.</summary>
  <img src="https://i.imgur.com/qs6E1eb.png">
 </details>    
+
 ### Customization > Appearance tab    
     
 <details>
