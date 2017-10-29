@@ -4948,7 +4948,14 @@ Update_Local_Settings() {
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
 * * * * * * * * * * * * * *  		1.12					* * *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+*/	
+/*	Icon.png is no longer used, POE.ico is now in a Icons folder
 */
+	if FileExist(ProgramValues.Others_Folder "\Icon.png")
+		FileDelete,% ProgramValues.Others_Folder "\Icon.png"
+	if FileExist(ProgramValues.Others_Folder "\POE.ico")
+		FileDelete,% ProgramValues.Others_Folder "\POE.ico"
+
 /*	More customization was added. Keys changed.
 	Previously, there was one single setting for Tabs and Buttons colours.
 		Keys would start with the Font_Color_ prefix.
@@ -5598,7 +5605,7 @@ GUI_ChooseInstance(_type, arr) {
 		thisRowContains := (isNewRow)?(0):(thisRowContains)
 		local x := (isNewRow || A_Index = 1)?("x15"):("x+10")
 
-		Gui, %guiName%:Add, Picture,% x " w48 h48 g" guiName "_OnSelect vPIC_" key " hwndhPIC_" key " BackgroundTrans",% ProgramValues.Others_Folder "/POE.ico"
+		Gui, %guiName%:Add, Picture,% x " w48 h48 g" guiName "_OnSelect vPIC_" key " hwndhPIC_" key " BackgroundTrans",% ProgramValues.Others_Folder "/Icons/POE.ico"
 		Controls["PIC_" key] := hPIC_%key%
 		thisRowContains++
 	}
@@ -6844,19 +6851,44 @@ Extract_Assets() {
 
 ;	OTHERS
 	resFolder := A_ScriptDir "\Resources\Others"
-	allowedFiles := "DonatePaypal.png,Icon.png,POE.ico"
+	allowedExt := "png,ico"
 	appendToFile .= "`n; OTHERS`n"
+	subFolders := []
+	allowedFolders := "Icons"
 
 	appendToFile .= "if !( InStr(FileExist(ProgramValues.Others_Folder), ""D"") )`n"
 				  . "	FileCreateDir,`% ProgramValues.Others_Folder `n"
+
+	; Main folder
 	Loop, Files,% resFolder "\*"
 	{
 		RegExMatch(A_LoopFileFullPath, "\\Resources\\(.*)", path)
 		filePath := "Resources\" path1
 
-		if A_LoopFileName in %allowedFiles%
+		if A_LoopFileExt in %allowedExt%
 			appendToFile .= "FileInstall, " filePath ",`% ProgramValues.Others_Folder """ "\" A_LoopFileName """" ", 1`n"
 	} 
+	; Sub folders
+	Loop, Files,% resFolder "\*", D
+	{
+		if A_LoopFileName in %allowedFolders%
+			subFolders.Push(A_LoopFileName)
+	}
+	for id, subFolder in subFolders {
+		appendToFile .= "`n" A_Tab "; " skinName "`n"
+
+		appendToFile .= "if !( InStr(FileExist(ProgramValues.Others_Folder ""\" subFolder """), ""D"") )`n"
+					  . "	FileCreateDir,`% ProgramValues.Others_Folder ""\" subFolder """`n"
+
+		Loop, Files,% resFolder "\" subFolder "\*"
+		{
+			RegExMatch(A_LoopFileFullPath, "\\Resources\\(.*)", path)
+			filePath := "Resources\" path1
+
+			if A_LoopFileExt in %allowedExt%
+				appendToFile .= "FileInstall, " filePath ",`% ProgramValues.Others_Folder ""\" subFolder "\" A_LoopFileName """" ", 1`n"
+		}
+	}
 
 ;	SKINS
 	skinNames := []
@@ -7061,6 +7093,13 @@ Create_Tray_Menu() {
 	Menu, Tray, Add,Reload, Reload_Func
 	Menu, Tray, Add,Close, Exit_Func
 	Menu, Tray, Check,% "Mode: " ProgramSettings.Trades_GUI_Mode
+
+	Menu, Tray, Icon, Settings,% ProgramValues.Local_Folder "\Others\Icons\gear.ico"
+	Menu, Tray, Icon, About?,% ProgramValues.Local_Folder "\Others\Icons\qmark.ico"
+	Menu, Tray, Icon, My Stats,% ProgramValues.Local_Folder "\Others\Icons\chart.ico"
+	Menu, Tray, Icon, Reload,% ProgramValues.Local_Folder "\Others\Icons\refresh.ico"
+	Menu, Tray, Icon, Close,% ProgramValues.Local_Folder "\Others\Icons\x.ico"
+
 	Menu, Tray, Icon
 	if ( A_IconHidden ) {
 		Menu, Tray, NoIcon
