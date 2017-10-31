@@ -6778,6 +6778,10 @@ Extract_Assets() {
 	installFile := % A_ScriptDir "\File_Install.ahk"
 	FileDelete,% installFile
 
+;	File_Install.ahk
+	appendToFile := "#SingleInstance Force`n"
+				 .	"#NoTrayIcon`n`n"
+
 ;	Pass ProgramValues to file
 	appendToFile .= "tempParams := {}`n"
 				 .	"Loop, %0% {`n"
