@@ -1,4 +1,18 @@
 \\
+--1.12.BETA_14--
+This is the latest beta before the update goes stable.
+
+Added:
+- Added support for FR/DE/ES whispers.
+- Tray menu now has icons.
+- Warning box when the user has too many fonts installed.
+Having over 720 fonts installed can cause major slowness with Trades Companion on Windows 10.
+
+Fixes:
+- "Custom Buttons" would not be correctly positioned when all "Smaller Buttons" are disabled.
+- Minor update check fixes.
+//
+\\
 --1.12.BETA_13--
 If you are having the "Couldn't get button's font" issue, restarting your computer will fix it.
 
