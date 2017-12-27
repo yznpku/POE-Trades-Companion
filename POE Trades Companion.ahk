@@ -6561,31 +6561,13 @@ Send_InGame_Message(allMessages, tabInfos="", specialEvent="") {
 		else {
 			firstChar := SubStr(messageToSend, 1, 1) ; Get first char, to compare if its a special chat command
 
-			; Clip backup
-			clipBackup := ClipboardAll
-			Clipboard :=
-			Sleep 10
-
-			; Set msg as new clipboard
-			Clipboard := messageToSend
-			ClipWait, 2, 1
-			Sleep 1
-
 			SendEvent,{VK%chatVK%}
 
 			if firstChar not in /,`%,&,#,@  ; Not a command. We send / then remove it to make sure chat is empty
 				SendEvent, {sc035}{BackSpace} ; Slash
 
-			; Pasting the message, and send
-			SendEvent,{Ctrl Down} ; Separating the inputs fixes an issue where ^v could fail (rarely, but stil happened)
-			Sleep 10
-			SendEvent,{sc02F} ; Ctrl+V
-			Sleep 10
-			SendEvent,{Ctrl Up}
+			Clip(messageToSend)
 			SendEvent,{Enter}
-
-			Sleep 10
-			Clipboard := clipBackup
 		}
 		Return
 	}
@@ -6611,11 +6593,6 @@ Send_InGame_Message(allMessages, tabInfos="", specialEvent="") {
 		WinActivate,[a-zA-Z0-9_] ahk_pid %gamePID%
 		WinWaitActive,[a-zA-Z0-9_] ahk_pid %gamePID%, ,5
 		if (!ErrorLevel) {
-			; Backup clipboard
-			clipBackup := ClipboardAll
-			Clipboard :=
-			Sleep 10
-
 			Loop 3 {
 				messageToSend := message%A_Index%
 				if ( !messagetoSend ) {
@@ -6623,11 +6600,6 @@ Send_InGame_Message(allMessages, tabInfos="", specialEvent="") {
 				}
 				else {
 					firstChar := SubStr(messageToSend, 1, 1) ; Get first char, to compare if its a special chat command
-
-					; Set msg as new clipboard
-					Clipboard := messageToSend
-					ClipWait, 2, 1
-					Sleep 1
 
 					; Opening the chat window
 					if chatVK in 0x1,0x2,0x4,0x5,0x6,0x9C,0x9D,0x9E,0x9F ; Mouse buttons
@@ -6645,19 +6617,11 @@ Send_InGame_Message(allMessages, tabInfos="", specialEvent="") {
 					if firstChar not in /,`%,&,#,@ ; Not a command. We send / then remove it to make sure chat is empty
 						SendEvent,{sc035}{BackSpace} ; Slash
 
-					; Pasting the message, and send
-					SendEvent,{Ctrl Down} ; Separating the inputs fixes an issue where ^v could fail (rarely, but stil happened)
-					Sleep 10
-					SendEvent,{sc02F} ; Ctrl+V
-					Sleep 10
-					SendEvent,{Ctrl Up}
+					Clip(messageToSend)
 					if !( specialEvent.doNotSend )
 						SendEvent,{Enter}
 				}
 			}
-			; Restore clipboard
-			Sleep 10
-			Clipboard := clipBackup
 		}
 	}
 }
@@ -8145,6 +8109,7 @@ ShowToolTip(_tip, tipX=0, tipY=0, radiusX=10, radiusY=10) {
 #Include JSON.ahk
 #Include Class_ImageButton.ahk  
 #Include BetaFuncs.ahk
+#Include Clip.ahk
 
 #IfWinActive ahk_group POEGame
 ^+LButton::StackClick()
