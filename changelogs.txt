@@ -1,4 +1,354 @@
 \\
+--1.12--
+	Since 1.12.BETA_14:
+	
+	Features:
+	- Added compatibility for the new poe.trade map whisper.
+	Since poeapp is using the same whisper layout for maps, it is now also compatible.
+	
+	Changes:
+	- Sending messages has been improved. Overall better and more reliable.
+	If you still get the issue where your item's name is sent in the local chat instead of the actual message, please report.
+	- In case putting an item in the clipboard fails, you should now receive a notification.
+	
+	Fixes:
+	- Settings GUI, Appearance tab: Using a non-hex value for any of the colour settings would cause a crash upon redrawing the Trades GUI.
+	- Upon having your buyer join your hideout, the clipboard content would be set to the item's name whereas it should only happen when switching tabs or using the "Clipboard" buttons.
+	
+	*********************	
+	Since 1.11.3:
+		TL;DR: Condensed patch notes:
+		- New skinning system. It has been made much more accessible in case you'd like to make your own skin.
+		www.github.com/lemasato/POE-Trades-Companion/wiki/Creating-Your-Skin
+		
+		The old "System" skin has been replaced with "White" and its "Dark Blue" night alternative.
+		White (new): A combination of white/blue colours.
+		Dark Blue (new): The "night" alternative of the White skin.
+		Path of Exile: It has been updated and look much better than it used to.
+		
+		If you are not much into skinning, you may still customize the font type and colours from the Settings menu.
+		
+		- Ctrl+Shift+LeftClick hotkey, which makes trading currency much easier.
+		If you would like more informations about how it works, simply search for "Ctrl+Shift+Left" here below.
+
+		- The tab colour will now change to green if your buyer has entered your area and purple if you received a whisper since you last checked its "Other:" slot.
+		You may even have a custom sound play when one of these events occurs.
+		- Hall of Fame. Can be seen in the "About?" tray menu.
+		- All types of PoeApp whispers are now compatible.
+		- "Send Message + Minimize" has been added as an option for Custom Buttons.
+		- Icons are now used in place of the big old "MINIMIZE" text.
+		- Support for FR/DE/ES whispers.
+		This refers to the "@De/Von/Desde" prefix, not the actual translated whispers from pathofexile.com/trade.
+		I will sadly NOT be adding support for these translated whispers as they also translate the league name, which cannot be retrieved anywhere from the API.
+		In my opinion, it's a bad design choice as even in-game "Abyss" stays "Abyss" for everyone and not "Бездна" or "Précurseurs".
+		
+	
+	*********************
+	Full patch notes. Some of these may not be relevant to the transition between 1.11.3 and 1.12 but the in-between _BETA releases.
+	
+	Features:
+		- The Trades GUI has been greatly improved. See the link at the top.
+		The "System" theme has been replaced with the new "White" theme.
+		The PoE theme has also seen many visual changes, and has been adapted to the new Skinning system.
+		- More customisation is available in the "Customization > Appearance" tab, in the Settings.
+		- Leagues are now retrieved from the online API.
+		- All type of whisper received from poeapp.com should now be working correctly.
+		
+		- Tabs notifications:
+		When your buyer joins your area, the tab colour will turn to green. The colour will revert back to normal when the buyer leaves the area.
+		When receiving another whisper from a buyer, the tab colour will turn to purple. The colour will revert back to normal when you acknowledged the whisper by hovering the "Other:" slot for that tab.
+		These options cannot be disabled at the moment, but full 1.12 release will allow to do so as well as playing a custom sound.
+		- Night theme: Dark Blue.
+		
+		- You can now choose to play a sound when a buyer joins your area.
+		- Nine new sound effects have been added.
+		- Currency names for the new shards and orbs (Used by the "My Stats" tray menu).
+		
+		- Send Message + Minimize action. This allows you to send a message, then put the GUI into its minimized state.
+		- Minimize and Maximize icons are now used instead of the "MINIMIZE" text, on the Trades GUI.
+		- The tool now makes use of the GitHub API to retrieve the latest stable and beta versions.
+
+		- Ctrl+Shift+Left Click Hotkey.
+		This hotkey allows trading currency much easier.
+		To stay within the "One server action per macro" GGG policy, it only withdraw one stack of currency per press.
+		Upon pressing the hotkey, it compares the currency under your cursor and the currency in the "Price" Slot (from the Trades GUI).
+		When both currency correspond, it will then behave as either a "Ctrl+Click" or a "Shift+Click, Number, Enter", based on the total amount required.
+
+		For example: The "Price" Slot shows "53" alteration. Alteration Orbs max stack count is 20.
+		The first press will "Ctrl+Click", removing 20 alteration. 33 more alration required.
+		The second press will "Ctrl+Click" again, removing 20 alteration. 13 more alteration required.
+		The third and final press will "Shift+Click, Send 13, Press Enter". You will have 13 alteration on your cursor, that you can place in your inventory.
+		Any further press on the hotkey will not do anything, allowing to safely remove just enough of the currency required.
+
+		- Hall of Fame. A new tab, accessible from the "About?" tray menu.
+		
+		- Added support for FR/DE/ES whispers.
+		- Tray menu now has icons.
+		- Warning box when the user has too many fonts installed.
+		Having over 720 fonts installed can cause major slowness with Trades Companion on Windows 10.
+	
+	Improvements:
+		- On startup, the tool logs the content of the Preferences.ini, this would slow down the start time as it would write many lines to the logs file.
+		Instead of writing each line for every individual setting, we now create a full "block" containing the settings, effectively writing to the file only once.
+		- Reading the game logs has been improved.
+		Instead of checking the file every 100ms, the timer is set at 400ms on startup.
+		Upon receiving a trading whisper, the timer will be reduced to 200ms.
+		When you haven't received a trading whisper for 5 minutes, the timer will increase to 400ms.
+		When you haven't received a trading whisper for 1 hour, the timer will increase to 600ms.
+		- Tray notifications no longer hangs the script during their animation.
+		- (Un)Minimizing no longer hangs the scirpt during its animation. The animation speed has also been improved.
+		- CPU usage has been reduced when spam-moving the mouse around inside the Trades GUI.
+
+		- Tray notifications have been improved. Up to 5 notifications can appear at the same time.
+		- Sending message should now be more reliable, as it makes use of the clipboard.
+		This also fixes an issue where people could get kicked out of the game, due to the message being sent too fast after opening the chat.
+
+		- Improved the reliability of the function used to send messages.
+		- Overall (minor) improvements to the Path of Exile Skin.
+
+		- The icons used in "Smaller Buttons" have been updated.
+		- The GUIs used for "Replace PID" and "Multiple instances detected" have been replaced.
+		This new GUI allows the user to find the desired instance much easier.
+	
+	Changes:
+		- Fonts now need to be installed on your system for the Trades GUI to function correctly.
+		All fonts inside the program's local font folder will automatically be installed, using FontReg.
+		- Slight visual change to the tray notifications.
+
+		- The About GUI now shows both current Beta and Stable version numbers.
+
+		- The tray notifications position is now based on your start bar position. 10px above, and 10px from the right border of your monitor.
+		- Minor changes to the Settings tab from the Settings GUI.
+
+		- The uncompiled script now uses the icon file.
+		- The Trades GUI title is now centered.
+		- Removed "- Queued Trades: xx" when no trades are on queue.
+		- The White Skin "Title (Active)" color has been changed to white (from black).
+
+		- TradesGUI: When failing to create an ImageButton, the error messages will be shown after the TradesGUI is created.
+		This change has been made so you do not have to click through dozen of message boxes anymore, in case an error happens.
+
+	Fixes:
+		- The "Overlay" mode would not function as intended.
+		Overlay mode is used to dock the Trades GUI to the top right of your game's window.
+		- When changing settings from the "Appearance" tab, a new fake trade request is created on the Trades GUI, to make previewing changes easier.
+		This tab would no longer appear since 1.10. Additionally, stats from this tab will not be saved.
+		
+		- On start, when using the "Mode: Window", the Trades GUI would appear at the default position instead of the previously saved one.
+		- When using the "Mode: Overlay", upon activating another window, the Trades GUI position would not be automatically adjusted.
+		- When using a non-default Screen DPI, the Trades GUI background picture would not fill the entire size.
+		- When using a non-default Screen DPI, the tray notifications would appear cut-off.
+		- Auto Updater: When running the source code (.ahk), the POE Trades Companion.ahk file would get deleted upon updating using the internal updater.
+		
+		- Clipboard search with trading whispers from poe.trade containing a gem as item would not function as expected.
+		- When using the "User Defined" preset, all settings would be reverted back to default upon next launch.
+		- Some elements would appear offset when using a non-default scale multiplier: Time Slot, Minimize, Tabs.
+		- The "Minimize" text could clip out of bound with specific font sizes.
+		- Potentially fixed an issue where the tray icon would not appear (If you happend to encounter this issue, please report it!)
+		
+		- "Only show while in game" would not work as it should.
+		- Upon reaching the initial tabs limit (25), the GUI would fail to allocate more tabs.
+		- When using an hotkey bound to a "Custom Button", an error would be logged even if the hotkey succeeded.
+		
+		- Emptying a message slot would revert its content back to default on next launch.
+		- On start, until a trading whisper would be received, a warning would be shown when trying to use an hotkey linked to a button.
+		- A file using some weird characters could appear in the folder you are running the application from.
+		If you happen to have this file, it can safely be deleted.
+		The origin of this file was due to an invalid path to the local .ini file, which would result in the location defaulting to the tool's folder.
+		Also, if in the future this issue re-appear, the file will be placed in the application's local folder instead (\My Documents\Autohotkey\POE Trades Companion\), in order to avoid any trouble.
+
+		- When unable to reach api.pathofexile.com, we normally use pre-included league names. This would not work correctly.
+		- Receiving a trading whisper would temporarily pause the function used to send in-game messages.
+		- Possible fix: The tool could "pause" during sending messages under specific circonstancies.
+
+		- Hovering a Trades Slot would cause the ToolTip to "flicker".
+		- Non-English whisper would fail to be parsed.
+		
+		- "Custom Buttons" would not be correctly positioned when all "Smaller Buttons" are disabled.
+//
+\\
+--1.12.BETA_14--
+This is the latest beta before the update goes stable.
+
+Added:
+- Added support for FR/DE/ES whispers.
+- Tray menu now has icons.
+- Warning box when the user has too many fonts installed.
+Having over 720 fonts installed can cause major slowness with Trades Companion on Windows 10.
+
+Fixes:
+- "Custom Buttons" would not be correctly positioned when all "Smaller Buttons" are disabled.
+- Minor update check fixes.
+//
+\\
+--1.12.BETA_13--
+If you are having the "Couldn't get button's font" issue, restarting your computer will fix it.
+
+Changes:
+- TradesGUI: When failing to create an ImageButton, the error messages will be shown after the TradesGUI is created.
+This change has been made so you do not have to click through dozen of message boxes anymore, in case an error happens.
+//
+\\
+--1.12.BETA_12--
+Added:
+- Ctrl+Shift+Left Click Hotkey.
+This hotkey allows trading currency much easier.
+To stay within the "One server action per macro" GGG policy, it only withdraw one stack of currency per press.
+Upon pressing the hotkey, it compares the currency under your cursor and the currency in the "Price" Slot (from the Trades GUI).
+When both currency correspond, it will then behave as either a "Ctrl+Click" or a "Shift+Click, Number, Enter", based on the total amount required.
+
+For example: The "Price" Slot shows "53" alteration. Alteration Orbs max stack count is 20.
+The first press will "Ctrl+Click", removing 20 alteration. 33 more alration required.
+The second press will "Ctrl+Click" again, removing 20 alteration. 13 more alteration required.
+The third and final press wil "Shift+Click, Send 13, Press Enter". You will have 13 alteration on your cursor, that you can place in your inventory.
+Any further press on the hotkey will not do anything, allowing to safely remove just enough of the currency required.
+
+- Hall of Fame. A new tab, accessible from the "About?" tray menu.
+
+Improvements:
+- The icons used in "Smaller Buttons" have been updated.
+- The GUIs used for "Replace PID" and "Multiple instances detected" have been replaced.
+This new GUI allows the user to find the desired instance much easier.
+
+Fixes:
+- Hovering a Trades Slot would cause the ToolTip to "flicker".
+- Non-English whisper would fail to be parsed.
+//
+\\
+--1.12.BETA_11--
+Added:
+- Minimize and Maximize icons are now used instead of the "MINIMIZE" text, on the Trades GUI.
+- The tool now makes use of the GitHub API to retrieve the latest stable and beta versions.
+
+Improvements:
+- Improved the reliability of the function used to send messages.
+- Overall (minor) improvements to the Path of Exile Skin.
+
+Changes:
+- The uncompilled script now uses the icon file.
+- The Trades GUI title is now centered.
+- Removed "- Queued Trades: xx" when no trades are on queue.
+- The White Skin "Title (Active)" color has been changed to white (from black).
+
+Fix:
+- When unable to reach api.pathofexile.com, we normally use pre-included league names. This would not work correctly.
+- Receiving a trading whisper would temporarily pause the function used to send in-game messages.
+- Possible fix: The tool could "pause" during sending messages under specific circonstancies.
+//
+\\
+--1.12.BETA_9/BETA_10--
+BETA_10: Removed caps from version.txt and changelogs.txt file name.
+Note to self: Don't use them. It messes up.
+
+Added:
+- Send Message + Minimize action. This allows you to send a message, then put the GUI into its minimized state.
+
+Improvements:
+- Tray notifications have been improved. Up to 5 notifications can appear at the same time.
+- Sending message should now be more reliable, as it makes use of the clipboard.
+This also fixes an issue where people could get kicked out of the game, due to the message being sent too fast after opening the chat.
+
+Fixes:
+- Emptying a message slot would revert its content back to default on next launch.
+- On start, until a trading whisper would be received, a warning would be shown when trying to use an hotkey linked to a button.
+- A file using some weird characters could appear in the folder you are running the application from.
+If you happen to have this file, it can safely be deleted.
+The origin of this file was due to an invalid path to the local .ini file, which would result in the location defaulting to the tool's folder.
+Also, if in the future this issue re-appear, the file will be placed in the application's local folder instead (\My Documents\Autohotkey\POE Trades Companion\), in order to avoid any trouble.
+//
+\\
+--1.12.BETA_8--
+Added:
+- You can now choose to play a sound when a buyer joins your area.
+- Nine new sound effects have been added.
+- Currency names for the new shards and orbs (Used by the "My Stats" tray menu).
+
+Changes:
+- The tray notifications position is now based on your start bar position. 10px above, and 10px from the right border of your monitor.
+- Minor changes to the Settings tab from the Settings GUI.
+
+Fixes:
+- "Only show while in game" would not work as it should.
+- Upon reaching the initial tabs limit (25), the GUI would fail to allocate more tabs.
+- When using an hotkey bound to a "Custom Button", an error would be logged even if the hotkey succeeded.
+//
+\\
+--1.12.BETA_6/BETA_7--
+BETA_7: Fix: Would fail to write to the changelogs file if the file was non-existent.
+
+Improvements: 
+- On startup, the tool logs the content of the Preferences.ini, this would slow down the start time as it would write many lines to the logs file.
+Instead of writting each line for every individual setting, we now create a full "block" containing the settings, effectively writting to the file only once.
+- Reading the game logs has been improved.
+Instead of checking the file every 100ms, the timer is set at 400ms on startup.
+Upon receiving a trading whisper, the timer will be reduced to 200ms.
+When you haven't received a trading whisper for 5 minutes, the timer will increase to 400ms.
+When you haven't received a trading whisper for 1 hour, the timer will increase to 600ms.
+- Tray notifications no longer hangs the script during their animation.
+- (Un)Minimizing no longer hangs the scirpt during its animation. The animation speed has also been improved.
+- CPU usage has been reduced when spam-moving the mouse around inside the Trades GUI.
+
+Changes:
+- Assets are now added to the executable dynamically.
+For the user, this does not change much. But for me, that means I will no longer have to include each file manually when adding new skins.
+
+Fixes:
+- Clipboard search with trading whispers from poe.trade containing a gem as item would not function as expected.
+- When using the "User Defined" preset, all settings would be reverted back to default upon next launch.
+- Some elements would appear offset when using a non-default scale multiplier: Time Slot, Minimize, Tabs.
+- The "Minimize" text could clip out of bound with specific font sizes.
+- Potentially fixed an issue where the tray icon would not appear (If you happend to encounter this issue, please report it!)
+//
+\\
+--1.12.BETA_3/BETA_4/BETA_5--
+BETA_5: Fix: Skin assets would be unable to extract.
+BETA_4: Fix: On start, while creating the TradesGUI, switching windows would cause a message box. (Only happens with Mode: Overlay)
+
+Features:
+- Tabs notifications:
+When your buyer joins your area, the tab colour will turn to green. The colour will revert back to normal when the buyer leaves the area.
+When receiving another whisper from a buyer, the tab colour will turn to purple. The colour will revert back to normal when you acknowledged the whisper by hovering the "Other:" slot for that tab.
+These options cannot be disabled at the moment, but full 1.12 release will allow to do so as well as playing a custom sound.
+- Night theme: Dark Blue.
+
+Changes:
+- The About GUI now shows both current Beta and Stable version numbers.
+
+Fixes:
+- On loading, when using the "Mode: Window", the Trades GUI would appear at the default position instead of the previously saved one.
+- When using the "Mode: Overlay", upon activating another window, the Trades GUI position would not be automatically adjusted.
+- When using a non-default Screen DPI, the Trades GUI background picture would not fill the entire size.
+- When using a non-default Screen DPI, the tray notifications would appear cut-off.
+- Auto Updater: When running the source code (.ahk), the POE Trades Companion.ahk file would get deleted upon updating using the internal updater.
+//
+\\
+--1.12.BETA_1--
+Skinning is now easier than ever.
+If you are interested into making your own skin, visit here:
+github.com/lemasato/POE-Trades-Companion/wiki/Creating-Your-Skin
+
+What's new:
+- The Trades GUI has been greatly improved. See the link at the top.
+The "System" theme has been replaced with the new "White" theme.
+The PoE theme has also seen many visual changes, and has been adapted to the new Skinning system.
+- More customisation is available in the "Customization > Appearance" tab, in the Settings.
+- Leagues are now retrieven from the online API.
+- All type of whisper received from poeapp.com should now be working correctly.
+
+What's changed:
+- Fonts now need to be installed on your system for the Trades GUI to function correctly.
+All fonts inside the program's local font folder will automatically be installed, using FontReg.
+- Slight visual change to the tray notifications.
+
+What's fixed:
+- The "Overlay" mode would not function as intended.
+Overlay mode is used to dock the Trades GUI to the top right of your game's window.
+- When changing settings from the "Appearance" tab, a new fake trade request is created on the Trades GUI, to make previewing changes easier.
+This tab would no longer appear since 1.10. Additionally, stats from this tab will not be saved.
+//
+
+
+\\
 --1.11.3--
 Fixes:
 - New whispers from the same buyer would not be added to its "Other:" slot.

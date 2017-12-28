@@ -1,13 +1,18 @@
-# Testing tools and ideas that cannot work.
-/_BETA/*
-/_Scrapped_Ideas/*
+# Testing tools
+/_DebugTools/*
+/_ScrappedIdeas/*
 /_Testings/*
-ENABLE_DEBUG.txt
 Verpatch.*
+*_Old*
+
+# EXE builder / Resources path file
+_Convert_Release.ahk
+File_Install.ahk
 
 # Resources source files
 *.sfd
 *.psd
+Resources/Fonts/*/*
 
 # =========================
 # Default .gitignore
@@ -60,4 +65,3 @@ $RECYCLE.BIN/
 Network Trash Folder
 Temporary Items
 .apdisk
-
