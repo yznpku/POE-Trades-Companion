@@ -2036,11 +2036,15 @@ Gui_Trades_Clipboard_Item_Func(tabID="NONE") {
 
 	tabInfos := Gui_Trades_Get_Trades_Infos(tabID)
 	item := tabInfos.Item
-	RegExMatch(item, "(.*?) \(Lvl:(.*?) \/ Qual:(.*?)%\)", itemPat)
-	clipContent := (itemPat1 && itemPat2 && itemPat3)?("""" itemPat1 """" . A_Space . """Level: " itemPat2 """" . A_Space . """Quality: +" itemPat3 "%""")
-				  :(itemPat1 && itemPat2 && !itemPat3)?("""" itemPat1 """" . A_Space . """Level: " itemPat2 """")
-				  :(itemPat4)?(itemPat4)
-				  :(item)
+	if RegExMatch(item, "(.*?) \(Lvl:(.*?) \/ Qual:(.*?)%\)", itemPat) {
+		clipContent := (itemPat1 && itemPat2 && itemPat3)?("""" itemPat1 """" . A_Space . """Level: " itemPat2 """" . A_Space . """Quality: +" itemPat3 "%""")
+				  		:(itemPat1 && itemPat2 && !itemPat3)?("""" itemPat1 """" . A_Space . """Level: " itemPat2 """")
+				  		:(itemPat4)?(itemPat4)
+				  		:(item)
+	}
+	else if RegExMatch(item, "O)(.*?) \(T(.*?)\)", itemPat) {
+		clipContent := """" itemPat.1 """" " tier:" itemPat.2
+	}
 	if (clipContent)
 		Clipboard := clipContent
 }
