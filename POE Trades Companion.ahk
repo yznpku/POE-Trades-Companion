@@ -1408,7 +1408,7 @@ SystemParametersInfo(toggle := 0)                               ; https://msdn.m
     return true
 }
 
-Gui_Trades_SetActiveTab_Func(tabID) {
+Gui_Trades_SetActiveTab_Func(tabID, noClip=False) {
 /*		Allows selecting a specific tab
 		Moving into its range
 */
@@ -1443,7 +1443,7 @@ Gui_Trades_SetActiveTab_Func(tabID) {
 
 ;	Clipboard the item
 	TradesGUI_Values.Active_Tab := tabID
-	if ( ProgramSettings.Clip_On_Tab_Switch ) {
+	if ( ProgramSettings.Clip_On_Tab_Switch && !noClip ) {
 		Gui_Trades_Clipboard_Item_Func()
 	}
 
@@ -7902,7 +7902,7 @@ Gui_Trades_Update_Tabs() {
 }
 
 GUI_Trades_Update_Tab_Style(tabId) {
-	Global TradesGUI_Controls, TradesGUI_Values, ProgramValues
+	Global TradesGUI_Controls, TradesGUI_Values, ProgramValues, ProgramSettings
 
 	oldTab := TradesGUI_Controls["Tab_" tabID]
 	GuiControlGet, isVisible, Trades:Visible,% oldTab
@@ -7921,7 +7921,8 @@ GUI_Trades_Update_Tab_Style(tabId) {
 	}
 
 	if (tabId = TradesGUI_Values.Active_Tab) {
-		Gui_Trades_SetActiveTab_Func(tabId)
+		; Make sure to use the active asset
+		Gui_Trades_SetActiveTab_Func(tabId, noClip=True)
 	}
 }
 
