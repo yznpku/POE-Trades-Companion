@@ -67,7 +67,7 @@ Start_Script() {
 	MyDocuments 						:= (RunParameters.MyDocuments)?(RunParameters.MyDocuments):(A_MyDocuments)
 
 	ProgramValues.Name 					:= "POE Trades Companion"
-	ProgramValues.Version 				:= "1.12.BETA_14"
+	ProgramValues.Version 				:= "1.12"
 	ProgramValues.Github_User 			:= "lemasato"
 	ProgramValues.GitHub_Repo 			:= "POE-Trades-Companion"
 
@@ -215,7 +215,7 @@ Start_Script() {
 
 	Gui_Trades_Load_Pending_Backup()
 	Monitor_Game_Logs()
-	Tray_Notifications_Show(ProgramValues.Name, "Loaded and ready!"
+	Tray_Notifications_Show(ProgramValues.Name, "Now monitoring your logs file."
 												. "`nRight click on the tray icon to access the settings.")
 }
 
