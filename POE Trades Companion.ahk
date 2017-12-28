@@ -2045,8 +2045,9 @@ Gui_Trades_Clipboard_Item_Func(tabID="NONE") {
 	else if RegExMatch(item, "O)(.*?) \(T(.*?)\)", itemPat) {
 		clipContent := """" itemPat.1 """" " tier:" itemPat.2
 	}
-	if (clipContent)
-		Clipboard := clipContent
+	if (clipContent) {
+		Set_Clipboard(clipContent)
+	}
 }
 
 Gui_Trades_Redraw(msg, params="") {
@@ -7930,12 +7931,13 @@ StackClick() {
 	global TradesGUI_Values, ProgramSettings, ProgramValues
 	static lastAvailable
 
-	Clipboard := ; Clear CLipboard
+	LongCopy := A_TickCount, Clipboard := "", LongCopy -= A_TickCount
 	SendInput {Shift Up}^{sc02E} ; Ctrl+C
 
-	; wait .01 second for the clipboard and do nothing if it fails 
-	ClipWait, .1
+	; wait for the clipboard and do nothing if it fails 
+	ClipWait,% LongCopy ? 0.6 : 0.2, 1
 	if (ErrorLevel) {
+		Tray_Notifications_Show(ProgramValues.Name, "The stack-click function timed out due to the clipboard not updating in time.")
 		return
 	}
 	clip := Clipboard
@@ -8139,6 +8141,18 @@ ShowToolTip(_tip, tipX=0, tipY=0, radiusX=10, radiusY=10) {
 	;	Revert CoordMode settings
 		CoordMode(coordSettings)
 	return
+}
+
+Set_Clipboard(str) {
+	global ProgramValues
+
+	Clipboard := ""
+	Clipboard := clipContent
+	ClipWait, 2, 1
+	if (ErrorLevel) {
+		Tray_Notifications_Show(ProgramValues.Name, "Unable to clipboard the following content: " clipContent
+			.	"`nThis may be due to an external clipboard manager creating conflict.")
+	}
 }
 
 #Include %A_ScriptDir%/Resources/AHK/
