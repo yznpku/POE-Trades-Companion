@@ -3067,15 +3067,32 @@ return
 					,TabJoinedActiveColorHandler,TabJoinedInactiveColorHandler,TabJoinedHoverColorHandler,TabJoinedPressColorHandler
 					,TabWhisperActiveColorHandler,TabWhisperInactiveColorHandler,TabWhisperHoverColorHandler,TabWhisperPressColorHandler]
 
+		keys 		:= ["Color_Border","Color_Button_Normal","Color_Button_Hover","Color_Button_Press"
+						,"Color_Title_Active","Color_Title_Inactive","Color_Trades_Infos_1","Color_Trades_Infos_2"
+						,"Color_Tab_Active","Color_Tab_Inactive","Color_Tab_Hover","Color_Tab_Press"
+						,"Color_Tab_Joined_Active","Color_Tab_Joined_Inactive","Color_Tab_Joined_Hover","Color_Tab_Joined_Press"
+						,"Color_Tab_Whisper_Active","Color_Tab_Whisper_Inactive","Color_Tab_Whisper_Hover","Color_Tab_Whisper_Press"]
+
 		for id, varName in ctrlVars {
 			if (A_GuiControl = varName) {
+
 				GuiControlGet, colorHex, Settings:,% ctrlHandlers[id]
-				GuiControl, Settings:+Background%colorHex%,% FontsColorPreviewHandler
+				if (colorHex = "")
+					colorHex = "CANNOT_BE_EMPTY"
+				if colorHex is not Xdigit
+				{
+					ShowToolTip(colorHex ": This is not a valid hex color code.")
+					IniRead, iniHex,% ProgramValues.Ini_File,CUSTOMIZATION_APPEARANCE,% keys[id]
+					GuiControl, Settings:,% ctrlHandlers[id],% iniHex
+				}
+				else {
+					GuiControl, Settings:+Background%colorHex%,% FontsColorPreviewHandler
+				}
+				
 			}
 		}
 
 		ctrlHandlers := "", ctrlVars := "", colorHex := ""
-
 		GoSub Gui_Settings_Set_Custom_Preset
 	Return
 	Gui_Settings_Fonts_Color_DropDownList:
@@ -3086,6 +3103,7 @@ return
 					,TabActiveColorHandler,TabInactiveColorHandler,TabHoverColorHandler,TabPressColorHandler
 					,TabJoinedActiveColorHandler,TabJoinedInactiveColorHandler,TabJoinedHoverColorHandler,TabJoinedPressColorHandler
 					,TabWhisperActiveColorHandler,TabWhisperInactiveColorHandler,TabWhisperHoverColorHandler,TabWhisperPressColorHandler]
+
 		for id, handler in ctrlHandlers {
 			GuiControlGet, isVisible,Settings:Visible,% handler
 			if (isVisible)
@@ -5158,6 +5176,20 @@ Set_Local_Settings(){
 			IniRead, var,% iniFilePath,% sectionName,% keyName
 			if ( var = "ERROR" || var = "0.00" ) {
 				IniWrite,% value,% iniFilePath,% sectionName,% keyName
+			}
+			if ( sectionName = "CUSTOMIZATION_APPEARANCE") {
+				if keyName contains Color_
+				{
+					if (var = "")
+						reset := True
+					if value is not xdigit
+						reset := True
+
+					if (reset) {
+						reset := False
+						IniWrite,% value,% iniFilePath,% sectionName,% keyName
+					}
+				}
 			}
 		}
 	}
