@@ -2037,14 +2037,15 @@ Gui_Trades_Clipboard_Item_Func(tabID="NONE") {
 	tabInfos := Gui_Trades_Get_Trades_Infos(tabID)
 	item := tabInfos.Item
 	if RegExMatch(item, "(.*?) \(Lvl:(.*?) \/ Qual:(.*?)%\)", itemPat) {
-		clipContent := (itemPat1 && itemPat2 && itemPat3)?("""" itemPat1 """" . A_Space . """Level: " itemPat2 """" . A_Space . """Quality: +" itemPat3 "%""")
-				  		:(itemPat1 && itemPat2 && !itemPat3)?("""" itemPat1 """" . A_Space . """Level: " itemPat2 """")
-				  		:(itemPat4)?(itemPat4)
-				  		:(item)
+		clipContent := (itemPat1 && itemPat2 && itemPat3)?("""" itemPat1 """" . A_Space . """Level: " itemPat2 """" . A_Space . """Quality: +" itemPat3 "%""") ; Lvl and Qual
+				  	  :(itemPat1 && itemPat2 && !itemPat3)?("""" itemPat1 """" . A_Space . """Level: " itemPat2 """") ; Lvl but no qual
+				  	  :(item) ; Neither found
 	}
 	else if RegExMatch(item, "O)(.*?) \(T(.*?)\)", itemPat) {
 		clipContent := """" itemPat.1 """" " tier:" itemPat.2
 	}
+
+	clipContent := (clipContent)?(clipContent):(item)
 	if (clipContent) {
 		Set_Clipboard(clipContent)
 	}
@@ -8147,10 +8148,10 @@ Set_Clipboard(str) {
 	global ProgramValues
 
 	Clipboard := ""
-	Clipboard := clipContent
+	Clipboard := str
 	ClipWait, 2, 1
 	if (ErrorLevel) {
-		Tray_Notifications_Show(ProgramValues.Name, "Unable to clipboard the following content: " clipContent
+		Tray_Notifications_Show(ProgramValues.Name, "Unable to clipboard the following content: " str
 			.	"`nThis may be due to an external clipboard manager creating conflict.")
 	}
 }
