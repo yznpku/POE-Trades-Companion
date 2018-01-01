@@ -2036,16 +2036,41 @@ Gui_Trades_Clipboard_Item_Func(tabID="NONE") {
 
 	tabInfos := Gui_Trades_Get_Trades_Infos(tabID)
 	item := tabInfos.Item
-	if RegExMatch(item, "(.*?) \(Lvl:(.*?) \/ Qual:(.*?)%\)", itemPat) {
-		clipContent := (itemPat1 && itemPat2 && itemPat3)?("""" itemPat1 """" . A_Space . """Level: " itemPat2 """" . A_Space . """Quality: +" itemPat3 "%""") ; Lvl and Qual
-				  	  :(itemPat1 && itemPat2 && !itemPat3)?("""" itemPat1 """" . A_Space . """Level: " itemPat2 """") ; Lvl but no qual
-				  	  :(item) ; Neither found
+	if RegExMatch(item, "O)(.*?) \(Lvl:(.*?) \/ Qual:(.*?)%\)", itemPat) {
+		gemName := itemPat.1, gemLevel := itemPat.2, gemQual := itemPat.3
 	}
 	else if RegExMatch(item, "O)(.*?) \(T(.*?)\)", itemPat) {
-		clipContent := """" itemPat.1 """" " tier:" itemPat.2
+		mapName := itemPat.1, mapTier := itemPat.2
 	}
 
-	clipContent := (clipContent)?(clipContent):(item)
+	if (gemName) {
+		Gui_Trades_Clipboard_Item_Func_GemString:
+		searchGemStr := """" gemName """", searchLvlStr := """l: " gemLevel """", searchQualStr := """y: +" gemQual "%"""
+		searchString := searchGemStr
+		searchString .= (gemLevel && !gemQual)?(" " searchLvlStr):(gemLevel && gemQual)?(" " searchLvlStr " " searchQualStr):("")
+
+		searchStrLen := StrLen(searchString)
+		if (searchStrLen > 50) {
+			charsToRemove := searchStrLen-50
+			StringTrimRight, gemName, gemName, %charsToRemove%
+			GoTo Gui_Trades_Clipboard_Item_Func_GemString
+		}
+	}
+	else if (mapName) {
+		Gui_Trades_Clipboard_Item_Func_MapString:
+		searchMapStr := """" mapName """", searchTierStr := "tier:" mapTier
+		searchString := searchMapStr
+		searchString .= (mapTier)?(" " searchTierStr):("")
+
+		searchStrLen := StrLen(searchString)
+		if (searchStrLen > 50) {
+			charsToRemove := searchStrLen-50
+			StringTrimRight, mapName, mapName, %charsToRemove%
+			GoTo Gui_Trades_Clipboard_Item_Func_MapString
+		}
+	}
+
+	clipContent := (searchString)?(searchString):(item)
 	if (clipContent) {
 		Set_Clipboard(clipContent)
 	}
