@@ -6073,11 +6073,7 @@ ShellMessage(wParam,lParam) {
 		WinGet, winID, ID, ahk_id %lParam%
 		if ( ProgramSettings.Show_Mode = "InGame" ) {
 			if ( TradesGUI_Values.Width ) { ; TradesGUI exists
-				if POEGameList contains %winEXE%
-				{
-					Gui, Trades:Show, NoActivate
-				}
-				else if (winID = GUISettingsHandler ) { 
+				if ( winEXE && IsContaining(POEGameList, winEXE) ) || ( (winID && GUISettingsHandler) && (winID = GUISettingsHandler) ) {
 					Gui, Trades:Show, NoActivate
 				}
 				else {
@@ -8179,6 +8175,16 @@ Set_Clipboard(str) {
 		Tray_Notifications_Show(ProgramValues.Name, "Unable to clipboard the following content: " str
 			.	"`nThis may be due to an external clipboard manager creating conflict.")
 	}
+}
+
+IsIn(_string, _list) {
+	if _string in %_list%
+		return True
+}
+
+IsContaining(_string, _keyword) {
+	if _string contains %_keyword%
+		return True
 }
 
 #Include %A_ScriptDir%/Resources/AHK/
