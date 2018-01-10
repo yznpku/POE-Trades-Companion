@@ -1,4 +1,10 @@
 \\
+--1.12.2--
+	Fixes:
+	- A "new update available" notification would always appear on start.
+	This bug was caused by the recent updating changes brought with 1.12.1.
+//
+\\
 --1.12.1--
 	Changes:
 	- The "Clipboard item" function now use "l: x" and "y: +x%" instead of "level: x" and "quality: +x%" for gems.
