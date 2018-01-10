@@ -1,4 +1,17 @@
 \\
+--1.12.1--
+	Changes:
+	- The "Clipboard item" function now use "l: x" and "y: +x%" instead of "level: x" and "quality: +x%" for gems.
+	This was done to reduce the characters used in the search string.
+	- When updating with the "Enable BETA" setting enabled", if the release on "stable" is "better", it will choose that one instead.
+	
+	Fixes:
+	- Having the "Only show while in game" setting enabled, the tool would still show on certain windows (such as the desktop)
+	- Some items could not be pasted into the in-game stash search.
+	This was due to the in-game stash search having a limit of 50 characters.
+	Any item past the length will have its name cut to fit.
+//
+\\
 --1.12--
 	Since 1.12.BETA_14:
 	
