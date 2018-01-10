@@ -4524,10 +4524,16 @@ Check_Update() {
 		ProgramValues.Version_Latest_Beta_Download 		:= valBetaDL
 		ProgramValues.Version_Online 					:= (isUsingBeta && !isStableBetter)?(valBetaTag):(valStableTag)
 		ProgramValues.Version_Online_Download 			:= (isUsingBeta && !isStableBetter)?(valBetaDL):(valStableDL)
+		ProgramValues.Is_Stable_Better					:= isStableBetter
 
-		isUpdateAvailable 	:= (isUsingBeta && ( (latestBetaTag && latestBetaTag != "ERROR") && (latestBetaTag != currentVersion) ) || (isStableBetter) )?(true)
-							  :(!isUsingBeta && (latestReleaseTag && latestReleaseTag != "ERROR") && (latestReleaseTag != currentVersion)) ?(true)
-							  :(false)	
+		if (isStableBetter) {
+		isUpdateAvailable := ( (latestReleaseTag && latestReleaseTag != "ERROR") && (latestReleaseTag != currentVersion) )?(True):(False)
+		}
+		else {
+		isUpdateAvailable := ( isUsingBeta && (latestBetaTag && latestBetaTag != "ERROR") && (latestBetaTag != currentVersion) )?(true)
+						    :(!isUsingBeta && (latestReleaseTag && latestReleaseTag != "ERROR") && (latestReleaseTag != currentVersion))?(true)
+						    :(false)
+		}
 		ProgramValues.Update_Available	:= isUpdateAvailable
 
 		if (isUpdateAvailable)
@@ -4686,9 +4692,14 @@ Check_Update() {
 			isStableBetter := True
 	}
 
-	isUpdateAvailable 			:= (isUsingBeta && ( (latestBetaTag && latestBetaTag != "ERROR") && (latestBetaTag != currentVersion) ) || (isStableBetter) )?(true)
-								  :(!isUsingBeta && (latestReleaseTag && latestReleaseTag != "ERROR") && (latestReleaseTag != currentVersion)) ?(true)
-								  :(false)	
+	if (isStableBetter) {
+		isUpdateAvailable := ( (latestReleaseTag && latestReleaseTag != "ERROR") && (latestReleaseTag != currentVersion) )?(True):(False)
+	}
+	else {
+		isUpdateAvailable := ( isUsingBeta && (latestBetaTag && latestBetaTag != "ERROR") && (latestBetaTag != currentVersion) )?(true)
+						    :(!isUsingBeta && (latestReleaseTag && latestReleaseTag != "ERROR") && (latestReleaseTag != currentVersion))?(true)
+						    :(false)
+	}
 
 	ProgramValues.Version_Latest 					:= latestReleaseTag
 	ProgramValues.Version_Latest_Download 			:= latestReleaseDownload
@@ -4706,7 +4717,7 @@ Check_Update() {
 	IniWrite,% latestBetaTag,% ProgramValues.Ini_File,PROGRAM,Version_Beta
 	IniWrite,% """" latestBetaDownload """",% ProgramValues.Ini_File,PROGRAM,Version_Beta_DL
 	IniWrite,% A_Now,% ProgramValues.Ini_File,PROGRAM,LastUpdateCheck
-	IniWrite,% isStableBetter,% ProgramValues.Ini_File, PROGRAM,Is_Stable_Better
+	IniWrite,% ProgramValues.Is_Stable_Better,% ProgramValues.Ini_File, PROGRAM,Is_Stable_Better
 
 	if ( isUpdateAvailable ) {
 		if (isAutoUpdateEnabled = 1) {
