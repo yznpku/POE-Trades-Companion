@@ -6611,6 +6611,10 @@ Send_InGame_Message(allMessages, tabInfos="", specialEvent="") {
 	chatVK := GameSettings.Chat_VK
 	if (!chatVK) {
 		MsgBox, 4096,% programName " - Operation Cancelled.",% "Could not detect the chat key!"
+		. "`nKey Name: " GameSettings.Chat_Name
+		. "`nKey VK: " GameSettings.Chat_VK
+		. "`nKey SC: " GameSettings.Chat_SC
+		. "`n"
 		. "`nPlease send me an archive containing the Logs folder."
 		. "`nYou can find links to GitHub / GGG / Reddit in the [About?] tray menu."
 		. "`n`n(The local folder containing the Logs folder will open upon closing this box)."
