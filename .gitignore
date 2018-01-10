@@ -2,12 +2,14 @@
 /_DebugTools/*
 /_ScrappedIdeas/*
 /_Testings/*
+/_Reborn/*
 Verpatch.*
 *_Old*
 
 # EXE builder / Resources path file
 _Convert_Release.ahk
 File_Install.ahk
+_ConvertRelease.ahk
 
 # Resources source files
 *.sfd

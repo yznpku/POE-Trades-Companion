@@ -67,7 +67,7 @@ Start_Script() {
 	MyDocuments 						:= (RunParameters.MyDocuments)?(RunParameters.MyDocuments):(A_MyDocuments)
 
 	ProgramValues.Name 					:= "POE Trades Companion"
-	ProgramValues.Version 				:= "1.12"
+	ProgramValues.Version 				:= "1.12.1"
 	ProgramValues.Github_User 			:= "lemasato"
 	ProgramValues.GitHub_Repo 			:= "POE-Trades-Companion"
 
@@ -2036,16 +2036,41 @@ Gui_Trades_Clipboard_Item_Func(tabID="NONE") {
 
 	tabInfos := Gui_Trades_Get_Trades_Infos(tabID)
 	item := tabInfos.Item
-	if RegExMatch(item, "(.*?) \(Lvl:(.*?) \/ Qual:(.*?)%\)", itemPat) {
-		clipContent := (itemPat1 && itemPat2 && itemPat3)?("""" itemPat1 """" . A_Space . """Level: " itemPat2 """" . A_Space . """Quality: +" itemPat3 "%""") ; Lvl and Qual
-				  	  :(itemPat1 && itemPat2 && !itemPat3)?("""" itemPat1 """" . A_Space . """Level: " itemPat2 """") ; Lvl but no qual
-				  	  :(item) ; Neither found
+	if RegExMatch(item, "O)(.*?) \(Lvl:(.*?) \/ Qual:(.*?)%\)", itemPat) {
+		gemName := itemPat.1, gemLevel := itemPat.2, gemQual := itemPat.3
 	}
 	else if RegExMatch(item, "O)(.*?) \(T(.*?)\)", itemPat) {
-		clipContent := """" itemPat.1 """" " tier:" itemPat.2
+		mapName := itemPat.1, mapTier := itemPat.2
 	}
 
-	clipContent := (clipContent)?(clipContent):(item)
+	if (gemName) {
+		Gui_Trades_Clipboard_Item_Func_GemString:
+		searchGemStr := """" gemName """", searchLvlStr := """l: " gemLevel """", searchQualStr := """y: +" gemQual "%"""
+		searchString := searchGemStr
+		searchString .= (gemLevel && !gemQual)?(" " searchLvlStr):(gemLevel && gemQual)?(" " searchLvlStr " " searchQualStr):("")
+
+		searchStrLen := StrLen(searchString)
+		if (searchStrLen > 50) {
+			charsToRemove := searchStrLen-50
+			StringTrimRight, gemName, gemName, %charsToRemove%
+			GoTo Gui_Trades_Clipboard_Item_Func_GemString
+		}
+	}
+	else if (mapName) {
+		Gui_Trades_Clipboard_Item_Func_MapString:
+		searchMapStr := """" mapName """", searchTierStr := "tier:" mapTier
+		searchString := searchMapStr
+		searchString .= (mapTier)?(" " searchTierStr):("")
+
+		searchStrLen := StrLen(searchString)
+		if (searchStrLen > 50) {
+			charsToRemove := searchStrLen-50
+			StringTrimRight, mapName, mapName, %charsToRemove%
+			GoTo Gui_Trades_Clipboard_Item_Func_MapString
+		}
+	}
+
+	clipContent := (searchString)?(searchString):(item)
 	if (clipContent) {
 		Set_Clipboard(clipContent)
 	}
@@ -4468,6 +4493,7 @@ Check_Update() {
 ;			then closing the current instance and renaming the new version
 	global ProgramValues
 
+	; IniWrite, 1994042612310000,% ProgramValues.Ini_File,PROGRAM,LastUpdateCheck
 	IniRead, isUsingBeta,% ProgramValues.Ini_File,PROGRAM,Update_Beta, 0
 	IniRead, isAutoUpdateEnabled,% ProgramValues.Ini_File,PROGRAM,AutoUpdate, 0
 	IniRead, lastTimeUpdated,% ProgramValues.Ini_File,PROGRAM,LastUpdate,% A_Now
@@ -4491,16 +4517,17 @@ Check_Update() {
 		IniRead, valStableDL,% ProgramValues.Ini_File,PROGRAM,Version_Stable_DL
 		IniRead, valBetaTag,% ProgramValues.Ini_File,PROGRAM,Version_Beta
 		IniRead, valBetaDL,% ProgramValues.Ini_File,PROGRAM,Version_Beta_DL
+		IniRead, isStableBetter,% ProgramValues.Ini_File,PROGRAM,Is_Stable_Better
 		ProgramValues.Version_Latest 					:= valStableTag
 		ProgramValues.Version_Latest_Download 			:= valStableDL
 		ProgramValues.Version_Latest_Beta 				:= valBetaTag
 		ProgramValues.Version_Latest_Beta_Download 		:= valBetaDL
-		ProgramValues.Version_Online 					:= (isUsingBeta)?(valBetaTag):(valStableTag)
-		ProgramValues.Version_Online_Download 			:= (isUsingBeta)?(valBetaDL):(valStableDL)
+		ProgramValues.Version_Online 					:= (isUsingBeta && !isStableBetter)?(valBetaTag):(valStableTag)
+		ProgramValues.Version_Online_Download 			:= (isUsingBeta && !isStableBetter)?(valBetaDL):(valStableDL)
 
-		isUpdateAvailable := (isUsingBeta && valBetaTag && valBetaTag != "ERROR" && valBetaTag != currentVersion)?(true)
-						    :(!isUsingBeta && valStableTag && valStableTag != "ERROR" && valStableTag != currentVersion)?(true)
-						    :(false)	
+		isUpdateAvailable 	:= (isUsingBeta && ( (latestBetaTag && latestBetaTag != "ERROR") && (latestBetaTag != currentVersion) ) || (isStableBetter) )?(true)
+							  :(!isUsingBeta && (latestReleaseTag && latestReleaseTag != "ERROR") && (latestReleaseTag != currentVersion)) ?(true)
+							  :(false)	
 		ProgramValues.Update_Available	:= isUpdateAvailable
 
 		if (isUpdateAvailable)
@@ -4646,17 +4673,31 @@ Check_Update() {
 	latestBetaDownload 			:= (apiError)?("ERROR"):(latestBetaDownload)
 	latestBetaDownload 			:= (latestBetaDownload="ERROR")?(ProgramValues.Download_FallBack_Beta):(latestBetaDownload)
 
-	isUpdateAvailable 			:= (isUsingBeta && latestBetaTag && latestBetaTag != "ERROR" && latestBetaTag != currentVersion)?(true)
-								  :(!isUsingBeta && latestReleaseTag && latestReleaseTag != "ERROR" && latestReleaseTag != currentVersion)?(true)
-								  :(false)							  
+	latestReleaseTag = %latestReleaseTag%
+	latestBetaTag = %latestBetaTag%
+
+	; Make sure not to download beta when stable is better
+	if (isUsingBeta) {
+		stableSubVers := StrSplit(latestReleaseTag, ".")
+		betaSubVers := StrSplit(latestBetaTag, ".")
+		currentSubVers := StrSplit(ProgramValues.Version, ".")
+
+		if (betaSubVers.1 = stableSubVers.1 && betaSubVers.2 = stableSubVers.2)
+			isStableBetter := True
+	}
+
+	isUpdateAvailable 			:= (isUsingBeta && ( (latestBetaTag && latestBetaTag != "ERROR") && (latestBetaTag != currentVersion) ) || (isStableBetter) )?(true)
+								  :(!isUsingBeta && (latestReleaseTag && latestReleaseTag != "ERROR") && (latestReleaseTag != currentVersion)) ?(true)
+								  :(false)	
 
 	ProgramValues.Version_Latest 					:= latestReleaseTag
 	ProgramValues.Version_Latest_Download 			:= latestReleaseDownload
 	ProgramValues.Version_Latest_Beta				:= latestBetaTag
 	ProgramValues.Version_Latest_Beta_Download 		:= latestBetaDownload
+	ProgramValues.Is_Stable_Better					:= (isStableBetter)?(True):(False)
 
-	ProgramValues.Version_Online 					:= (isUsingBeta)?(latestBetaTag):(latestReleaseTag)
-	ProgramValues.Version_Online_Download 			:= (isUsingBeta)?(latestBetaDownload):(latestReleaseDownload)
+	ProgramValues.Version_Online 					:= (isUsingBeta && !isStableBetter)?(latestBetaTag):(latestReleaseTag)
+	ProgramValues.Version_Online_Download 			:= (isUsingBeta && !isStableBetter)?(latestBetaDownload):(latestReleaseDownload)
 
 	ProgramValues.Update_Available 					:= isUpdateAvailable
 
@@ -4665,6 +4706,7 @@ Check_Update() {
 	IniWrite,% latestBetaTag,% ProgramValues.Ini_File,PROGRAM,Version_Beta
 	IniWrite,% """" latestBetaDownload """",% ProgramValues.Ini_File,PROGRAM,Version_Beta_DL
 	IniWrite,% A_Now,% ProgramValues.Ini_File,PROGRAM,LastUpdateCheck
+	IniWrite,% isStableBetter,% ProgramValues.Ini_File, PROGRAM,Is_Stable_Better
 
 	if ( isUpdateAvailable ) {
 		if (isAutoUpdateEnabled = 1) {
@@ -4697,7 +4739,7 @@ Gui_About() {
 
 	iniFilePath := ProgramValues.Ini_File, programName := ProgramValues.Name
 	verCurrent := ProgramValues.Version, verLatest := ProgramValues.Version_Latest
-	isUpdateAvailable := ProgramValues.Update_Available, onlineVersionAvailable := ProgramValues.Version_Online
+	isUpdateAvailable := ProgramValues.Update_Available, onlineVersionAvailable := ProgramValues.Version_Online, isStableBetter := ProgramValues.Is_Stable_Better
 
 	IniRead, isUsingBeta,% iniFilePath,PROGRAM,Update_Beta
 	IniRead, isAutoUpdateEnabled,% iniFilePath,PROGRAM,AutoUpdate
@@ -4726,12 +4768,12 @@ Gui_About() {
 	Gui, About:Add, Text,x+5 yp+3,(%timeDif% mins ago)
 
 	Gui, About:Add, Text, xs+20 ys+40 hwndLastestVersionTextHandler,% "Latest Version (Stable): " A_Tab ProgramValues.Version_Latest
-	if (isUpdateAvailable && !isUsingBeta) {
+	if (isUpdateAvailable && (!isUsingBeta || isStableBetter)) {
 		GuiControl, About:+cBlue +Redraw,% LastestVersionTextHandler
 		Gui, About:Add, Button,x+25 yp-5 w80 h20 gGui_About_Update,Update
 	}
 	Gui, About:Add, Text, xs+20 ys+55 hwndLastestVersionBetaTextHandler,% "Latest Version (Beta): " A_Tab A_Tab ProgramValues.Version_Latest_Beta
-	if (isUpdateAvailable && isUsingBeta) {
+	if (isUpdateAvailable && ( isUsingBeta && !isStableBetter)) {
 		GuiControl, About:+cBlue +Redraw,% LastestVersionBetaTextHandler
 		Gui, About:Add, Button,x+25 yp-5 w80 h20 gGui_About_Update,Update
 	}
@@ -6048,11 +6090,7 @@ ShellMessage(wParam,lParam) {
 		WinGet, winID, ID, ahk_id %lParam%
 		if ( ProgramSettings.Show_Mode = "InGame" ) {
 			if ( TradesGUI_Values.Width ) { ; TradesGUI exists
-				if POEGameList contains %winEXE%
-				{
-					Gui, Trades:Show, NoActivate
-				}
-				else if (winID = GUISettingsHandler ) { 
+				if ( winEXE && IsContaining(POEGameList, winEXE) ) || ( (winID && GUISettingsHandler) && (winID = GUISettingsHandler) ) {
 					Gui, Trades:Show, NoActivate
 				}
 				else {
@@ -6573,6 +6611,10 @@ Send_InGame_Message(allMessages, tabInfos="", specialEvent="") {
 	chatVK := GameSettings.Chat_VK
 	if (!chatVK) {
 		MsgBox, 4096,% programName " - Operation Cancelled.",% "Could not detect the chat key!"
+		. "`nKey Name: " GameSettings.Chat_Name
+		. "`nKey VK: " GameSettings.Chat_VK
+		. "`nKey SC: " GameSettings.Chat_SC
+		. "`n"
 		. "`nPlease send me an archive containing the Logs folder."
 		. "`nYou can find links to GitHub / GGG / Reddit in the [About?] tray menu."
 		. "`n`n(The local folder containing the Logs folder will open upon closing this box)."
@@ -8154,6 +8196,16 @@ Set_Clipboard(str) {
 		Tray_Notifications_Show(ProgramValues.Name, "Unable to clipboard the following content: " str
 			.	"`nThis may be due to an external clipboard manager creating conflict.")
 	}
+}
+
+IsIn(_string, _list) {
+	if _string in %_list%
+		return True
+}
+
+IsContaining(_string, _keyword) {
+	if _string contains %_keyword%
+		return True
 }
 
 #Include %A_ScriptDir%/Resources/AHK/
