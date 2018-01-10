@@ -4671,17 +4671,31 @@ Check_Update() {
 	latestBetaDownload 			:= (apiError)?("ERROR"):(latestBetaDownload)
 	latestBetaDownload 			:= (latestBetaDownload="ERROR")?(ProgramValues.Download_FallBack_Beta):(latestBetaDownload)
 
-	isUpdateAvailable 			:= (isUsingBeta && latestBetaTag && latestBetaTag != "ERROR" && latestBetaTag != currentVersion)?(true)
-								  :(!isUsingBeta && latestReleaseTag && latestReleaseTag != "ERROR" && latestReleaseTag != currentVersion)?(true)
-								  :(false)							  
+	latestReleaseTag = %latestReleaseTag%
+	latestBetaTag = %latestBetaTag%
+
+	; Make sure not to download beta when stable is better
+	if (isUsingBeta) {
+		stableSubVers := StrSplit(latestReleaseTag, ".")
+		betaSubVers := StrSplit(latestBetaTag, ".")
+		currentSubVers := StrSplit(ProgramValues.Version, ".")
+
+		if (betaSubVers.1 = stableSubVers.1 && betaSubVers.2 = stableSubVers.2)
+			isStableBetter := True
+	}
+
+	isUpdateAvailable 			:= (isUsingBeta && ( (latestBetaTag && latestBetaTag != "ERROR") && (latestBetaTag != currentVersion) ) || (isStableBetter) )?(true)
+								  :(!isUsingBeta && (latestReleaseTag && latestReleaseTag != "ERROR") && (latestReleaseTag != currentVersion)) ?(true)
+								  :(false)	
 
 	ProgramValues.Version_Latest 					:= latestReleaseTag
 	ProgramValues.Version_Latest_Download 			:= latestReleaseDownload
 	ProgramValues.Version_Latest_Beta				:= latestBetaTag
 	ProgramValues.Version_Latest_Beta_Download 		:= latestBetaDownload
+	ProgramValues.Is_Stable_Better					:= (isStableBetter)?(True):(False)
 
-	ProgramValues.Version_Online 					:= (isUsingBeta)?(latestBetaTag):(latestReleaseTag)
-	ProgramValues.Version_Online_Download 			:= (isUsingBeta)?(latestBetaDownload):(latestReleaseDownload)
+	ProgramValues.Version_Online 					:= (isUsingBeta && !isStableBetter)?(latestBetaTag):(latestReleaseTag)
+	ProgramValues.Version_Online_Download 			:= (isUsingBeta && !isStableBetter)?(latestBetaDownload):(latestReleaseDownload)
 
 	ProgramValues.Update_Available 					:= isUpdateAvailable
 
@@ -4722,7 +4736,7 @@ Gui_About() {
 
 	iniFilePath := ProgramValues.Ini_File, programName := ProgramValues.Name
 	verCurrent := ProgramValues.Version, verLatest := ProgramValues.Version_Latest
-	isUpdateAvailable := ProgramValues.Update_Available, onlineVersionAvailable := ProgramValues.Version_Online
+	isUpdateAvailable := ProgramValues.Update_Available, onlineVersionAvailable := ProgramValues.Version_Online, isStableBetter := ProgramValues.Is_Stable_Better
 
 	IniRead, isUsingBeta,% iniFilePath,PROGRAM,Update_Beta
 	IniRead, isAutoUpdateEnabled,% iniFilePath,PROGRAM,AutoUpdate
@@ -4751,12 +4765,12 @@ Gui_About() {
 	Gui, About:Add, Text,x+5 yp+3,(%timeDif% mins ago)
 
 	Gui, About:Add, Text, xs+20 ys+40 hwndLastestVersionTextHandler,% "Latest Version (Stable): " A_Tab ProgramValues.Version_Latest
-	if (isUpdateAvailable && !isUsingBeta) {
+	if (isUpdateAvailable && (!isUsingBeta || isStableBetter)) {
 		GuiControl, About:+cBlue +Redraw,% LastestVersionTextHandler
 		Gui, About:Add, Button,x+25 yp-5 w80 h20 gGui_About_Update,Update
 	}
 	Gui, About:Add, Text, xs+20 ys+55 hwndLastestVersionBetaTextHandler,% "Latest Version (Beta): " A_Tab A_Tab ProgramValues.Version_Latest_Beta
-	if (isUpdateAvailable && isUsingBeta) {
+	if (isUpdateAvailable && ( isUsingBeta && !isStableBetter)) {
 		GuiControl, About:+cBlue +Redraw,% LastestVersionBetaTextHandler
 		Gui, About:Add, Button,x+25 yp-5 w80 h20 gGui_About_Update,Update
 	}
