@@ -4493,6 +4493,7 @@ Check_Update() {
 ;			then closing the current instance and renaming the new version
 	global ProgramValues
 
+	; IniWrite, 1994042612310000,% ProgramValues.Ini_File,PROGRAM,LastUpdateCheck
 	IniRead, isUsingBeta,% ProgramValues.Ini_File,PROGRAM,Update_Beta, 0
 	IniRead, isAutoUpdateEnabled,% ProgramValues.Ini_File,PROGRAM,AutoUpdate, 0
 	IniRead, lastTimeUpdated,% ProgramValues.Ini_File,PROGRAM,LastUpdate,% A_Now
@@ -4516,16 +4517,17 @@ Check_Update() {
 		IniRead, valStableDL,% ProgramValues.Ini_File,PROGRAM,Version_Stable_DL
 		IniRead, valBetaTag,% ProgramValues.Ini_File,PROGRAM,Version_Beta
 		IniRead, valBetaDL,% ProgramValues.Ini_File,PROGRAM,Version_Beta_DL
+		IniRead, isStableBetter,% ProgramValues.Ini_File,PROGRAM,Is_Stable_Better
 		ProgramValues.Version_Latest 					:= valStableTag
 		ProgramValues.Version_Latest_Download 			:= valStableDL
 		ProgramValues.Version_Latest_Beta 				:= valBetaTag
 		ProgramValues.Version_Latest_Beta_Download 		:= valBetaDL
-		ProgramValues.Version_Online 					:= (isUsingBeta)?(valBetaTag):(valStableTag)
-		ProgramValues.Version_Online_Download 			:= (isUsingBeta)?(valBetaDL):(valStableDL)
+		ProgramValues.Version_Online 					:= (isUsingBeta && !isStableBetter)?(valBetaTag):(valStableTag)
+		ProgramValues.Version_Online_Download 			:= (isUsingBeta && !isStableBetter)?(valBetaDL):(valStableDL)
 
-		isUpdateAvailable := (isUsingBeta && valBetaTag && valBetaTag != "ERROR" && valBetaTag != currentVersion)?(true)
-						    :(!isUsingBeta && valStableTag && valStableTag != "ERROR" && valStableTag != currentVersion)?(true)
-						    :(false)	
+		isUpdateAvailable 	:= (isUsingBeta && ( (latestBetaTag && latestBetaTag != "ERROR") && (latestBetaTag != currentVersion) ) || (isStableBetter) )?(true)
+							  :(!isUsingBeta && (latestReleaseTag && latestReleaseTag != "ERROR") && (latestReleaseTag != currentVersion)) ?(true)
+							  :(false)	
 		ProgramValues.Update_Available	:= isUpdateAvailable
 
 		if (isUpdateAvailable)
@@ -4704,6 +4706,7 @@ Check_Update() {
 	IniWrite,% latestBetaTag,% ProgramValues.Ini_File,PROGRAM,Version_Beta
 	IniWrite,% """" latestBetaDownload """",% ProgramValues.Ini_File,PROGRAM,Version_Beta_DL
 	IniWrite,% A_Now,% ProgramValues.Ini_File,PROGRAM,LastUpdateCheck
+	IniWrite,% isStableBetter,% ProgramValues.Ini_File, PROGRAM,Is_Stable_Better
 
 	if ( isUpdateAvailable ) {
 		if (isAutoUpdateEnabled = 1) {
