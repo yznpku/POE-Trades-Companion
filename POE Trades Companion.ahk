@@ -2072,7 +2072,7 @@ Gui_Trades_Clipboard_Item_Func(tabID="NONE") {
 	}
 	else if (mapName) {
 		Gui_Trades_Clipboard_Item_Func_MapString:
-		searchMapStr := """" mapName """", searchTierStr := "tier:" mapTier
+		searchMapStr := mapName, searchTierStr := "tier:" mapTier
 		searchString := searchMapStr
 		searchString .= (mapTier)?(" " searchTierStr):("")
 
