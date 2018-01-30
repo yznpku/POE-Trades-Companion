@@ -77,11 +77,6 @@ Start_Script() {
 	ProgramValues.Download_FallBack			:= "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/POE Trades Companion.exe"
 	ProgramValues.Download_FallBack_Beta	:= "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/dev/POE Trades Companion.exe"
 
-	ProgramValues.NewVersion_File		:= A_ScriptDir "\POE-TC-NewVersion.exe"
-	ProgramValues.Updater_File 			:= A_ScriptDir "\POE-TC-Updater.exe"
-	ProgramValues.Updater_Link 			:= "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/Updater_v2.exe"
-	ProgramValues.Updater_Link_Beta 	:= "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/dev/Updater_v2.exe"
-
 	ProgramValues.Changelogs_Link 		:= "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/changelogs.txt"
 	ProgramValues.Changelogs_Link_Beta	:= "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/dev/changelogs.txt"
 
@@ -108,6 +103,11 @@ Start_Script() {
 	ProgramValues.Game_Folder 			:= MyDocuments "\my games\Path of Exile"
 	ProgramValues.Game_Ini_File 		:= ProgramValues.Game_Folder "\production_Config.ini"
 	ProgramValues.Game_Ini_File_Copy 	:= ProgramValues.Local_Folder "\production_Config.ini"
+
+	ProgramValues.NewVersion_File		:= ProgramValues.Local_Folder "\POE-TC-NewVersion.exe"
+	ProgramValues.Updater_File 			:= ProgramValues.Local_Folder "\POE-TC-Updater.exe"
+	ProgramValues.Updater_Link 			:= "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/Updater_v2.exe"
+	ProgramValues.Updater_Link_Beta 	:= "https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/dev/Updater_v2.exe"
 
 	ProgramSettings.Support_Message 	:= "@%buyerName% " ProgramValues.Name ": view-thread/1755148"
 
