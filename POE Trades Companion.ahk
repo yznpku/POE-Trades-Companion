@@ -667,11 +667,12 @@ Monitor_Game_Logs(mode="") {
 ;			Upon receiving a poe.trade whisper, pass the trades infos to Gui_Trades()
 	global RunParameters, POEGameArray, TradesGUI_Values
 
-	static logsFile, fileObj, sleepTime, timeSinceLastTrade, timer
+	static logsFile, fileObj, sleepTime, timeSinceLastTrade, timer, prevTimer
 
 ;	Close file obj when an error occured
 	if (mode = "CLOSE") {
 		fileObj.Close()
+		fileObj := ""
 		Return
 	}
 
@@ -695,6 +696,14 @@ Monitor_Game_Logs(mode="") {
 		Logs_Append(A_ThisFunc, {File:logsFile})
 		fileObj := FileOpen(logsFile, "r")
 		fileObj.Read()
+
+		justCreated := True
+	}
+
+	; We just closed the file, auto reopen it
+	if (!fileObj && logsFile) {
+		fileObj := FileOpen(logsFile, "r")
+		fileObj.Read()
 	}
 
 ;	new line appeared
@@ -715,14 +724,19 @@ Monitor_Game_Logs(mode="") {
 		Return
 	}
 
-;	set clever timer, based on when the latest trading whisper was received
+;	set dynamic timer, based on when the latest trading whisper was received
 	timeSinceLastTrade := A_Now
 	EnvSub, timeSinceLastTrade,% TradesGUI_Values.Last_Trade_Time, Seconds
-	timer := (!timer)?(400) ; Start at this value
+	timer := (!timer)?(200) ; Start at this value
 			:( IsBetween(timeSinceLastTrade, 300, 3600) )?(400) ; when no trade received for 5mins
-			:( timeSinceLastTrade > 3600 )?(600) ; when no trade received for over an hour
-			:(200) ; Otherwise, this value
-	SetTimer,% A_ThisFunc, -%timer%
+			:( timeSinceLastTrade > 3600 )?(800) ; when no trade received for over an hour
+			:(400) ; Otherwise, this value
+
+	if (justCreated || timer != prevTimer) {
+		SetTimer,% A_ThisFunc, Delete
+		SetTimer,% A_ThisFunc, %timer%
+	}
+	prevTimer := timer
 	Return
 }
 
