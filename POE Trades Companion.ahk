@@ -2872,9 +2872,18 @@ Gui_Settings() {
 		Sleep 1
 		Gui, Settings:Add, ListBox,% "xp+10" . " yp+20" . " w190" . " vSelectedSkin hwndSelectedSkinHandler R4" . " gGui_Settings_Set_Custom_Preset",% skinsList
 
-		scalingList := "50%|75%|100%|125%|150%|175%|200%"
+
+		scalingList := "", scaleIndex := 50
+		Loop {
+			if (scaleIndex > 200)
+				Break
+			scalingList .= "|" scaleIndex "%"
+			scaleIndex += 5
+		}
+		StringTrimLeft, scalingList, scalingList, 1
+
 		Gui, Settings:Add, Text,% "xp+205" . " yp+3",Scale: 
-		Gui, Settings:Add, DropDownList,% "xp+40" . " yp-3" . " w145" . " vSkinScaling hwndSkinScalingHandler" . " gGui_Settings_Set_Custom_Preset",% scalingList
+		Gui, Settings:Add, DropDownList,% "xp+40" . " yp-3" . " w145" . " vSkinScaling hwndSkinScalingHandler" . " R10 gGui_Settings_Set_Custom_Preset",% scalingList
 
 	Gui, Settings:Add, GroupBox,% "x" guiXWorkArea . " y" guiYWorkArea+145 . " w430 h85" . " c000000",Font
 
