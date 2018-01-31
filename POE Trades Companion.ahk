@@ -2735,9 +2735,11 @@ Gui_Trades_Set_Position(xpos="UNSPECIFIED", ypos="UNSPECIFIED"){
 	dpiFactor := ProgramSettings.Screen_DPI
 
 	if WinExist("ahk_id " TradesGUI_Values.Dock_Window) {
-		WinGetPos, winX, winY, winWidth, winHeight,% "ahk_id " TradesGUI_Values.Dock_Window
+		winTitleStr := "ahk_id " TradesGUI_Values.Dock_Window
+
+		WinGetPos, winX, winY, winWidth, winHeight,% winTitleStr
 		xpos := ( (winX+winWidth)-TradesGUI_Values.Width * dpiFactor ), ypos := winY
-		WinGet, isMinMax, MinMax,% "ahk_id " TradesGUI_Values.Dock_Window ; -1: Min | 1: Max | 0: Neither
+		WinGet, isMinMax, MinMax,% winTitleStr ; -1: Min | 1: Max | 0: Neither
 		xpos := (isMinMax=1)?(xpos-8):(isMinMax=-1)?(((A_ScreenWidth/dpiFactor) - TradesGUI_Values.Width ) * dpiFactor):(xpos)
 		ypos := (isMinMax=1)?(ypos+8):(isMinMax=-1)?(0):(ypos)
 		if xpos is not number
@@ -2746,11 +2748,16 @@ Gui_Trades_Set_Position(xpos="UNSPECIFIED", ypos="UNSPECIFIED"){
 			ypos := 0
 		Gui, Trades:Show,% "x" xpos " y" ypos " NoActivate"
 	}
+	else if WinExist("ahk_group POEGame") {
+		Gui_Trades_Cycle_Func()
+		Return
+	}
 	else {
 		xpos := ( ( (A_ScreenWidth/dpiFactor) - TradesGUI_Values.Width ) * dpiFactor )
 		Gui, Trades:Show,% "x" xpos " y0" " NoActivate"
 	}
 	Logs_Append(A_ThisFunc, {X:xpos, Y:ypos})
+	Return
 }
 
 
