@@ -4550,11 +4550,11 @@ Check_Update() {
 		ProgramValues.Is_Stable_Better					:= isStableBetter
 
 		if (isStableBetter) {
-		isUpdateAvailable := ( (latestReleaseTag && latestReleaseTag != "ERROR") && (latestReleaseTag != currentVersion) )?(True):(False)
+			isUpdateAvailable := ( (valStableTag && valStableTag != "ERROR") && (valStableTag != currentVersion) )?(True):(False)
 		}
 		else {
-		isUpdateAvailable := ( isUsingBeta && (latestBetaTag && latestBetaTag != "ERROR") && (latestBetaTag != currentVersion) )?(true)
-						    :(!isUsingBeta && (latestReleaseTag && latestReleaseTag != "ERROR") && (latestReleaseTag != currentVersion))?(true)
+			isUpdateAvailable := ( isUsingBeta && (valBetaTag && valBetaTag != "ERROR") && (valBetaTag != currentVersion) )?(true)
+						    :(!isUsingBeta && (valStableTag && valStableTag != "ERROR") && (valStableTag != currentVersion))?(true)
 						    :(false)
 		}
 		ProgramValues.Update_Available	:= isUpdateAvailable
