@@ -920,10 +920,10 @@ Gui_Trades(mode="", tradeInfos="") {
 		Gui, Trades:Add, Picture,% "x" borderSize " y" borderSize " w" guiWidth-(borderSize*2) " h" (30*scaleMult) " BackgroundTrans Section",% SkinAssets.Misc_Header
 		Gui, Trades:Add, Picture,% "x" borderSize+(2*scaleMult) " y" borderSize+(2*scaleMult) " w" 24*scaleMult " h" 24*scaleMult " +BackgroundTrans",% SkinAssets.Misc_Icon
 
-		Gui, Trades:Add, Button,% "x" guiWidth-(20*scaleMult)-borderSize-4 " y" borderSize+4 " w20 h20 gGui_Trades_Minimize hwndhHeaderMinimize",% ""
+		Gui, Trades:Add, Button,% "x" guiWidth-(20*scaleMult)-borderSize-4 " y" borderSize+4 " w" 20*scaleMult " h" 20*scaleMult " gGui_Trades_Minimize hwndhHeaderMinimize",% ""
 		if !ImageButton.Create(hHeaderMinimize, IBStyle_Minimize*)
 			imageBtnError .= "`nMinimize: " ImageButton.LastError
-		Gui, Trades:Add, Button,% "x" guiWidth-(20*scaleMult)-borderSize-4 " y" borderSize+4 " w20 h20 gGui_Trades_Minimize hwndhHeaderMaximize",% ""
+		Gui, Trades:Add, Button,% "x" guiWidth-(20*scaleMult)-borderSize-4 " y" borderSize+4 " w" 20*scaleMult " h" 20*scaleMult " gGui_Trades_Minimize hwndhHeaderMaximize",% ""
 		if !ImageButton.Create(hHeaderMaximize, IBStyle_Maximize*)
 			imageBtnError .= "`nMaximize: " ImageButton.LastError
 
