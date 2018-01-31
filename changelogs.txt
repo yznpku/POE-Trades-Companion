@@ -1,4 +1,16 @@
 \\
+--1.12.3--
+	Changes:
+	- Added more GUI scaling options (from 25% steps to 5% steps).
+	
+	Fixes:
+	- Using the "Clipboard Item" to find rare maps would not work.
+	This is because the random generated name and the map name are split on separate lines.
+	Therefore, the in-game stash search does not allow to search for a literal string.
+	- The Min/Max button width and height would not be scaling.
+	- The "All trades request have been answered" would not be scaling on the Y axis.
+//
+\\
 --1.12.2--
 	Fixes:
 	- A "new update available" notification would always appear on start.
