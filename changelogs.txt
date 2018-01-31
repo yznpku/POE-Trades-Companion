@@ -9,6 +9,7 @@
 	Therefore, the in-game stash search does not allow to search for a literal string.
 	- The Min/Max button width and height would not be scaling.
 	- The "All trades request have been answered" would not be scaling on the Y axis.
+	- When using the "Overlay" mode, if the game had been restarted, the GUI would not automatically dock to the new game instance unless the user clicked on the "Cycle Overlay" tray menu item.
 //
 \\
 --1.12.2--
