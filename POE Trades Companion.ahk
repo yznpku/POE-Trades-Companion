@@ -1141,7 +1141,7 @@ Gui_Trades(mode="", tradeInfos="") {
 				    . "`nthen [Settings] to set your preferences."
 		GuiControl, Trades:, TabCtrl,% "No Trades On Queue|"
 		Gui, Trades:Tab,% "No Trades On Queue",,Exact
-		Gui, Trades:Add, Text,x0 y55 w%guiWidth% Center BackgroundTrans hWndhNoTradeMsg c%colorTradesInfos1%,% noTradeMsg
+		Gui, Trades:Add, Text,% "x0 y" 55*scaleMult " w" guiWidth " Center BackgroundTrans hWndhNoTradeMsg c" colorTradesInfos1,% noTradeMsg
 		TradesGUI_Controls["No_Trade_Msg"] 		:= hNoTradeMsg
 
 		noInstanceMsg := "No game instance could be found,"
@@ -1150,7 +1150,7 @@ Gui_Trades(mode="", tradeInfos="") {
 					   . "`nthen [Settings] to set your preferences."
 		GuiControl, Trades:, TabCtrl,% "Logs File Not Found|"
 		Gui, Trades:Tab,% "Logs File Not Found",,Exact
-		Gui, Trades:Add, Text,x0 y55 w%guiWidth% Center BackgroundTrans hWndhNoInstanceMsg c%colorTradesInfos1%,% noInstanceMsg
+		Gui, Trades:Add, Text,% "x0 y" 55*scaleMult " w" guiWidth " Center BackgroundTrans hWndhNoInstanceMsg c" colorTradesInfos1,% noInstanceMsg
 		TradesGUI_Controls["No_Instance_Msg"] 	:= hNoInstanceMsg
 
 ; - - - - -
