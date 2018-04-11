@@ -1,4 +1,10 @@
 \\
+--1.12.4--
+	Changes:
+	- Removed "tier:x" for map items, when copying the item infos.
+	The "tier:x" search string does not work when used along with the map's name, when used in the Map Stash Tab.
+//
+\\
 --1.12.3--
 	Changes:
 	- Added more GUI scaling options (from 25% steps to 5% steps).
