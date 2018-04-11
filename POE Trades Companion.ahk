@@ -2074,7 +2074,7 @@ Gui_Trades_Clipboard_Item_Func(tabID="NONE") {
 		Gui_Trades_Clipboard_Item_Func_MapString:
 		searchMapStr := mapName, searchTierStr := "tier:" mapTier
 		searchString := searchMapStr
-		searchString .= (mapTier)?(" " searchTierStr):("")
+		; searchString .= (mapTier)?(" " searchTierStr):("") ; Disabled (#91). Does not work for Map Stash Tab. 
 
 		searchStrLen := StrLen(searchString)
 		if (searchStrLen > 50) {
