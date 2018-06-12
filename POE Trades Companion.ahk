@@ -171,9 +171,9 @@ Start_Script() {
 		Extract_Assets()
 	}
 
-	Manage_Font_Resources("UNLOAD")
-	Install_Font_Files()
-	Manage_Font_Resources("LOAD")
+	Gdip_Startup()
+	LoadFonts()
+	; Install_Font_Files() ; No longer required
 	Update_Skin_Preset()
 
 	Set_Local_Settings() ; Reset broken settings
@@ -752,7 +752,7 @@ Gui_Trades(mode="", tradeInfos="") {
 ;			Switching tab will clipboard the item's infos if the user enabled
 ;			Is transparent and click-through when there is no trade on queue
 	static
-	global ProgramValues, TradesGUI_Values, TradesGUI_Controls, ProgramSettings, SkinAssets
+	global ProgramValues, TradesGUI_Values, TradesGUI_Controls, ProgramSettings, SkinAssets, ProgramPrivateFonts
 
 	activeSkin := ProgramSettings.Active_Skin
 	scaleMult := ProgramSettings.Scale_Multiplier
@@ -760,7 +760,7 @@ Gui_Trades(mode="", tradeInfos="") {
 	IniRead, fontSizeAuto,% ProgramValues.Fonts_Settings_File,SIZE,% ProgramSettings.Font
 	if !IsNum(fontSizeAuto)
 		IniRead, fontSizeAuto,% ProgramValues.Fonts_Settings_File,SIZE,Default
-	fontName := (ProgramSettings.Font="System")?(""):(ProgramSettings.Font)
+	fontName := (ProgramSettings.Font="System")?("Segoe UI"):(ProgramSettings.Font)
 	fontSize := (ProgramSettings.Font_Size_Mode="Custom")?(ProgramSettings.Font_Size_Custom)
 			   :(fontSizeAuto*scaleMult)
 	IniRead, fontQualAuto,% ProgramValues.Fonts_Settings_File,QUALITY,% ProgramSettings.Font
@@ -921,10 +921,10 @@ Gui_Trades(mode="", tradeInfos="") {
 		Gui, Trades:Add, Picture,% "x" borderSize+(2*scaleMult) " y" borderSize+(2*scaleMult) " w" 24*scaleMult " h" 24*scaleMult " +BackgroundTrans",% SkinAssets.Misc_Icon
 
 		Gui, Trades:Add, Button,% "x" guiWidth-(20*scaleMult)-borderSize-4 " y" borderSize+4 " w" 20*scaleMult " h" 20*scaleMult " gGui_Trades_Minimize hwndhHeaderMinimize",% ""
-		if !ImageButton.Create(hHeaderMinimize, IBStyle_Minimize*)
+		if !ImageButton.Create(hHeaderMinimize, IBStyle_Minimize, ProgramPrivateFonts[fontName], fontSize)
 			imageBtnError .= "`nMinimize: " ImageButton.LastError
 		Gui, Trades:Add, Button,% "x" guiWidth-(20*scaleMult)-borderSize-4 " y" borderSize+4 " w" 20*scaleMult " h" 20*scaleMult " gGui_Trades_Minimize hwndhHeaderMaximize",% ""
-		if !ImageButton.Create(hHeaderMaximize, IBStyle_Maximize*)
+		if !ImageButton.Create(hHeaderMaximize, IBStyle_Maximize, ProgramPrivateFonts[fontName], fontSize)
 			imageBtnError .= "`nMaximize: " ImageButton.LastError
 
 		Gui, Trades:Add, Text,% "x" borderSize+(24*scaleMult) . " y" borderSize . " w" guiWidth-(borderSize+(32*scaleMult))-(borderSize-4+(20*scaleMult)) " h" (30-(2*scaleMult))*scaleMult " hWndhHeaderTitle gGui_Trades_Move c" colorTitleInactive . " BackgroundTrans +0x200 Center",% ProgramValues.Name
@@ -954,7 +954,7 @@ Gui_Trades(mode="", tradeInfos="") {
 			
 			; Default Tab
 			Gui, Trades:Add, Button,%btnPos% gGui_Trades_SetActiveTab vTab%A_Index% hWndhTab%A_Index% Section,% A_Index
-			if !ImageButton.Create(hTab%A_Index%, IBStyle_Tab*)
+			if !ImageButton.Create(hTab%A_Index%, IBStyle_Tab, ProgramPrivateFonts[fontName], fontSize)
 				imageBtnError .= "`nTab Default " A_Index ": " ImageButton.LastError
 
 			GuiControl,Trades:Hide,% hTab%A_Index%
@@ -963,7 +963,7 @@ Gui_Trades(mode="", tradeInfos="") {
 			; Joined Tab
 			btnPos := "xp yp wp hp"
 			Gui, Trades:Add, Button,%btnPos% gGui_Trades_SetActiveTab vTabJoined%A_Index% hWndhTabJoined%A_Index% Section,% A_Index
-			if !ImageButton.Create(hTabJoined%A_Index%, IBStyle_Tab_Joined*)
+			if !ImageButton.Create(hTabJoined%A_Index%, IBStyle_Tab_Joined, ProgramPrivateFonts[fontName], fontSize)
 				imageBtnError .= "`nTab Joined " A_Index ": " ImageButton.LastError
 
 			GuiControl,Trades:Hide,% hTabJoined%A_Index%
@@ -971,7 +971,7 @@ Gui_Trades(mode="", tradeInfos="") {
 
 			; Whisper tab
 			Gui, Trades:Add, Button,%btnPos% gGui_Trades_SetActiveTab vTabMsg%A_Index% hWndhTabMsg%A_Index% Section,% A_Index
-			if !ImageButton.Create(hTabMsg%A_Index%, IBStyle_Tab_Whisper*)
+			if !ImageButton.Create(hTabMsg%A_Index%, IBStyle_Tab_Whisper, ProgramPrivateFonts[fontName], fontSize)
 				imageBtnError .= "`nTab Whisper " A_Index ": " ImageButton.LastError
 
 			GuiControl,Trades:Hide,% hTabMsg%A_Index%
@@ -989,14 +989,14 @@ Gui_Trades(mode="", tradeInfos="") {
 
 ; - - - - - Left / Right arrows and Close
 		Gui, Trades:Add, Button,% "xp+" 40*scaleMult " yp w" 25*scaleMult " h" 25*scaleMult " hWndhArrowLeft gGui_Trades_Arrow_Left BackgroundTrans",% (SkinAssets.Arrow_Left_Use_Character)?("<"):("")
-		if !ImageButton.Create(hArrowLeft, IBStyle_Arrow_Left*)
+		if !ImageButton.Create(hArrowLeft, IBStyle_Arrow_Left, ProgramPrivateFonts[fontName], fontSize)
 			imageBtnError .= "`nArow Left: " ImageButton.LastError
 		Gui, Trades:Add, Button,% "xp+" 25*scaleMult " yp w" 25*scaleMult " h" 25*scaleMult " hWndhArrowRight gGui_Trades_Arrow_Right BackgroundTrans",% (SkinAssets.Arrow_Right_Use_Character)?(">"):("")
-		if !ImageButton.Create(hArrowRight, IBStyle_Arrow_Right*)
+		if !ImageButton.Create(hArrowRight, IBStyle_Arrow_Right, ProgramPrivateFonts[fontName], fontSize)
 			imageBtnError .= "`nArrow Right: " ImageButton.LastError
 
 		Gui, Trades:Add, Button,% "xp+" 26*scaleMult " yp w" 27*scaleMult " h" 25*scaleMult " hWndhBtnCloseTab gGui_Trades_Close_Tab_Label Section",% (SkinAssets.Close_Tab_Use_Character)?("X"):("")
-		if !ImageButton.Create(hBtnCloseTab, IBStyle_Close_Tab*)
+		if !ImageButton.Create(hBtnCloseTab, IBStyle_Close_Tab, ProgramPrivateFonts[fontName], fontSize)
 			imageBtnError .= "`nClose Tab: " ImageButton.LastError
 
 		TradesGUI_Controls["Arrow_Left"]			:= hArrowLeft
@@ -1063,7 +1063,7 @@ Gui_Trades(mode="", tradeInfos="") {
 				btnHandler := "UnicodeBtn" A_Index
 
 				Gui, Trades:Add, Button,% "x" btnPos_X " y" btnPos_Y*scaleMult " w" btnPos_W*scaleMult " h" btnPos_H*scaleMult " hWnd" btnHandler " BackgroundTrans gGui_Trades_Do_Action_Func",% fontChars[btnType]
-				if !ImageButton.Create(%btnHandler%, IBStyle_Button_Special*)
+				if !ImageButton.Create(%btnHandler%, IBStyle_Button_Special, ProgramPrivateFonts.TC_Symbols, fontSize)
 					imageBtnError .= "`nButton Special " A_Index ": " ImageButton.LastError
 
 		   		TradesGUI_Controls["Button_Unicode_" A_Index] 				:= %btnHandler%
@@ -1122,7 +1122,7 @@ Gui_Trades(mode="", tradeInfos="") {
 
 			if ( btnW != "ERROR" && btnX != "ERROR" && btnY != "ERROR" && btnAction != "" && btnAction != "ERROR" ) {
 				Gui, Trades:Add, Button,% "x" btnX " y" btnY*scaleMult " w" btnW " h" btnH*scaleMult " hWndhBtnCustom" A_Index " gGui_Trades_Do_Action_Func BackgroundTrans",% btnName
-				if !ImageButton.Create(hBtnCustom%A_Index%, IBStyle*)
+				if !ImageButton.Create(hBtnCustom%A_Index%, IBStyle, ProgramPrivateFonts[fontName], fontSize)
 					imageBtnError .= "`nButton Custom " A_Index ": " ImageButton.LastError
 
 				TradesGUI_Controls["Button_Custom_" A_Index]				:= hBtnCustom%A_Index%
@@ -6771,6 +6771,8 @@ StringToHex(String) {
 Install_Font_Files(doAgain=false) {
 /*		Compare local and installed fonts file size
 		If any font is not installed or is different, run FontReg.
+
+		NO LONGER REQUIRED
 */
 	global ProgramValues, RunParameters
 
@@ -7591,24 +7593,51 @@ Gui_Trades_Save_Position(X="FALSE", Y="FALSE") {
 	}
 }
 
-Manage_Font_Resources(mode) {
-	global ProgramValues, ProgramFonts
+LoadFonts() {
+	global ProgramValues, ProgramFonts, ProgramPrivateFonts
+	global PrivateFontsCollection
+	ProgramFonts := {}, ProgramPrivateFonts := {}
 
+	DllCall("gdiplus\GdipNewPrivateFontCollection", "uint*", PrivateFontsCollection) ; 
 	fontsFolder := ProgramValues.Fonts_Folder
-
 	Loop, Files, %fontsFolder%\*.*
 	{
 		if (A_LoopFileExt = "ttf") {
-			if ( mode="LOAD") {
-				DllCall( "GDI32.DLL\AddFontResourceEx", Str, A_LoopFileFullPath,UInt,(FR_PRIVATE:=0x10), Int,0)
-				fontTitle := FGP_Value(A_LoopFileFullPath, 21)	; 21 = Title
-				ProgramFonts.Insert(A_LoopFileName, fontTitle)
-			}
-			else if ( mode="UNLOAD") {
-				DllCall( "GDI32.DLL\RemoveFontResourceEx",Str, A_LoopFileFullPath,UInt,(FR_PRIVATE:=0x10),Int,0)
-			}
+			fontFile := A_LoopFileFullPath, fontFileName := A_LoopFileName, fontTitle := FGP_Value(A_LoopFileFullPath, 21)	; 21 = Title
+
+			DllCall( "GDI32.DLL\AddFontResourceEx", Str, fontFile,UInt,(FR_PRIVATE:=0x10), Int,0)
+			DllCall("gdiplus\GdipPrivateAddFontFile", "uint", PrivateFontsCollection, "uint", &fontFile)
+			DllCall("gdiplus\GdipCreateFontFamilyFromName", "uint", &fontTitle, "uint", PrivateFontsCollection, "uint*", hFamily)
+
+			ProgramFonts[A_LoopFileName] := fontTitle
+			ProgramPrivateFonts[fontTitle] := hFamily
 		}
 	}
+
+	SendMessage, 0x1D,,,, ahk_id 0xFFFF
+}
+
+UnloadFonts() {
+	global ProgramFonts, ProgramPrivateFonts
+	global PrivateFontsCollection
+
+	fontsFolder := A_ScriptDir
+	Loop, Files, %fontsFolder%\*.*
+	{
+		if (A_LoopFileExt = "ttf")
+			DllCall( "GDI32.DLL\RemoveFontResourceEx",Str, A_LoopFileFullPath,UInt,(FR_PRIVATE:=0x10),Int,0)
+	}
+
+	for key, value in ProgramPrivateFonts {
+		Gdip_DeleteFontFamily(ProgramPrivateFonts[key])
+		ProgramPrivateFonts.Remove(key) 
+		ProgramFonts.Remove(key)
+	}
+	ProgramFonts := {}
+	ProgramPrivateFonts := {}
+   	DllCall("gdiplus\GdipDeletePrivateFontCollection", "uint*", PrivateFontsCollection)
+
+   	SendMessage,  0x1D,,,, ahk_id 0xFFFF
 }
 
 IsInteger(str) {
@@ -7638,7 +7667,8 @@ Get_Control_Coords(guiName, ctrlHandler) {
 
 Exit_Func(ExitReason, ExitCode) {
 	Gui_Trades_Save_Position()
-	Manage_Font_Resources("UNLOAD")
+	UnloadFonts()
+	Gdip_Shutdown()
 
 	if ExitReason not in Reload
 		ExitApp
@@ -8255,6 +8285,7 @@ IsContaining(_string, _keyword) {
 #Include Class_ImageButton.ahk  
 #Include BetaFuncs.ahk
 #Include Clip.ahk
+#Include GDIP.ahk
 
 #IfWinActive ahk_group POEGame
 ^+LButton::StackClick()

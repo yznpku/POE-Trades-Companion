@@ -18,11 +18,11 @@
 ;        The index of each option object determines the corresponding button state on which the bitmap will be shown.
 ;        MSDN defines 6 states (http://msdn.microsoft.com/en-us/windows/bb775975):
 ;           PBS_NORMAL    = 1
-;	         PBS_HOT       = 2
-;	         PBS_PRESSED   = 3
-;	         PBS_DISABLED  = 4
-;	         PBS_DEFAULTED = 5
-;	         PBS_STYLUSHOT = 6 <- used only on tablet computers (that's false for Windows Vista and 7, see below)
+;           PBS_HOT       = 2
+;           PBS_PRESSED   = 3
+;           PBS_DISABLED  = 4
+;           PBS_DEFAULTED = 5
+;           PBS_STYLUSHOT = 6 <- used only on tablet computers (that's false for Windows Vista and 7, see below)
 ;        If you don't want the button to be 'animated' on themed GUIs, just pass one option object with index 1.
 ;        On Windows Vista and 7 themed bottons are 'animated' using the images of states 5 and 6 after clicked.
 ;        ---------------------------------------------------------------------------------------------------------------
@@ -176,7 +176,7 @@ Class ImageButton {
    ; ===================================================================================================================
    ; PUBLIC METHODS ====================================================================================================
    ; ===================================================================================================================
-   Create(HWND, Options*) {
+   Create(HWND, Options, hFamily="", fontSize="", fontStyle="") {
       ; Windows constants
       Static BCM_SETIMAGELIST := 0x1602
            , BS_CHECKBOX := 0x02, BS_RADIOBUTTON := 0x04, BS_GROUPBOX := 0x07, BS_AUTORADIOBUTTON := 0x09
@@ -211,13 +211,41 @@ Class ImageButton {
       ; ----------------------------------------------------------------------------------------------------------------
       ; Get the button's font
       GDIPFont := 0
-      HFONT := DllCall("User32.dll\SendMessage", "Ptr", HWND, "UInt", WM_GETFONT, "Ptr", 0, "Ptr", 0, "Ptr")
+      if (hFamily || fontSize) { ; If specified a private fontfamily handle
+         fontSize := !fontSize?8:fontSize, fontStyle := !fontStyle?0:fontStyle
+         fontSize *= 1.35 ; Oddly font size is 35% smaller than normally, so we need to adjust it
+         usePrivateFont := True, fontStyleID := fontStyle
+         if (fontStyle) {
+            fontsStyleList := "Regular,Bold,Italic,Underline,Strike"
+            fontsStyleIDs := {Regular:0, Bold:1, Italic:2, Underline:4, Strike:8}
+
+            Loop, Parse,% fontsStyleList,% "," ; Calculate the font ID from style keywords
+            {
+               if RegExMatch(fontStyle, A_LoopField)
+                  fontStyleID += fontsStyleIDs[A_LoopField]
+            }
+         }
+         pFont := hFont := Gdip_FontCreate(hFamily, fontSize, fontStyleID)
+     }
+      else {
+         HFONT := DllCall("User32.dll\SendMessage", "Ptr", HWND, "UInt", WM_GETFONT, "Ptr", 0, "Ptr", 0, "Ptr") ; Default
+      }
       DC := DllCall("User32.dll\GetDC", "Ptr", HWND, "Ptr")
       DllCall("Gdi32.dll\SelectObject", "Ptr", DC, "Ptr", HFONT)
-      DllCall("Gdiplus.dll\GdipCreateFontFromDC", "Ptr", DC, "PtrP", PFONT)
+      if !(usePrivateFont)
+         DllCall("Gdiplus.dll\GdipCreateFontFromDC", "Ptr", DC, "PtrP", PFONT)
       DllCall("User32.dll\ReleaseDC", "Ptr", HWND, "Ptr", DC)
-      If !(PFONT)
-         Return This.SetError("Couldn't get button's font!")
+
+      if (usePrivateFont) {
+         if (hFamily && !PFONT)
+            return This.SetError("Couldn't create font from private font family!")
+         else If (!hFamily)
+            Return This.SetError("Specified font family is empty!")
+      }
+      else {
+         If !(PFONT)
+            Return This.SetError("Couldn't get button's font!")
+      }
       ; ----------------------------------------------------------------------------------------------------------------
       ; Get the button's rectangle
       VarSetCapacity(RECT, 16, 0)
