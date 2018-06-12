@@ -2363,22 +2363,31 @@ Gdip_SetCompositingMode(pGraphics, CompositingMode=0)
 
 Gdip_Startup()
 {
+	global GDIP_TOKEN
 	Ptr := A_PtrSize ? "UPtr" : "UInt"
+
+	if (GDIP_TOKEN)
+		return
 	
 	if !DllCall("GetModuleHandle", "str", "gdiplus", Ptr)
 		DllCall("LoadLibrary", "str", "gdiplus")
 	VarSetCapacity(si, A_PtrSize = 8 ? 24 : 16, 0), si := Chr(1)
 	DllCall("gdiplus\GdiplusStartup", A_PtrSize ? "UPtr*" : "uint*", pToken, Ptr, &si, Ptr, 0)
+	GDIP_TOKEN := pToken
 	return pToken
 }
 
-Gdip_Shutdown(pToken)
-{
+Gdip_Shutdown(pToken="")
+{	
+	global GDIP_TOKEN
+	pToken := !pToken?GDIP_TOKEN:pToken
 	Ptr := A_PtrSize ? "UPtr" : "UInt"
 	
 	DllCall("gdiplus\GdiplusShutdown", Ptr, pToken)
 	if hModule := DllCall("GetModuleHandle", "str", "gdiplus", Ptr)
 		DllCall("FreeLibrary", Ptr, hModule)
+
+	GDIP_TOKEN := 
 	return 0
 }
 
