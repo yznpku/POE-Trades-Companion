@@ -1,4 +1,12 @@
 \\
+--1.12.5--
+	Changes:
+	- Now uses private fonts. This means fonts no longer need to be installed onto the system.
+	
+	RECOMMENDED: Either reinstall Fontin SmallCaps or delete it from Windows to fix an issue where "ffi" appears as blank
+	https://github.com/lemasato/POE-Trades-Companion/wiki/FAQ#when-holding-alt-over-an-item-sux-appears-instead-of-suffix
+//
+\\
 --1.12.4--
 	Changes:
 	- Removed "tier:x" for map items, when copying the item infos.
