@@ -6326,8 +6326,8 @@ Get_Active_Trading_Leagues() {
 
 	apiLink 			:= "http://api.pathofexile.com/leagues?type=main&compact=1"
 	excludedWords 		:= "SSF,Solo"
-	activeLeagues 		:= "Standard,Hardcore,Beta Standard,Beta Hardcore,Harbinger,Hardcore Harbinger" 
-	tradingLeagues 		:= ["Standard","Hardcore","Beta Standard","Beta Hardcore","Harbinger","Hardcore Harbinger"] ; In case API is down or does not show them
+	activeLeagues 		:= "Standard,Hardcore,Beta Standard,Beta Hardcore,Incursion,Hardcore Incursion" 
+	tradingLeagues 		:= ["Standard","Hardcore","Beta Standard","Beta Hardcore","Incursion","Hardcore Incursion"] ; In case API is down or does not show them
 
 	attempts++
 	timeOuts := (attempts = 1)?(10000) ; 10s
