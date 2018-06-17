@@ -2083,6 +2083,10 @@ Gui_Trades_Clipboard_Item_Func(tabID="NONE") {
 			GoTo Gui_Trades_Clipboard_Item_Func_MapString
 		}
 	}
+	else { ; Remove numbers from str, so we only keep item name
+		searchString := RegExReplace(item, "\d")
+		searchString = %searchString%
+	}
 
 	clipContent := (searchString)?(searchString):(item)
 	if (clipContent) {
