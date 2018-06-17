@@ -5211,6 +5211,7 @@ Get_Local_Settings() {
 Set_Local_Settings(){
 ;			Set the default INI settings if they do not exist
 	global ProgramValues
+	programVer := ProgramValues.Version
 
 	iniFilePath := ProgramValues.Ini_File, programPID := ProgramValues.PID
 
@@ -5228,7 +5229,7 @@ Set_Local_Settings(){
 	IniWrite,% ProgramValues.Version,% iniFilePath,% "PROGRAM",% "Version"
 
 ;	Set beta state, if version contains BETA
-	if ProgramValues.Version contains BETA
+	if programVer contains BETA
 		IniWrite, 1,% iniFilePath,% "PROGRAM",% "Update_Beta"
 	else
 		IniWrite, 0,% iniFilePath,% "PROGRAM",% "Update_Beta"
