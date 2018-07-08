@@ -67,7 +67,7 @@ Start_Script() {
 	MyDocuments 						:= (RunParameters.MyDocuments)?(RunParameters.MyDocuments):(A_MyDocuments)
 
 	ProgramValues.Name 					:= "POE Trades Companion"
-	ProgramValues.Version 				:= "1.12.5"
+	ProgramValues.Version 				:= "1.12.6"
 	ProgramValues.Github_User 			:= "lemasato"
 	ProgramValues.GitHub_Repo 			:= "POE-Trades-Companion"
 

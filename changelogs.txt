@@ -1,4 +1,13 @@
 \\
+--1.12.6--
+	Changes:
+	- No longer puts the number of currency in the clipboard for currency trades.
+	
+	Fixes:
+	- Potential slow startup due to waiting for all windows to refresh.
+	- BETA checkbox would always be checked.
+//
+\\
 --1.12.5--
 	Changes:
 	- Now uses private fonts. This means fonts no longer need to be installed onto the system.
