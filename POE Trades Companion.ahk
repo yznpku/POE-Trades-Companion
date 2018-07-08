@@ -7619,7 +7619,8 @@ LoadFonts() {
 		}
 	}
 
-	SendMessage, 0x1D,,,, ahk_id 0xFFFF
+	; SendMessage, 0x1D,,,, ahk_id 0xFFFF
+	PostMessage, 0x1D,,,, ahk_id 0xFFFF
 }
 
 UnloadFonts() {
@@ -7642,7 +7643,8 @@ UnloadFonts() {
 	ProgramPrivateFonts := {}
    	DllCall("gdiplus\GdipDeletePrivateFontCollection", "uint*", PrivateFontsCollection)
 
-   	SendMessage,  0x1D,,,, ahk_id 0xFFFF
+   	; SendMessage,  0x1D,,,, ahk_id 0xFFFF
+	PostMessage, 0x1D,,,, ahk_id 0xFFFF
 }
 
 IsInteger(str) {
