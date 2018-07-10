@@ -7627,7 +7627,7 @@ UnloadFonts() {
 	global ProgramFonts, ProgramPrivateFonts
 	global PrivateFontsCollection
 
-	fontsFolder := A_ScriptDir
+	fontsFolder := ProgramValues.Fonts_Folder
 	Loop, Files, %fontsFolder%\*.*
 	{
 		if (A_LoopFileExt = "ttf")
