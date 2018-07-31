@@ -217,6 +217,7 @@ Download(url, file) {
 	SysGet m, MonitorWorkArea, 1
 	y := mBottom-52-2, x := mRight-330-2, VarSetCapacity(_cu, 100), VarSetCapacity(tn, 520)
 	, DllCall("shlwapi\PathCompactPathEx", "str", _cu, "str", url, "uint", 50, "uint", 0)
+	; Seems the Progress parameters are what trigger the virustotal positive flags (?)
 	Progress Hide CW1A1A1A CTFFFFFF CB666666 x%x% y%y% w330 h52 B1 FS8 WM700 WS700 FM8 ZH12 ZY3 C11,, %_cu%, AutoHotkeyProgress, Tahoma
 	if (0 = DllCall("urlmon\URLDownloadToCacheFile", "ptr", 0, "str", url, "str", tn, "uint", 260, "uint", 0x10, "ptr*", &vt))
 	{
