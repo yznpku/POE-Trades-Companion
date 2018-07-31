@@ -1,4 +1,15 @@
 \\
+--1.12.7--
+	If you are getting flags about Trades Companion being a "virus", you may want to read here: https://github.com/lemasato/POE-Trades-Companion/issues/121
+	Especially my third post.
+	
+	TLDR;
+	I don't include malware.
+
+	Fixes:
+	- Minor coding typo on script exit
+//
+\\
 --1.12.6--
 	Changes:
 	- No longer puts the number of currency in the clipboard for currency trades.
