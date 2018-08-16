@@ -1,0 +1,68 @@
+1.13.BETA_1 (12 Aug 2018)
+	In short:
+	- Complete rewrite of the tool.
+	- Major overhaul of the Settings menu.
+	- Verify an item price.
+	- PushBullet notifications.
+	
+	Features / Changes:
+		Trades menu:
+		- Added a GUI element to verify the trade's item price.
+		It is marked by a grey ring next to the time stamp.
+		
+		This new feature allows to easily spot those who changed the whisper's price.
+		For this feature to work, you need to set your account name in the Settings menu.
+		Clicking on it will retrieve this item's price on poe.trade and compare it with the local price.
+		
+		The colour of the ring will change based on the results:
+		Gray: Not verified yet.
+		Green: Found item on poe.trade, and both prices match.
+		Orange: Couldn't find the item on poe.trade.
+		Red: Found item on poe.trade, and the prices differ.
+		
+		
+		- PushBullet notifications can be received upon receiving a trading whisper / party message / whisper message.
+		It is also possible to only receive those notifications only when you are AFK.
+		
+		By using the PushBullet android app, this allows you to still be aware of your trading whispers while away from the computer.
+		
+		For this feature to work, you need to set your PushBullet token in the Settings menu.
+		You can create a PushBullet account here: https://www.pushbullet.com/
+		You can get your PushBullet token by clicking on "Create Access Token" here: https://www.pushbullet.com/#settings/account
+		
+		
+		- You can now lock the GUI in position by right clicking on the title bar and choosing "Lock Position"
+		- (Change) "Close similar" has been renamed into "Close other tabs with same item".
+		This option can be accessed by right clicking on a tab's "X" button.
+		
+			
+		Settings menu:
+		- Completely redone the GUI. User friendly.
+		- Added many new buttons/hotkeys actions.
+		- Added a new settings that allows to instantly send the whisper in-game by holding CTRL down when clicking on the "Copy" link from trading websites.
+		- (Change) You can now have 18 basic hotkeys, up from 8.
+		- (Change) You can now have an infinite amount of advanced hotkeys, up from 16.
+		- Added icons that link respectively to: GitHub / PoE Forums thread / My Reddit profile / My Discord channel / Paypal donations.
+		- (Change) Renamed many settings, to fit better.
+		- (Change) The "Customization > Appearance" tab has been renamed into "Skins"
+		- (Change)  The "Customization > Custom Buttons" and "Smaller Buttons" tabs have been merged into a single "Buttons" tab.
+		It is also now exponentially easier to set up your buttons!
+		- Added two new tabs: "Updating" and "About".
+		The former allows to set your updating settings, check for update manually, and see the changelogs.
+		The latter includes the Hall of Fame.
+
+		
+		Tray menu: 
+		- Added options to toggle on/off Clickthrough and Lock Position.
+		Clickthrough is a feature that already existed, but needed to be toggled from within the Settings menu.
+		Lock Position is a new feature, it allows to lock the Trades GUI in place.
+
+		
+		About? menu:
+		- Removed, merged within the Settings menu.
+		
+	Fixes:
+		Undocumented.
+		
+	
+= = = = = = = = = = = = =	
