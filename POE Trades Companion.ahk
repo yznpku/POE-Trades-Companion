@@ -95,7 +95,7 @@ Start_Script() {
 
 	; Set global - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	PROGRAM.NAME					:= "POE Trades Companion"
-	PROGRAM.VERSION 				:= "1.13.BETA_1"
+	PROGRAM.VERSION 				:= "1.13.BETA_2"
 	PROGRAM.IS_BETA					:= IsContaining(PROGRAM.VERSION, "beta")?"True":"False"
 
 	PROGRAM.GITHUB_USER 			:= "lemasato"
@@ -243,22 +243,22 @@ Start_Script() {
 	EnableHotkeys()
 
 	ImageButton_TestDelay() ;
-	; Gui_Trades.Create()
-	; GUI_Trades.LoadBackup()
+	Gui_Trades.Create()
+	GUI_Trades.LoadBackup()
 
 	; Parse debug msgs
-	; if (DEBUG.settings.use_chat_logs) {
-	; 	Loop % DEBUG.chatlogs.MaxIndex()
-	; 		; Parse_GameLogs(DEBUG.chatlogs[A_Index])
-	; }
-	; Monitor_GameLogs()
+	if (DEBUG.settings.use_chat_logs) {
+		Loop % DEBUG.chatlogs.MaxIndex()
+			Parse_GameLogs(DEBUG.chatlogs[A_Index])
+	}
+	Monitor_GameLogs()
 
 	global GuiSettings
-	; if !WinExist("ahk_id " GuiSettings.Handle)
-	; 	Gui_Settings.Create()
-	; if (DEBUG.settings.open_settings_gui) {
+	if !WinExist("ahk_id " GuiSettings.Handle)
+		Gui_Settings.Create()
+	if (DEBUG.settings.open_settings_gui) {
 		Gui_Settings.Show()
-	; }
+	}
 
 	if (DEBUG.settings.open_mystats_gui) {
 		GUI_MyStats.Create()

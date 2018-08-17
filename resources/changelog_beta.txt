@@ -1,4 +1,11 @@
-1.13.BETA_1 (12 Aug 2018)
+1.13.BETA_2 (17 Aug 2018)
+	Fix:
+	- Trades GUI would only open upon closing settings.
+	- Settings would always open on startup.
+
+
+= = = = = = = = = = = = =	
+1.13.BETA_1 (16 Aug 2018)
 	In short:
 	- Complete rewrite of the tool.
 	- Major overhaul of the Settings menu.
