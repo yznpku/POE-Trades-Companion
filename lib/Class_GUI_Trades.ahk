@@ -494,6 +494,13 @@
 					: actionType="Kick" ? "/kick %buyer%"
 					: ""
 
+				actionType := actionType="Clipboard" ? "COPY_ITEM_INFOS"
+					: actionType="Whisper" ? "WRITE_TO_BUYER"
+					: actionType="Invite" ? "INVITE_BUYER"
+					: actionType="Trade" ? "TRADE_BUYER"
+					: actionType="Kick" ? "KICK_BUYER"
+					: ""
+
 				if (actionType) {
 					Do_Action(actionType, actionContent)
 				}

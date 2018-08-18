@@ -63,6 +63,10 @@ Do_Action(actionType, actionContent="", isHotkey=False, uniqueNum="") {
 		Return
 	}
 
+	global ACTIONS_FORCED_CONTENT
+	if (ACTIONS_FORCED_CONTENT[actionType])
+		actionContent := ACTIONS_FORCED_CONTENT[actionType]
+
 	actionContent := Replace_TradeVariables(actionContent)
 
 	if IsContaining(actionType, "CUSTOM_BUTTON_") {
