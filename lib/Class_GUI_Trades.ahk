@@ -1321,7 +1321,7 @@
 		; newTabWithdrawTally := (tabInfos.WithdrawTally != "")?(tabInfos.WithdrawTally):(currentTabContent.WithdrawTally)
 		newTabBuyerGuild := updateOnly && !tabInfos.BuyerGuild ? cTabCont.BuyerGuild : tabInfos.BuyerGuild
 		newTabTimeStamp := updateOnly && !tabInfos.TimeStamp ? cTabCont.TimeStamp : tabInfos.TimeStamp
-		newTabPID := updateOnly && !tabInfos.tabInfos ? cTabCont.tabInfos : tabInfos.tabInfos
+		newTabPID := updateOnly && !tabInfos.PID ? cTabCont.PID : tabInfos.PID
 		newTabIsInArea := updateOnly && !tabInfos.IsInArea ? cTabCont.IsInArea : tabInfos.IsInArea
 		newTabHasNewMessage := updateOnly && !tabInfos.HasNewMessage ? cTabCont.HasNewMessage : tabInfos.HasNewMessage
 		newTabWithdrawTally := updateOnly && !tabInfos.WithdrawTally ? cTabCont.WithdrawTally : tabInfos.WithdrawTally
