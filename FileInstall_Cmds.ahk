@@ -170,26 +170,6 @@ if !InStr(FileExist(PROGRAM.FONTS_FOLDER ""), "D")
 	FileCreateDir,% PROGRAM.FONTS_FOLDER ""
 
 if (A_IsCompiled) {
-	sourceFileSize := Get_ResourceSize("resources\fonts\EnumFonts.vbs")
-	FileGetSize, destFileSize, % PROGRAM.FONTS_FOLDER "\EnumFonts.vbs"
-}
-else {
-	FileGetSize, sourceFileSize, resources\fonts\EnumFonts.vbs
-	FileGetSize, destFileSize, % PROGRAM.FONTS_FOLDER "\EnumFonts.vbs"
-}
-if (sourceFileSize != destFileSize)
-	FileInstall, resources\fonts\EnumFonts.vbs, % PROGRAM.FONTS_FOLDER "\EnumFonts.vbs", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\fonts\EnumFonts.vbs"
-	. "`nDest: " PROGRAM.FONTS_FOLDER "\EnumFonts.vbs"
-	. "`nFlag: 2"
-
-; ----------------------------
-if !InStr(FileExist(PROGRAM.FONTS_FOLDER ""), "D")
-	FileCreateDir,% PROGRAM.FONTS_FOLDER ""
-
-if (A_IsCompiled) {
 	sourceFileSize := Get_ResourceSize("resources\fonts\Fontin-SmallCaps.ttf")
 	FileGetSize, destFileSize, % PROGRAM.FONTS_FOLDER "\Fontin-SmallCaps.ttf"
 }
@@ -203,26 +183,6 @@ if (ErrorLevel)
 	Msgbox % "Failed to extract file!"
 	. "`nSource: resources\fonts\Fontin-SmallCaps.ttf"
 	. "`nDest: " PROGRAM.FONTS_FOLDER "\Fontin-SmallCaps.ttf"
-	. "`nFlag: 2"
-
-; ----------------------------
-if !InStr(FileExist(PROGRAM.FONTS_FOLDER ""), "D")
-	FileCreateDir,% PROGRAM.FONTS_FOLDER ""
-
-if (A_IsCompiled) {
-	sourceFileSize := Get_ResourceSize("resources\fonts\FontReg.exe")
-	FileGetSize, destFileSize, % PROGRAM.FONTS_FOLDER "\FontReg.exe"
-}
-else {
-	FileGetSize, sourceFileSize, resources\fonts\FontReg.exe
-	FileGetSize, destFileSize, % PROGRAM.FONTS_FOLDER "\FontReg.exe"
-}
-if (sourceFileSize != destFileSize)
-	FileInstall, resources\fonts\FontReg.exe, % PROGRAM.FONTS_FOLDER "\FontReg.exe", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\fonts\FontReg.exe"
-	. "`nDest: " PROGRAM.FONTS_FOLDER "\FontReg.exe"
 	. "`nFlag: 2"
 
 ; ----------------------------

@@ -72,7 +72,8 @@
 
 ;	- - - - FONTS
 	allowedExtensions := "ttf"
-	allowedFiles := "FontReg.exe,EnumFonts.vbs,Settings.ini"
+	; allowedFiles := "FontReg.exe,EnumFonts.vbs,Settings.ini"
+	allowedFiles := "Settings.ini"
 	Loop, Files,% A_ScriptDir "\resources\fonts\*"
 	{
 		RegExMatch(A_LoopFileFullPath, "O)\\resources\\fonts\\(.*)", path)
