@@ -1,7 +1,17 @@
+1.13.BETA_3 (18 Aug 2018)
+	Changes:
+	- Removed FontReg.exe and EnumFonts.vbs.
+	This change is to see if the executable still gets flagged without those.
+	
+	Fixes:
+	- An issue when assigning the game PID to a Trades tab.
+	
+
+= = = = = = = = = = = = =	
 1.13.BETA_2 (17 Aug 2018)
-	Fix:
+	Fixes:
 	- Trades GUI would only open upon closing settings.
-	- Settings would always open on startup.
+	- Settings would always open on launch.
 
 
 = = = = = = = = = = = = =	
