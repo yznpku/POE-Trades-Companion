@@ -5,6 +5,8 @@
 	
 	Fixes:
 	- An issue when assigning the game PID to a Trades tab.
+	- Settings "Download updates automatically" checkbox would not be set on Settings GUI creation.
+	The setting itself was still working as expected, only the checkbox state was being affected.
 	
 
 = = = = = = = = = = = = =	
