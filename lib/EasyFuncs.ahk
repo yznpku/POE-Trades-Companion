@@ -1,4 +1,12 @@
-﻿MultiplyBy(byWhat, ByRef num1, ByRef num2="", ByRef num3="", ByRef num4="", ByRef num5="", ByRef num6="", ByRef num7="", ByRef num8="", ByRef num9="", ByRef num10="") {
+﻿RemoveTrailingZeroes(num) {
+	num := RTrim(num, "0")
+	if ( SubStr(num, 0) = "." ) {
+		StringTrimRight, num, num, 1
+	}
+	return num
+}
+
+MultiplyBy(byWhat, ByRef num1, ByRef num2="", ByRef num3="", ByRef num4="", ByRef num5="", ByRef num6="", ByRef num7="", ByRef num8="", ByRef num9="", ByRef num10="") {
 	num1 *= byWhat
 	num2 *= byWhat
 	num3 *= byWhat
