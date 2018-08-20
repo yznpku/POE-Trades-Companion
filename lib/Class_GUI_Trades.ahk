@@ -349,6 +349,8 @@
 			GUI_Trades.Minimize()
 		if (PROGRAM.SETTINGS.SETTINGS_MAIN.AllowClicksToPassThroughWhileInactive = "True")
 			GUI_Trades.Enable_ClickThrough()
+
+		GroupAdd, GUITradesGroup,% "ahk_id " GuiTrades.Handle " ahk_pid " PROGRAM.PID
 		Return
 
 		Gui_Trades_ContextMenu:
