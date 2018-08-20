@@ -887,10 +887,11 @@
 			GUI_Trades.ScrollTabs("Left")
 		}
 		; Change active tab if needed
-		if (GUI_Trades.GetActiveTab() = tabsCount)
+		if (GUI_Trades.GetActiveTab() = tabsCount) && (tabsCount != 1) {
 			GUI_Trades.SetActiveTab(tabsCount-1, False) ; autoScroll=False
+		}
 		; Hide tab assets is required
-		if (tabsCount = 1) {
+		else if (tabsCount = 1) {
 			GUI_Trades.ToggleTabSpecificAssets("OFF")
 			GUI_Trades.SetActiveTab("No Trades On Queue")
 		}
@@ -1516,10 +1517,19 @@
 		}
 	}
 
-	SetActiveTab(tabName, autoScroll=True) {
+	SetActiveTab(tabName, autoScroll=True, skipError=False) {
 		global PROGRAM, GuiTrades, GuiTrades_Controls
 		tabRange := GUI_Trades.GetTabsRange()
 		tabsCount := GuiTrades.Tabs_Count
+
+		tabName := tabName="0"?"No Trades On Queue" : tabName
+
+		if IsNum(tabName) && !IsBetween(tabName, 1, tabsCount) {
+			if (skipError=False)
+				MsgBox(48, "", "Cannot select tab """ tabName """ because it exceed the tabs count (" tabsCount ")")
+
+			return
+		}
 
 		GuiControl, Trades:Choose,% GuiTrades_Controls.hTab_AllTabs,% tabName
 
