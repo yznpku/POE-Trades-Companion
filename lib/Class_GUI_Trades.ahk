@@ -492,19 +492,13 @@
 			}
 			else if (btnType = "Special") {
 				actionType := PROGRAM.SETTINGS["SETTINGS_SPECIAL_BUTTON_" btnNum]["Type"]
-				actionContent := actionType="Clipboard" ? ""
-					: actionType="Whisper" ? "@%buyer% "
-					: actionType="Invite" ? "/invite %buyer%"
-					: actionType="Trade" ? "/tradewith %buyer%"
-					: actionType="Kick" ? "/kick %buyer%"
-					: ""
-
 				actionType := actionType="Clipboard" ? "COPY_ITEM_INFOS"
 					: actionType="Whisper" ? "WRITE_TO_BUYER"
 					: actionType="Invite" ? "INVITE_BUYER"
 					: actionType="Trade" ? "TRADE_BUYER"
 					: actionType="Kick" ? "KICK_BUYER"
 					: ""
+				actionContent := ACTIONS_FORCED_CONTENT[actionType]
 
 				if (actionType) {
 					Do_Action(actionType, actionContent)

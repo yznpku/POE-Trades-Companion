@@ -64,7 +64,7 @@ Do_Action(actionType, actionContent="", isHotkey=False, uniqueNum="") {
 	}
 
 	global ACTIONS_FORCED_CONTENT
-	if (ACTIONS_FORCED_CONTENT[actionType])
+	if (ACTIONS_FORCED_CONTENT[actionType]) && !(actionContent)
 		actionContent := ACTIONS_FORCED_CONTENT[actionType]
 
 	actionContent := Replace_TradeVariables(actionContent)
