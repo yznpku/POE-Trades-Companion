@@ -1068,75 +1068,148 @@
 		global PROGRAM, SKIN
 		accounts := PROGRAM.SETTINGS.SETTINGS_MAIN.PoeAccounts
 
-		itemQualNoPercent := StrReplace(tabInfos.ItemQuality, "%", "")
-		RegExMatch(tabInfos.StashPosition, "O)(.*);(.*)", stashPosPat)
-    	stashPosX := stashPosPat.1, stashPosY := stashPosPat.2
-		RegExMatch(tabInfos.Price, "O)(\d+)(\D+)", pricePat)
-		priceNum := pricePat.1, priceCurrency := pricePat.2
-		AutoTrimStr(priceNum, pricePat)
-		
-		currencyInfos := Get_CurrencyInfos(priceCurrency)
-		poeTradeCurrencyName := PoeTrade_Get_CurrencyAbridgedName_From_FullName(currencyInfos.Name)
-		poeTradePrice := priceNum " " poeTradeCurrencyName
+		if RegExMatch(tabInfos.Item, "iO)(\d+) (\D+)", itemPat) { ; its a currency trade
+			RegExMatch(tabInfos.Price, "iO)(\d+) (\D+)", pricePat)
+			wantCount := itemPat.1, wantWhat := itemPat.2
+			wantCurInfos := Get_CurrencyInfos(wantWhat)
+			wantFullName := wantCurInfos.Name, wantID := PROGRAM["DATA"]["POETRADE_CURRENCY_DATA"][wantFullName].ID, isWantListed := wantCurInfos.Is_Listed
+			giveCount := pricePat.1, giveWhat := pricePat.2
+			giveCurInfos := Get_CurrencyInfos(giveWhat)
+			giveFullName := giveCurInfos.Name, giveID := PROGRAM["DATA"]["POETRADE_CURRENCY_DATA"][giveFullName].ID, isGiveListed := giveCurInfos.Is_Listed
+			sellBuyRatio := RemoveTrailingZeroes(wantCount/giveCount)
 
-		Loop, Parse, accounts,% ","
-		{
-			poeTradeObj := {"name": tabInfos.ItemName, "buyout": poeTradePrice
-			, "level_min": tabInfos.ItemLevel, "level_max": tabInfos.ItemLevel
-			, "q_min": itemQualNoPercent, "q_max": itemQualNoPercent
-			, "league": tabInfos.StashLeague, "seller": A_LoopField}
-			itemURL := PoeTrade_GetItemSearchUrl(poeTradeObj)
-			
-			poeTradeObj.seller := A_LoopField, poeTradeObj.level := poeTradeObj.level_max
-			poeTradeObj.quality := poeTradeObj.q_max, poeTradeObj.tab := tabInfos.StashTab
-			poeTradeObj.x := stashPosX,	poeTradeObj.y := stashPosY, poeTradeObj.online := ""
+			Loop, Parse, accounts,% ","
+			{
+				poeTradeObj := {"league": tabInfos.StashLeague, "online": "x", "want": wantID, "have": giveID}
+				itemURL := PoeTrade_GetCurrencySearchUrl(poeTradeObj)
 
-			matchingObj := PoeTrade_GetMatchingItemData(poeTradeObj, itemURL)
+				poeTradeObj.username := A_LoopField
+				poeTradeObj.sellcurrency := wantID, poeTradeObj.sellvalue := wantCount
+				poeTradeObj.buycurrency := giveID, poeTradeObj.buyvalue := giveCount
+				poeTradeObj.sellBuyRatio := sellBuyRatio
 
-			if IsObject(matchingObj) {
-				foundMatch := True
-				Break
+				matchingObj := PoETrade_GetMatchingCurrencyTradeData(poeTradeObj, itemURL)
+
+				if matchingObj.MaxIndex() {
+					foundMatch := True
+					Break
+				}
 			}
-		}
 
-		tabID := GUI_Trades.GetTabNumberFromUniqueID(tabInfos.UniqueID)
+			tabID := GUI_Trades.GetTabNumberFromUniqueID(tabInfos.UniqueID)
 
-		_infos := ""
-		if (foundMatch) {
-			if (poeTradeObj.buyout = matchingObj.buyout) {
-				_infos := "Price confirmed legit."
-				. "\npoe.trade: " matchingObj.buyout
-				. "\nwhisper: " poeTradeObj.buyout
-				GUI_Trades.SetTabVerifyColor(tabID, "Green")
+			_infos .= ""
+			if (foundMatch) {
+				Loop % matchingObj.MaxIndex() { ; Loop through matchs
+					legitRatio := matchingObj[A_Index].IsSameRatio
+					ratioTxt := "poe.trade: 1 " giveFullName " = " matchingObj[A_Index].sellBuyRatio " " wantFullName
+						. "\nwhisper: 1 " giveFullName " = " sellBuyRatio " " wantFullName
+					
+					if (legitRatio=True) { ; If ratio is the same
+						_infos := "Ratio is the same."
+						. "\n" ratioTxt
+						vColor := "Green"
+						Break
+					}
+					else if (matchingObj[A_Index].sellBuyRatio > sellBuyRatio) { ; Or if ratio is higher
+						_infos := "Ratio is higher."
+						. "\n" ratioTxt
+						vColor := "Green"
+						Break
+					}
+					else { ; Otherwise, currency either not listed or ratio modified
+						if (!isWantListed || !isGiveListed) {
+							wantListedInfos := isWantListed=True?"" : "\nUnknown currency type: """ wantFullName """"
+							giveListedInfos := isGiveListed=True?"" : "\nUnknown currency type: """ giveFullName """"
+							_infos := wantListedInfos . giveListedInfos "\nPlease report it."
+							vColor := "Orange"
+						}
+						else {
+							_infos := "Ratio is lower."
+							. "\n" ratioTxt
+							vColor := "Red"
+						}
+					}
+				}
 			}
 			else {
-				if (!currencyInfos.Is_Listed) {
-					_infos .= "Unknown currency name: """ currencyInfos.Name """"
-					. "\nPlease report it."
-					GUI_Trades.SetTabVerifyColor(tabID, "Orange")
-					; TO_DO logs
-				}
-				else if (currencyInfos.Is_Listed && poeTradeObj.buyout != matchingObj.buyout) {
-					_infos := "Price is different."
-					. "\npoe.trade: " matchingObj.buyout
-					. "\nwhisper " poeTradeObj.buyout
-					GUI_Trades.SetTabVerifyColor(tabID, "Red")
-					; TO_DO logs
-				}
-				; MsgBox % "Price Scam:`n`n"
-				; . matchingObj.seller " - " poeTradeObj.seller "`n" matchingObj.buyout " - " poeTradeObj.buyout "`n" matchingObj.league " - " poeTradeObj.league
-            	; . "`n" matchingObj.tab " - " poeTradeObj.tab "`n" matchingObj.level " - " poeTradeObj.level "`n"  matchingObj.quality " - " poeTradeObj.quality
-            	; . "`n" matchingObj.x " - " poeTradeObj.x "`n" matchingObj.y " - " poeTradeObj.y
+				_infos := "Could not find any item matching the same currency trade."
+				. "\nMake sure to set your account name in the settings."
+				. "\nAccounts: " accounts
+				vColor := "Orange"
 			}
+
+			GUI_Trades.SetTabVerifyColor(tabID, vColor)
+			GUI_Trades.UpdateSlotContent(tabID, "TradeVerifyInfos", _infos)
 		}
-		else {
-			_infos := "Could not find any item matching the same stash location"
-			. "\nMake sure to set your account name in the settings."
-			. "\nAccounts: " accounts
-			. "\n\nWhispers for currency trading is not compatible yet."
-			GUI_Trades.SetTabVerifyColor(tabID, "Orange")
+		else { ; its a regular trade
+			itemQualNoPercent := StrReplace(tabInfos.ItemQuality, "%", "")
+			RegExMatch(tabInfos.StashPosition, "O)(.*);(.*)", stashPosPat)
+			stashPosX := stashPosPat.1, stashPosY := stashPosPat.2
+			RegExMatch(tabInfos.Price, "O)(\d+)(\D+)", pricePat)
+			priceNum := pricePat.1, priceCurrency := pricePat.2
+			AutoTrimStr(priceNum, pricePat)
+			
+			currencyInfos := Get_CurrencyInfos(priceCurrency)
+			poeTradeCurrencyName := PoeTrade_Get_CurrencyAbridgedName_From_FullName(currencyInfos.Name)
+			poeTradePrice := priceNum " " poeTradeCurrencyName
+
+			Loop, Parse, accounts,% ","
+			{
+				poeTradeObj := {"name": tabInfos.ItemName, "buyout": poeTradePrice
+				, "level_min": tabInfos.ItemLevel, "level_max": tabInfos.ItemLevel
+				, "q_min": itemQualNoPercent, "q_max": itemQualNoPercent
+				, "league": tabInfos.StashLeague, "seller": A_LoopField}
+				itemURL := PoeTrade_GetItemSearchUrl(poeTradeObj)
+				
+				poeTradeObj.seller := A_LoopField, poeTradeObj.level := poeTradeObj.level_max
+				poeTradeObj.quality := poeTradeObj.q_max, poeTradeObj.tab := tabInfos.StashTab
+				poeTradeObj.x := stashPosX,	poeTradeObj.y := stashPosY, poeTradeObj.online := ""
+
+				matchingObj := PoeTrade_GetMatchingItemData(poeTradeObj, itemURL)
+
+				if IsObject(matchingObj) {
+					foundMatch := True
+					Break
+				}
+			}
+
+			tabID := GUI_Trades.GetTabNumberFromUniqueID(tabInfos.UniqueID)
+
+			_infos := ""
+			if (foundMatch) {
+				if (poeTradeObj.buyout = matchingObj.buyout) {
+					_infos := "Price confirmed legit."
+					. "\npoe.trade: " matchingObj.buyout
+					. "\nwhisper: " poeTradeObj.buyout
+					GUI_Trades.SetTabVerifyColor(tabID, "Green")
+				}
+				else {
+					if (!currencyInfos.Is_Listed) {
+						_infos := "Unknown currency name: """ currencyInfos.Name """"
+						. "\nPlease report it."
+						GUI_Trades.SetTabVerifyColor(tabID, "Orange")
+						; TO_DO logs
+					}
+					else if (currencyInfos.Is_Listed && poeTradeObj.buyout != matchingObj.buyout) {
+						_infos := "Price is different."
+						. "\npoe.trade: " matchingObj.buyout
+						. "\nwhisper " poeTradeObj.buyout
+						GUI_Trades.SetTabVerifyColor(tabID, "Red")
+						; TO_DO logs
+					}
+
+				}
+			}
+			else {
+				_infos := "Could not find any item matching the same stash location"
+				. "\nMake sure to set your account name in the settings."
+				. "\nAccounts: " accounts
+				. "\n\nWhispers for currency trading is not compatible yet."
+				GUI_Trades.SetTabVerifyColor(tabID, "Orange")
+			}
+			GUI_Trades.UpdateSlotContent(tabID, "TradeVerifyInfos", _infos)
 		}
-		GUI_Trades.UpdateSlotContent(tabID, "TradeVerifyInfos", _infos)
 	}
 
 	SetTabVerifyColor(tabID, colour) {

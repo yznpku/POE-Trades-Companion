@@ -27,7 +27,7 @@ PoeTrade_GenerateCurrencyListTXT() {
 PoeTrade_GetCurrencyData(createData=False) {
     global PROGRAM
 
-	Url := "http://currency.poe.trade/"
+    Url := "http://currency.poe.trade/"
 	postData 	:= ""
 	options	:= ""
 
@@ -136,6 +136,42 @@ PoeTrade_Get_CurrencyAbridgedName_From_FullName(lName) {
     return sName
 }
 
+PoETrade_GetMatchingCurrencyTradeData(dataObj, itemURL) {
+    html := CurrencyPoeTrade_GetSource("http://currency.poe.trade/search?" itemURL, skipPayload:=True)
+
+    regexPos := 1
+    matchingDatas := {}, foundMatchIndex := 0
+    Loop {
+        loopindex := A_Index
+        foundPos := RegExMatch(html, "iO)<div class=""displayoffer "".*?<div class=""row"">", htmlPat, regexPos)
+        if (foundPos) {
+            tBody := htmlPat.0, regexPos := foundPos+1
+
+            saleInfoTags := "username,sellcurrency,sellvalue,buycurrency,buyvalue,ign", foundObj := {}
+            Loop, Parse, saleInfoTags,% ","
+            {
+                RegExMatch(tBody, "iO)data-" A_LoopField "=""(.*?)""", foundPat)
+                foundObj[A_LoopField] := foundPat.1
+            }
+
+            sellBuyRatio := RemoveTrailingZeroes(foundObj.sellvalue / foundObj.buyvalue)
+            isSameAccount := foundObj.username = dataObj.username ? True : False
+            isSameRatio := sellBuyRatio = dataObj.sellBuyRatio ? True : False
+
+            if (isSameAccount) {
+                foundMatchIndex++
+                isMatching := isSameRatio=True?True:False
+                matchingDatas[foundMatchIndex] := foundObj
+                matchingDatas[foundMatchIndex].SellBuyRatio := sellBuyRatio
+                matchingDatas[foundMatchIndex].IsSameRatio := isSameRatio
+            }
+        }
+        else    
+            Break
+    }
+    return matchingDatas
+}
+
 PoeTrade_GetMatchingItemData(dataObj, itemURL) {
     
     ; itemURL := PoeTrade_GetItemSearchUrl(dataObj)
@@ -201,6 +237,35 @@ PoeTrade_ParseSource(html) {
     ; FileAppend, %html%, poeTradeHtml.html
 }
 
+PoeTrade_CreateCurrencyPayload(obj, addDefaultParams=False) {
+    defaultParams := {"have": "", "league": "Incursion", "online": "x", "stock": "", "want": ""}
+
+    poeTradeObj := obj
+
+    ; Capitalize league first letters
+    league := poeTradeObj["league"]
+    StringUpper, league, league, T
+    poeTradeObj["league"] := league
+
+    ; Create payload
+    payload := ""
+    if (addDefaultParams) {
+        for key, defValue in defaultParams {
+            value := poeTradeObj.HasKey(key) ? poeTradeObj[key] : addDefaultParams=True && defValue?defValue : ""
+            payloadStr := key "=" value
+            payload .= (payload)?("&" payloadStr):(payloadStr)
+        }
+    }
+    else {
+        for key, value in poeTradeObj {
+            payloadStr := key "=" value
+            payload .= (payload)?("&" payloadStr):(payloadStr)
+        }
+    }
+
+    return payload
+}
+
 PoeTrade_CreatePayload(obj, addDefaultParams=False) {
     defaultParams := {"altart": "", "aps_max": "", "aps_min": "", "armour_max": "", "armour_min": "", "base": "", "block_max": "", "block_min": "", "buyout_currency": ""
     , "buyout_max": "", "buyout_min": "", "capquality": "x", "corrupted": "", "crafted": "", "crit_max": "", "crit_min": "", "dmg_max": "", "dmg_min": ""
@@ -238,6 +303,17 @@ PoeTrade_CreatePayload(obj, addDefaultParams=False) {
     return payload
 }
 
+PoeTrade_GetCurrencySearchUrl(itemObj) {
+    itemURL := PoeTrade_CreateCurrencyPayload(itemObj)
+    return itemURL
+}
+
+PoeTrade_OpenCurrencySearchUrl(itemObj) {
+    itemURL := PoeTrade_GetCurrencySearchUrl(itemObj)
+
+    Run, http://currency.poe.trade/search?%itemURL%
+}
+
 PoeTrade_GetItemSearchUrl(itemObj) {
     itemURL := PoeTrade_CreatePayload(itemObj)
     return itemURL
@@ -266,6 +342,29 @@ PoeTrade_GetSource(url) {
 	reqHeaders.push("Content-type: application/x-www-form-urlencoded; charset=UTF-8")
 	reqHeaders.push("Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
 	reqHeaders.push("Referer: http://poe.trade/")
+
+    html := cURL_Download(url, postData, reqHeaders, options, false)
+
+    return html
+}
+
+CurrencyPoeTrade_GetSource(url, skipPayload=False) {
+    RegExMatch(url, "O).*poe\.trade/search\?(.*)", payloadPat)
+    if (skipPayload = False)
+        payload := payloadPat.1
+
+    postData 	:= payload
+	payLength	:= StrLen(postData)
+	options	    := ""
+
+	reqHeaders	:= []
+	reqHeaders.push("User-Agent:Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Safari/537.36")
+	reqHeaders.push("Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8")
+	reqHeaders.push("Accept-Encoding:gzip, deflate")
+	reqHeaders.push("Accept-Language:de-DE,de;q=0.8,en-US;q=0.6,en;q=0.4")
+	reqHeaders.push("Connection:keep-alive")
+	reqHeaders.push("Referer:http://currency.poe.trade")
+	reqHeaders.push("Upgrade-Insecure-Requests:1")
 
     html := cURL_Download(url, postData, reqHeaders, options, false)
 
