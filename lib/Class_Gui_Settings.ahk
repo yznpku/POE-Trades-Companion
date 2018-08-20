@@ -92,6 +92,13 @@ Class GUI_Settings {
 		global GuiSettings, GuiSettings_Controls, GuiSettings_Submit
 		static guiCreated
 
+		; Free ImageButton memory
+		for key, value in GuiSettings_Controls
+			if IsIn(key, "hBTN_CloseGUI")
+			|| IsContaining(key, "hBTN_TabSettings,hBTN_TabCustomization,hBTN_TabHotkeys,hBTN_TabMisc")
+				ImageButton.DestroyBtnImgList(value)
+		
+		; Initialize gui arrays
 		Gui, Settings:Destroy
 		Gui.New("Settings", "-Caption -Border +LabelGUI_Settings_ +HwndhGuiSettings", "Settings")
 		; Gui.New("Settings", "+AlwaysOnTop +ToolWindow +LabelGUI_Settings_ +HwndhGuiSettings", "Settings")
