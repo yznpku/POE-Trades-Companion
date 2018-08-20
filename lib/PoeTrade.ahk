@@ -20,10 +20,6 @@
     FileAppend,% txtData,% fileLocation
 }
 
-PoeTrade_GenerateCurrencyListTXT() {
-    
-}
-
 PoeTrade_GetCurrencyData(createData=False) {
     global PROGRAM
 
@@ -74,19 +70,16 @@ PoeTrade_GetCurrencyData(createData=False) {
                     currenciesObj[curTitle]["Full"] := curTitle
                     currenciesObj[curTitle]["Abridged"] := curDataTitle
                     currenciesObj[curTitle]["ID"] := curDataID
-
-                    curTitle := "", curDataTitle := "", curDataID := ""
                 }
                 if (curDataTitle) {
                     currenciesObj[curDataTitle] := curTitle
                 }
+                curTitle := "", curDataTitle := "", curDataID := ""
             }
             else 
                 Break
         }
     }
-
-    
 
     if !(currenciesObj["Chaos Orb"]) {
         ; TO_DO logs, fallback to json file
@@ -124,7 +117,7 @@ PoeTrade_GetCurrencyData(createData=False) {
         return [jsonData, txtData]
     }
 
-    Return currenciesData
+    Return currenciesObj
 }
 
 PoeTrade_Get_CurrencyAbridgedName_From_FullName(lName) {
