@@ -19,12 +19,13 @@
 		modifier .= "!"
 
 	if (A_ThisHotkey == "*BackSpace" && HK_CTRL[1] && !modifier)   ;if the control has text but no modifiers held,
-		GuiControl, Settings:,% HK_CTRL[3]                                       ;  allow BackSpace to clear that text.
+		GuiControl, Settings:,% HK_CTRL[2]                                       ;  allow BackSpace to clear that text.
 	else {                                                     ;Otherwise,
-		GuiControl, Settings:,% HK_CTRL[3],% modifier SubStr(A_ThisHotkey,2)  ;  show the hotkey.
+		GuiControl, Settings:,% HK_CTRL[2],% modifier SubStr(A_ThisHotkey,3)  ;  show the hotkey.
 
-		GUI_Settings.Hotkey_OnSpecialKeyPress(HK_CTRL[2], modifier SubStr(A_ThisHotkey,2))
+		GUI_Settings.Hotkey_OnSpecialKeyPress(HK_CTRL[2], modifier SubStr(A_ThisHotkey,3))
 	}
+
 	return
 #If
 
