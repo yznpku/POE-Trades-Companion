@@ -1861,6 +1861,11 @@ Class GUI_Settings {
 		global PROGRAM, GuiSettings, GuiSettings_Controls
 		iniFile := PROGRAM.INI_FILE
 
+		if !(GuiSettings.CUSTOM_BUTTON_SELECTED) {
+			MsgBox(4096, "", "Cannot save button settings because no button is selected.")
+			return
+		}
+
 		Gui, Settings:ListView,% GuiSettings_Controls.hLV_ButtonsActions
 
 		btnNum := GuiSettings.CUSTOM_BUTTON_SELECTED
