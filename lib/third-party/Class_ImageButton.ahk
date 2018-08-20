@@ -1,74 +1,115 @@
-﻿; ======================================================================================================================
-; Namespace:         ImageButton
-; Function:          Create images and assign them to pushbuttons.
-; Tested with:       AHK 1.1.14.03 (A32/U32/U64)
-; Tested on:         Win 7 (x64)
-; Change history:    1.4.00.00/2014-06-07/just me - fixed bug for button caption = "0", "000", etc.
-;                    1.3.00.00/2014-02-28/just me - added support for ARGB colors
-;                    1.2.00.00/2014-02-23/just me - added borders
-;                    1.1.00.00/2013-12-26/just me - added rounded and bicolored buttons       
-;                    1.0.00.00/2013-12-21/just me - initial release
-; How to use:
-;     1. Create a push button (e.g. "Gui, Add, Button, vMyButton hwndHwndButton, Caption") using the 'Hwnd' option
-;        to get its HWND.
-;     2. Call ImageButton.Create() passing two parameters:
-;        HWND        -  Button's HWND.
-;        Options*    -  variadic array containing up to 6 option arrays (see below).
-;        ---------------------------------------------------------------------------------------------------------------
-;        The index of each option object determines the corresponding button state on which the bitmap will be shown.
-;        MSDN defines 6 states (http://msdn.microsoft.com/en-us/windows/bb775975):
-;           PBS_NORMAL    = 1
-;           PBS_HOT       = 2
-;           PBS_PRESSED   = 3
-;           PBS_DISABLED  = 4
-;           PBS_DEFAULTED = 5
-;           PBS_STYLUSHOT = 6 <- used only on tablet computers (that's false for Windows Vista and 7, see below)
-;        If you don't want the button to be 'animated' on themed GUIs, just pass one option object with index 1.
-;        On Windows Vista and 7 themed bottons are 'animated' using the images of states 5 and 6 after clicked.
-;        ---------------------------------------------------------------------------------------------------------------
-;        Each option array may contain the following values:
-;           Index Value
-;           1     Mode        mandatory:
-;                             0  -  unicolored or bitmap
-;                             1  -  vertical bicolored
-;                             2  -  horizontal bicolored
-;                             3  -  vertical gradient
-;                             4  -  horizontal gradient
-;                             5  -  vertical gradient using StartColor at both borders and TargetColor at the center
-;                             6  -  horizontal gradient using StartColor at both borders and TargetColor at the center
-;                             7  -  'raised' style
-;           2     StartColor  mandatory for Option[1], higher indices will inherit the value of Option[1], if omitted:
-;                             -  ARGB integer value (0xAARRGGBB) or HTML color name ("Red").
-;                             -  Path of an image file or HBITMAP handle for mode 0.
-;           3     TargetColor mandatory for Option[1] if Mode > 0, ignored if Mode = 0. Higher indcices will inherit
-;                             the color of Option[1], if omitted:
-;                             -  ARGB integer value (0xAARRGGBB) or HTML color name ("Red").
-;           4     TextColor   optional, if omitted, the default text color will be used for Option[1], higher indices 
-;                             will inherit the color of Option[1]:
-;                             -  ARGB integer value (0xAARRGGBB) or HTML color name ("Red").
-;                                Default: 0xFF000000 (black)
-;           5     Rounded     optional:
-;                             -  Radius of the rounded corners in pixel; the letters 'H' and 'W' may be specified
-;                                also to use the half of the button's height or width respectively.
-;                                Default: 0 - not rounded
-;           6     GuiColor    optional, needed for rounded buttons if you've changed the GUI background color:
-;                             -  RGB integer value (0xRRGGBB) or HTML color name ("Red").
-;                                Default: AHK default GUI background color
-;           7     BorderColor optional, ignored for modes 0 (bitmap) and 7, color of the border:
-;                             -  RGB integer value (0xRRGGBB) or HTML color name ("Red").
-;           8     BorderWidth optional, ignored for modes 0 (bitmap) and 7, width of the border in pixels:
-;                             -  Default: 1
-;        ---------------------------------------------------------------------------------------------------------------
-;        If the the button has a caption it will be drawn above the bitmap.
-; Credits:           THX tic     for GDIP.AHK     : http://www.autohotkey.com/forum/post-198949.html
-;                    THX tkoi    for ILBUTTON.AHK : http://www.autohotkey.com/forum/topic40468.html
-; ======================================================================================================================
-; This software is provided 'as-is', without any express or implied warranty.
-; In no event will the authors be held liable for any damages arising from the use of this software.
-; ======================================================================================================================
-; ======================================================================================================================
-; CLASS ImageButton()
-; ======================================================================================================================
+﻿/*
+======================================================================================================================
+Namespace:         ImageButton
+Function:          Create images and assign them to pushbuttons.
+Tested with:       AHK 1.1.14.03 (A32/U32/U64)
+Tested on:         Win 7 (x64)
+Change history:    
+    1.4.2 / 2018-08-20 / lemasato - Added DestroyBtnImgList into the Class, for easier use
+    1.4.1 / 2018-06-12 / lemasato - Added private fonts support on ImageButton.Create()
+    1.4   / 2014-06-07 / just me  - fixed bug for button caption = "0", "000", etc.
+    1.3   / 2014-02-28 / just me  - added support for ARGB colors
+    1.2   / 2014-02-23 / just me  - added borders
+    1.1   / 2013-12-26 / just me  - added rounded and bicolored buttons       
+    1.0   / 2013-12-21 / just me  - initial release
+How to use:
+    1. Create a push button (e.g. "Gui, Add, Button, vMyButton hwndHwndButton, Caption") using the 'Hwnd' option
+       to get its HWND.
+    2. Call ImageButton.Create() passing two parameters:
+       HWND        -  Button's HWND.
+       Options*    -  variadic array containing up to 6 option arrays (see below).
+       ---------------------------------------------------------------------------------------------------------------
+       The index of each option object determines the corresponding button state on which the bitmap will be shown.
+       MSDN defines 6 states (http://msdn.microsoft.com/en-us/windows/bb775975):
+          PBS_NORMAL    = 1
+          PBS_HOT       = 2
+          PBS_PRESSED   = 3
+          PBS_DISABLED  = 4
+          PBS_DEFAULTED = 5
+          PBS_STYLUSHOT = 6 <- used only on tablet computers (that's false for Windows Vista and 7, see below)
+       If you don't want the button to be 'animated' on themed GUIs, just pass one option object with index 1.
+       On Windows Vista and 7 themed bottons are 'animated' using the images of states 5 and 6 after clicked.
+       ---------------------------------------------------------------------------------------------------------------
+       Each option array may contain the following values:
+          Index Value
+          1     Mode        mandatory:
+                            0  -  unicolored or bitmap
+                            1  -  vertical bicolored
+                            2  -  horizontal bicolored
+                            3  -  vertical gradient
+                            4  -  horizontal gradient
+                            5  -  vertical gradient using StartColor at both borders and TargetColor at the center
+                            6  -  horizontal gradient using StartColor at both borders and TargetColor at the center
+                            7  -  'raised' style
+          2     StartColor  mandatory for Option[1], higher indices will inherit the value of Option[1], if omitted:
+                            -  ARGB integer value (0xAARRGGBB) or HTML color name ("Red").
+                            -  Path of an image file or HBITMAP handle for mode 0.
+          3     TargetColor mandatory for Option[1] if Mode > 0, ignored if Mode = 0. Higher indcices will inherit
+                            the color of Option[1], if omitted:
+                            -  ARGB integer value (0xAARRGGBB) or HTML color name ("Red").
+          4     TextColor   optional, if omitted, the default text color will be used for Option[1], higher indices 
+                            will inherit the color of Option[1]:
+                            -  ARGB integer value (0xAARRGGBB) or HTML color name ("Red").
+                               Default: 0xFF000000 (black)
+          5     Rounded     optional:
+                            -  Radius of the rounded corners in pixel; the letters 'H' and 'W' may be specified
+                               also to use the half of the button's height or width respectively.
+                               Default: 0 - not rounded
+          6     GuiColor    optional, needed for rounded buttons if you've changed the GUI background color:
+                            -  RGB integer value (0xRRGGBB) or HTML color name ("Red").
+                               Default: AHK default GUI background color
+          7     BorderColor optional, ignored for modes 0 (bitmap) and 7, color of the border:
+                            -  RGB integer value (0xRRGGBB) or HTML color name ("Red").
+          8     BorderWidth optional, ignored for modes 0 (bitmap) and 7, width of the border in pixels:
+                            -  Default: 1
+       ---------------------------------------------------------------------------------------------------------------
+       If the the button has a caption it will be drawn above the bitmap.
+
+
+Private fonts (how to use example):
+      FGP_ by kon can be found here: https://github.com/ahkon/FGP-FileGetProperties
+      
+      1. Load your fonts privately and store the font family handle into a global object.
+         I recommend using the font title (can be retrieved using FPG_Value() by kon to access the font family handle.
+         This is so, if you store your GUI font name in a variable, you can use it in both AHK "Gui,Font" cmd and this function.
+
+            Loop, Files, %fontsFolder%\*.ttf
+      	{
+                  fontFile := A_LoopFileFullPath, fontTitle := FGP_Value(A_LoopFileFullPath, 21)	; 21 = Title
+
+			DllCall( "GDI32.DLL\AddFontResourceEx", Str, fontFile,UInt,(FR_PRIVATE:=0x10), Int,0)
+			DllCall("gdiplus\GdipPrivateAddFontFile", "uint", hCollection, "uint", &fontFile)
+			DllCall("gdiplus\GdipCreateFontFamilyFromName", "uint", &fontTitle, "uint", hCollection, "uint*", hFamily)
+			PrivateFonts[fontTitle] := hFamily
+		}
+
+      2. Create your ImageButton with your private font.
+         ImageButton.Create(Hwnd, Options, hFamily="", fontSize="", fontStyle="")
+         hFamily is the handle to your private font
+         fontSize is the size of the font you desire
+         fontStyle can be a combination of the following: Regular,Bold,Italic,Underline,Strike (eg: RegularBold or BoldUnderlineStrike or StrikeBoldItalic etc)
+
+            Gui, Add, Button, hwndhBTN, Hello
+            ImageButton.Create(hwndhBTN_Minimize, imgBtnStyle, PrivateFonts["Fontin SmallCaps"], 10)
+      
+      3. Freeing memory
+      3a.   When deleting your GUI, free your ImageButton controls individually by using:
+            ImageButton.DestroyBtnImgList(hBTN)
+      4a.   To free a font family and remove it from your private font resources, use:
+            Gdip_DeleteFontFamily(PROGRAM.FONTS[fontTitle])
+	      DllCall( "GDI32.DLL\RemoveFontResourceEx",Str, A_LoopFileFullPath,UInt,(FR_PRIVATE:=0x10),Int,0)
+
+
+Credits:           THX tic     for GDIP.AHK     : http://www.autohotkey.com/forum/post-198949.html
+                   THX tkoi    for ILBUTTON.AHK : http://www.autohotkey.com/forum/topic40468.html
+======================================================================================================================
+This software is provided 'as-is', without any express or implied warranty.
+In no event will the authors be held liable for any damages arising from the use of this software.
+======================================================================================================================
+======================================================================================================================
+CLASS ImageButton()
+======================================================================================================================
+*/
 Class ImageButton {
    ; ===================================================================================================================
    ; PUBLIC PROPERTIES =================================================================================================
@@ -511,5 +552,12 @@ Class ImageButton {
          Return False
       This.DefTxtColor := (This.HTML.HasKey(TxtColor) ? This.HTML[TxtColor] : TxtColor) & 0xFFFFFF
       Return True
+   }
+   DestroyBtnImgList(HBTN) {
+      ; https://autohotkey.com/boards/viewtopic.php?p=44287#p44287
+      ; BCM_GETIMAGELIST = 0x1603
+      VarSetCapacity(BtnImgList, A_PtrSize + 24, 0)
+      SendMessage, 0x1603, 0, % &BtnImgList, , ahk_id %HBTN%
+      Return IL_Destroy(NumGet(BtnImgList, "UPtr"))
    }
 }
