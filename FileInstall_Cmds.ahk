@@ -1,7 +1,4 @@
-﻿#SingleInstance Force
-#NoTrayIcon
-
-if (!A_IsCompiled && A_ScriptName = "FileInstall_Cmds.ahk") {
+﻿if (!A_IsCompiled && A_ScriptName = "FileInstall_Cmds.ahk") {
 	#Include %A_ScriptDir%/lib/third-party/Get_ResourceSize.ahk
 
 	if (!PROGRAM)
@@ -22,8 +19,8 @@ global PROGRAM
 
 
 if !(PROGRAM.MAIN_FOLDER) {
- 	Msgbox You cannot run this file manually!
- 	ExitApp
+	Msgbox You cannot run this file manually!
+ExitApp
 }
 
 if !InStr(FileExist(PROGRAM.MAIN_FOLDER ""), "D")
