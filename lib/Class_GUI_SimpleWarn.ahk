@@ -95,7 +95,3 @@
 		Gui.Destroy("SimpleWarn")
 	}
 }
-
-#SingleInstance, Force
-#Include Easyfuncs.ahk
-#Include Class_GUI.ahk

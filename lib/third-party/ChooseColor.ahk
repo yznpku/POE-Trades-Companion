@@ -167,5 +167,3 @@ BGR2RGB(Color)
 
     return ret
 }
-
-#SingleInstance, Force
