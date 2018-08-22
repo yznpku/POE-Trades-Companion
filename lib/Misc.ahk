@@ -17,7 +17,6 @@
 
 	if !IsIn(currency, PROGRAM.DATA.CURRENCY_LIST) {
 		currencyFullName := PROGRAM.DATA.POETRADE_CURRENCY_DATA[currency]
-		currencyFullName := StrReplace(currencyFullName, "_", " ")
 		if (currencyFullName)
 			isCurrencyListed := True
 	}
