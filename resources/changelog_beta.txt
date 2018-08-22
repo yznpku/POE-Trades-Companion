@@ -1,3 +1,20 @@
+1.13.BETA_4 (22 Aug 2018)
+	Features:
+	- Price Verify now also works for currency whispers.
+	- You can now navigate through tabs with the following built-in hotkeys:
+	Ctrl + Tab / Ctrl + WheelDown: Next tab.
+	Ctrl + Shift + Tab / Ctrl + WheelUp: Previous tab.
+	Ctrl + 1-9: Choose tab ID 1-9.
+	
+	Fixes:
+	- Memory leak related to ImageButton.
+	- Smaller "special" trade buttons not working.
+	- Special keyboard combination for hotkeys not working (Example: Ctrl+Space)
+	- Typo that prevented from retrieveing currency data from currency.poe.trade
+	- /NoReplace or /NewInstance parameter wouldn't work correctly.
+	
+
+= = = = = = = = = = = = =	
 1.13.BETA_3 (18 Aug 2018)
 	Changes:
 	- Removed FontReg.exe and EnumFonts.vbs.
