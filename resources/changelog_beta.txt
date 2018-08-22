@@ -1,4 +1,7 @@
-1.13.BETA_4 (22 Aug 2018)
+1.13.BETA_4 && BETA_5 (22 Aug 2018)
+
+	1.13.BETA_5 Fix: Script not loading as admin automatically.
+	
 	Features:
 	- Price Verify now also works for currency whispers.
 	- You can now navigate through tabs with the following built-in hotkeys:
