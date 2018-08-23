@@ -390,23 +390,19 @@ Parse_GameLogs(strToParse) {
 					if (PROGRAM.SETTINGS.SETTINGS_MAIN.TradingWhisperSFXToggle = "True") && FileExist(PROGRAM.SETTINGS.SETTINGS_MAIN.TradingWhisperSFXPath)
 						SoundPlay,% PROGRAM.SETTINGS.SETTINGS_MAIN.TradingWhisperSFXPath
 
-					doPBNote := (PROGRAM.SETTINGS.SETTINGS_MAIN.PushBulletOnTradingWhisper = "True")
-					if (PROGRAM.SETTINGS.SETTINGS_MAIN.PushBulletOnlyWhenAFK = "True" && idk) { ; TO_DO afk state global
-						doPBNote := True
-					}
-					else {
-						doPBNote := True
+					pbNoteOnTradingWhisper := PROGRAM.SETTINGS.SETTINGS_MAIN.PushBulletOnTradingWhisper
+					if (pbNoteOnTradingWhisper = "True") {
+						if (PROGRAM.SETTINGS.SETTINGS_MAIN.PushBulletOnlyWhenAFK = "True" && PLAYER_IS_AFK) ; TO_DO afk state global funcs
+							doPBNote := True
+						else if (PROGRAM.SETTINGS.SETTINGS_MAIN.PushBulletOnlyWhenAFK = "False")
+							doPBNote := True
 					}
 
-					if (doPBNote = True) {
-						; pbErr := PB_PushNote(PROGRAM.SETTINGS.SETTINGS_MAIN.PushBulletToken, "Buying request from " whispName ":"
-						; , "Item: " tradeItemFull "\nPrice: " tradePrice "\nStash: " tradeStashFull)
-						pbErr := PB_PushNote("a", "Buying request from " whispName ":"
+					if (doPBNote = True) && StrLen(PROGRAM.SETTINGS.SETTINGS_MAIN.PushBulletToken) > 5 {
+						pbErr := PB_PushNote(PROGRAM.SETTINGS.SETTINGS_MAIN.PushBulletToken, "Buying request from " whispName ":"
 						, "Item: " tradeItemFull "\nPrice: " tradePrice "\nStash: " tradeStashFull)
-
 						; TO_DO logs pbErr
 					}
-					; }
 
 					if !WinActive("ahk_pid " instancePID) { ; If the instance is not active
 						if ( PROGRAM.SETTINGS.SETTINGS_MAIN.ShowTabbedTrayNotificationOnWhisper = "True" ) {
