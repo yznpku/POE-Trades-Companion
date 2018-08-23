@@ -139,7 +139,8 @@
 	FileAppend,% appendToFile "`n",% installFile
 	Sleep 10
 
-	RunWait,% installFile " /MAIN_FOLDER=" 	"""" PROGRAM.MAIN_FOLDER """"
+	RunWait,% installFile " /f"
+	.		" /MAIN_FOLDER=" 	"""" PROGRAM.MAIN_FOLDER """"
 	.		" /SFX_FOLDER=" 	"""" PROGRAM.SFX_FOLDER """"
 	.		" /LOGS_FOLDER=" 	"""" PROGRAM.LOGS_FOLDER """"
 	.		" /SKINS_FOLDER=" 	"""" PROGRAM.SKINS_FOLDER """"
@@ -147,5 +148,4 @@
 	.		" /DATA_FOLDER=" 	"""" PROGRAM.DATA_FOLDER """"
 	.		" /IMAGES_FOLDER=" 	"""" PROGRAM.IMAGES_FOLDER """"
 	.		" /ICONS_FOLDER=" 	"""" PROGRAM.ICONS_FOLDER """",% A_ScriptDir
-	.		" /f"
 }
