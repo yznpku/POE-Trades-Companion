@@ -117,6 +117,8 @@ Do_Action(actionType, actionContent="", isHotkey=False, uniqueNum="") {
 		SendEvent,{Raw}%actionContent%
 	else if (actionType = "IGNORE_SIMILAR_TRADE")
 		GUI_Trades.AddActiveTrade_To_IgnoreList()
+	else if (actionType = "SHOW_GRID")
+		GUI_Trades.ShowActiveTabItemGrid()
 
 	prevNum := uniqueNum
 }

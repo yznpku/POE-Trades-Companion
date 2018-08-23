@@ -142,6 +142,7 @@ Class GUI_Settings {
 			, "FORCE_MIN":"Force minimized"
 			, "FORCE_MAX":"Force maximized"
 			, "IGNORE_SIMILAR_TRADE":"Ignore tab item for 10mins"
+			, "SHOW_GRID":"Show item location grid"
 
 			, "CMD_AFK":"/afk"
 			, "CMD_AUTOREPLY":"/autoreply"
@@ -178,6 +179,7 @@ Class GUI_Settings {
 			, "FORCE_MIN":"Force the GUI to go into minimized form."
 			, "FORCE_MAX":"Force the GUI to go into maximized form."
 			, "IGNORE_SIMILAR_TRADE":"Ignore whispers for items with the same price and stash for 10 minutes."
+			, "SHOW_GRID":"Show the item location grid."
 
 			, "CMD_AFK":"Send the /afk command into chat. You can write anything next to the command to customize your AFK message."
 			, "CMD_AUTOREPLY":"Send the /autoreply command into chat. You can write anything next to the command to customize your autoreply message"
@@ -216,7 +218,7 @@ Class GUI_Settings {
 		global ACTIONS_READONLY := "INVITE_BUYER,TRADE_BUYER,KICK_BUYER"
 			. ",SAVE_TRADE_STATS,COPY_ITEM_INFOS,GO_TO_NEXT_TAB,GO_TO_PREVIOUS_TAB"
 			. ",CLOSE_TAB,TOGGLE_MIN_MAX,FORCE_MIN,FORCE_MAX,CMD_OOS,CMD_REMAINING"
-			. ",IGNORE_SIMILAR_TRADE"
+			. ",IGNORE_SIMILAR_TRADE,SHOW_GRID"
 		Loop 9
 			ACTIONS_READONLY .= ",CUSTOM_BUTTON_" A_Index
 
@@ -245,6 +247,7 @@ Class GUI_Settings {
 		. "|" ACTIONS_TEXT_NAME.FORCE_MIN
 		. "|" ACTIONS_TEXT_NAME.FORCE_MAX
 		. "|" ACTIONS_TEXT_NAME.IGNORE_SIMILAR_TRADE
+		. "|" ACTIONS_TEXT_NAME.SHOW_GRID
 		. "| "
 		. "|--------- Commands ---------|"
 		. "|" ACTIONS_TEXT_NAME.CMD_AFK

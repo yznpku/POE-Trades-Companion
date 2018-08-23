@@ -311,6 +311,7 @@ Return
 #Include Class_Gui_Settings.ahk
 #Include Class_Gui_ChooseInstance.ahk
 #Include Class_Gui_MyStats.ahk
+#Include Class_Gui_ItemGrid.ahk
 #Include WM_Messages.ahk
 
 #Include Game.ahk

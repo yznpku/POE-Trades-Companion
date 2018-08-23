@@ -504,6 +504,8 @@
 
 				if (actionType) {
 					Do_Action(actionType, actionContent)
+					if (actionType = "TRADE_BUYER")
+						GUI_Trades.ShowActiveTabItemGrid()
 				}
 			}
 		}
@@ -1280,6 +1282,9 @@
 		else if (slotName = "WithdrawnTally") {
 			GUI_Trades.SetTabContent(tabName, {WithdrawnTally:newContent}, isNewlyPushed:=False, updateOnly:=True)
 		}
+		else if (slotName = "IsBuyerInvited") {
+			GUI_Trades.SetTabContent(tabName, {IsBuyerInvited:newContent}, isNewlyPushed:=False, updateOnly:=True)
+		}
 	}
 
 	GetTabContent(tabName) {
@@ -1353,6 +1358,8 @@
 				invisibleInfosArr.WhisperSite := whisperSitePat.1
 			else if RegExMatch(A_LoopField, "O)TradeVerifyInfos:" A_Tab "(.*)", tradeVerifyInfosPat)
 				invisibleInfosArr.TradeVerifyInfos := tradeVerifyInfosPat.1
+			else if RegExMatch(A_LoopField, "O)IsBuyerInvited:" A_Tab "(.*)", isBuyerInvitedPat)
+				invisibleInfosArr.IsBuyerInvited := isBuyerInvitedPat.1
 		}
 
 		tabContent := {}
@@ -1444,10 +1451,11 @@
 		newTradeVerify := updateOnly && !tabInfos.TradeVerify ? cTabCont.TradeVerify : tabInfos.TradeVerify
 		newWhisperSite := updateOnly && !tabInfos.WhisperSite ? cTabCont.WhisperSite : tabInfos.WhisperSite
 		newTradeVerifyInfos := updateOnly && !tabInfos.TradeVerifyInfos ? cTabCont.TradeVerifyInfos : tabInfos.TradeVerifyInfos
+		newIsBuyerInvited := updateOnly && !tabInfos.IsBuyerInvited ? cTabCont.IsBuyerInvited : tabInfos.IsBuyerInvited
 
 		AutoTrimStr(newTabBuyer, newTabItem, newTabPrice, newTabStash, newTabOther, newTabBuyerGuild, newTabTimeStamp, newTabPID, newTabIsInArea, newTabHasNewMessage)
 		AutoTrimStr(newTabWithdrawTally, newTabItemName, newTabItemLevel, newTabItemQuality, newTabStashLeague, newTabStashTab, newTabStashPosition)
-		AutoTrimStr(newTabUniqueID, newTradeVerify, newWhisperSite, newTradeVerifyInfos)
+		AutoTrimStr(newTabUniqueID, newTradeVerify, newWhisperSite, newTradeVerifyInfos, newIsBuyerInvited)
 				
 		invisibleText := ""
 		. 		"BuyerGuild:"		A_Tab newTabBuyerGuild
@@ -1472,6 +1480,7 @@
 		. "`n"	"TradeVerify:"		A_Tab newTradeVerify
 		. "`n"	"WhisperSite:"		A_Tab newWhisperSite
 		. "`n" 	"TradeVerifyInfos:"	A_Tab newTradeVerifyInfos
+		. "`n" 	"IsBuyerInvited:"	A_Tab newIsBuyerInvited
 
 		; newTimeReceived := (currentTabContent.Time)?(currentTabContent.Time):(timeReceived)
 		newTimeReceived := updateOnly && !tabInfos.Time ? cTabCont.Time : tabInfos.Time
@@ -1556,6 +1565,12 @@
 
 		if (PROGRAM.SETTINGS.SETTINGS_MAIN.CopyItemInfosOnTabChange = "True" && IsNum(tabName)) 
 			Gui_Trades.CopyItemInfos(tabName)
+
+		tabContent := GUI_Trades.GetTabContent(tabName)
+		if (tabContent.IsBuyerInvited = True)
+			GUI_Trades.ShowActiveTabItemGrid()
+		else
+			GUI_Trades.DestroyItemGrid()
 
 		GuiTrades.Active_Tab := tabName
 	}
@@ -1962,5 +1977,25 @@
 			}
 		}
 		; TO_DO logs
+	}
+
+	ShowActiveTabItemGrid() {
+		global GuiTrades
+		activeTabID := Gui_Trades.GetActiveTab()
+		activeTabInfos := GUI_Trades.GetTabContent(activeTabID)
+		tabStashPos := StrSplit(activeTabInfos.StashPosition, ";")
+		tabXPos := tabStashPos.1, tabYPos := tabStashPos.2
+
+		if (tabXPos && tabYPos) && WinExist("ahk_pid " activeTabInfos.PID " ahk_group POEGameGroup") {
+			WinGetPos, winX, winY, winW, winH,% "ahk_pid " activeTabInfos.PID " ahk_group POEGameGroup"
+
+			Gui_Trades.UpdateSlotContent(activeTabID, "IsBuyerInvited", True)
+			GUI_ItemGrid.Create(tabXPos, tabYPos, winX, winY, winH)
+		}
+		else
+			GUI_Trades.DestroyItemGrid()
+	}
+	DestroyItemGrid() {
+		GUI_ItemGrid.Destroy()
 	}
 }
