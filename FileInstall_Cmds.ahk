@@ -167,6 +167,26 @@ if !InStr(FileExist(PROGRAM.FONTS_FOLDER ""), "D")
 	FileCreateDir,% PROGRAM.FONTS_FOLDER ""
 
 if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\fonts\Fontin-Regular.ttf")
+	FileGetSize, destFileSize, % PROGRAM.FONTS_FOLDER "\Fontin-Regular.ttf"
+}
+else {
+	FileGetSize, sourceFileSize, resources\fonts\Fontin-Regular.ttf
+	FileGetSize, destFileSize, % PROGRAM.FONTS_FOLDER "\Fontin-Regular.ttf"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\fonts\Fontin-Regular.ttf, % PROGRAM.FONTS_FOLDER "\Fontin-Regular.ttf", 1
+if (ErrorLevel)
+	Msgbox % "Failed to extract file!"
+	. "`nSource: resources\fonts\Fontin-Regular.ttf"
+	. "`nDest: " PROGRAM.FONTS_FOLDER "\Fontin-Regular.ttf"
+	. "`nFlag: 2"
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.FONTS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.FONTS_FOLDER ""
+
+if (A_IsCompiled) {
 	sourceFileSize := Get_ResourceSize("resources\fonts\Fontin-SmallCaps.ttf")
 	FileGetSize, destFileSize, % PROGRAM.FONTS_FOLDER "\Fontin-SmallCaps.ttf"
 }
