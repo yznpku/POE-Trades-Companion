@@ -289,6 +289,8 @@ Parse_GameLogs(strToParse) {
 
 	static areaRegexStr := ("^(?:[^ ]+ ){6}(\d+)\] : (.*?) (?:has) (joined|left) (?:the area.*)") 
 
+	static afkRegexStr := ("^(?:[^ ]+ ){6}(\d+)\] : AFK mode is now (ON|OFF)") 
+
 	Loop, Parse,% strToParse,`n,`r ; For each line
 	{
 		if RegExMatch(A_LoopField, "SO)" areaRegexStr, areaPat) {
@@ -297,6 +299,11 @@ Parse_GameLogs(strToParse) {
 				GUI_Trades.SetTabStyleJoinedArea(playerName)
 			else 
 				GUI_Trades.UnSetTabStyleJoinedArea(playerName)
+		}
+		else if RegExMatch(A_LoopField, "iSO)" afkRegexStr, afkPat) {
+			instancePID := afkPat.1, onOrOff := afkPat.2
+			afkState := onOrOff="ON"?True:False
+			GuiTrades[instancePID "_AfkState"] := afkState
 		}
 		else if RegExMatch(A_LoopField, "SO)^(?:[^ ]+ ){6}(\d+)\] (?=[^#$&%]).*@(?:From|De|От кого|จาก|Von|Desde) (.*?): (.*)", whisperPat ) { ; If it's a whisper
 			instancePID := whisperPat.1, whispNameFull := whisperPat.2, whispMsg := whisperPat.3
@@ -392,7 +399,7 @@ Parse_GameLogs(strToParse) {
 
 					pbNoteOnTradingWhisper := PROGRAM.SETTINGS.SETTINGS_MAIN.PushBulletOnTradingWhisper
 					if (pbNoteOnTradingWhisper = "True") {
-						if (PROGRAM.SETTINGS.SETTINGS_MAIN.PushBulletOnlyWhenAFK = "True" && PLAYER_IS_AFK) ; TO_DO afk state global funcs
+						if (PROGRAM.SETTINGS.SETTINGS_MAIN.PushBulletOnlyWhenAFK = "True" && GuiTrades[instancePID "_AfkState"] = True)
 							doPBNote := True
 						else if (PROGRAM.SETTINGS.SETTINGS_MAIN.PushBulletOnlyWhenAFK = "False")
 							doPBNote := True
