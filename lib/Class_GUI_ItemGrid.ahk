@@ -1,7 +1,7 @@
 ﻿class GUI_ItemGrid {
 /*  Function usage example:
-        GUI_ItemGrid.Show(5, 2, 0, 0, 1080)
-        ^ Will show the location of an item at X5 Y2, in borderless fullscreen, with a H res of 1080 
+        GUI_ItemGrid.Show(5, 2, "Shop", 0, 0, 1080)
+        ^ Will show the location of an item at X5 Y2, tab name "Shop", in borderless fullscreen, with a H res of 1080 
 
     With as reference resolution 800x600
     
@@ -33,16 +33,19 @@
     static casesCountQuadX := 24
     static casesCountQuadY := 24
 
-    static gridThicc := 2
+    static stashTabHeightRoot := 0.025 ; 0,02666666666666666666666666666667
 
-    Create(gridItemX, gridItemY, winX, winY, winH, winW="") {
+    static gridThicc := 2
+    static tabThicc := 1
+
+    Create(gridItemX, gridItemY, gridItemTab, winX, winY, winH, winW="") {
         global PROGRAM
         xStart := this.xRoot * winH, yStart := this.yRoot * winH ; Calc first case x/y start pos
-
         gridItemX--, gridItemY-- ; Minus one, so we can get correct case multiplier
 
         GUI_ItemGrid.Destroy()
 
+        ; Only show normal tab grid if both X and Y are lower than the max case count
         if (gridItemX <= this.casesCountX) && (gridItemY <= this.casesCountY) {
             caseW := this.squareWRoot * winH, caseH := this.squareHRoot * winH ; Calc case w/h
             stashX := xStart + (gridItemX * caseW), stashY := yStart + (gridItemY * caseH) ; Calc point pos
@@ -58,7 +61,8 @@
             Gui, ItemGrid:Add, Progress,% "x0 y0 w" this.gridThicc " h" pointH " BackgroundWhite" ; <
             showNormalTabGrid := True 
         }
-        caseQuadW := this.squareQuadWRoot * winH, caseQuadH := this.squareQuadHRoot * winH ; CAlc case w/h
+        ; Quad tab
+        caseQuadW := this.squareQuadWRoot * winH, caseQuadH := this.squareQuadHRoot * winH ; Calc case w/h
         stashQuadX := xStart + (gridItemX * caseQuadW), stashQuadY := yStart + (gridItemY * caseQuadH) ; Calc point pos
         stashQuadXRelative := stashQuadX + winX, stashQuadYRelative := stashQuadY + winY ; Relative to win pos
         pointQuadW := caseQuadW, pointQuadH := caseQuadH ; Make a square same size as stash square
@@ -71,13 +75,35 @@
         Gui, ItemGridQuad:Add, Progress,% "x0 y" pointQuadH " w" pointQuadW " h" this.gridThicc " BackgroundWhite" ; v 
         Gui, ItemGridQuad:Add, Progress,% "x0 y0 w" this.gridThicc " h" pointQuadH " BackgroundWhite" ; <
 
+        ; Stash tab name
+        txtSize := Get_TextCtrlSize("Tab: " gridItemTab, "Fontin Smallcaps", 12)
+        guiSizeW := txtSize.W+30, guiSizeH := txtSize.H+10
+        fontColor := "d4b172", borderColor := "000000"
+
+        stashTabHeight := this.stashTabHeightRoot*winH
+        ; stashTabNameX := xStart, stashTabNameY := yStart + (this.casesCountY * caseH) + 5 ; Position: Under all cases
+        stashTabNameX := xStart, stashTabNameY := yStart - (this.stashTabHeightRoot*winH) - guiSizeH - 5 ; Position: Above tabs
+        stashTabNameXRelative := stashTabNameX + winX, stashTabNameYRelative := stashTabNameY + winY ; Relative to win pos
+       
+        Gui, ItemGridTabName: -Border +LastFound +AlwaysOnTop +ToolWindow -Caption +AlwaysOnTop +ToolWindow
+        Gui, ItemGridTabName:Font, S12, Fontin SmallCaps
+        Gui, ItemGridTabName:Color, %fontColor%
+        Gui, ItemGridTabName:Add, Progress,% "x0 y0 w" guiSizeW " h" this.tabThicc " Background" borderColor ; ^
+        Gui, ItemGridTabName:Add, Progress,% "x" guiSizeW-this.tabThicc " y0 w" this.tabThicc " h" guiSizeH " Background" borderColor ; > 
+        Gui, ItemGridTabName:Add, Progress,% "x0 y" guiSizeH-this.tabThicc " w" guiSizeW-this.tabThicc " h" this.tabThicc " Background" borderColor ; v 
+        Gui, ItemGridTabName:Add, Progress,% "x0 y0 w" this.tabThicc " h" guiSizeH " Background" borderColor ; <
+        Gui, ItemGridTabName:Add, Text,% "x0 y0 cBlack Center BackgroundTrans w" guiSizeW " h" guiSizeH " 0x200",% "Tab: " gridItemTab
+
         if (showNormalTabGrid)
             Gui, ItemGrid:Show, x%stashXRelative% y%stashYRelative% AutoSize
         Gui, ItemGridQuad:Show, x%stashQuadXRelative% y%stashQuadYRelative% AutoSize
+        Gui, ItemGridTabName:Show,% "x" stashTabNameXRelative " y" stashTabNameYRelative " w" guiSizeW " h" guiSizeH
     }
 
     Destroy() {
         Gui, ItemGrid:Destroy
         Gui, ItemGridQuad:Destroy
     }
+}
+
 }
