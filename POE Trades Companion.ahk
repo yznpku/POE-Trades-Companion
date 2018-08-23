@@ -104,9 +104,9 @@ Start_Script() {
 	global LEAGUES 							:= [] ; Trading leagues
 
 	; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-	Handle_CmdLineParameters() 		; PROGRAM.RUNTIME_PARAMETERS
+	Handle_CmdLineParameters() 		; RUNTIME_PARAMETERS
 
-	MyDocuments 					:= (PROGRAM.RUNTIME_PARAMETERS.MyDocuments)?(PROGRAM.RUNTIME_PARAMETERS.MyDocuments):(A_MyDocuments)
+	MyDocuments 					:= (RUNTIME_PARAMETERS.MyDocuments)?(RUNTIME_PARAMETERS.MyDocuments):(A_MyDocuments)
 
 	; Set global - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	PROGRAM.NAME					:= "POE Trades Companion"
