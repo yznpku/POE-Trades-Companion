@@ -36,7 +36,13 @@ Handle_CmdLineParameters() {
 			else
 				Msgbox(4096+16, "", "Parameter invalid: Client.txt not found in logs subfolder.`n`nParam: " param "`nFolder: " found.1)
 		}
-		else if RegExMatch(param, "iO)/Screen_DPI=(.*)", found)
-			MsgBox(4096+48, "", "Parameter invalid: This parameter was removed due to it being unnecessary.`n`nParam: " param "`nFolder: " found.1)
+		else if RegExMatch(param, "iO)/Screen_DPI=(.*)", found) {
+			MsgBox(4096+48, "", "Parameter invalid: This parameter was removed due to it being unnecessary.`n`nParam: " param)
+			found := ""
+		}
+		else if RegExMatch(param, "iO)/PrefsFile=(.*)", found) { ; || RegExMatch(param, "iO)/LocalINI=(.*)", found) 
+			MsgBox(4096+48, "", "Parameter invalid: This parameter was removed due to it being unnecessary.`n`nParam: " param)
+			found := ""
+		}
 	}
 }
