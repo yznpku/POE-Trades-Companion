@@ -1984,13 +1984,14 @@
 		activeTabID := Gui_Trades.GetActiveTab()
 		activeTabInfos := GUI_Trades.GetTabContent(activeTabID)
 		tabStashPos := StrSplit(activeTabInfos.StashPosition, ";")
-		tabXPos := tabStashPos.1, tabYPos := tabStashPos.2
+		tabXPos := tabStashPos.1, tabYPos := tabStashPos.2, tabStashTab := activeTabInfos.StashTab
 
 		if (tabXPos && tabYPos) && WinExist("ahk_pid " activeTabInfos.PID " ahk_group POEGameGroup") {
 			WinGetPos, winX, winY, winW, winH,% "ahk_pid " activeTabInfos.PID " ahk_group POEGameGroup"
+			clientInfos := GetWindowClientInfos("ahk_pid" activeTabInfos.PID " ahk_group POEGameGroup")
 
 			Gui_Trades.UpdateSlotContent(activeTabID, "IsBuyerInvited", True)
-			GUI_ItemGrid.Create(tabXPos, tabYPos, winX, winY, winH)
+			GUI_ItemGrid.Create(tabXPos, tabYPos, tabStashTab, winX, winY, clientInfos.H, clientInfos.X, clientInfos.Y)
 		}
 		else
 			GUI_Trades.DestroyItemGrid()

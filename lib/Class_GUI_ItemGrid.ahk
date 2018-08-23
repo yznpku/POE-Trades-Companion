@@ -2,6 +2,7 @@
 /*  Function usage example:
         GUI_ItemGrid.Show(5, 2, "Shop", 0, 0, 1080)
         ^ Will show the location of an item at X5 Y2, tab name "Shop", in borderless fullscreen, with a H res of 1080 
+        Make sure to always retrieve the Client height and not the window height.
 
     With as reference resolution 800x600
     
@@ -38,8 +39,20 @@
     static gridThicc := 2
     static tabThicc := 1
 
-    Create(gridItemX, gridItemY, gridItemTab, winX, winY, winH, winW="") {
+    Create(gridItemX, gridItemY, gridItemTab, winX, winY, winH, winBorderSide="", winBorderTop="") {
         global PROGRAM
+
+        ; Get default border size if unspecified
+        ; SysGet, SM_CXSIZEFRAME, 32
+        ; SysGet, SM_CYSIZEFRAME, 33
+        ; SysGet, SM_CYCAPTION, 4
+        ; winBorderTop := winBorderTop=""?SM_CYSIZEFRAME+SM_CYCAPTION : winBorderTop
+        ; winBorderSide := winBorderSide=""?SM_CXSIZEFRAME : winBorderSide
+
+        ; Set border size at 0 if unspecified (borderless)
+        winBorderTop := winBorderTop?winBorderTop:0
+        winBorderSide := winBorderSide?winBorderSide:0
+
         xStart := this.xRoot * winH, yStart := this.yRoot * winH ; Calc first case x/y start pos
         gridItemX--, gridItemY-- ; Minus one, so we can get correct case multiplier
 
@@ -50,9 +63,10 @@
             caseW := this.squareWRoot * winH, caseH := this.squareHRoot * winH ; Calc case w/h
             stashX := xStart + (gridItemX * caseW), stashY := yStart + (gridItemY * caseH) ; Calc point pos
             stashXRelative := stashX + winX, stashYRelative := stashY + winY ; Relative to win pos
+            stashXRelative += winBorderSide, stashYRelative += winBorderTop ; Add win border
             pointW := caseW, pointH := caseH ; Make a square same size as stash square
 
-            Gui, ItemGrid: -Border +LastFound +AlwaysOnTop +ToolWindow -Caption +AlwaysOnTop +ToolWindow
+            Gui, ItemGrid: -Border +LastFound +AlwaysOnTop -Caption +AlwaysOnTop
             Gui, ItemGrid:Color, EEAA99
             WinSet, TransColor, EEAA99
             Gui, ItemGrid:Add, Progress,% "x0 y0 w" pointW " h" this.gridThicc " BackgroundWhite" ; ^
@@ -65,9 +79,10 @@
         caseQuadW := this.squareQuadWRoot * winH, caseQuadH := this.squareQuadHRoot * winH ; Calc case w/h
         stashQuadX := xStart + (gridItemX * caseQuadW), stashQuadY := yStart + (gridItemY * caseQuadH) ; Calc point pos
         stashQuadXRelative := stashQuadX + winX, stashQuadYRelative := stashQuadY + winY ; Relative to win pos
+        stashQuadXRelative += winBorderSide, stashQuadYRelative += winBorderTop ; Add win border
         pointQuadW := caseQuadW, pointQuadH := caseQuadH ; Make a square same size as stash square
 
-        Gui, ItemGridQuad: -Border +LastFound +AlwaysOnTop +ToolWindow -Caption +AlwaysOnTop +ToolWindow
+        Gui, ItemGridQuad:-Border +LastFound +AlwaysOnTop -Caption +AlwaysOnTop
         Gui, ItemGridQuad:Color, EEAA99
         WinSet, TransColor, EEAA99
         Gui, ItemGridQuad:Add, Progress,% "x0 y0 w" pointQuadW " h" this.gridThicc " BackgroundWhite" ; ^
@@ -76,17 +91,19 @@
         Gui, ItemGridQuad:Add, Progress,% "x0 y0 w" this.gridThicc " h" pointQuadH " BackgroundWhite" ; <
 
         ; Stash tab name
-        txtSize := Get_TextCtrlSize("Tab: " gridItemTab, "Fontin Smallcaps", 12)
+        guiFont := "Fontin Regular", guiFontSize := 12
+        txtSize := Get_TextCtrlSize("Tab: " gridItemTab, guiFont, guiFontSize)
         guiSizeW := txtSize.W+30, guiSizeH := txtSize.H+10
         fontColor := "d4b172", borderColor := "000000"
 
         stashTabHeight := this.stashTabHeightRoot*winH
         ; stashTabNameX := xStart, stashTabNameY := yStart + (this.casesCountY * caseH) + 5 ; Position: Under all cases
         stashTabNameX := xStart, stashTabNameY := yStart - (this.stashTabHeightRoot*winH) - guiSizeH - 5 ; Position: Above tabs
+        stashTabNameX += winBorderSide, stashTabNameY += winBorderTop ; Add window border
         stashTabNameXRelative := stashTabNameX + winX, stashTabNameYRelative := stashTabNameY + winY ; Relative to win pos
        
-        Gui, ItemGridTabName: -Border +LastFound +AlwaysOnTop +ToolWindow -Caption +AlwaysOnTop +ToolWindow
-        Gui, ItemGridTabName:Font, S12, Fontin SmallCaps
+        Gui, ItemGridTabName:-Border +AlwaysOnTop -Caption +AlwaysOnTop
+        Gui, ItemGridTabName:Font, S%guiFontSize%, %guiFont%
         Gui, ItemGridTabName:Color, %fontColor%
         Gui, ItemGridTabName:Add, Progress,% "x0 y0 w" guiSizeW " h" this.tabThicc " Background" borderColor ; ^
         Gui, ItemGridTabName:Add, Progress,% "x" guiSizeW-this.tabThicc " y0 w" this.tabThicc " h" guiSizeH " Background" borderColor ; > 
@@ -103,7 +120,6 @@
     Destroy() {
         Gui, ItemGrid:Destroy
         Gui, ItemGridQuad:Destroy
+        Gui, ItemGridTabName:Destroy
     }
-}
-
 }

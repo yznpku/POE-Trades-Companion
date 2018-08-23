@@ -1,4 +1,36 @@
-﻿RemoveTrailingZeroes(num) {
+﻿GetWindowClientInfos(winName) {
+/*	Source:
+		noname: 		http://autohotkey.com/board/topic/77915-get-client-window/?p=495250
+		arcaine.net: 	http://arcaine.net/l2/AtomixMacro/Unsupported/CP&CTRL.ahk
+						http://arcaine.net/l2/AtomixMacro/AtomixMacro.ahk
+
+	Allows to get a window client infos
+*/
+    WinGet, hwnd , ID, %winName%
+
+    WinGetPos, , , , Window_Height, ahk_id %hwnd%
+    VarSetCapacity(rcClient, 16, 0)          ; rcClient Structure 
+    DllCall("user32\GetClientRect","uint", hwnd ,"uint",&rcClient)  
+    rcClient_x   := NumGet(rcClient, 0)
+    rcClient_y   := NumGet(rcClient, 4)
+    rcClient_r   := NumGet(rcClient, 8)
+    rcClient_b   := NumGet(rcClient, 12)
+
+    VarSetCapacity(pwi, 68, 0)
+    DllCall("GetWindowInfo", "UInt", hwnd, "UInt", &pwi)
+    
+    bx := NumGet(pwi, 48) ; border width
+    by := NumGet(pwi, 52) ; border height
+    RealX := bx
+    RealY := Window_Height - by - rcClient_b
+    RealWidth := rcClient_r
+    RealHeight := rcClient_b
+
+    return {X:RealX, Y:Realy, W:RealWidth, H:RealHeight}
+}
+
+
+RemoveTrailingZeroes(num) {
 	num := RTrim(num, "0")
 	if ( SubStr(num, 0) = "." ) {
 		StringTrimRight, num, num, 1
