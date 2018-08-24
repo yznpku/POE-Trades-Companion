@@ -996,7 +996,7 @@
 
 		existingTabID := Gui_Trades.IsTabAlreadyExisting(tabInfos)
 		if (existingTabID) {
-			Gui_Trades.UpdateSlotContent(existingTabID, "Other", tabInfos.Other)
+			; Gui_Trades.UpdateSlotContent(existingTabID, "Other", tabInfos.Other) ; Disabled. Useless?
 			Return "TabAlreadyExists"
 		}
 		if GUI_Trades.IsTrade_In_IgnoreList(tabInfos) {
