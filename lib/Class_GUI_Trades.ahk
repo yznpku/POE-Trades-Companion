@@ -1248,23 +1248,25 @@
 		tabContent := GUI_Trades.GetTabContent(tabName)
 		if (slotName = "Other") {
 			otherSlotContent := Gui_Trades.GetTabContent(tabName).Other
+			mergedCurrendAndNew := otherSlotContent?otherSlotContent "`n" newContent : newContent
 
-			otherMsgsCount := 1 ; Counts start at 1, including newContent
-			Loop, Parse, otherSlotContent,% "`n",% "`r"
+			finalOtherStr := "", msgCount := 0
+			Loop, Parse, mergedCurrendAndNew, `n, `r
 			{
-				if !InStr(A_LoopField, " message(s). Hold click to see more.") {
-					if !RegExMatch(A_LoopField, "[\d:\d]")
-						existingStr .= "[" A_Hour ":" A_Min "] "
-					existingStr .= A_LoopField "`n"
-					otherMsgsCount++
+				parsedMsg := A_LoopField, timeStamp := ""
+				AutoTrimStr(parsedMsg)
+				
+				if !InStr(A_LoopField, " messages(s). Hold click to see more.") && (parsedMsg != "") {
+					if !RegExMatch(A_LoopField, "[\d+:\d+]")
+						timeStamp := "[" A_Hour ":" A_Min "] "
+
+					finalOtherStr := finalOtherStr?finalOtherStr "`n" timeStamp . A_LoopField : timeStamp . A_LoopField
+					msgCount++
 				}
 			}
-			if (otherMsgsCount)
-				StringTrimRight, existingStr, existingStr, 1
+			finalOtherStr := msgCount " messages(s). Hold click to see more.`n" finalOtherStr
 
-			newOtherStr := otherMsgsCount " message(s). Hold click to see more.`n"
-			newOtherStr .= existingStr?existingStr "`n" newContent : newContent
-			GUI_Trades.SetTabContent(tabName, {Other:newOtherStr}, isNewlyPushed:=False, updateOnly:=True)
+			GUI_Trades.SetTabContent(tabName, {Other:finalOtherStr}, isNewlyPushed:=False, updateOnly:=True)
 		}
 		else if (slotName = "IsInArea") {
 			GUI_Trades.SetTabContent(tabName, {IsInArea:newContent}, isNewlyPushed:=False, updateOnly:=True)
@@ -1812,21 +1814,19 @@
 		Loop % savedCount {
 			loopedCount := A_Index
 			sectKeysAndValues := INI.Get(backupFile, loopedCount, , getKeysAndValues:=True)
-			thisTabInfos := {}
+			thisTabInfos := {}, otherArr := [], otherTxt := ""
 			for key, value in sectKeysAndValues {
-				; if RegExMatch(key, "O)Visible_(.*)", keyPat) {
-				; if RegExMatch(keyPat.1, "O)Other_") {
-					/*	TO_DO probably need to redo PushNewTab() so we can add more than one line of text
-						to the other slot, without having to use UpdateTabContent()
-					*/
-				; }
-				; else
-
-				if !RegExMatch(key, "iO)Other_") ; TO_DO load other from backup
+				if RegExMatch(key, "iO)Other_(\d+)", otherPat)
+					otherArr[otherPat.1] := value
+				else
 					thisTabInfos[key] := value
-			; }
 			}
+			for key, value in otherArr
+				otherTxt .= key=1?value : "`n" value
+
 			GUI_Trades.PushNewTab(thisTabInfos)
+			if (otherTxt)
+				GUI_Trades.UpdateSlotContent(A_Index, "Other", otherTxt)
 		}
 		
 		FileDelete,% backupFile
