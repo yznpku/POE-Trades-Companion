@@ -41,6 +41,9 @@
 
     Create(gridItemX, gridItemY, gridItemTab, winX, winY, winH, winBorderSide="", winBorderTop="") {
         global PROGRAM
+        global GuiItemGrid, GuiItemGrid_Controls, GuiItemGrid_Submit
+        global GuiItemGridQuad, GuiItemGridQuad_Controls, GuiItemGridQuad_Submit
+        global GuiItemGridTabName, GuiItemGridTabName_Controls, GuiItemGridTabName_Submit
 
         ; Get default border size if unspecified
         ; SysGet, SM_CXSIZEFRAME, 32
@@ -66,13 +69,13 @@
             stashXRelative += winBorderSide, stashYRelative += winBorderTop ; Add win border
             pointW := caseW, pointH := caseH ; Make a square same size as stash square
 
-            Gui, ItemGrid: -Border +LastFound +AlwaysOnTop -Caption +AlwaysOnTop +ToolWindow -SysMenu
-            Gui, ItemGrid:Color, EEAA99
+            Gui.New("ItemGrid", "-Border +LastFound +AlwaysOnTop -Caption +AlwaysOnTop +ToolWindow -SysMenu +HwndhGuiItemGrid", "ItemGrid")
+            Gui.Color("ItemGrid", "EEAA99")
             WinSet, TransColor, EEAA99
-            Gui, ItemGrid:Add, Progress,% "x0 y0 w" pointW " h" this.gridThicc " BackgroundWhite" ; ^
-            Gui, ItemGrid:Add, Progress,% "x" pointW " y0 w" this.gridThicc " h" pointH " BackgroundWhite" ; > 
-            Gui, ItemGrid:Add, Progress,% "x0 y" pointH " w" pointW " h" this.gridThicc " BackgroundWhite" ; v 
-            Gui, ItemGrid:Add, Progress,% "x0 y0 w" this.gridThicc " h" pointH " BackgroundWhite" ; <
+            Gui.Add("ItemGrid", "Progress", "x0 y0 w" pointW " h" this.gridThicc " BackgroundWhite") ; ^
+            Gui.Add("ItemGrid", "Progress", "x" pointW " y0 w" this.gridThicc " h" pointH " BackgroundWhite") ; > 
+            Gui.Add("ItemGrid", "Progress", "x0 y" pointH " w" pointW " h" this.gridThicc " BackgroundWhite") ; v 
+            Gui.Add("ItemGrid", "Progress", "x0 y0 w" this.gridThicc " h" pointH " BackgroundWhite") ; <
             showNormalTabGrid := True 
         }
         ; Quad tab
@@ -82,13 +85,13 @@
         stashQuadXRelative += winBorderSide, stashQuadYRelative += winBorderTop ; Add win border
         pointQuadW := caseQuadW, pointQuadH := caseQuadH ; Make a square same size as stash square
 
-        Gui, ItemGridQuad:-Border +LastFound +AlwaysOnTop -Caption +AlwaysOnTop +ToolWindow -SysMenu
-        Gui, ItemGridQuad:Color, EEAA99
+        Gui.New("ItemGridQuad", "-Border +LastFound +AlwaysOnTop -Caption +AlwaysOnTop +ToolWindow -SysMenu HwndhGuiItemGridQuad", "ItemGridQuad")
+        Gui.Color("ItemGridQuad", "EEAA99")
         WinSet, TransColor, EEAA99
-        Gui, ItemGridQuad:Add, Progress,% "x0 y0 w" pointQuadW " h" this.gridThicc " BackgroundWhite" ; ^
-        Gui, ItemGridQuad:Add, Progress,% "x" pointQuadW " y0 w" this.gridThicc " h" pointQuadH " BackgroundWhite" ; > 
-        Gui, ItemGridQuad:Add, Progress,% "x0 y" pointQuadH " w" pointQuadW " h" this.gridThicc " BackgroundWhite" ; v 
-        Gui, ItemGridQuad:Add, Progress,% "x0 y0 w" this.gridThicc " h" pointQuadH " BackgroundWhite" ; <
+        Gui.Add("ItemGridQuad", "Progress", "x0 y0 w" pointQuadW " h" this.gridThicc " BackgroundWhite") ; ^
+        Gui.Add("ItemGridQuad", "Progress", "x" pointQuadW " y0 w" this.gridThicc " h" pointQuadH " BackgroundWhite") ; > 
+        Gui.Add("ItemGridQuad", "Progress", "x0 y" pointQuadH " w" pointQuadW " h" this.gridThicc " BackgroundWhite") ; v 
+        Gui.Add("ItemGridQuad", "Progress", "x0 y0 w" this.gridThicc " h" pointQuadH " BackgroundWhite") ; <
 
         ; Stash tab name
         guiFont := "Fontin Regular", guiFontSize := 12
@@ -102,24 +105,61 @@
         stashTabNameX += winBorderSide, stashTabNameY += winBorderTop ; Add window border
         stashTabNameXRelative := stashTabNameX + winX, stashTabNameYRelative := stashTabNameY + winY ; Relative to win pos
        
-        Gui, ItemGridTabName:-Border +AlwaysOnTop -Caption +AlwaysOnTop +ToolWindow -SysMenu
-        Gui, ItemGridTabName:Font, S%guiFontSize%, %guiFont%
-        Gui, ItemGridTabName:Color, %fontColor%
-        Gui, ItemGridTabName:Add, Progress,% "x0 y0 w" guiSizeW " h" this.tabThicc " Background" borderColor ; ^
-        Gui, ItemGridTabName:Add, Progress,% "x" guiSizeW-this.tabThicc " y0 w" this.tabThicc " h" guiSizeH " Background" borderColor ; > 
-        Gui, ItemGridTabName:Add, Progress,% "x0 y" guiSizeH-this.tabThicc " w" guiSizeW-this.tabThicc " h" this.tabThicc " Background" borderColor ; v 
-        Gui, ItemGridTabName:Add, Progress,% "x0 y0 w" this.tabThicc " h" guiSizeH " Background" borderColor ; <
-        Gui, ItemGridTabName:Add, Text,% "x0 y0 cBlack Center BackgroundTrans w" guiSizeW " h" guiSizeH " 0x200",% "Tab: " gridItemTab
+        Gui.New("ItemGridTabName", "-Border +LastFound +AlwaysOnTop -Caption +AlwaysOnTop +ToolWindow -SysMenu +HwndhGuiItemGridTabName", "ItemGridTabName")
+        Gui.Font("ItemGridTabName", guiFont, guiFontSize)
+        Gui.Color("ItemGridTabName", fontColor)
+        Gui.Add("ItemGridTabName", "Progress", "x0 y0 w" guiSizeW " h" this.tabThicc " Background" borderColor) ; ^
+        Gui.Add("ItemGridTabName", "Progress", "x" guiSizeW-this.tabThicc " y0 w" this.tabThicc " h" guiSizeH " Background" borderColor) ; > 
+        Gui.Add("ItemGridTabName", "Progress", "x0 y" guiSizeH-this.tabThicc " w" guiSizeW-this.tabThicc " h" this.tabThicc " Background" borderColor) ; v 
+        Gui.Add("ItemGridTabName", "Progress", "x0 y0 w" this.tabThicc " h" guiSizeH " Background" borderColor) ; <
+        Gui.Add("ItemGridTabName", "Text", "x0 y0 cBlack Center BackgroundTrans w" guiSizeW " h" guiSizeH " 0x200", "Tab: " gridItemTab)
 
         if (showNormalTabGrid)
-            Gui, ItemGrid:Show, x%stashXRelative% y%stashYRelative% AutoSize
-        Gui, ItemGridQuad:Show, x%stashQuadXRelative% y%stashQuadYRelative% AutoSize
-        Gui, ItemGridTabName:Show,% "x" stashTabNameXRelative " y" stashTabNameYRelative " w" guiSizeW " h" guiSizeH
+            Gui.Show("ItemGrid", "x" stashXRelative " y" stashYRelative " AutoSize NoActivate")
+        Gui.Show("ItemGridQuad", "x" stashQuadXRelative " y" stashQuadYRelative " AutoSize NoActivate")
+        Gui.Show("ItemGridTabName", "x" stashTabNameXRelative " y" stashTabNameYRelative " w" guiSizeW " h" guiSizeH " NoActivate")
     }
 
     Destroy() {
         Gui, ItemGrid:Destroy
         Gui, ItemGridQuad:Destroy
         Gui, ItemGridTabName:Destroy
+    }
+
+    Exists() {
+        global GuiItemGrid, GuiItemGrid_Controls, GuiItemGrid_Submit
+        global GuiItemGridQuad, GuiItemGridQuad_Controls, GuiItemGridQuad_Submit
+        global GuiItemGridTabName, GuiItemGridTabName_Controls, GuiItemGridTabName_Submit
+
+        hw := A_DetectHiddenWindows
+        DetectHiddenWindows, On
+
+        if WinExist("ahk_id " GuiItemGrid.Handle)
+        || WinExist("ahk_id " GuiItemGridQuad.Handle)
+        || WinExist("ahk_id " GuiItemGridTabName.Handle) 
+            exists := True
+        else
+            exists := False
+
+        DetectHiddenWindows, %hw%
+        return exists
+    }
+
+    Hide() {
+        if !GUI_ItemGrid.Exists()
+            return
+
+        Gui, ItemGrid:Hide 
+        Gui, ItemGridQuad:Hide 
+        Gui, ItemGridTabName:Hide 
+    }
+
+    Show() {
+        if !GUI_ItemGrid.Exists()
+            return
+
+        Gui, ItemGrid:Show, NoActivate 
+        Gui, ItemGridQuad:Show, NoActivate 
+        Gui, ItemGridTabName:Show, NoActivate 
     }
 }
