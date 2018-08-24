@@ -1072,8 +1072,8 @@
 		global PROGRAM, SKIN
 		accounts := PROGRAM.SETTINGS.SETTINGS_MAIN.PoeAccounts
 
-		if RegExMatch(tabInfos.Item, "iO)(\d+) (\D+)", itemPat) { ; its a currency trade
-			RegExMatch(tabInfos.Price, "iO)(\d+) (\D+)", pricePat)
+		if RegExMatch(tabInfos.Item, "iO)$(\d+) (\D+)", itemPat) { ; its a currency trade
+			RegExMatch(tabInfos.Price, "iO)$(\d+) (\D+)", pricePat)
 			wantCount := itemPat.1, wantWhat := itemPat.2
 			wantCurInfos := Get_CurrencyInfos(wantWhat)
 			wantFullName := wantCurInfos.Name, wantID := PROGRAM["DATA"]["POETRADE_CURRENCY_DATA"][wantFullName].ID, isWantListed := wantCurInfos.Is_Listed
