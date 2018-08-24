@@ -57,11 +57,20 @@
 			settings_fontQual := SKIN.Settings.FONT.Quality
 		}
 
+		tradeInfoBox := Get_TextCtrlSize("Buyer:`nItem:`nPrice:`nLocation:`nOther:", settings_fontName, settings_fontSize, "", "R5")
+
 		; Gui size and positions
 		borderSize := Floor(1*scaleMult)
-		guiHeightNoRow_NoSpecial := 59*scaleMult, guiHeightOneRow_NoSpecial := guiHeightOneRow-(scaleMult*35)-5
-		guiHeightTwoRow_NoSpecial := guiHeightTwoRow-(scaleMult*35)-5, guiHeightThreeoRow_NoSpecial := guiHeightThreeRow-(scaleMult*35)-5
-		guiHeightNoRow := guiHeightNoRow_NoSpecial+(scaleMult*25)+(5*1), guiHeightOneRow := guiHeightNoRow+(scaleMult*35)+(5*2), guiHeightTwoRow := guiHeightNoRow+(scaleMult*(35*2))+(5*3), guiHeightThreeRow := guiHeightNoRow+(scaleMult*(35*3))+(5*4) ; 35 = CustomButton_H, 5 = space between rows
+		guiHeightNoRow_NoSpecial := (30+25)*scaleMult + 2 + 5 + tradeInfoBox.H + 5 ; (header+tabs bar) + undertab line + 5 off + info + 5 off
+		guiHeightNoRow := guiHeightNoRow_NoSpecial+(scaleMult*25)+5 ; 25 = SpecialButton_H
+
+		guiHeightOneRow_NoSpecial := guiHeightNoRow_NoSpecial+(scaleMult*35)+5 ; 35 = CustomButton_H, 5 = space between rows	
+		guiHeightTwoRow_NoSpecial := guiHeightOneRow_NoSpecial+(scaleMult*35)+5
+		guiHeightThreeoRow_NoSpecial := guiHeightTwoRow_NoSpecial+(scaleMult*35)+5
+
+		guiHeightOneRow := guiHeightNoRow+(scaleMult*35)+5
+		guiHeightTwoRow := guiHeightOneRow+(scaleMult*35)+5
+		guiHeightThreeRow := guiHeightTwoRow+(scaleMult*35)+5
 
 		btnRowsCount := Gui_Trades.Get_ButtonsRowsCount()
 		if (btnRowsCount.Special)
@@ -77,11 +86,7 @@
 				: btnRowsCount.Custom = 3 ? guiHeightThreeoRow_NoSpecial
 				: "ERROR"
 
-		; guiFullheight := guiHeightOneRow
-
 		guiFullHeight := guiFullHeight+(borderSize*2), guiFullWidth := scaleMult*(398+(2*borderSize))
-		tradeInfoBox := Get_TextCtrlSize("Buyer:`nItem:`nPrice:`nLocation:`nOther:", settings_fontName, settings_fontSize, "", "R5")
-		guiFullHeight += tradeInfoBox.H
 
 		guiHeight := guiFullHeight-(2*borderSize), guiWidth := guiFullWidth-(2*borderSize)
 		guiMinimizedHeight := (30*scaleMult)+(2*borderSize) ; 30 = Header_H
