@@ -66,7 +66,7 @@
             stashXRelative += winBorderSide, stashYRelative += winBorderTop ; Add win border
             pointW := caseW, pointH := caseH ; Make a square same size as stash square
 
-            Gui, ItemGrid: -Border +LastFound +AlwaysOnTop -Caption +AlwaysOnTop
+            Gui, ItemGrid: -Border +LastFound +AlwaysOnTop -Caption +AlwaysOnTop +ToolWindow -SysMenu
             Gui, ItemGrid:Color, EEAA99
             WinSet, TransColor, EEAA99
             Gui, ItemGrid:Add, Progress,% "x0 y0 w" pointW " h" this.gridThicc " BackgroundWhite" ; ^
@@ -82,7 +82,7 @@
         stashQuadXRelative += winBorderSide, stashQuadYRelative += winBorderTop ; Add win border
         pointQuadW := caseQuadW, pointQuadH := caseQuadH ; Make a square same size as stash square
 
-        Gui, ItemGridQuad:-Border +LastFound +AlwaysOnTop -Caption +AlwaysOnTop
+        Gui, ItemGridQuad:-Border +LastFound +AlwaysOnTop -Caption +AlwaysOnTop +ToolWindow -SysMenu
         Gui, ItemGridQuad:Color, EEAA99
         WinSet, TransColor, EEAA99
         Gui, ItemGridQuad:Add, Progress,% "x0 y0 w" pointQuadW " h" this.gridThicc " BackgroundWhite" ; ^
@@ -102,7 +102,7 @@
         stashTabNameX += winBorderSide, stashTabNameY += winBorderTop ; Add window border
         stashTabNameXRelative := stashTabNameX + winX, stashTabNameYRelative := stashTabNameY + winY ; Relative to win pos
        
-        Gui, ItemGridTabName:-Border +AlwaysOnTop -Caption +AlwaysOnTop
+        Gui, ItemGridTabName:-Border +AlwaysOnTop -Caption +AlwaysOnTop +ToolWindow -SysMenu
         Gui, ItemGridTabName:Font, S%guiFontSize%, %guiFont%
         Gui, ItemGridTabName:Color, %fontColor%
         Gui, ItemGridTabName:Add, Progress,% "x0 y0 w" guiSizeW " h" this.tabThicc " Background" borderColor ; ^
