@@ -1832,7 +1832,7 @@
 		FileDelete,% backupFile
 	}
 
-	SetOrUnsetTabStyle(whatDo="", tabStyle="", playerOrTab="") {
+	SetOrUnsetTabStyle(whatDo="", tabStyle="", playerOrTab="", applyToThisTabOnly=False) {
 		global GuiTrades, GuiTrades_Controls
 
 		if !(whatDo) || !(playerOrTab) || (!tabStyle) {
@@ -1845,13 +1845,18 @@
 		else
 			buyerName := playerOrTab
 
-		Loop % GuiTrades.Tabs_Count {
-			tabContent := Gui_Trades.GetTabContent(A_Index)
-			if (tabContent.Buyer = buyerName) {
-				buyerTabs .= A_Index ",", tab%A_Index%IsInArea := tabContent.IsInArea, tab%A_Index%HasNewMessage := tabContent.HasNewMessage
-			}
+		if (applyToThisTabOnly=True) && IsNum(playerOrTab) {
+			buyerTabs := playerOrTab
 		}
-		StringTrimRight, buyerTabs, buyerTabs, 1
+		else {
+			Loop % GuiTrades.Tabs_Count {
+				tabContent := Gui_Trades.GetTabContent(A_Index)
+				if (tabContent.Buyer = buyerName) {
+					buyerTabs .= A_Index ",", tab%A_Index%IsInArea := tabContent.IsInArea, tab%A_Index%HasNewMessage := tabContent.HasNewMessage
+				}
+			}
+			StringTrimRight, buyerTabs, buyerTabs, 1
+		}
 
 		Loop, Parse, buyerTabs,% ","
 		{
@@ -1909,7 +1914,7 @@
 	}
 
 	UnSetTabStyleWhisperReceived(playerOrTab) {
-		GUI_Trades.SetOrUnsetTabStyle("Unset", "WhisperReceived", playerOrTab)
+		GUI_Trades.SetOrUnsetTabStyle("Unset", "WhisperReceived", playerOrTab, applyToThisTabOnly:=True)
 	}
 
 	IsTrade_In_IgnoreList(tradeInfos) {
