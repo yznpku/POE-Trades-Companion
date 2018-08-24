@@ -80,6 +80,8 @@
 	settings.SETTINGS_CUSTOM_BUTTON_3.Action_2_Content									:= """/invite %buyer%"""
 	settings.SETTINGS_CUSTOM_BUTTON_3.Action_3_Type										:= "SEND_TO_BUYER"
 	settings.SETTINGS_CUSTOM_BUTTON_3.Action_3_Content									:= """@%buyer% Ready to be picked up: %item% listed for %price%"""
+	settings.SETTINGS_CUSTOM_BUTTON_3.Action_4_Type										:= "SHOW_GRID"
+	settings.SETTINGS_CUSTOM_BUTTON_3.Action_4_Content									:= ""
 
 	settings.SETTINGS_CUSTOM_BUTTON_4 													:= {}
 	settings.SETTINGS_CUSTOM_BUTTON_4.Name												:= "Sold already"
