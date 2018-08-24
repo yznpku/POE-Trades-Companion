@@ -8,6 +8,7 @@
 
 	settings.GENERAL 																	:= {}
 	settings.GENERAL.IsFirstTimeRunning 												:= "True"
+	settings.GENERAL.AddShowGridActionToInviteButtons									:= "True"
 
 	settings.SETTINGS_MAIN 																:= {}
 	settings.SETTINGS_MAIN.TradingWhisperSFXPath 										:= PROGRAM.SFX_FOLDER "\WW_MainMenu_Letter.wav" 
@@ -177,7 +178,7 @@ LocalSettings_IsValueValid(iniSect, iniKey, iniValue) {
 	isFirstTimeRunning := INI.Get(PROGRAM.INI_FILE, "GENERAL", "IsFirstTimeRunning")
 
 	if (iniSect = "GENERAL") {
-		if (iniKey = "IsFirstTimeRunning")
+		if IsIn(iniKey, "IsFirstTimeRunning,AddShowGridActionToInviteButtons")
 			isValueValid := IsIn(iniValue, "True,False") ? True : False	
 	}
 
@@ -404,7 +405,7 @@ Set_LocalSettings() {
 			}
 
 			if (!isValueValid) {
-				if (IsFirstTimeRunning != "True" && iniKey != "IsFirstTimeRunning")
+				if (IsFirstTimeRunning != "True" && !IsIn(iniKey, "IsFirstTimeRunning,AddShowGridActionToInviteButtons"))
 					warnMsg .= "Section: " iniSect "`nKey: " iniKey "`nValue: " iniValue "`nDefault value: " defValue "`n`n"
 				Restore_LocalSettings(iniSect, iniKey)
 				; INI.Set(iniFile, iniSect, iniKey, defValue)
@@ -463,10 +464,46 @@ Update_LocalSettings() {
 	subVersions := StrSplit(priorVerNum, ".")
 	mainVer := subVersions[1], releaseVer := subVersions[2], patchVer := subVersions[3]
 
+	localSettings := Get_LocalSettings()
+
 	Restore_LocalSettings("UPDATING", "Version")
 
+	if (localSettings.GENERAL.AddShowGridActionToInviteButtons = "True") {
+		; TO_DO logs, detected setting is true + add log for each loop
+		Loop {
+			cbIndex := A_Index
+			loopedSetting := localSettings["SETTINGS_CUSTOM_BUTTON_" cbIndex]
+			if IsObject(loopedSetting) {
+				hasInvite := False, hasGrid := False
+				Loop {
+					loopActionIndex := A_Index
+					loopedActionContent := loopedSetting["Action_" loopActionIndex "_Content"]
+					loopedActionType := loopedSetting["Action_" loopActionIndex "_Type"]
+
+					if (!loopedActionType) || (loopedActionType = "") || (loopActionIndex > 50)
+						Break
+					
+					else if IsContaining(loopedActionContent, "/invite %buyer%") || IsContaining(loopedActionContent, "/invite %buyerName%")
+					|| (loopedActionType = "INVITE_BUYER")
+						hasInvite := True
+
+					else if (loopedActionType = "SHOW_GRID")
+						hasGrid := True
+				}
+				if (hasInvite = True && hasGrid = False) {
+					INI.Set(iniFile, "SETTINGS_CUSTOM_BUTTON_" cbIndex, "Action_" loopActionIndex "_Content", "")
+					INI.Set(iniFile, "SETTINGS_CUSTOM_BUTTON_" cbIndex, "Action_" loopActionIndex "_Type", "SHOW_GRID")
+				}
+			}
+			else if (cbIndex > 20)
+				Break
+			else
+				Break
+		}
+		INI.Set(iniFile, "GENERAL", "AddShowGridActionToInviteButtons", "False")
+	}
 	
-	if (PROGRAM.SETTINGS.GENERAL.IsFirstTimeRunning = "True") {
+	if (localSettings.GENERAL.IsFirstTimeRunning = "True") {
 		
 		if (PROGRAM.IS_BETA = "True")
 			GUI_BetaTasks.Show()
