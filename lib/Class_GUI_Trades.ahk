@@ -396,7 +396,7 @@
 					if (tabInfos.Item = activeTabInfos.Item)
 					&& (tabInfos.Price = activeTabInfos.Price)
 					&& (tabInfos.Stash =  activeTabInfos.Stash) {
-						Gui_Trades.RemoveTab(loopedTab) ; TO_DO logs
+						Gui_Trades.RemoveTab(loopedTab, massRemove:=True) ; TO_DO logs
 					}
 				}
 				tabsToLoop--
@@ -847,7 +847,7 @@
 		}
 	}
 
-	RemoveTab(tabName="") {
+	RemoveTab(tabName="", massRemove=False) {
 		global PROGRAM, SKIN
 		global GuiTrades, GuiTrades_Controls
 		tabsLimit := GuiTrades.Tabs_Limit
@@ -897,6 +897,8 @@
 			GUI_Trades.ToggleTabSpecificAssets("OFF")
 			GUI_Trades.SetActiveTab("No Trades On Queue")
 		}
+		else if (tabsCount > tabName) && (massRemove=False) ; Re-activate same
+			GUI_Trades.SetActiveTab(tabName)
 
 		GuiControl, Trades:Hide,% GuiTrades["Tab_" tabsCount]
 		GuiTrades.Tabs_Count--
