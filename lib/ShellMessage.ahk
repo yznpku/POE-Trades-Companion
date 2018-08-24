@@ -64,6 +64,14 @@ ShellMessage(wParam,lParam) {
 			if ( PROGRAM.SETTINGS.SETTINGS_MAIN.TradesGUI_Mode = "Dock")
 				GUI_Trades.DockMode_SetPosition()
 
+			WinGet, activePID, PID, ahk_id %lParam%
+			if (activePID = GuiTrades.ItemGrid_PID) && ( GUI_ItemGrid.Exists())
+				GUI_Trades.ShowActiveTabItemGrid() ; Recreate. In case window moved.
+				; GUI_ItemGrid.Show() ; Just show at same pos.
+			else if ( GUI_ItemGrid.Exists() ) {
+				GUI_ItemGrid.Hide()
+			}
+
 			Gui, Trades:+LastFound
 			WinSet, AlwaysOnTop, On
 		}

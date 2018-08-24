@@ -2004,6 +2004,7 @@
 
 			Gui_Trades.UpdateSlotContent(activeTabID, "IsBuyerInvited", True)
 			GUI_ItemGrid.Create(tabXPos, tabYPos, tabStashTab, winX, winY, clientInfos.H, clientInfos.X, clientInfos.Y)
+			GuiTrades.ItemGrid_PID := activeTabInfos.PID
 		}
 		else
 			GUI_Trades.DestroyItemGrid()
