@@ -39,7 +39,9 @@
 			if IsIn(key, "hBTN_Minimize,hBTN_Maximize,hBTN_LeftArrow,hBTN_RightArrow,hBTN_CloseTab")
 			|| IsContaining(key, "hBTN_TabDefault,hBTN_TabJoinedArea,hBTN_TabWhisperReceived,hBTN_Custom,hBTN_Special")
 				ImageButton.DestroyBtnImgList(value)
+
 		; Initialize gui arrays
+		Gui, Trades:Destroy
 		Gui.New("Trades", "+AlwaysOnTop +ToolWindow +LastFound -SysMenu -Caption -Border +LabelGUI_Trades_ +HwndhGuiTrades", "Trades")
 		guiCreated := False
 
@@ -1044,6 +1046,9 @@
 				Break
 			}
 		}
+
+		if (tabContent.HasNewMessage = True)
+			GUI_Trades.SetTabStyleWhisperReceived(tabContent.Buyer)
 
 		tabContent := GUI_Trades.GetTabContent(GuiTrades.Tabs_Count)
 		; GUI_Trades.VerifyItemPrice(tabContent, ) ; TO_DO disabled bcs it lags the script, need to see if we can do the request without interupting script. until then, user needs to click on color dot
