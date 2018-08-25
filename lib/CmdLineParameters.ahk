@@ -27,9 +27,7 @@ Handle_CmdLineParameters() {
 			RUNTIME_PARAMETERS["SkipAdmin"] := True
 		}
 		else if (param="/NoReplace" || param="/NewInstance") {
-			MsgBox(4096+48, "", "Parameter invalid: This parameter has been replaced with /InstanceName=""exampleName""."
-			. "`nPlease report to the wiki to see some usage example."
-			. "`n`nParam: " param)
+			RUNTIME_PARAMETERS["NewInstance"] := True
 		}
 		else if RegExMatch(param, "iO)/InstanceName=(.*)", found) {
 			RUNTIME_PARAMETERS["InstanceName"] := found.1, found := ""
