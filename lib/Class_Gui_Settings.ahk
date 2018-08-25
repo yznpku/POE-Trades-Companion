@@ -3690,8 +3690,7 @@ Class GUI_Settings {
 		, 	"hCB_PushBulletOnTradingWhisper":"Receive a PB notification upon receiving a trading whisper"
 		, 	"hCB_PushBulletOnPartyMessage":"Receive a PB notification upon receiving a party message"
 		, 	"hCB_PushBulletOnWhisperMessage":"Receive a PB notification upon receiving a regular whisper"
-		, 	"hCB_PushBulletOnlyWhenAfk":"/!\ Feature not added yet /!\"
-			. 							"`nReceive a PB notification only if you are AFK."
+		, 	"hCB_PushBulletOnlyWhenAfk":"Receive a PB notification only if you are AFK."
 
 		,	"hEDIT_PoeAccounts":"Your PoE accounts names."
 			.					"`nUsed for the price verify feature."

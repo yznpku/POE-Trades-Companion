@@ -1201,7 +1201,11 @@
 					GUI_Trades.SetTabVerifyColor(tabID, "Green")
 				}
 				else {
-					if (!currencyInfos.Is_Listed) {
+					if (currencyInfos.Name = "") {
+						_infos := "/!\ Cannot verify unpriced items yet. /!\"
+						GUI_Trades.SetTabVerifyColor(tabID, "Orange")
+					}
+					else if (!currencyInfos.Is_Listed) {
 						_infos := "Unknown currency name: """ currencyInfos.Name """"
 						. "\nPlease report it."
 						GUI_Trades.SetTabVerifyColor(tabID, "Orange")
@@ -1221,7 +1225,6 @@
 				_infos := "Could not find any item matching the same stash location"
 				. "\nMake sure to set your account name in the settings."
 				. "\nAccounts: " accounts
-				. "\n\nWhispers for currency trading is not compatible yet."
 				GUI_Trades.SetTabVerifyColor(tabID, "Orange")
 			}
 			GUI_Trades.UpdateSlotContent(tabID, "TradeVerifyInfos", _infos)
