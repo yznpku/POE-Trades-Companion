@@ -273,9 +273,11 @@ PoeTrade_CreatePayload(obj, addDefaultParams=False) {
     poeTradeObj := obj
 
     ; Capitalize league first letters
-    league := poeTradeObj["league"]
-    StringUpper, league, league, T
-    poeTradeObj["league"] := league
+    leagueSplit := StrSplit(poeTradeObj["league"], " (")
+    leagueName := leagueSplit.1, leagueID := leagueSplit.2
+    StringUpper, leagueName, leagueName, T
+    leagueFull := leagueID?leagueName " (" leagueID : leagueName
+    poeTradeObj["league"] := leagueFull
 
     ; Create payload
     payload := ""

@@ -330,14 +330,24 @@ Parse_GameLogs(strToParse) {
 				tradeLeagueAndMore := tradePat[matchingRegEx["League"]]
 				AutoTrimStr(tradeBuyerName, tradeItem, tradePrice, tradeOtherStart)
 
+				leagueMatches := [], leagueMatchesIndex := 0
 				Loop, Parse, LEAGUES,% ","
 				{
-					if RegExMatch(tradeLeagueAndMore, "iSO)" A_LoopField "(.*)", leagueAndMorePat) {
+					parsedLeague := A_LoopField
+					parsedLeague := StrReplace(parsedLeague, "(", "\(")
+					parsedLeague := StrReplace(parsedLeague, ")", "\)")
+					if RegExMatch(tradeLeagueAndMore, "iSO)" parsedLeague "(.*)", leagueAndMorePat) {
+						leagueMatchesIndex++
 						tradeLeague := A_LoopField
 						restOfWhisper := leagueAndMorePat.1
-
 						AutoTrimStr(tradeLeague, restOfWhisper)
-						Break
+
+						leagueMatches[leagueMatchesIndex] := {Len:StrLen(A_LoopField), Str:A_LoopField}
+					}
+				}
+				Loop % leagueMatches.MaxIndex() {
+					if (leagueMatches[A_Index].Len > biggestLen) {
+						biggestLen := leagueMatches[A_Index].Len, tradeLeague := leagueMatches[A_Index].Str
 					}
 				}
 				if !(tradeLeague) {
