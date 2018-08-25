@@ -470,9 +470,12 @@ Class GUI_Settings {
 
 		; Gui.Add("Settings", "Text", "x+0 yp-2 Center FontSize7", "<- Click on the square`n   to change the color")
 
+		; * * Preview btn
+		Gui.Add("Settings", "Button", "x" leftMost2+525-215-5 " y" upMost2+400-30-5 " w215 h30 hwndhBTN_RecreateTradesGUI", "Click here to apply your changes now")
+
 		; * * Subroutines + User settings
 		GuiSettings.TabCustomizationSkins_Controls := "hDDL_SkinPreset,hLB_SkinBase,hEDIT_SkinScalingPercentage,hLB_SkinFont,hCB_UseRecommendedFontSettings,"
-		. "hTEXT_FontSize,hEDIT_SkinFontSize,hEDIT_SkinFontQuality,hDDL_ChangeableFontColorTypes,hPROGRESS_ColorSquarePreview,hBTN_ShowColorPicker"
+		. "hTEXT_FontSize,hEDIT_SkinFontSize,hEDIT_SkinFontQuality,hDDL_ChangeableFontColorTypes,hPROGRESS_ColorSquarePreview,hBTN_ShowColorPicker,hBTN_RecreateTradesGUI"
 		GUI_Settings.TabCustomizationSkins_SetUserSettings()
 		GUI_Settings.TabCustomizationSkins_EnableSubroutines()
 
@@ -1144,6 +1147,8 @@ Class GUI_Settings {
 					__f := GUI_Settings.TabCustomizationsSkins_OnChangeableColorTypeChange.bind(GUI_Settings)
 				else if (loopedCtrl = "hBTN_ShowColorPicker")
 					__f := GUI_Settings.TabCustomizationSkins_ShowColorPicker.bind(GUI_Settings)
+				else if (loopedCtrl = "hBTN_RecreateTradesGUI")
+					__f := GUI_Settings.TabCustomizationSkins_RecreateTradesGUI.bind(GUI_Settings)
 				else 
 					__f := 
 
@@ -1497,6 +1502,13 @@ Class GUI_Settings {
 			fontSettings := GUI_Settings.TabCustomizationSkins_GetFontRecommendedSettings(selectedFont)
 			GUI_Settings.TabCustomizationSkins_SetFontSizeAndQuality(selectedFont.Size, selectedFont.Quality)
 		}
+	}
+
+	TabCustomizationSkins_RecreateTradesGUI() {
+		TrayNotifications.Show("Recreating the Trades window with the new skin settings.")
+		UpdateHotkeys()
+		Declare_SkinAssetsAndSettings()
+		Gui_Trades.RecreateGUI()
 	}
 
 	/* * On Change
