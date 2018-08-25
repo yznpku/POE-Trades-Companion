@@ -1,3 +1,45 @@
+1.13.BETA_6 (24 Aug 2018)
+
+	PSA: If you are missing your settings after updating, please copy the following files from the Admin account's MyDocuments to your user account's MyDocuments
+	Folder : "\Documents\lemasato\POE Trades Companion" - Files: "Preferences.ini", "Trades_History.ini"
+	
+	Features:
+	- "Show item location grid" has been added as a new action for buttons/hotkeys.
+	This new feature allows to quickly find your item in your stash by highlighting its location on your screen.
+	Two white squares will appear. The bigger is for normal stash tabs, and the smaller one is for quad stash tabs.
+	It will also show the tab name the item is located in, so you don't have to look away.
+	The grid will automatically hide itself when the game window is not on focus.
+	- Any custom button that had the "Invite buyer to party" action has been updated with the new "Show item location grid" action.
+	- The small "trade" button has been updated to show the item grid as well.
+	- /InstanceName="" cmd line parameter.
+	This new parameter merges both /NewInstance and the old /PrefsFile paramter together.
+	It allows to run a second instance of the script, and keep your settings separate.
+	The settings file will be renamed based on the instance name chosen.
+	- Only receive PushBullet notifications while AFK.
+	This setting was already existing previously but wasn't implemented until now.
+	
+	Changes:
+	- Reloading the script now also restore the "Other" slot content.
+	- Added a button to preview your changes in the Setting skins
+	- Added a warning when trying to Price Verify unpriced items (not added yet).
+	
+	Fix:
+	- After reloading as admin, the admin's MyDocuments folder would be used instead of the user who started the executable's MyDocuments.
+	If you are missing your settings after updating, please copy the following files from the Admin account's MyDocuments to your user account's MyDocuments
+	Folder : "\Documents\lemasato\POE Trades Companion" - Files: "Preferences.ini", "Trades_History.ini"
+	- Wouldn't be able to check prices for racing leagues.
+	- The league from trading whispers from event leagues would show as "Incursion" instead of the full race name (eg. Incursion Event (IRE001)).
+	- /GameFolder="" cmd line parameter not being detected.
+	- Pushbullet notifications wouldn't work normally.
+	- The script would slow down a bit upon receiving a trading whisper due to it always trying to send a PushBullet request.
+	- Items containing a number (such as gems and maps) would be detected as currency item when trying to verify their price.
+	- Clicking on a tab Other's slot would disable the "Purple" tab colour for all tabs of that buyer, instead of just that one tab.
+	- If a tab had a "purple" colour, it wouldn't be restored upon recreating the Trades GUI (such as after closing the Settings)
+	- The .ahk source would be unable to extract resources due to a change brought in 1.13.BETA_4/5
+	- Incorrect GUI height with no small/special buttons enabled.
+	
+
+= = = = = = = = = = = = =	
 1.13.BETA_4 && BETA_5 (22 Aug 2018)
 
 	1.13.BETA_5 Fix: Script not loading as admin automatically.
