@@ -8,10 +8,17 @@
 	appendToFile := "OS Informations: " quote A_OSType A_Space . A_OSVersion A_Space . os3264bits quote
 	. "`n"			"OS Res-DPI: " quote PROGRAM.OS.RESOLUTION_DPI quote
 	. "`n"
+	. "`n"			"AHK Version: " quote A_AhkVersion quote
+	. "`n"			"Is Unicode: " quote A_IsUnicode quote
+	. "`n"			"Is Compiled: " quote A_IsCompiled quote
+	. "`n"			"Pointer Size: " quote A_PtrSize quote
+	. "`n"
 	. "`n"			"Program version: " quote PROGRAM.VERSION quote
 	. "`n"			"Main folder: " quote PROGRAM.MAIN_FOLDER quote
+	. "`n"			"Program path: " quote A_ScriptFullPath quote
 	. "`n"			"Chat key: " quote GAME.SETTINGS.ChatKey_Name quote . "     " "VK: " quote GAME.SETTINGS.ChatKey_VK quote . "     " "SC: " quote GAME.SETTINGS.ChatKey_SC quote
-	. "`n`n"
+	. "`n"			
+	. "`n"
 	. "`n"
 
 	FileAppend,% appendToFile,% PROGRAM.LOGS_FILE
