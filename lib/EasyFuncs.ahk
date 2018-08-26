@@ -4,23 +4,25 @@
 		arcaine.net: 	http://arcaine.net/l2/AtomixMacro/Unsupported/CP&CTRL.ahk
 						http://arcaine.net/l2/AtomixMacro/AtomixMacro.ahk
 
+    Edited to add support on AHK U64
+
 	Allows to get a window client infos
 */
     WinGet, hwnd , ID, %winName%
 
     WinGetPos, , , , Window_Height, ahk_id %hwnd%
-    VarSetCapacity(rcClient, 16, 0)          ; rcClient Structure 
+    VarSetCapacity(rcClient, 12+A_PtrSize, 0)          ; rcClient Structure 
     DllCall("user32\GetClientRect","uint", hwnd ,"uint",&rcClient)  
-    rcClient_x   := NumGet(rcClient, 0)
-    rcClient_y   := NumGet(rcClient, 4)
-    rcClient_r   := NumGet(rcClient, 8)
-    rcClient_b   := NumGet(rcClient, 12)
+    rcClient_x   := NumGet(rcClient, 0, "int")
+    rcClient_y   := NumGet(rcClient, 4, "int")
+    rcClient_r   := NumGet(rcClient, 8, "int")
+    rcClient_b   := NumGet(rcClient, 12, "int")
 
-    VarSetCapacity(pwi, 68, 0)
+    VarSetCapacity(pwi, 64+A_PtrSize, 0)
     DllCall("GetWindowInfo", "UInt", hwnd, "UInt", &pwi)
     
-    bx := NumGet(pwi, 48) ; border width
-    by := NumGet(pwi, 52) ; border height
+    bx := NumGet(pwi, 48, "int") ; border width
+    by := NumGet(pwi, 52, "int") ; border height
     RealX := bx
     RealY := Window_Height - by - rcClient_b
     RealWidth := rcClient_r
