@@ -160,9 +160,15 @@
 	settings.SETTINGS_HOTKEY_ADV_1.Action_3_Type 										:= "CMD_HIDEOUT"
 	settings.SETTINGS_HOTKEY_ADV_1.Action_3_Content 									:= """/hideout"""
 
+	hw := A_DetectHiddenWindows
+	DetectHiddenWindows, On
+	WinGet, fileProcessName, ProcessName,% "ahk_pid " DllCall("GetCurrentProcessId")
+	DetectHiddenWindows, %hw%
 	settings.UPDATING 																	:= {}
 	settings.UPDATING.PID 																:= DllCall("GetCurrentProcessId")
 	settings.UPDATING.FileName 															:= A_ScriptName
+	settings.UPDATING.FileProcessName 													:= fileProcessName
+	settings.UPDATING.ScriptHwnd 														:= A_ScriptHwnd
 	settings.UPDATING.Version 															:= PROGRAM.VERSION
 	settings.UPDATING.UseBeta															:= "False"
 	settings.UPDATING.CheckForUpdatePeriodically 										:= "OnStartAndEveryFiveHours"
@@ -372,6 +378,8 @@ Set_LocalSettings() {
 		isFirstTimeRunning := INI.Get(iniFile, "GENERAL", "IsFirstTimeRunning")
 	}
 
+	Restore_LocalSettings("UPDATING", "ScriptHwnd")
+	Restore_LocalSettings("UPDATING", "FileProcessName")
 	Restore_LocalSettings("UPDATING", "FileName")
 	Restore_LocalSettings("UPDATING", "PID")
 

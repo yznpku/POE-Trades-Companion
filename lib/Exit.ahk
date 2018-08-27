@@ -20,9 +20,9 @@ Close_PreviousInstance() {
 		Return
 	}
 
-	prevPID := INI.Get(iniFile, "PROGRAM", "PID")
-	prevPName := INI.Get(iniFile, "PROGRAM", "FileProcessName")
-
+	prevPID := INI.Get(iniFile, "UPDATING", "PID")
+	prevPName := INI.Get(iniFile, "UPDATING", "FileProcessName")
+	prevHwnd := INI.Get(iniFile, "UPDATING", "ScriptHwnd")
 
 	Process, Exist, %prevPID%
 	existingPID := ErrorLevel
@@ -35,10 +35,11 @@ Close_PreviousInstance() {
 
 		if ( existingPName = prevPName ) { ; Match found, close the previous instance
 			Detect_HiddenWindows("On")
-			WinClose, ahk_pid %existingPID%
-			WinWaitClose, ahk_pid %existingPID%,,5
+			WinClose, ahk_id %prevHwnd%
+			WinWaitClose, ahk_id %prevHwnd%,,5
+			err := ErrorLevel
 			Detect_HiddenWindows()
-			if (ErrorLevel) {
+			if (err) {
 				GUI_SimpleWarn.Show("", "Previous instance detected."
 								. "`nUnable to close PID " existingPID " (could be due to missing admin rights)."
 								. "`nPlease close it before continuing."
