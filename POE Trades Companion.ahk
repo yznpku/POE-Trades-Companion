@@ -360,6 +360,7 @@ Return
 #Include StdOutStream.ahk
 #Include TilePicture.ahk
 #Include GDIP.ahk
+#Include Extract2Folder.ahk
 
 if (A_IsCompiled) {
 	#Include %A_ScriptDir%/FileInstall_Cmds.ahk
