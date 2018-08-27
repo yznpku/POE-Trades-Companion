@@ -31,10 +31,23 @@
 	updateRel := (useBeta && isStableBetter)?(latestStable)
 		: (useBeta && !isStableBetter)?(latestBeta)
 		: (latestStable)
-	relTag := updateRel.tag_name, relDL := updateRel.assets.1.browser_download_url, relNotes := updateRel.body
+
+	relTag := updateRel.tag_name
+	relNotes := updateRel.body
+	Loop {
+		assetName := updateRel.assets[A_Index].name
+		SplitPath, assetName, assetFileName, , assetExt
+		if (assetExt = "exe")
+			exeDL := updateRel.assets[A_Index].browser_download_url
+		else if (assetExt = "zip")
+			zipDL := updateRel.assets[A_Index].browser_download_url
+		else if (assetName = "") || (A_Index > 10)
+			Break
+	}
+	relDL := A_IsCompiled?exeDL : zipDL
 
 	if (relTag && relDL) && (relTag != PROGRAM.VERSION) {
-		Return updateRel
+		Return {tag:updateRel.tag_name, notes:updateRel.body, download:relDL}
 	}
 	else if (relTag = PROGRAM.VERSION) {
 		return False
@@ -71,11 +84,11 @@ UpdateCheck(checkType="normal", notifOrBox="notif") {
 		return
 	}	
 
-	updTag := updateRel.tag_name, updDL := updateRel.assets.1.browser_download_url, updNotes := updateRel.body
+	updTag := updateRel.tag, updDL := updateRel.download, updNotes := updateRel.notes
 	global UPDATE_TAGNAME, UPDATE_DOWNLOAD, UPDATE_NOTES
 	UPDATE_TAGNAME := updTag, UPDATE_DOWNLOAD := updDL, UPDATE_NOTES := updNotes
 
-	if (checkType="on_start") && (autoupdate = "True") {
+	if (checkType="on_start") && (autoupdate = "True") && (A_IsCompiled) {
 		DownloadAndRunUpdater()
 		return
 	}
@@ -110,32 +123,65 @@ DownloadAndRunUpdater(dl="") {
 		return
 	}
 
-	SplitPath, A_ScriptName, , , scriptExt
-	if (scriptExt = "ahk") {
-		MsgBox(4096+48+4, "", "The script was about to update but you are using the .ahk source. Currently, there is no way to update automatically. Sorry for the inconvenience."
-			. "`n"	"Would you like to open the GitHub releases page?")
-		IfMsgBox, Yes
-			Run,% PROGRAM.LINK_GITHUB "/releases"
-		return
-	}
+	if (!A_IsCompiled) {
+		success := Download(dl, PROGRAM.MAIN_FOLDER "\Source.zip")
+		if !(success) {
+			MsgBox(4096+16, "", "Failed to download update!")
+			return
+		}
 
-	success := Download(PROGRAM.LINK_UPDATER, PROGRAM.UPDATER_FILENAME)
-	if (success)
+		updateFolder := PROGRAM.MAIN_FOLDER "\_UPDATE"
+		FileRemoveDir,% updateFolder, 1
+		Extract2Folder(PROGRAM.MAIN_FOLDER "\Source.zip", updateFolder)
+		if FileExist(PROGRAM.MAIN_FOLDER "\_UPDATE\POE Trades Companion.ahk") {
+			folder := updateFolder
+		}
+		else {
+			Loop, Files,% updateFolder "\*", RD
+			{
+				if FileExist(A_LoopFileFullPath "\POE Trades Companion.ahk") {
+					folder := A_LoopFileFullPath
+					Break
+				}
+			}
+		}
+
+		if !(folder) {
+			MsgBox(4096+16, "", "Couldn't locate the folder containing updated files.`nPlease try updating manually.")
+			FileRemoveDir, updateFolder, 1
+			return
+		}
+
+		FileCopyDir,% folder,% A_ScriptDir, 1
+		if (ErrorLevel) {
+			MsgBox(4096+16, "", "Failed to copy the new files into the folder.`nPlease try updating manually.")
+			FileRemoveDir, updateFolder, 1
+			return
+		}
+		
+		Reload()
+	}
+	else {
+		success := Download(PROGRAM.LINK_UPDATER, PROGRAM.UPDATER_FILENAME)
+		if !(success) {
+			MsgBox(4096+16, "", "Failed to download the updater!")
+			return
+		}
+		
 		Run_Updater(dl)
-	else
-		MsgBox(4096, "", "Failed to download the updater!")
+	}
 }
 
 Run_Updater(downloadLink) {
 	global PROGRAM
-	iniFile := PROGRAM.Ini_File
+	iniFile := PROGRAM.INI_FILE
 
 	INI.Set(iniFile, "UPDATING", "LastUpdate", A_Now)
 	Run,% PROGRAM.UPDATER_FILENAME 
 	. " /Name=""" PROGRAM.NAME  """"
 	. " /File_Name=""" A_ScriptDir "\" PROGRAM.NAME ".exe" """"
-	. " /Local_Folder=""" PROGRAM.Local_Folder """"
-	. " /Ini_File=""" PROGRAM.Ini_File """"
+	. " /Local_Folder=""" PROGRAM.MAIN_FOLDER """"
+	. " /Ini_File=""" PROGRAM.INI_FILE """"
 	. " /NewVersion_Link=""" downloadLink """"
 	ExitApp
 }

@@ -110,7 +110,7 @@ Start_Script() {
 
 	; Set global - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	PROGRAM.NAME					:= "POE Trades Companion"
-	PROGRAM.VERSION 				:= "1.13.BETA_7"
+	PROGRAM.VERSION 				:= "1.13.BETA_8"
 	PROGRAM.IS_BETA					:= IsContaining(PROGRAM.VERSION, "beta")?"True":"False"
 
 	PROGRAM.GITHUB_USER 			:= "lemasato"
@@ -249,10 +249,14 @@ Start_Script() {
 		if (updChkTimer)
 			SetTimer, UpdateCheck, %updChkTimer%
 
-		UpdateCheck(checktype:="on_start")
+		if (A_IsCompiled)
+			UpdateCheck(checktype:="on_start")
+		else
+			UpdateCheck(checkType:="on_start", "box")
 	}
-	else if (DEBUG.settings.force_update_check)
+	else if (DEBUG.settings.force_update_check) {
 		UpdateCheck(checkType:="forced")
+	}
 
 	Get_TradingLeagues() ; Getting leagues
 
