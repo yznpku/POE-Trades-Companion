@@ -117,6 +117,13 @@ ShowUpdatePrompt(ver, dl) {
 DownloadAndRunUpdater(dl="") {
 	global PROGRAM, UPDATE_DOWNLOAD
 
+	if InStr(FileExist(A_ScriptDir "\.git"), "D") {
+		MsgBox(4096+48, "", "Updating canceled!"
+		. "`n" ".git folder detected at script location."
+		. "`n" "Updating has been canceled to avoid overwritting changes.")
+		return
+	}
+
 	dl := dl?dl : UPDATE_DOWNLOAD
 	if !(dl) {
 		MsgBox(4096, "", "Dowload URL empty, canceling! ")
