@@ -129,12 +129,30 @@
 					StringTrimLeft, trimmedCtrl, loopedCtrl, 5
 					__f := GUI_MyStats.FilterList.bind(GUI_MyStats, trimmedCtrl, filterContent:="")
 				}
+				else if (loopedCtrl = "hLV_Stats") {
+					__f := GUI_MyStats.OnLVClick.bind(GUI_MyStats)
+				}
 				else
 					__f := 
 
 				if (__f)
 					GuiControl, MyStats:+g,% GuiMyStats_Controls[loopedCtrl],% __f 
 			}
+		}
+	}
+
+	OnLVClick(hwnd, guiEvent="", eventInfo="") {
+		Gui, MyStats:Default
+		Gui, MyStats:ListView,% GuiMyStats_Controls.hLV_Stats
+
+		if (guiEvent="ColClick") {
+			LV_GetText(Out1, 1, eventInfo)
+			LV_GetText(Out2, LV_GetCount(), eventInfo)
+			isSortedDown := Out2 < Out1
+			if (isSortedDown)
+				LV_ModifyCol(eventInfo, "Sort") 	
+			else
+				LV_ModifyCol(eventInfo, "SortDesc") 
 		}
 	}
 
