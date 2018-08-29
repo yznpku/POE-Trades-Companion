@@ -1297,8 +1297,8 @@
 		else if (slotName = "TradeVerifyInfos") {
 			GUI_Trades.SetTabContent(tabName, {TradeVerifyInfos:newContent}, isNewlyPushed:=False, updateOnly:=True)
 		}
-		else if (slotName = "WithdrawnTally") {
-			GUI_Trades.SetTabContent(tabName, {WithdrawnTally:newContent}, isNewlyPushed:=False, updateOnly:=True)
+		else if (slotName = "WithdrawTally") {
+			GUI_Trades.SetTabContent(tabName, {WithdrawTally:newContent}, isNewlyPushed:=False, updateOnly:=True)
 		}
 		else if (slotName = "IsBuyerInvited") {
 			GUI_Trades.SetTabContent(tabName, {IsBuyerInvited:newContent}, isNewlyPushed:=False, updateOnly:=True)

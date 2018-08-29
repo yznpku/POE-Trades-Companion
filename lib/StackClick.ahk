@@ -1,6 +1,6 @@
 ﻿StackClick() {
 	global PROGRAM
-	static lastAvailable
+	static lastAvailable, lastTime
 
 	LongCopy := A_TickCount, Clipboard := "", LongCopy -= A_TickCount
 	SendInput {Shift Up}^{sc02E} ; Ctrl+C
@@ -12,6 +12,11 @@
 		return
 	}
 	clip := Clipboard
+
+	; if !(lastTime)
+		; lastTime := 19940426000000000
+	; timeSince := A_Now A_MSec
+	; timeSince -= lastTime
 
 	activeTab := GUI_Trades.GetActiveTab()
 	tabContent := GUI_Trades.GetTabContent(activeTab)
@@ -64,6 +69,7 @@
 	} else {
 		Gosub %A_ThisFunc%_CtrlClick
 	}
+	; lastTime := A_Now A_MSec
 	return
 
 	; Using these because ^{LButton} was finicky, sometimes including shifts or not executing properly

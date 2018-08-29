@@ -51,7 +51,7 @@ Return
 
 ; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-#IfWinActive ahk_group POEGame
+#IfWinActive ahk_group POEGameGroup
 ^+LButton::StackClick()
 
 #IfWinActive ahk_group GUITradesGroup
