@@ -13,6 +13,7 @@
 ; = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
 ; #Warn LocalSameAsGlobal, StdOut
+; #ErrorStdOut
 #SingleInstance, Off
 #KeyHistory 0
 #Persistent
@@ -110,7 +111,7 @@ Start_Script() {
 
 	; Set global - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	PROGRAM.NAME					:= "POE Trades Companion"
-	PROGRAM.VERSION 				:= "1.13.BETA_8"
+	PROGRAM.VERSION 				:= "1.13.BETA_7"
 	PROGRAM.IS_BETA					:= IsContaining(PROGRAM.VERSION, "beta")?"True":"False"
 
 	PROGRAM.GITHUB_USER 			:= "lemasato"
