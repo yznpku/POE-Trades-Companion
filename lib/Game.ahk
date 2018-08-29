@@ -59,7 +59,8 @@
 		rawFile := cURL_Download(url, postData, reqHeaders, "", false, true, false, "", reqHeadersCurl)
 
 		if IsContaining(rawFile, "Error,404") {
-			 ; TO_DO logging
+			AppendToLogs(A_ThisFunc "(forceScriptLeagues=" forceScriptLeagues "): Failed to get leagues from GitHub file."
+			. "`nrawFile: """ rawFile """")
 			rawFile := ""
 		}
 		gitLeagues := ""		
@@ -111,7 +112,9 @@ Send_GameMessage(actionType, msgString, gamePID="") {
 		WinWaitActive,[a-zA-Z0-9_] ahk_group POEGameGroup, ,2
 	}
 	if (ErrorLevel) {
-		return "WINWAITACTIVE_TIMEOUT", ; TO_DO logs + notif?
+		AppendToLogs(A_ThisFunc "(actionType=" actionType ", msgString=" msgString ", gamePID=" gamePID "): WinWaitActive timed out.")
+		TrayNotifications.Show("Window timeout", "Game window wasn't focused after 5 seconds, canceling sending message.")
+		return "WINWAITACTIVE_TIMEOUT"
 	}
 	GoSub, Send_GameMessage_OpenChat
 	GoSub, Send_GameMessage_ClearChat
@@ -247,7 +250,8 @@ Monitor_GameLogs() {
 		if (logsFile)
 			SetTimer,% A_ThisFunc, 500
 		else {
-			SetTimer,% A_ThisFunc, -10000 ; TO_DO logs
+			AppendToLogs(A_ThisFunc "(): No game instance found. Retrying in 10 seconds")
+			SetTimer,% A_ThisFunc, -10000
 		}
 	}
 
@@ -351,7 +355,7 @@ Parse_GameLogs(strToParse) {
 					}
 				}
 				if !(tradeLeague) {
-					MsgBox(4096, "", "Failed to parse the league from whisper message:`n`n""" whispMsg """") ; TO_DO tray notif instead
+					TrayNotifications.Show("Failed to parse the league from whisper", "Couldn't parse the league from the whisper """ whispMsg """")
 					Return
 				}
 
@@ -418,7 +422,9 @@ Parse_GameLogs(strToParse) {
 					if (doPBNote = True) && StrLen(PROGRAM.SETTINGS.SETTINGS_MAIN.PushBulletToken) > 5 {
 						pbErr := PB_PushNote(PROGRAM.SETTINGS.SETTINGS_MAIN.PushBulletToken, "Buying request from " whispName ":"
 						, "Item: " tradeItemFull "\nPrice: " tradePrice "\nStash: " tradeStashFull)
-						; TO_DO logs pbErr
+						if (pbErr && pbErr != 200)
+							AppendToLogs(A_ThisFunc "(): Error sending PushBullet notification."
+							. "Code: """ pbErr """ - Token length: """ StrLen(PROGRAM.SETTINGS.SETTINGS_MAIN.PushBulletToken) """")
 					}
 
 					if !WinActive("ahk_pid " instancePID) { ; If the instance is not active
@@ -457,15 +463,17 @@ Read_GameLogs(logsFile) {
 	if (!logsFileObj && logsFile) {
 		logsFileObj := FileOpen(logsFile, "r")
 		logsFileObj.Read()
-		; TO_DO add logs, start monitoring logs file 
+		AppendToLogs(A_ThisFunc "(logsFile=" logsFile "): Now monitoring logs file.")
 	}
 
 	if ( logsFileObj.pos < logsFileObj.length ) {
 		newFileContent := logsFileObj.Read()
 		return newFileContent 
 	}
-	else if (logsFileObj.pos > logsFileObj.length) || (logsFileObj.pos < 0) {
-		; TO_DO add logs, file was shorten 
+	else if (logsFileObj.pos > logsFileObj.length) || (logsFileObj.pos < 0) && (logsFileObj) {
+		AppendToLogs(A_ThisFunc "(logsFile=" logsFile "): Restarting logs file monitor."
+		. "logsFileObj.pos: """ logsFileObj.pos """ - logsFileObj.length: """ logsFileObj.length """")
+		TrayNotifications.Show("Restarting logs file monitoring", "An issue occured while reading the logs file. Restarting the monitoring function.")
 		logsFileObj.Close()
 		logsFileObj := FileOpen(logsFile, "r")
 		logsFileObj.Read()

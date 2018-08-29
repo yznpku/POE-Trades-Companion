@@ -82,7 +82,7 @@ PoeTrade_GetCurrencyData(createData=False) {
     }
 
     if !(currenciesObj["Chaos Orb"]) {
-        ; TO_DO logs, fallback to json file
+        AppendToLogs(A_ThisFunc "(createData=" createData "): Couldn't retrieve currency data from poe.trade, falling back to json.")
         FileRead, JSONFile,% PROGRAM.DATA_FOLDER "\poeTradeCurrencyData.json"
         currenciesObj := JSON.Load(JSONFile)
     }

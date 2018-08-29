@@ -838,7 +838,7 @@ Class GUI_Settings {
 			Gui, Settings:Show, xCenter yCenter
 		}
 		else {
-			; TO_DO: Logs
+			AppendToLogs("GUI_Settings.Show(" whichTab "): Non existent. Recreating.")
 			GUI_Settings.Create()
 			GUI_Settings.Show()
 		}
@@ -1505,7 +1505,7 @@ Class GUI_Settings {
 	}
 
 	TabCustomizationSkins_RecreateTradesGUI() {
-		TrayNotifications.Show("Recreating the Trades window with the new skin settings.")
+		TrayNotifications.Show("POE Trades Companion", "Recreating the Trades window with the new skin settings")
 		UpdateHotkeys()
 		Declare_SkinAssetsAndSettings()
 		Gui_Trades.RecreateGUI()
@@ -2662,8 +2662,10 @@ Class GUI_Settings {
 			CtrlName := Get_MatchingIndex_From_Object_Using_Value(GuiSettings_Controls, CtrlHwnd)
 			RegExMatch(CtrlName, "\d+", CtrlNum)
 		}
-		else
-			MsgBox YOU SOULD NOT SEE THIS`nFunc: %A_ThisFunc%`nCtrl: %CtrlHwnd_Or_CtrlNum% ; TO_DO; make sure no msgbox
+		else {
+			MsgBox YOU SOULD NOT SEE THIS`nFunc: %A_ThisFunc%`nCtrl: %CtrlHwnd_Or_CtrlNum% 
+			AppendToLogs("GUI_Settings.TabHotkeysBasic_OnHotkeyActionContentChange(CtrlHwnd_Or_CtrlNum): YOU APPARENTLY DID SEE THIS.")
+		}
 
 		actionType := GUI_Settings.Submit("hDDL_HotkeyActionType" CtrlNum)
 		actionContent := GUI_Settings.Submit(CtrlName)

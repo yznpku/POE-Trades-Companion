@@ -32,7 +32,7 @@
 		}
 	}
 	else if !(currencyFullName) { ; Unknown currency name
-		; Logs_Append(A_ThisFunc, {Currency:currency}) ; TO_DO logs
+		AppendToLogs(A_ThisFunc "(currency=" currency "): Unknown currency name.")
 	}
 
 	currencyFullName := (currencyFullName)?(currencyFullName):(currency)
@@ -58,7 +58,7 @@ Do_Action(actionType, actionContent="", isHotkey=False, uniqueNum="") {
 
 	if (uniqueNum) && (uniqueNum = prevNum) && (ignoreFollowingActions) {
 		prevNum := uniqueNum, ignoreFollowingActions := False
-		; TO_DO; Add logs, tried to do more action but were ignored
+		AppendToLogs(A_thisFunc "(actionType=" actionType ", actionContent=" actionContent ", isHotkey=" isHotkey ", uniqueNum=" uniqueNum "): Action ignored.")
 		Return
 	}
 

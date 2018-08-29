@@ -76,7 +76,7 @@
 			Gui, BetaTasks:Show, xCenter yCenter
 		}
 		else {
-			; TO_DO: Logs
+			AppendToLogs("GUI_BetaTasks.Show(): Non existent. Recreating.")
 			GUI_BetaTasks.Create()
 			GUI_BetaTasks.Show()
 		}

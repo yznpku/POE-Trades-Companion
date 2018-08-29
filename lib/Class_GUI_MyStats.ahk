@@ -217,7 +217,8 @@
 			else
 				Break
 
-			if (otherIndex > 100) { ; TO_DO: logs
+			if (otherIndex > 100) {
+				AppendToLogs("GUI_MyStats.StatsData_AddRow(): Broke out of loop after 100")
 				Break
 			}
 			otherIndex--
@@ -397,7 +398,7 @@
 			; GUI_MyStats.OnTabBtnClick("MyStats Main")
 		}
 		else {
-			; TO_DO: Logs
+			AppendToLogs("GUI_MYStats.Show(): Non existent. Recreating.")
 			GUI_MyStats.Create()
 			GUI_MyStats.Show()
 		}

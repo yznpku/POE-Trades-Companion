@@ -2,7 +2,7 @@
 
 	if ExitReason not in Reload
 	{
-		; TO_DO logs 
+		AppendToLogs(A_ThisFunc "(ExitReason=" ExitReason ", ExitCode=" ExitCode ").")
 		ExitApp
 	}
 }

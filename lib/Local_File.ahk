@@ -477,7 +477,8 @@ Update_LocalSettings() {
 	Restore_LocalSettings("UPDATING", "Version")
 
 	if (localSettings.GENERAL.AddShowGridActionToInviteButtons = "True") {
-		; TO_DO logs, detected setting is true + add log for each loop
+		AppendToLogs(A_ThisFunc "(): AddShowGridActionToInviteButtons detected as True."
+		. "`n" "Adding SHOW_GRID action to all buttons containing the INVITE_BUYER action.")
 		Loop {
 			cbIndex := A_Index
 			loopedSetting := localSettings["SETTINGS_CUSTOM_BUTTON_" cbIndex]
@@ -499,6 +500,8 @@ Update_LocalSettings() {
 						hasGrid := True
 				}
 				if (hasInvite = True && hasGrid = False) {
+					AppendToLogs(A_ThisFunc "(): Adding SHOW_GRID action to button with"
+					. "`n" "ID: """ cbIndex """ - Action index: """ loopActionIndex """")
 					INI.Set(iniFile, "SETTINGS_CUSTOM_BUTTON_" cbIndex, "Action_" loopActionIndex "_Content", "")
 					INI.Set(iniFile, "SETTINGS_CUSTOM_BUTTON_" cbIndex, "Action_" loopActionIndex "_Type", "SHOW_GRID")
 				}
@@ -508,10 +511,12 @@ Update_LocalSettings() {
 			else
 				Break
 		}
+		AppendToLogs(A_ThisFunc "(): Finished adding SHOW_GRID action.")
 		INI.Set(iniFile, "GENERAL", "AddShowGridActionToInviteButtons", "False")
 	}
 	
 	if (localSettings.GENERAL.IsFirstTimeRunning = "True") {
+		AppendToLogs(A_ThisFunc "(): IsFirstTimeRunning detected as True")
 		
 		if (PROGRAM.IS_BETA = "True")
 			GUI_BetaTasks.Show()

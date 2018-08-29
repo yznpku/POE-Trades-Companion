@@ -403,7 +403,8 @@
 					if (tabInfos.Item = activeTabInfos.Item)
 					&& (tabInfos.Price = activeTabInfos.Price)
 					&& (tabInfos.Stash =  activeTabInfos.Stash) {
-						Gui_Trades.RemoveTab(loopedTab, massRemove:=True) ; TO_DO logs
+						Gui_Trades.RemoveTab(loopedTab, massRemove:=True)
+						AppendToLogs(A_ThisLabel ": Removed tab " loopedTab)
 					}
 				}
 				tabsToLoop--
@@ -866,7 +867,7 @@
 			tabName := Gui_Trades.GetActiveTab()
 
 		if !IsNum(tabName) {
-			; TO_DO ; logs, tried to close non num tab
+			AppendToLogs(A_ThisFunc "(tabName=" tabName ", massRemove=" massRemove "): Failed to remove tab due to not being a number.")
 			Return
 		}
 
@@ -1007,7 +1008,8 @@
 			Return "TabAlreadyExists"
 		}
 		if GUI_Trades.IsTrade_In_IgnoreList(tabInfos) {
-			; TO_DO logs
+			AppendToLogs(A_ThisFunc "(): Canceled creating new tab due to trade being in ignore list:" 
+			. "Buyer: """ tabInfos.Buyer """ - Item: """ tabInfos.Item """ - Price: """ tabInfos.Price """ - Stash:""" tabInfos.Stash """")
 			return "TabIgnored"
 		}
 
@@ -1073,8 +1075,9 @@
 				found := A_Index
 		}
 		if !(found) {
+			AppendToLogs(A_ThisFunc "(uniqueId=" uniqueId "): Couldn't find any tab ID matching this unique ID")
 			MsgBox("", "", "Unable to find matching tab ID with unique id """ uniqueID """")
-			return ; TO_DO logs?
+			return
 		}
 
 		return found
@@ -1198,25 +1201,24 @@
 					_infos := "Price confirmed legit."
 					. "\npoe.trade: " matchingObj.buyout
 					. "\nwhisper: " poeTradeObj.buyout
-					GUI_Trades.SetTabVerifyColor(tabID, "Green")
+					vColor := "Green"
 				}
 				else {
 					if (currencyInfos.Name = "") {
 						_infos := "/!\ Cannot verify unpriced items yet. /!\"
-						GUI_Trades.SetTabVerifyColor(tabID, "Orange")
+						vColor := "Orange"
+						
 					}
 					else if (!currencyInfos.Is_Listed) {
 						_infos := "Unknown currency name: """ currencyInfos.Name """"
 						. "\nPlease report it."
-						GUI_Trades.SetTabVerifyColor(tabID, "Orange")
-						; TO_DO logs
+						vColor := "Orange"
 					}
 					else if (currencyInfos.Is_Listed && poeTradeObj.buyout != matchingObj.buyout) {
 						_infos := "Price is different."
 						. "\npoe.trade: " matchingObj.buyout
 						. "\nwhisper " poeTradeObj.buyout
-						GUI_Trades.SetTabVerifyColor(tabID, "Red")
-						; TO_DO logs
+						vColor := "Red"
 					}
 
 				}
@@ -1225,8 +1227,10 @@
 				_infos := "Could not find any item matching the same stash location"
 				. "\nMake sure to set your account name in the settings."
 				. "\nAccounts: " accounts
-				GUI_Trades.SetTabVerifyColor(tabID, "Orange")
+				vColor := "Orange"
 			}
+
+			GUI_Trades.SetTabVerifyColor(tabID, vColor)
 			GUI_Trades.UpdateSlotContent(tabID, "TradeVerifyInfos", _infos)
 		}
 	}
@@ -1235,8 +1239,8 @@
 		global GuiTrades_Controls
 
 		if !IsIn(colour, "Grey,Orange,Green,Red") || !IsNum(tabID) {
+			AppendToLogs(A_ThisFunc "(tabID=" tabID ", colour=" colour "): Invalid colour or tabID is not a number.")
 			MsgBox("", "", "Invalid use of " A_ThisFunc "`n`ntabID: """ tabID """`ncolour: """ colour """")
-			; TO_DO logs
 			return
 		}
 
@@ -1249,9 +1253,6 @@
 			GuiTrades_Controls["hIMG_TradeVerify" tabID] := newColHwnd
 
 			Gui_Trades.UpdateSlotContent(tabID, "TradeVerify", colour)
-		}
-		else {
-			; TO_DO: logs
 		}
 	}
 
@@ -1675,7 +1676,7 @@
 			}
 		}
 		catch e {
-			; TO_DO logs, failed to set pos based on width
+			AppendToLogs(A_ThisFunc "(dontWrite=" dontWrite "): Failed to set GUI pos based on screen width. Setting to 0,0.")
 			Gui, Trades:Show,% "NoActivate x0 y0"
 			if !(dontWrite) {
 				INI.Set(PROGRAM.INI_FILE, "SETTINGS_MAIN", "Pos_X", 0)
@@ -1766,7 +1767,7 @@
 		if IsNum(dockedX) && (tradesX = moveToX && tradesY = moveToY)
 			Return
 		else if !IsNum(dockedX) || (isWinMinimized) {
-			; TO_DO: logs, dock win doesnt exists anymore, dock to another
+			AppendToLogs(A_ThisFunc "(): Couldn't dock Trades GUI to game window. Resetting pos and cycling to next game window.")
 			GUI_Trades.ResetPosition(dontWrite:=True)
 			GUI_Trades.DockMode_Cycle(dontSetPos:=True)
 		}
@@ -1964,7 +1965,8 @@
 
 		tabContent := GUI_Trades.GetTabContent(GuiTrades.Active_Tab)
 		if GUI_Trades.IsTrade_In_IgnoreList(tabContent) {
-			; TO_DO logs mb?
+			AppendToLogs(A_ThisFunc "(): Tab is already in ignore list. Canceling."
+			. "`nBuyer: """ tabContent.Buyer """ - Item: """ tabContent.Item """ - Price: """ tabContent.Price """ - Stash: """ tabContent.Stash """")
 			return
 		}
 		if !(tabContent.Item) {
@@ -1976,7 +1978,8 @@
 		TRADES_IGNORE_LIST[ignoreIndex+1].Price := tabContent.Price
 		TRADES_IGNORE_LIST[ignoreIndex+1].Stash := tabContent.Stash
 		TRADES_IGNORE_LIST[ignoreIndex+1].Time := A_Now
-		; TO_DO logs
+		AppendToLogs(A_ThisFunc "(): Successfully added tab to ignore list."
+		. "`nBuyer: """ tabContent.Buyer """ - Item: """ tabContent.Item """ - Price: """ tabContent.Price """ - Stash: """ tabContent.Stash """")
 	}
 	
 	RefreshIgnoreList() {
@@ -1994,9 +1997,9 @@
 				for key, value in TRADES_IGNORE_LIST[loopIndex]
 					TRADES_IGNORE_LIST[loopIndex].Delete(key)
 				TRADES_IGNORE_LIST.Delete(loopIndex)
+				; AppendToLogs(A_ThisFunc "(): Removed item from ignore list after " timeToIgnore "mins.")
 			}
 		}
-		; TO_DO logs
 	}
 
 	ShowActiveTabItemGrid() {
