@@ -114,10 +114,14 @@
         Gui.Add("ItemGridTabName", "Progress", "x0 y0 w" this.tabThicc " h" guiSizeH " Background" borderColor) ; <
         Gui.Add("ItemGridTabName", "Text", "x0 y0 cBlack Center BackgroundTrans w" guiSizeW " h" guiSizeH " 0x200", "Tab: " gridItemTab)
 
-        if (showNormalTabGrid)
+        if (showNormalTabGrid) {
             Gui.Show("ItemGrid", "x" stashXRelative " y" stashYRelative " AutoSize NoActivate")
+            WinSet, ExStyle, +0x20,% "ahk_id " ItemGrid.hGuiItemGrid
+        }
         Gui.Show("ItemGridQuad", "x" stashQuadXRelative " y" stashQuadYRelative " AutoSize NoActivate")
         Gui.Show("ItemGridTabName", "x" stashTabNameXRelative " y" stashTabNameYRelative " w" guiSizeW " h" guiSizeH " NoActivate")
+        WinSet, ExStyle, +0x20,% "ahk_id " ItemGridQuad.hGuiItemGridQuad
+        WinSet, ExStyle, +0x20,% "ahk_id " ItemGridTabName.hGuiItemGridTabName
     }
 
     Destroy() {
