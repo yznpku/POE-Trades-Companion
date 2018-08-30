@@ -71,7 +71,7 @@
 
             Gui.New("ItemGrid", "-Border +LastFound +AlwaysOnTop -Caption +AlwaysOnTop +ToolWindow -SysMenu +HwndhGuiItemGrid", "ItemGrid")
             Gui.Color("ItemGrid", "EEAA99")
-            WinSet, TransColor, EEAA99
+            WinSet, TransColor, EEAA99 254 ; 254 = need to be trans to allow clickthrough style
             Gui.Add("ItemGrid", "Progress", "x0 y0 w" pointW " h" this.gridThicc " BackgroundWhite") ; ^
             Gui.Add("ItemGrid", "Progress", "x" pointW " y0 w" this.gridThicc " h" pointH " BackgroundWhite") ; > 
             Gui.Add("ItemGrid", "Progress", "x0 y" pointH " w" pointW " h" this.gridThicc " BackgroundWhite") ; v 
@@ -85,9 +85,9 @@
         stashQuadXRelative += winBorderSide, stashQuadYRelative += winBorderTop ; Add win border
         pointQuadW := caseQuadW, pointQuadH := caseQuadH ; Make a square same size as stash square
 
-        Gui.New("ItemGridQuad", "-Border +LastFound +AlwaysOnTop -Caption +AlwaysOnTop +ToolWindow -SysMenu HwndhGuiItemGridQuad", "ItemGridQuad")
+        Gui.New("ItemGridQuad", "-Border +LastFound +AlwaysOnTop -Caption +AlwaysOnTop +ToolWindow -SysMenu +HwndhGuiItemGridQuad", "ItemGridQuad")
         Gui.Color("ItemGridQuad", "EEAA99")
-        WinSet, TransColor, EEAA99
+        WinSet, TransColor, EEAA99 254
         Gui.Add("ItemGridQuad", "Progress", "x0 y0 w" pointQuadW " h" this.gridThicc " BackgroundWhite") ; ^
         Gui.Add("ItemGridQuad", "Progress", "x" pointQuadW " y0 w" this.gridThicc " h" pointQuadH " BackgroundWhite") ; > 
         Gui.Add("ItemGridQuad", "Progress", "x0 y" pointQuadH " w" pointQuadW " h" this.gridThicc " BackgroundWhite") ; v 
@@ -116,12 +116,14 @@
 
         if (showNormalTabGrid) {
             Gui.Show("ItemGrid", "x" stashXRelative " y" stashYRelative " AutoSize NoActivate")
-            WinSet, ExStyle, +0x20,% "ahk_id " ItemGrid.hGuiItemGrid
+            WinSet, ExStyle, +0x20,% "ahk_id " GUIItemGrid.Handle
         }
         Gui.Show("ItemGridQuad", "x" stashQuadXRelative " y" stashQuadYRelative " AutoSize NoActivate")
+        WinSet, ExStyle, +0x20,% "ahk_id " GUIItemGridQuad.Handle
+
         Gui.Show("ItemGridTabName", "x" stashTabNameXRelative " y" stashTabNameYRelative " w" guiSizeW " h" guiSizeH " NoActivate")
-        WinSet, ExStyle, +0x20,% "ahk_id " ItemGridQuad.hGuiItemGridQuad
-        WinSet, ExStyle, +0x20,% "ahk_id " ItemGridTabName.hGuiItemGridTabName
+        WinSet, Transparent, 254,% "ahk_id " GUIItemGridTabName.Handle
+        WinSet, ExStyle, +0x20,% "ahk_id " GUIItemGridTabName.Handle
     }
 
     Destroy() {
