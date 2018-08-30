@@ -888,9 +888,10 @@
 			GUI_Trades.SetTabContent(tabIndex-1, "") ; Make last tab empty
 		}
 		else if (tabName = tabsCount) {
-			GUI_Trades.SetTabStyleDefault(tabName)
 			GUI_Trades.SetTabContent(tabName, "")
 		}
+
+		GUI_Trades.SetTabStyleDefault(tabName)
 
 		; Move tabs if needed
 		if (lastVisibleTab = tabsCount) {
@@ -1544,7 +1545,7 @@
 		}
 	}
 
-	SetActiveTab(tabName, autoScroll=True, skipError=False) {
+	SetActiveTab(tabName, autoScroll=True, skipError=False, styleChanged=False) {
 		global PROGRAM, GuiTrades, GuiTrades_Controls
 		tabRange := GUI_Trades.GetTabsRange()
 		tabsCount := GuiTrades.Tabs_Count
@@ -1581,14 +1582,19 @@
 				GuiControl, Trades:-Disabled,% GuiTrades["Tab_" A_Index]
 		}
 
-		if (PROGRAM.SETTINGS.SETTINGS_MAIN.CopyItemInfosOnTabChange = "True" && IsNum(tabName)) 
-			Gui_Trades.CopyItemInfos(tabName)
 
-		tabContent := GUI_Trades.GetTabContent(tabName)
-		if (tabContent.IsBuyerInvited = True)
-			GUI_Trades.ShowActiveTabItemGrid()
-		else
-			GUI_Trades.DestroyItemGrid()
+		; Don't do these if only the tab style changed.
+		; Avoid an issue where upon removing a tab, it would copy the item infos again due to the tab style func re-activating the tab
+		if (styleChanged) {
+			if (PROGRAM.SETTINGS.SETTINGS_MAIN.CopyItemInfosOnTabChange = "True" && IsNum(tabName))
+				Gui_Trades.CopyItemInfos(tabName)
+
+			tabContent := GUI_Trades.GetTabContent(tabName)
+			if (tabContent.IsBuyerInvited = True)
+				GUI_Trades.ShowActiveTabItemGrid()
+			else
+				GUI_Trades.DestroyItemGrid()
+		}
 
 		GuiTrades.Active_Tab := tabName
 	}
@@ -1907,7 +1913,7 @@
 		}
 
 		if (styleChanged = True) {
-			GUI_Trades.SetActiveTab( GUI_Trades.GetActiveTab() )
+			GUI_Trades.SetActiveTab( tabName:=GUI_Trades.GetActiveTab(), autoScroll:=True, skipError:=False, styleChanged:=True )
 		}
 	}
 
