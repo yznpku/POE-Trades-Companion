@@ -309,63 +309,61 @@ Return
 ; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 #Include %A_ScriptDir%\lib\
-#Include Class_GUI_SimpleWarn.ahk
 #Include Class_GUI.ahk
 #Include Class_GUI_BetaTasks.ahk
-#Include Class_Gui_Trades.ahk
-#Include Class_Gui_Settings.ahk
+#Include Class_GUI_ImportPre1dot13Settings.ahk
+#Include Class_GUI_SimpleWarn.ahk
 #Include Class_Gui_ChooseInstance.ahk
-#Include Class_Gui_MyStats.ahk
 #Include Class_Gui_ItemGrid.ahk
+#Include Class_Gui_MyStats.ahk
+#Include Class_Gui_Settings.ahk
+#Include Class_Gui_Trades.ahk
 #Include WM_Messages.ahk
 
-#Include Game.ahk
-#Include Logs.ahk
-#Include TrayMenu.ahk
 #Include AssetsExtract.ahk
-#Include FileInstall.ahk
-#Include ManageFonts.ahk
-#Include Misc.ahk
+#Include Class_INI.ahk
 #Include CmdLineParameters.ahk
 #Include Debug.ahk
 #Include EasyFuncs.ahk
-#Include Local_File.ahk
-#Include Game_File.ahk
-#Include WindowsSettings.ahk
-#Include StackClick.ahk
-
-#Include Class_INI.ahk
-#Include TrayRefresh.ahk
 #Include Exit.ahk
-#Include Reload.ahk
-#Include Hotkeys.ahk
-#Include PoeTrade.ahk
-
-#Include Updating.ahk
+#Include FileInstall.ahk
+#Include Game.ahk
+#Include Game_File.ahk
 #Include GitHubAPI.ahk
-#Include SplashText.ahk
-#Include ShowToolTip.ahk
-#Include TrayNotifications.ahk
+#Include Hotkeys.ahk
+#Include Local_File.ahk
+#Include Logs.ahk
+#Include ManageFonts.ahk
+#Include Misc.ahk
 #Include OnClipboardChange.ahk
+#Include PoeTrade.ahk
+#Include Reload.ahk
+#Include ShowToolTip.ahk
+#Include SplashText.ahk
+#Include StackClick.ahk
+#Include TrayMenu.ahk
+#Include TrayNotifications.ahk
+#Include TrayRefresh.ahk
+#Include Updating.ahk
+#Include WindowsSettings.ahk
 
 #Include %A_ScriptDir%\lib\third-party\
-#Include PushBullet.ahk
-
 #Include AddToolTip.ahk
-#Include Clip.ahk
-#Include Class_ImageButton.ahk
 #Include ChooseColor.ahk
-#Include cURL.ahk
+#Include Class_ImageButton.ahk
+#Include Clip.ahk
 #Include Download.ahk
+#Include Extract2Folder.ahk
 #Include FGP.ahk
+#Include GDIP.ahk
 #Include JSON.ahk
 #Include LV_SetSelColors.ahk
+#Include PushBullet.ahk
 #Include SetEditCueBanner.ahk
-#Include StringtoHex.ahk
 #Include StdOutStream.ahk
+#Include StringtoHex.ahk
 #Include TilePicture.ahk
-#Include GDIP.ahk
-#Include Extract2Folder.ahk
+#Include cURL.ahk
 
 if (A_IsCompiled) {
 	#Include %A_ScriptDir%/FileInstall_Cmds.ahk
