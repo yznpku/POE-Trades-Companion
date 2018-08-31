@@ -1652,7 +1652,8 @@
 
 	SetTransparencyPercent(transPercent) {
 		global GuiTrades
-		WinSet, Transparent,% (255/100)*transPercent,% "ahk_id " GuiTrades.Handle
+		Gui, Trades:+LastFound
+		WinSet, Transparent,% (255/100)*transPercent
 	}
 
 	SetTransparency_Inactive() {
@@ -1669,12 +1670,14 @@
 
 	Enable_ClickThrough() {
 		global PROGRAM, GuiTrades
-		WinSet, ExStyle, +0x20,% "ahk_id " GuiTrades.Handle
+		Gui, Trades: +LastFound
+		WinSet, ExStyle, +0x20
 	}
 
 	Disable_ClickThrough() {
 		global GuiTrades
-		WinSet, ExStyle, -0x20,% "ahk_id " GuiTrades.Handle
+		Gui, Trades: +LastFound
+		WinSet, ExStyle, -0x20
 	}
 
 	ResetPosition(dontWrite=False) {

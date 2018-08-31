@@ -116,14 +116,17 @@
 
         if (showNormalTabGrid) {
             Gui.Show("ItemGrid", "x" stashXRelative " y" stashYRelative " AutoSize NoActivate")
-            WinSet, ExStyle, +0x20,% "ahk_id " GUIItemGrid.Handle
+            Gui, ItemGrid:+LastFound
+            WinSet, ExStyle, +0x20
         }
         Gui.Show("ItemGridQuad", "x" stashQuadXRelative " y" stashQuadYRelative " AutoSize NoActivate")
-        WinSet, ExStyle, +0x20,% "ahk_id " GUIItemGridQuad.Handle
+        Gui, ItemGridQuad:+LastFound
+        WinSet, ExStyle, +0x20
 
         Gui.Show("ItemGridTabName", "x" stashTabNameXRelative " y" stashTabNameYRelative " w" guiSizeW " h" guiSizeH " NoActivate")
-        WinSet, Transparent, 254,% "ahk_id " GUIItemGridTabName.Handle
-        WinSet, ExStyle, +0x20,% "ahk_id " GUIItemGridTabName.Handle
+        Gui, ItemGridTabName:+LastFound
+        WinSet, Transparent, 254
+        WinSet, ExStyle, +0x20
     }
 
     Destroy() {

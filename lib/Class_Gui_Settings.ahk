@@ -1016,7 +1016,8 @@ Class GUI_Settings {
 		INI.Set(iniFile, "SETTINGS_MAIN", iniKey, transValue)
 		Declare_LocalSettings()
 
-		WinSet, Transparent,% (255/100)*transValue,% "ahk_id " GuiTrades.Handle
+		Gui, Trades:+LastFound
+		WinSet, Transparent,% (255/100)*transValue
 
 		if IsIn(A_GuiControlEvent,"Normal,4") {
 			if (GuiTrades.Tabs_Count > 0)
@@ -1025,7 +1026,8 @@ Class GUI_Settings {
 				transRevert := PROGRAM.SETTINGS.SETTINGS_MAIN.NoTabsTransparency
 			else transRevert := 255
 
-			Winset, Transparent,% (255/100)*transRevert,% "ahk_id " GuiTrades.Handle
+			Gui, Trades:+LastFound
+			Winset, Transparent,% (255/100)*transRevert
 		}
 	}
 
