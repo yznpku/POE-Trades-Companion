@@ -1,3 +1,24 @@
+1.13.BETA_8 (31 Aug 2018)
+	Features:
+	- You can now update automatically the script using the .ahk version.
+	
+	Changes:
+	- The clipboard is no longer reverted after being used for sending a message in-game.
+	This change is due to an issue where some messages would send the wrong content.
+	This change also fixes a behaviour where, while using TradeMacro, if you had an item data in the clipboard before using a custom button, the TradeMacro item data tooltip would appear (due to TradeMacro noticing the clipboard change).
+	- 
+	
+	Fixes:
+	- The StackClick hotkey wouldn't be able to function.
+	This hotkey allows to take just the right amount of currency when doing a currency.poe.trade by using Ctrl+Shift+Click.
+	- Stash Highlight: The tab name and the grid borders wouldn't be clickthrough.
+	- When launching a new instance without any special parameter, would be unable to close the previous script instance.
+	- Wouldn't be able to sort by clicking columns on the Stats GUI.
+	- Using the "Close other tabs with similar items" feature, tabs style wouldn't be reset.
+	This means that if a tab had the green or purple colour and was removed by the feature, any new tab with that ID would have appeared with the same colours scheme instead of the default one.
+
+
+= = = = = = = = = = = = =	
 1.13.BETA_7 (27 Aug 2018)
 	Fix: (.ahk only) The new "Show item location grid" function would throw errors when using the .ahk script on Unicode 64bits.
 		
