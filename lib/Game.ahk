@@ -6,9 +6,9 @@
 	global PROGRAM, GAME, LEAGUES
 
 	challengeLeagues := GAME.CHALLENGE_LEAGUE
-	scriptLeagues := "Standard,Hardcore"
 	Loop, Parse, challengeLeagues,% ","
-		scriptLeagues .= "," A_LoopField ",Hardcore " A_LoopField
+		scriptLeagues := scriptLeagues ? scriptLeagues "," A_LoopField ",Hardcore " A_LoopField : A_LoopField ",Hardcore " A_LoopField
+	scriptLeagues := scriptLeagues ? scriptLeagues ",Standard,Hardcore" : "Standard,Hardcore"
 
 	if (forceScriptLeagues = True) {
 		LEAGUES := scriptLeagues
@@ -72,6 +72,13 @@
 
 	; Set LEAGUES var content
 	tradingLeagues := apiTradingLeagues?apiTradingLeagues : gitLeagues?gitLeagues : scriptLeagues
+	Loop, Parse, scriptLeagues,% ","
+	{
+		loopedLeague := A_LoopField
+		if !IsIn(loopedLeague, tradingLeagues)
+			tradingLeagues := tradingLeagues ? tradingLeagues "," loopedLeague : loopedLeague
+	}
+	msgbox %tradingLeagues%`n%scriptLeagues%
 	LEAGUES := tradingLeagues
 
 	return tradingLeagues
