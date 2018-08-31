@@ -20,8 +20,8 @@
 			latestStable := recentRels[index], foundStableTag := True
 	}
 	stableTag := latestStable.tag_name, betaTag := latestBeta.tag_name
-	stableSubVers := StrSplit(stableTag, "."), betaSubVers := StrSplit(betaTag, ".")
-	if (useBeta) && (betaSubVers.1 = stableSubVers.1 && betaSubVers.2 = stableSubVers.2)
+	stableSubVers := StrSplit(stableTag, "."), betaSubVers := StrSplit(betaTag, "."), currentSubVers := StrSplit(PROGRAM.VERSION, ".")
+	if (useBeta) && ( (betaSubVers.1 = stableSubVers.1 && betaSubVers.2 = stableSubVers.2) || (betaSubVers.1 = currentSubVers.1 && betaSubVers.2 = currentSubVers.2) )
 		isStableBetter := True
 
 	INI.Set(iniFile, "UPDATING", "LatestStable", stableTag)
