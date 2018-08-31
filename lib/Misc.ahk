@@ -141,17 +141,23 @@ Get_Changelog(removeTrails=False) {
 
 Set_Clipboard(str) {
 	global PROGRAM
-
-	if (str = "")
-		return
+	global SET_CLIPBOARD_CONTENT
 
 	Clipboard := ""
 	Clipboard := str
-	ClipWait, 2, 1
+	ClipWait, 10, 1
 	if (ErrorLevel) {
 		TrayNotifications.Show(PROGRAM.NAME, "Unable to clipboard the following content: " str
 			.	"`nThis may be due to an external clipboard manager creating conflict.")
+		return 1
 	}
+	SET_CLIPBOARD_CONTENT := str
+}
+
+Reset_Clipboard() {
+	global SET_CLIPBOARD_CONTENT
+	if (Clipboard = SET_CLIPBOARD_CONTENT)
+		Clipboard := ""
 }
 
 Replace_TradeVariables(string) {

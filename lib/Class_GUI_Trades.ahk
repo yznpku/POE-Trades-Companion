@@ -491,14 +491,20 @@
 			uniqueNum := !uniqueNum
 			if (btnType = "Custom") {
 				Loop {
-					actionType := PROGRAM.SETTINGS["SETTINGS_CUSTOM_BUTTON_" btnNum]["Action_" A_Index "_Type"]
-					actionContent := PROGRAM.SETTINGS["SETTINGS_CUSTOM_BUTTON_" btnNum]["Action_" A_Index "_Content"]
+					actionIndex := A_Index
+					actionType := PROGRAM.SETTINGS["SETTINGS_CUSTOM_BUTTON_" btnNum]["Action_" actionIndex "_Type"]
+					actionContent := PROGRAM.SETTINGS["SETTINGS_CUSTOM_BUTTON_" btnNum]["Action_" actionIndex "_Content"]
 
 					if (actionType = "" || actionType = "ERROR")
 						Break
+					else if (actionType = "COPY_ITEM_INFOS")
+						copyActionIndex := actionIndex, hasCopyAction := True
 
 					Do_Action(actionType, actionContent, , uniqueNum)
 				}
+
+				if (actionIndex > copyActionIndex && hasCopyAction = True)
+					Do_Action("COPY_ITEM_INFOS", "", , uniqueNum)
 			}
 			else if (btnType = "Special") {
 				actionType := PROGRAM.SETTINGS["SETTINGS_SPECIAL_BUTTON_" btnNum]["Type"]

@@ -120,8 +120,11 @@ Send_GameMessage(actionType, msgString, gamePID="") {
 	GoSub, Send_GameMessage_ClearChat
 
 	if (actionType = "WRITE_SEND") {
-		if (sendMsgMode = "Clipboard")
-			Clip(msgString)
+		if (sendMsgMode = "Clipboard") {
+			Set_Clipboard(msgString)
+			SendInput, ^{sc02F}
+			SetTimer, Reset_Clipboard, -700
+		}
 		else if (sendMsgMode = "SendInput")
 			SendInput,%msgString%
 		else if (sendMsgMode = "SendEvent")
@@ -130,8 +133,11 @@ Send_GameMessage(actionType, msgString, gamePID="") {
 		SendEvent,{Enter}
 	}
 	else if (actionType = "WRITE_DONT_SEND") {
-		if (sendMsgMode = "Clipboard")
-			Clip(msgString)
+		if (sendMsgMode = "Clipboard") {
+			Set_Clipboard(msgString)
+			SendInput, ^{sc02F}
+			SetTimer, Reset_Clipboard, -700
+		}
 		else if (sendMsgMode = "SendInput")
 			SendInput,%msgString%
 		else if (sendMsgMode = "SendEvent")
@@ -141,8 +147,11 @@ Send_GameMessage(actionType, msgString, gamePID="") {
 		foundPos := InStr(msgString, "{X}"), _strLen := StrLen(msgString), leftPresses := _strLen-foundPos+1-3
 		msgString := StrReplace(msgString, "{X}", "")
 
-		if (sendMsgMode = "Clipboard")
-			Clip(msgString)
+		if (sendMsgMode = "Clipboard") {
+			Set_Clipboard(msgString)
+			SendInput, ^{sc02F}
+			SetTimer, Reset_Clipboard, -700
+		}
 		else if (sendMsgMode = "SendInput")
 			SendInput,%msgString%
 		else if (sendMsgMode = "SendEvent")
