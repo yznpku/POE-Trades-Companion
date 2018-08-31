@@ -78,7 +78,6 @@
 		if !IsIn(loopedLeague, tradingLeagues)
 			tradingLeagues := tradingLeagues ? tradingLeagues "," loopedLeague : loopedLeague
 	}
-	msgbox %tradingLeagues%`n%scriptLeagues%
 	LEAGUES := tradingLeagues
 
 	return tradingLeagues
