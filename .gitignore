@@ -1,20 +1,16 @@
-# Testing tools
-/_DebugTools/*
-/_ScrappedIdeas/*
-/_Testings/*
-/_Reborn/*
-Verpatch.*
-*_Old*
+# =========================
+# Testing tools folder
+# =========================
 
-# EXE builder / Resources path file
-_Convert_Release.ahk
-File_Install.ahk
-_ConvertRelease.ahk
+/__*
 
+# =========================
 # Resources source files
+# =========================
+
 *.sfd
 *.psd
-Resources/Fonts/*/*
+resources/fonts/*/*
 
 # =========================
 # Default .gitignore
