@@ -9,6 +9,7 @@
 	settings.GENERAL 																	:= {}
 	settings.GENERAL.IsFirstTimeRunning 												:= "True"
 	settings.GENERAL.AddShowGridActionToInviteButtons									:= "True"
+	settings.GENERAL.HasAskedForImport													:= "True"
 
 	settings.SETTINGS_MAIN 																:= {}
 	settings.SETTINGS_MAIN.TradingWhisperSFXPath 										:= PROGRAM.SFX_FOLDER "\WW_MainMenu_Letter.wav" 
@@ -184,7 +185,7 @@ LocalSettings_IsValueValid(iniSect, iniKey, iniValue) {
 	isFirstTimeRunning := INI.Get(PROGRAM.INI_FILE, "GENERAL", "IsFirstTimeRunning")
 
 	if (iniSect = "GENERAL") {
-		if IsIn(iniKey, "IsFirstTimeRunning,AddShowGridActionToInviteButtons")
+		if IsIn(iniKey, "IsFirstTimeRunning,AddShowGridActionToInviteButtons,HasAskedForImport")
 			isValueValid := IsIn(iniValue, "True,False") ? True : False	
 	}
 

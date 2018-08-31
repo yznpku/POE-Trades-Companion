@@ -103,6 +103,7 @@ Start_Script() {
 	global Stats_RealCurrencyNames 			:= {} ; All currency full names
 
 	global LEAGUES 							:= [] ; Trading leagues
+	global MyDocuments
 
 	; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	Handle_CmdLineParameters() 		; RUNTIME_PARAMETERS
@@ -163,9 +164,9 @@ Start_Script() {
 	SetWorkingDir,% PROGRAM.MAIN_FOLDER
 
 	; Auto admin reload - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-	if (!A_IsAdmin && !RUNTIME_PARAMETERS.SkipAdmin) { ; TO_DO re-enable, also prob dont need warn
+	if (!A_IsAdmin && !RUNTIME_PARAMETERS.SkipAdmin) {
 		; GUI_SimpleWarn.Show("", "Reloading to request admin privilieges in 3...`nClick on this window to reload now.", "Green", "White", {CountDown:True, CountDown_Timer:1000, CountDown_Count:3, WaitClose:1, CloseOnClick:True})
-		ReloadWithParams(" /MyDocuments=""" MyDocuments """", getCurrentParams:=True, asAdmin:=True)
+		; ReloadWithParams(" /MyDocuments=""" MyDocuments """", getCurrentParams:=True, asAdmin:=True)
 	}
 
 	; Game executables groups - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -224,6 +225,20 @@ Start_Script() {
 	; Fonts related
 	LoadFonts() 
 
+	; Import old settings if accepted
+	Get_Pre1dot13_TradeHistory()
+	oldIni := MyDocuments "\AutoHotkey\POE Trades Companion\Preferences.ini"
+	if FileExist(oldIni) {
+		hasAsked := INI.Get(PROGRAM.INI_File, "GENERAL", "HasAskedForImport")
+		if (hasAsked != "True") {
+			GUI_ImportPre1dot13Settings.Show()
+			global GuiImportPre1dot13Settings
+			WinWait,% "ahk_id " GuiImportPre1dot13Settings.Handle
+			WinWaitClose,% "ahk_id " GuiImportPre1dot13Settings.Handle
+		}
+		INI.Set(PROGRAM.INI_File, "GENERAL", "HasAskedForImport", "True")
+	}
+	
 	; Local settings
 	Set_LocalSettings()
 	Update_LocalSettings()

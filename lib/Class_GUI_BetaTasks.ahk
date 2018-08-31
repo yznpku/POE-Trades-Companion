@@ -22,12 +22,7 @@
             . "`n"  "- Open an issue on GitHub"
             . "`n"  "- Contact me on the PoE forums on the thread or via PM"
             . "`n"  "- Contact me on Reddit via PM"
-            . "`n"  "- Join the discord channel"
-            . "`n"
-            . "`n"  "Your settings have been set to default."
-            . "`n"  "Don't worry, your pre-1.13 settings have not been lost. Once 1.13 is released,"
-            . "`n"  "you will be given the choice to use your pre-1.13 settings or keep settings you made during the betas.")
-
+            . "`n"  "- Join the discord channel")
 
         ; Gui.Add("BetaTasks", "Picture", "x" guiWidth-120 " y" guiHeight-45 " hwndhIMG_Paypal", PROGRAM.IMAGES_FOLDER "\DonatePaypal.png")
         Gui.Add("BetaTasks", "Picture", "x" guiWidth-50 " y" guiHeight-45 " w40 h40 hwndhIMG_Discord", PROGRAM.IMAGES_FOLDER "\Discord.png")
