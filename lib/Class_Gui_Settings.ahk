@@ -355,6 +355,9 @@ Class GUI_Settings {
 			GuiControl, Settings:+g,% GuiSettings_Controls["hBTN_TabMisc" A_Index],% __f
 			GuiSettings.Tabs_Controls["Misc_" allTabs.Misc[A_Index]] := GuiSettings_Controls["hBTN_TabMisc" A_Index]
 		}
+		Gui.Add("Settings", "Button", "x" leftMost " y+30 w" tabSectionW " h" tabSectionH " hwndhBTN_ResetToDefaultSettings", "Reset to default settings")
+		__f := GUI_Settings.ResetToDefaultSettings.bind(GUI_Settings)
+		GuiControl, Settings:+g,% GuiSettings_Controls.hBTN_ResetToDefaultSettings,% __f
 
 		/* * * * * * * * * * *
 		*	TAB SETTINGS MAIN
@@ -436,7 +439,7 @@ Class GUI_Settings {
 		*	TAB CUSTOMIZATION SKINS
 		*/
 		Gui, Settings:Tab, Customization Skins
-		Gui.Add("Settings", "GroupBox", "x" leftMost2 " y" upMost2 " cBlack w525 h400")
+		Gui.Add("Settings", "GroupBox", "x" leftMost2 " y" upMost2 " cBlack w525 h" guiHeight-80)
 
 		; * * Preset
 		Gui.Add("Settings", "Text", "xp yp+20 w525 Center BackgroundTrans","Preset: ")
@@ -483,7 +486,7 @@ Class GUI_Settings {
 		*	TAB CUSTOMIZATION BUTTONS
 		*/
 		Gui, Settings:Tab, Customization Buttons
-		Gui.Add("Settings", "GroupBox", "x" leftMost2 " y" upMost2 " cBlack w525 h400")
+		Gui.Add("Settings", "GroupBox", "x" leftMost2 " y" upMost2 " cBlack w525 h" guiHeight-80)
 		thisTabCtrlsList := ""
 
 		; Custom Buttons: Determine positions and sizes
@@ -647,7 +650,7 @@ Class GUI_Settings {
 		*/
 		Gui, Settings:Tab, Hotkeys Advanced
 
-		Gui.Add("Settings", "GroupBox", "x" leftMost2 " y" upMost2 " cBlack w540 h400")
+		Gui.Add("Settings", "GroupBox", "x" leftMost2 " y" upMost2 " cBlack w540 h" guiHeight-80)
 		Gui.Add("Settings", "DropDownList", "x" leftMost2+20 " y" upMost2+20 " w430 R20 hwndhDDL_HotkeyAdvExistingList")
 		Gui.Add("Settings", "Button", "x+5 yp-1 w30 R1 hwndhBTN_HotkeyAdvAddNewProfile", "+")
 		Gui.Add("Settings", "Button", "x+5 yp w30 R1 hwndhBTN_HotkeyAdvDeleteCurrentProfile", "-")
@@ -847,6 +850,25 @@ Class GUI_Settings {
 				Gui_Settings.OnTabBtnClick(whichTab)
 			else
 				Gui_Settings.OnTabBtnClick("Settings Main")
+	}
+
+	ResetToDefaultSettings() {
+		global PROGRAM
+
+		MsgBox(4096+4, "", "Are you sure to reset your settings to default?"
+		. "`n" "Your current settings file will be kept and renamed, in case you ever wish to revert the changes."
+		. "`n" "Settings file can be found at:"
+		. "`n" PROGRAM.INI_FILE)
+		. "`n"
+		. "`n" PROGRAM.NAME " will be reloading if you choose to continue."
+
+		IfMsgBox, Yes
+		{
+			iniFile := PROGRAM.INI_FILE
+			SplitPath, iniFile, fileName, folder
+			FileMove,% PROGRAM.INI_FILE,% folder "\" A_Now "_" fileName, 1
+			Reload()
+		}
 	}
 
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
