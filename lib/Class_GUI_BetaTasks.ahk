@@ -8,7 +8,7 @@
         Gui.New("BetaTasks", "+LabelGUI_BetaTasks_ +HwndhGuiBetaTasks", "Beta Tasks")
         Gui.Font("BetaTasks", "Segoe UI", "8")
 
-        guiHeight := 270, guiWidth := 710
+        guiHeight := 170, guiWidth := 710
 
         Gui.Add("BetaTasks", "Text", "hwndhTXT_Welcome", ""
             .       "Welcome to " PROGRAM.NAME " betas!"
