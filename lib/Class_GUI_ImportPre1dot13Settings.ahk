@@ -11,7 +11,7 @@ Class GUI_ImportPre1dot13Settings {
 		GuiImportPre1dot13Settings.Is_Created := False
 
 		guiCreated := False
-		guiFullHeight := 300, guiFullWidth := 520, borderSize := 1, borderColor := "Black"
+		guiFullHeight := 285, guiFullWidth := 520, borderSize := 1, borderColor := "Black"
 		guiHeight := guiFullHeight-(2*borderSize), guiWidth := guiFullWidth-(2*borderSize)
 		leftMost := borderSize, rightMost := guiWidth-borderSize
 		upMost := borderSize, downMost := guiHeight-borderSize
@@ -342,7 +342,7 @@ Get_Pre1dot13_Settings() {
             }
         }
         else { ; error skin unknown
-            MsgBox,% 4096+16, POE Trades Companion,% "Custom skin detected."
+            ; MsgBox,% 4096+16, POE Trades Companion,% "Custom skin detected."
         }
 
         ; Hotkeys
@@ -406,7 +406,7 @@ Get_Pre1dot13_Settings() {
 
             newName := oldName
             newPos := oldPosToNewPos[oldH]+oldPosToNewPos[oldV]
-            newToggle := oldSize="Disabled" ? "True" : "False"
+            newToggle := oldSize="Disabled" ? "False" : "True"
             newSize := IsIn(oldSize, "Small,Medium,Large") ? oldSize : "Small"
 
             newSettingsObj["SETTINGS_CUSTOM_BUTTON_" A_Index].Name := newName
