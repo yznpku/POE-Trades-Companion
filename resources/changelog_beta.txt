@@ -6,7 +6,6 @@
 	- The clipboard is no longer reverted after being used for sending a message in-game.
 	This change is due to an issue where some messages would send the wrong content.
 	This change also fixes a behaviour where, while using TradeMacro, if you had an item data in the clipboard before using a custom button, the TradeMacro item data tooltip would appear (due to TradeMacro noticing the clipboard change).
-	- 
 	
 	Fixes:
 	- The StackClick hotkey wouldn't be able to function.
