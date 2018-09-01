@@ -9,10 +9,10 @@
 
 	maxHistory := 5
 	chatKeyVK := GAME.SETTINGS.ChatKey_VK
-	isModKeyEnabled := PROGRAM.SETTINGS.SETTINGS_MAIN.SendTradingWhisperUponCopyWhenHoldingCTRL
+	isEnabled := PROGRAM.SETTINGS.SETTINGS_MAIN.SendTradingWhisperUponCopyWhenHoldingCTRL
 	modKeyVK := "0x11" ; CTRL
 
-	if (isFunctionRunning)
+	if (isFunctionRunning || isEnabled != "True")
 		Return
 
 	isFunctionRunning := True, clipboardStr := Clipboard
@@ -30,30 +30,21 @@
 	}
 
 
-	if (isModKeyEnabled = "True") { ; Key is enabled. Wait until its up to send whisper
-		isModKeyDown := GetKeyState("VK" modKeyVK, "P")
-		if !(isModKeyDown) {
-			GoSub OnClipboardChange_Func_Finished
-			Return
-		}
-		if (isWhisperInHistory) { ; whisper sent not long ago, cancel
-			ShowToolTip(PROGRAM.NAME "`nThis whisper was sent within`nthe last " maxHistory " previous whispers`nOperation canceled.")
-			GoSub OnClipboardChange_Func_Finished
-			Return
-		}
-		ShowToolTip(PROGRAM.NAME "`nThis whisper will be sent upon releasing CTRL.`nPress [ SPACE ] to cancel.")
-		AUTOWHISPER_WAITKEYUP := True
-		KeyWait, VK%modKeyVK%, U
-		RemoveToolTip()
-		AUTOWHISPER_WAITKEYUP := False
+	isModKeyDown := GetKeyState("VK" modKeyVK, "P")
+	if !(isModKeyDown) {
+		GoSub OnClipboardChange_Func_Finished
+		Return
 	}
-	else { ; Key is disabled, just send whisper
-		if (isWhisperInHistory) { ; whisper sent not long ago, cancel
-			ShowToolTip(PROGRAM.NAME "`nThis whisper was sent within`nthe last " maxHistory " previous whispers`nOperation canceled.")
-			GoSub OnClipboardChange_Func_Finished
-			Return
-		}
+	if (isWhisperInHistory) { ; whisper sent not long ago, cancel
+		ShowToolTip(PROGRAM.NAME "`nThis whisper was sent within`nthe last " maxHistory " previous whispers`nOperation canceled.")
+		GoSub OnClipboardChange_Func_Finished
+		Return
 	}
+	ShowToolTip(PROGRAM.NAME "`nThis whisper will be sent upon releasing CTRL.`nPress [ SPACE ] to cancel.")
+	AUTOWHISPER_WAITKEYUP := True
+	KeyWait, VK%modKeyVK%, U
+	RemoveToolTip()
+	AUTOWHISPER_WAITKEYUP := False
 
 	if (AUTOWHISPER_CANCEL) {
 		AUTOWHISPER_CANCEL := False
