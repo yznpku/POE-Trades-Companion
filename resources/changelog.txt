@@ -1,3 +1,15 @@
+1.13.1 (01 Sept 2018)
+
+	If you are stuck unable to use the tool due to the Import GUI not showing up, please download this update manually.
+	Update checking is done after showing the said GUI, and so you wouldn't be able to autoupdate.
+
+Fixes:
+	- Toggling off the automatic whisper setting would only make it so you don't have to press CTRL.
+	Having the setting disabled will now correclty disable this feature.
+	- Could fail to show the import GUI on startup.
+
+
+= = = = = = = = = = = = =	
 1.13 (31 Aug 2018)
 
 	In short:
