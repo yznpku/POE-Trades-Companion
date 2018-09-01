@@ -226,7 +226,6 @@ Start_Script() {
 	LoadFonts() 
 
 	; Import old settings if accepted
-	Get_Pre1dot13_TradeHistory()
 	oldIni := MyDocuments "\AutoHotkey\POE Trades Companion\Preferences.ini"
 	if FileExist(oldIni) {
 		hasAsked := INI.Get(PROGRAM.INI_File, "GENERAL", "HasAskedForImport")
