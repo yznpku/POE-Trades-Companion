@@ -64,7 +64,7 @@ Class GUI_ImportPre1dot13Settings {
 		__f := GUI_ImportPre1dot13Settings.Choice.bind(GUI_ImportPre1dot13Settings, "No")
 		GuiControl, ImportPre1dot13Settings:+g,% GuiImportPre1dot13Settings_Controls.hBTN_No,% __f
 
-        Gui.Show("ImportPre1dot13Settings", "x-800 yCenter w" guiWidth " h" guiHeight)
+        Gui.Show("ImportPre1dot13Settings", "xCenter yCenter w" guiWidth " h" guiHeight)
         return
     }
 
@@ -173,7 +173,7 @@ Class GUI_ImportPre1dot13Settings {
 		GUI_MyStats.UpdateData()
 
 		if (foundHwnd) {
-			; Gui, ImportPre1dot13Settings:Show, xCenter yCenter
+			Gui, ImportPre1dot13Settings:Show, xCenter yCenter
 		}
 		else {
 			AppendToLogs("GUI_ImportPre1dot13Settings.Show(): Non existent. Recreating.")
