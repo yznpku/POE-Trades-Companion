@@ -38,8 +38,10 @@ DisableHotkeys() {
 
 	; Disable hotkeys
 	for hk, nothing in PROGRAM.HOTKEYS {
-		Hotkey, IfWinActive, ahk_group POEGameGroup
-		Hotkey,% hk, Off
+		if (hk != "") {
+			Hotkey, IfWinActive, ahk_group POEGameGroup
+			Hotkey,% hk, Off
+		}
 	}
 
 	; Reset the arr 
@@ -74,7 +76,7 @@ EnableHotkeys() {
 		acType := thisHotkeySettings.Action_1_Type
 		hk := thisHotkeySettings.Hotkey
 
-		if (hk != "") && (acType != "") {
+		if (hk != "") || (acType != "") {
 			PROGRAM.HOTKEYS[hk] := {}
 
 			Loop {
@@ -88,10 +90,16 @@ EnableHotkeys() {
 				PROGRAM.HOTKEYS[hk]["Action_" A_Index "_Content"] := LoopAcContent
 				PROGRAM.HOTKEYS[hk]["Actions_Count"] := A_Index
 			}
-			Hotkey, IfWinActive, ahk_group POEGameGroup
-			Hotkey,% hk, OnHotkeyPress, On
+			if (hk != "") {
+				Hotkey, IfWinActive, ahk_group POEGameGroup
+				Hotkey,% hk, OnHotkeyPress, On
+			}
 		}
-		else 
+		else if (A_Index > 1000) {
+			AppendToLogs(A_ThisFunc "(): Broke out of loop after 1000.")
+			Break
+		}
+		else
 			Break
 	}
 	Set_TitleMatchMode()
