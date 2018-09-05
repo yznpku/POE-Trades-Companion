@@ -355,7 +355,9 @@ Class GUI_Settings {
 			GuiControl, Settings:+g,% GuiSettings_Controls["hBTN_TabMisc" A_Index],% __f
 			GuiSettings.Tabs_Controls["Misc_" allTabs.Misc[A_Index]] := GuiSettings_Controls["hBTN_TabMisc" A_Index]
 		}
-		Gui.Add("Settings", "Button", "x" leftMost " y+30 w" tabSectionW " h" tabSectionH " hwndhBTN_ResetToDefaultSettings", "Reset to default settings")
+
+
+		Gui.Add("Settings", "Button", "x" leftMost " y+35 w" tabSectionW " h" tabSectionH " hwndhBTN_ResetToDefaultSettings", "Reset all settings`nto default")
 		__f := GUI_Settings.ResetToDefaultSettings.bind(GUI_Settings)
 		GuiControl, Settings:+g,% GuiSettings_Controls.hBTN_ResetToDefaultSettings,% __f
 
@@ -690,7 +692,7 @@ Class GUI_Settings {
 
 		Gui.Font("Settings", "Consolas", "8")
 
-		Gui.Add("Settings", "GroupBox", "x" leftMost2 " y" upMost2 " cBlack w525 R8", "You are up to date!")
+		Gui.Add("Settings", "GroupBox", "x" leftMost2 " y" upMost2 " cBlack w525 h115 hwndhGB_UpdateCheck", "You are up to date!")
 
 		Gui.Add("Settings", "Text", "x" leftMost2+20 " y" upMost2+20 " hwndhTEXT_YourVersion", "Your version:")
 		Gui.Add("Settings", "Text", "x+30 yp BackgroundTrans hwndhTEXT_ProgramVer")
@@ -711,12 +713,12 @@ Class GUI_Settings {
 		Gui.Add("Settings", "Checkbox", "xp y+10 hwndhCB_UseBeta", "Use the BETA branch?")		
 		Gui.Add("Settings", "Checkbox", "xp y+5 hwndhCB_DownloadUpdatesAutomatically", "Download updates`nautomatically?")
 		
-
-		Gui.Add("Settings", "Edit", "x" leftMost2 " y" upMost2+125 " w525 R26", Get_Changelog(removeTrails:=True) )
+		ctrlSize := Get_ControlCoords("Settings", GuiSettings_Controls.hGB_UpdateCheck)
+		Gui.Add("Settings", "Edit", "x" leftMost2 " y" upMost2+125 " w525 h" guiHeight-80-ctrlSize.H-ctrlSize.Y+15, Get_Changelog(removeTrails:=True) )
 
 		Gui.Font("Settings", "Segoe UI", "8")
 
-		GuiSettings.TabMiscUpdating_Controls := "hTEXT_LatestBetaVer,hTEXT_LatestStableVer,hTEXT_YourVersion,hBTN_CheckForUpdates,hTEXT_MinsAgo"
+		GuiSettings.TabMiscUpdating_Controls := "hGB_UpdateCheck,hTEXT_LatestBetaVer,hTEXT_LatestStableVer,hTEXT_YourVersion,hBTN_CheckForUpdates,hTEXT_MinsAgo"
 			. ",hDDL_CheckForUpdate,hCB_UseBeta,hBTN_CheckForUpdates,hCB_DownloadUpdatesAutomatically"
 		GUI_Settings.TabMiscUpdating_SetUserSettings()
 		GUI_Settings.TabMiscUpdating_EnableSubroutines()
@@ -726,13 +728,14 @@ Class GUI_Settings {
 		*/
 		Gui, Settings:Tab, Misc About
 
-		Gui.Add("Settings", "GroupBox", "x" leftMost2 " y" upMost2 " cBlack w525 R8")
-		Gui.Add("Settings", "Text", "x" leftMost2+10 " y" upMost2+15 " w505 Center" , "POE Trades Companion is a tool meant to enhance your trading experience. "
+		Gui.Add("Settings", "GroupBox", "x" leftMost2 " y" upMost2 " cBlack w525 h115 hwndhGB_About")
+		Gui.Add("Settings", "Text", "x" leftMost2+10 " y" upMost2+15 " w505 Center hwndhTEXT_About" , "POE Trades Companion is a tool meant to enhance your trading experience. "
 			. "`n`nUpon receiving a trading whisper (poe.trade / poeapp.com),"
 			. "`nthe most important informations from the trade will be shown in a convenient interface."
 			. "`n`nUp to nine custom buttons to interact with your buyer, five special smaller buttons to do the strict minimum, and many hotkeys are available to make trading more enjoyable.")
-		
-		Gui.Add("Settings", "Edit", "x" leftMost2 " y" upMost2+125 " w525 R26 ReadOnly Center hwndhEDIT_HallOfFame", "Hall of Fame`nThank you for your support!`n`n" "[Hall of Fame loading]")
+
+		ctrlSize := Get_ControlCoords("Settings", GuiSettings_Controls.hGB_About)
+		Gui.Add("Settings", "Edit", "x" leftMost2 " y" upMost2+125 " w525 h" guiHeight-80-ctrlSize.H-ctrlSize.Y+15 " ReadOnly Center hwndhEDIT_HallOfFame", "Hall of Fame`nThank you for your support!`n`n" "[Hall of Fame loading]")
 
 		GUI_Settings.TabMiscAbout_UpdateAllOfFame()
 
@@ -3432,6 +3435,13 @@ Class GUI_Settings {
 		timeDiffS -= lastTimeChecked, Seconds
 		timeDiff -= lastTimeChecked, Minutes
 		timeDiff := timeDiffS < 61 ? 1 : timeDiff
+		; Set groupbox title
+		isStableBetter := IsStableBetter(thisTabSettings.LatestStable, thisTabSettings.LatestBeta)
+		updAvailable := isStableBetter ? thisTabSettings.LatestStable: thisTabSettings.LatestBeta
+		if (updAvailable != PROGRAM.VERSION)
+			GuiControl, Settings:,% GuiSettings_Controls.hGB_UpdateCheck,% updAvailable " is available!"
+		else GuiControl, Settings:,% GuiSettings_Controls.hGB_UpdateCheck,% "You are up to date!"
+
 		; Set field content
 		GuiControl, Settings:,% GuiSettings_Controls.hTEXT_ProgramVer,% PROGRAM.VERSION
 		GuiControl, Settings:,% GuiSettings_Controls.hTEXT_LatestStableVer,% thisTabSettings.LatestStable
