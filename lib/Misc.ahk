@@ -42,7 +42,7 @@
 
 Do_Action(actionType, actionContent="", isHotkey=False, uniqueNum="") {
 	global PROGRAM, GuiTrades, GuiTrades_Controls
-	static prevNum, ignoreFollowingActions
+	static prevNum, ignoreFollowingActions, prevActionType, prevActionContent
 	activeTab := GuiTrades.Active_Tab
 
 	tabContent := isHotkey ? "" : GUI_Trades.GetTabContent(activeTab)
@@ -58,15 +58,23 @@ Do_Action(actionType, actionContent="", isHotkey=False, uniqueNum="") {
 
 	if (uniqueNum) && (uniqueNum = prevNum) && (ignoreFollowingActions) {
 		prevNum := uniqueNum, ignoreFollowingActions := False
-		AppendToLogs(A_thisFunc "(actionType=" actionType ", actionContent=" actionContent ", isHotkey=" isHotkey ", uniqueNum=" uniqueNum "): Action ignored.")
+		AppendToLogs(A_thisFunc "(actionType=" actionType ", actionContent=" actionContent ", isHotkey=" isHotkey ", uniqueNum=" uniqueNum "): Action ignored."
+		. "`n" "ignoreFollowingActions=""" ignoreFollowingActions """, prevActionType=""" prevActionType """, prevActionContent=""" prevActionContent """.")
 		Return
 	}
+	
 
 	global ACTIONS_FORCED_CONTENT
 	if (ACTIONS_FORCED_CONTENT[actionType]) && !(actionContent)
 		actionContent := ACTIONS_FORCED_CONTENT[actionType]
 
 	actionContent := Replace_TradeVariables(actionContent)
+
+	if IsIn(prevActionType, "COPY_ITEM_INFOS,WRITE_SEND,WRITE_DONT_SEND,WRITE_GO_BACK,SENDINPUT,SENDINPUT_RAW,SENDEVENT,SENDEVENT_RAW") {
+		; AppendToLogs(A_thisFunc "(actionType=" actionType ", actionContent=" actionContent ", isHotkey=" isHotkey ", uniqueNum=" uniqueNum "):"
+		; . "Sleeping for 10ms due to previous action (" prevActionType ") being listed as using the clipboard.")
+		Sleep 10
+	}
 
 	if IsContaining(actionType, "CUSTOM_BUTTON_") {
 		RegExMatch(actionType, "\D+", actionType_NoNum)
@@ -120,7 +128,7 @@ Do_Action(actionType, actionContent="", isHotkey=False, uniqueNum="") {
 	else if (actionType = "SHOW_GRID")
 		GUI_Trades.ShowActiveTabItemGrid()
 
-	prevNum := uniqueNum
+	prevNum := uniqueNum, prevActionType := actionType, prevActionContent := actionContent	
 }
 
 Get_Changelog(removeTrails=False) {
@@ -144,6 +152,7 @@ Set_Clipboard(str) {
 	global SET_CLIPBOARD_CONTENT
 
 	Clipboard := ""
+	Sleep 10
 	Clipboard := str
 	ClipWait, 10, 1
 	if (ErrorLevel) {

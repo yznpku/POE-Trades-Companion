@@ -503,13 +503,16 @@
 					if (actionType = "" || actionType = "ERROR")
 						Break
 					else if (actionType = "COPY_ITEM_INFOS")
-						copyActionIndex := actionIndex, hasCopyAction := True
+						doCopyActionAtEnd := True
 
-					Do_Action(actionType, actionContent, , uniqueNum)
+					if (actionType != "COPY_ITEM_INFOS")
+						Do_Action(actionType, actionContent, , uniqueNum)
 				}
 
-				if (actionIndex > copyActionIndex && hasCopyAction = True)
+				if (doCopyActionAtEnd = True) {
+					Sleep 100
 					Do_Action("COPY_ITEM_INFOS", "", , uniqueNum)
+				}
 			}
 			else if (btnType = "Special") {
 				actionType := PROGRAM.SETTINGS["SETTINGS_SPECIAL_BUTTON_" btnNum]["Type"]

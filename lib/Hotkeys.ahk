@@ -15,8 +15,15 @@
 	else if (isHKAdvanced) {
 		uniqueNum := !uniqueNum
 		Loop % hkSettings.Actions_Count {
-			Do_Action(hkSettings["Action_" A_Index "_Type"], hkSettings["Action_" A_Index "_Content"], True, uniqueNum)
+			acType := hkSettings["Action_" A_Index "_Type"], acContent := hkSettings["Action_" A_Index "_Content"]
+
+			if (actionType != "COPY_ITEM_INFOS")
+				Do_Action(acType, acContent, True, uniqueNum)
+			else if (actionType = "COPY_ITEM_INFOS")
+				doCopyActionAtEnd := True
 		}
+		if (doCopyActionAtEnd)
+			Do_Action("COPY_ITEM_INFOS", "", True, uniqueNum)
 	}
 }
 

@@ -129,7 +129,7 @@ Send_GameMessage(actionType, msgString, gamePID="") {
 		if (sendMsgMode = "Clipboard") {
 			Set_Clipboard(msgString)
 			SendInput, ^{sc02F}
-			SetTimer, Reset_Clipboard, -700
+			; SetTimer, Reset_Clipboard, -700
 		}
 		else if (sendMsgMode = "SendInput")
 			SendInput,%msgString%
@@ -142,7 +142,7 @@ Send_GameMessage(actionType, msgString, gamePID="") {
 		if (sendMsgMode = "Clipboard") {
 			Set_Clipboard(msgString)
 			SendInput, ^{sc02F}
-			SetTimer, Reset_Clipboard, -700
+			; SetTimer, Reset_Clipboard, -700
 		}
 		else if (sendMsgMode = "SendInput")
 			SendInput,%msgString%
@@ -156,7 +156,7 @@ Send_GameMessage(actionType, msgString, gamePID="") {
 		if (sendMsgMode = "Clipboard") {
 			Set_Clipboard(msgString)
 			SendInput, ^{sc02F}
-			SetTimer, Reset_Clipboard, -700
+			; SetTimer, Reset_Clipboard, -700
 		}
 		else if (sendMsgMode = "SendInput")
 			SendInput,%msgString%
