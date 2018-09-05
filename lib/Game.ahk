@@ -272,7 +272,7 @@ Parse_GameLogs(strToParse) {
 										, Other:1, Item:2, League:3}
 	static poeTradeCurrencyRegex	:= {String:"(.*)Hi, I'd like to buy your (.*) for my (.*) in (.*)" ; 1: Other, 2: Currency, 3: Price, 4: League + Tab + Other
 										, Other:1, Item:2, Price:3, League:4}
-	static poeTradeStashRegex 		:= {String:"\(stash tab ""(.*)""; position: left (.*), top (.*)\)(.*)" ; 1: Tab, 2: Left, 3: Top, 4: Other
+	static poeTradeStashRegex 		:= {String:"\(stash tab ""(.*)""; position: left (\d+), top (\d+)\)(.*)" ; 1: Tab, 2: Left, 3: Top, 4: Other
 										, Tab:1, Left:2, Top:3, Other:4}
 	static poeTradeQualityRegEx 		:= {String:"level (.*) (.*)% (.*)" ; 1: Item level, 2: Item quality, 3: Item name
 										, Level:1, Quality:2, Item:3}
@@ -282,7 +282,7 @@ Parse_GameLogs(strToParse) {
 										, Other:1, Item:2, Price:3, League:4}
 	static poeAppUnpricedRegex 		:= {String:"(.*)wtb (.*) in (.*)" ; 1: Other, 2: Item, 3: League + Tab + Other
 										, Other:1, Item:2, League:3}
-	static poeAppStashRegex 		:= {String:"\(stash ""(.*)""; left (.*), top(.*)\)(.*)" ; 1: Tab, 2: Left, 3: Top, 4: Other
+	static poeAppStashRegex 		:= {String:"\(stash ""(.*)""; left (\d+), top(\d+)\)(.*)" ; 1: Tab, 2: Left, 3: Top, 4: Other
 										, Tab:1, Left:2, Top:3, Other:4}
 	static poeAppQualityRegEx 		:= {String:"(.*) \((.*)/(.*)%\)" ; 1: Item name, 2: Item level, 3: Item quality
 										, Item:1, Level:2, Quality:3}
