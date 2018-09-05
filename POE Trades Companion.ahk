@@ -239,6 +239,7 @@ Start_Script() {
 	}
 	
 	; Local settings
+	LocalSettings_VerifyEncoding()
 	Set_LocalSettings()
 	Update_LocalSettings()
 	localSettings := Get_LocalSettings()

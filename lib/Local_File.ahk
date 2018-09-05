@@ -1,4 +1,22 @@
-﻿Get_LocalSettings_DefaultValues() {
+﻿LocalSettings_VerifyEncoding() {
+	global PROGRAM
+	iniFile := PROGRAM.INI_FILE
+
+	hINI := FileOpen(iniFile, "r")
+	if (hINI.Encoding != "UTF-16") {
+		AppendToLogs(A_ThisFunc "(): Wrong ini file encoding (" hINI.Encoding "). Making backup and creating new file with UTF-16 encoding.")
+		data := hINI.Read()
+		hINI.Close()   
+
+		SplitPath, iniFile, , folder
+		FileMove,% iniFile,% folder "\" A_Now "_Preferences.ini", 1
+
+		hINI2 := FileOpen(iniFile, "w", "UTF-16")
+		hINI2.Write(Data)
+	}
+}
+
+Get_LocalSettings_DefaultValues() {
 	global PROGRAM
 
 	settings := {}
