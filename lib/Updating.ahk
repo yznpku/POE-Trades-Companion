@@ -1,4 +1,14 @@
-﻿IsUpdateAvailable() {
+﻿IsStableBetter(stable, beta) {
+	isStableBetter := False
+	
+	stableSubVers := StrSplit(stable, "."), betaSubVers := StrSplit(beta, "."), currentSubVers := StrSplit(PROGRAM.VERSION, ".")
+	if (betaSubVers.1 = stableSubVers.1 && betaSubVers.2 = stableSubVers.2) || (betaSubVers.1 = currentSubVers.1 && betaSubVers.2 = currentSubVers.2)
+		isStableBetter := True
+
+	return isStableBetter
+}
+
+IsUpdateAvailable() {
 	global PROGRAM
 	iniFile := PROGRAM.INI_FILE
 
@@ -20,8 +30,7 @@
 			latestStable := recentRels[index], foundStableTag := True
 	}
 	stableTag := latestStable.tag_name, betaTag := latestBeta.tag_name
-	stableSubVers := StrSplit(stableTag, "."), betaSubVers := StrSplit(betaTag, "."), currentSubVers := StrSplit(PROGRAM.VERSION, ".")
-	if (useBeta) && ( (betaSubVers.1 = stableSubVers.1 && betaSubVers.2 = stableSubVers.2) || (betaSubVers.1 = currentSubVers.1 && betaSubVers.2 = currentSubVers.2) )
+	if (useBeta && IsStableBetter(stableTag, betaTag))
 		isStableBetter := True
 
 	INI.Set(iniFile, "UPDATING", "LatestStable", stableTag)
