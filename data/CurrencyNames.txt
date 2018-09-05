@@ -11,11 +11,13 @@ Ancient City
 Ancient Orb
 Ancient Reliquary Key
 Annulment Shard
+Apprentice Cartographer's Sextant
 Arachnid Nest
 Arachnid Tomb
 Arcade
 Arena
 Arid Lake
+Armourer's Scrap
 Armoury
 Arsenal
 Ashen Wood
@@ -32,6 +34,8 @@ Belfry
 Bestiary Orb
 Beyond
 Birth of the Three
+Blacksmith's Whetstone
+Blessed Orb
 Blessing of Chayula
 Blessing of Esh
 Blessing of God
@@ -51,6 +55,7 @@ Caldera
 Call to the First Ones
 Canyon
 Carcass
+Cartographer's Chisel
 Cartographer's Delight
 Castle Ruins
 Catacombs
@@ -58,9 +63,11 @@ Cavern
 Cells
 Cemetery
 Channel
+Chaos Orb
 Chaotic Disposition
 Chateau
 Chayula's Breachstone
+Chromatic Orb
 City Square
 Colonnade
 Colosseum
@@ -104,6 +111,7 @@ Desert Spring
 Destined to Crumble
 Dialla's Subjugation
 Dig
+Divine Orb
 Divine Vessel
 Doedre's Madness
 Domination
@@ -111,6 +119,7 @@ Dunes
 Dungeon
 Dying Anguish
 Earth Drinker
+Eber's Key
 Emperor of Purity
 Emperor's Luck
 Engineer's Orb
@@ -121,6 +130,8 @@ Essence of Horror
 Essence of Hysteria
 Essence of Insanity
 Estuary
+Eternal Orb
+Exalted Orb
 Exalted Shard
 Excavation
 Factory
@@ -128,11 +139,17 @@ Fields
 Flooded Mine
 Forbidden Power
 Forge of the Phoenix
+Fragment of the Chimera
+Fragment of the Hydra
+Fragment of the Minotaur
+Fragment of the Phoenix
 Gardens
+Gemcutter's Prism
 Gemcutter's Promise
 Geode
 Ghetto
 Gift of the Gemling Queen
+Glassblower's Bauble
 Glimmer of Hope
 Gorge
 Grave Knowledge
@@ -156,8 +173,11 @@ Iceberg
 Immortal Resolve
 Infested Valley
 Invasion
+Inya's Key
 Ivory Temple
 Jack in the Box
+Jeweller's Orb
+Journeyman Cartographer's Sextant
 Jungle Valley
 Laboratory
 Lair
@@ -179,6 +199,7 @@ Lucky Deck
 Lysah's Respite
 Malformation
 Marshes
+Master Cartographer's Sextant
 Mausoleum
 Mawr Blaidd
 Maze
@@ -187,9 +208,14 @@ Merciless Armament
 Mesa
 Might is Right
 Mineral Pools
+Mirror of Kalandra
 Mirror Shard
 Mitts
 Moon Temple
+Mortal Grief
+Mortal Hope
+Mortal Ignorance
+Mortal Rage
 Mortal set
 Mud Geyser
 Museum
@@ -198,10 +224,19 @@ Necropolis
 Nemesis
 No Traces
 Oasis
+Offering to the Goddess
 Onslaught
+Orb of Alchemy
+Orb of Alteration
 Orb of Annulment
+Orb of Augmentation
 Orb of Binding
+Orb of Chance
+Orb of Fusing
 Orb of Horizons
+Orb of Regret
+Orb of Scouring
+Orb of Transmutation
 Orchard
 Overgrown Ruin
 Overgrown Shrine
@@ -211,6 +246,7 @@ Park
 Pen
 Peninsula
 Perandus
+Perandus Coin
 Perfection
 Phantasmagoria
 Pier
@@ -219,6 +255,7 @@ Pit of the Chimera
 Plateau
 Plaza
 Port
+Portal Scroll
 Precinct
 Pride Before the Fall
 Primordial Pool
@@ -233,12 +270,17 @@ Rampage
 Ramparts
 Rats
 Reef
+Regal Orb
 Reinforced Iron Net
 Reinforced Rope Net
 Reinforced Steel Net
 Relic Chambers
 Remnant of Corruption
 Residence
+Sacrifice at Dawn
+Sacrifice at Dusk
+Sacrifice at Midnight
+Sacrifice at Noon
 Sacrifice set
 Scholar of the Seas
 Screaming Essence of Anger
@@ -262,6 +304,7 @@ Screaming Essence of Woe
 Screaming Essence of Wrath
 Screaming Essence of Zeal
 Scriptorium
+Scroll of Wisdom
 Sepulchre
 Sewer
 Shaped Academy
@@ -408,6 +451,7 @@ Shrieking Essence of Wrath
 Shrieking Essence of Zeal
 Shrine
 Siege
+Silver Coin
 Simple Iron Net
 Simple Rope Net
 Simple Steel Net
@@ -600,6 +644,7 @@ Underground River
 Underground Sea
 Uul-Netol's Breachstone
 Vaal City
+Vaal Orb
 Vaal Pyramid
 Vaal Temple
 Vault
@@ -616,6 +661,7 @@ Villa
 Vinia's Token
 Volatile Power
 Volcano
+Volkuur's Key
 Warbands
 Waste Pool
 Wasteland
@@ -623,3 +669,4 @@ Waterways
 Wealth and Power
 Wharf
 Xoph's Breachstone
+Yriel's Key

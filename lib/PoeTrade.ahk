@@ -71,12 +71,14 @@ PoeTrade_GetCurrencyData(createData=False) {
                     currenciesObj[curTitle]["Abridged"] := curDataTitle
                     currenciesObj[curTitle]["ID"] := curDataID
                 }
-                if (curDataTitle) {
+                if (curDataTitle && curDataTitle != curTitle) {
+                    currenciesObj[curDataTitle] := {}
                     currenciesObj[curDataTitle] := curTitle
                 }
+
                 curTitle := "", curDataTitle := "", curDataID := ""
             }
-            else 
+            else
                 Break
         }
     }
@@ -95,21 +97,23 @@ PoeTrade_GetCurrencyData(createData=False) {
         jsonData := "{`n"
         for key, value in currenciesObj {
             fName := currenciesObj[key].Full, cID := currenciesObj[key].ID, sName := currenciesObj[key].Abridged
-                    
-            if (sName != fName) {
+
+            if (sName && fName && cID) && (sName != fName) {
                 jsonData .= A_Tab """" fName """: {"
                 . "`n" A_Tab A_Tab """Abridged"": " """" sName ""","
                 . "`n" A_Tab A_Tab """ID"": " """" cID """"
                 . "`n" A_Tab "},"
                 . "`n" A_Tab """" sName """: """ fName """,`n"
             }
-            else {
+            else if (fName && cID) {
                 jsonData .= A_Tab """" fName """: {"
                 . "`n" A_Tab A_Tab """ID"": " """" cID """"
                 .  "`n" A_Tab "},`n"
-
-                txtData .= txtData?"`n" fName : fName
             }
+
+            if (fName)
+                txtData .= txtData?"`n" fName : fName
+            
         }
         StringTrimRight, jsonData, jsonData, 2
         jsonData .= "`n}"
@@ -217,7 +221,7 @@ PoeTrade_ParseSource(html) {
             {
                 RegExMatch(tBody, "iO)data-" A_LoopField "=""(.*?)""", foundPat)
                 saleObj[A_LoopField] := foundPat.1
-                msgbox % foundPat.1
+                ; msgbox % foundPat.1
             }
             
             ; PoeTrade_CompareItemDatas(saleObj, tcObj)
