@@ -1102,8 +1102,8 @@
 		global PROGRAM, SKIN
 		accounts := PROGRAM.SETTINGS.SETTINGS_MAIN.PoeAccounts
 
-		if RegExMatch(tabInfos.Item, "iO)$(\d+) (\D+)", itemPat) { ; its a currency trade
-			RegExMatch(tabInfos.Price, "iO)$(\d+) (\D+)", pricePat)
+		if RegExMatch(tabInfos.Item, "iO)(\d+\.\d+|\d+) (\D+)", itemPat) { ; its a currency trade
+			RegExMatch(tabInfos.Price, "iO)(\d+\.\d+|\d+) (\D+)", pricePat)
 			wantCount := itemPat.1, wantWhat := itemPat.2
 			wantCurInfos := Get_CurrencyInfos(wantWhat)
 			wantFullName := wantCurInfos.Name, wantID := PROGRAM["DATA"]["POETRADE_CURRENCY_DATA"][wantFullName].ID, isWantListed := wantCurInfos.Is_Listed
@@ -1180,7 +1180,7 @@
 			itemQualNoPercent := StrReplace(tabInfos.ItemQuality, "%", "")
 			RegExMatch(tabInfos.StashPosition, "O)(.*);(.*)", stashPosPat)
 			stashPosX := stashPosPat.1, stashPosY := stashPosPat.2
-			RegExMatch(tabInfos.Price, "O)(\d+)(\D+)", pricePat)
+			RegExMatch(tabInfos.Price, "O)(\d+\.\d+|\d+) (\D+)", pricePat)
 			priceNum := pricePat.1, priceCurrency := pricePat.2
 			AutoTrimStr(priceNum, pricePat)
 			
