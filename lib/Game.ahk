@@ -90,19 +90,7 @@ Send_GameMessage(actionType, msgString, gamePID="") {
 	sendMsgMode := PROGRAM.SETTINGS.SETTINGS_MAIN.SendMsgMode
 
 ;	Retrieve the virtual key id for chat opening
-	chatVK := GAME.SETTINGS.ChatKey_VK
-	if (!chatVK) {
-		MsgBox(4096, PROGRAM.NAME " - Operation Cancelled.", "Could not detect the chat key!"
-		. "`nKey Name: " GAME.SETTINGS.ChatKey_Name
-		. "`nKey VK: " GAME.SETTINGS.ChatKey_VK
-		. "`nKey SC: " GAME.SETTINGS.ChatKey_SC
-		. "`n"
-		. "`nPlease send me an archive containing the Logs folder."
-		. "`nYou can find links to GitHub / GGG / Reddit in the [About?] tray menu."
-		. "`n`n(The local folder containing the Logs folder will open upon closing this box).")
-		Run, % PROGRAM.MAIN_FOLDER
-		Return 1
-	}
+	chatVK := GAME.SETTINGS.ChatKey_VK ? GAME.SETTINGS.ChatKey_VK : "0xD"
 
 	titleMatchMode := A_TitleMatchMode
 	SetTitleMatchMode, RegEx ; RegEx = Fix some case where specifying only the pid does not work
