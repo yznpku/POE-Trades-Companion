@@ -1660,8 +1660,24 @@
 
 	SetTransparencyPercent(transPercent) {
 		global GuiTrades
+
+		if !IsNum(transPercent) {
+			AppendToLogs(A_ThisFunc "(transPercent=" transPercent "): Not a number. Setting transparency to max.")
+			transValue := 255
+		}
+		else
+			transValue := (255/100)*transPercent
+
 		Gui, Trades:+LastFound
-		WinSet, Transparent,% (255/100)*transPercent
+		WinSet, Transparent,% transValue
+	}
+
+	SetTransparency_Automatic() {
+		global GuiTrades
+		if (GuiTrades.Tabs_Count = 0)
+			GUI_Trades.SetTransparency_Inactive()
+		else
+			GUI_Trades.SetTransparency_Active()
 	}
 
 	SetTransparency_Inactive() {

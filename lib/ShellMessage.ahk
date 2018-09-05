@@ -51,8 +51,7 @@ ShellMessage(wParam,lParam) {
 				}
 
 				if (activeWinExe && IsIn(activeWinExe, POEGameList)) || (activeWinHwnd && GuiSettings.Handle && activeWinHwnd = GuiSettings.Handle) {
-					Gui_Trades.SetTransparencyPercent(100)
-					Gui_Trades.Disable_ClickThrough()
+					Gui_Trades.SetTransparency_Automatic()
 					Gui, Trades:Show, NoActivate
 				}
 				else
