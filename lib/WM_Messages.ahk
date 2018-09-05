@@ -133,6 +133,8 @@ WM_MOUSEMOVE() {
 	static _mouseX, _mouseY, _prevMouseX, _prevMouseY, _prevInfos
 	static curControl, prevControl
 
+	resDPI := PROGRAM.OS.RESOLUTION_DPI
+
 	MouseGetPos, _mouseX, _mouseY
 	if (_mouseX = _prevMouseX) && (_mouseY = _prevMouseY)
 		Return
@@ -171,6 +173,8 @@ WM_MOUSEMOVE() {
 		if (MOUSEDRAG_CTRL) {
 			Set_Format("Float", "0")
 			MouseGetPos, mouseX, mouseY
+			mouseX := mouseX - ((mouseX * resDPI) - mouseX)
+			mouseY := mouseY - ((mouseY * resDPI) - mouseY)
 
 			distance := 0, smallestDistance := 9999
 

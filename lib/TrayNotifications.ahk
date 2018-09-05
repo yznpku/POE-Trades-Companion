@@ -55,6 +55,9 @@
 		static
 		global SKIN
 		global TrayNotifications_Handles
+		global PROGRAM
+
+		resDPI := PROGRAM.OS.RESOLUTION_DPI
 
 	;	Monitor infos
 		local MonitorCount, MonitorPrimary, MonitorWorkArea
@@ -131,8 +134,8 @@
 		Gui, TrayNotification%index%:Add, Text,% "xm+10" " ym+35" " w" textWidthMax " BackgroundTrans ca5a5a5",% msg
 		Gui, TrayNotification%index%:Add, Picture, x5 y5 w24 h24 hwndhIcon,% SKIN.Assets.Misc.Icon
 
-		showX := MonitorWorkAreaRight-guiWidth-10
-		showY := MonitorWorkAreaBottom-guiHeight-10
+		showX := MonitorWorkAreaRight - ( (guiWidth+10)*resDPI )
+		showY := MonitorWorkAreaBottom - ( (guiHeight+10)*resDPI )
 		showW := guiWidth, showH := guiHeight
 		Gui, TrayNotification%index%:Show,% "x" showX " y" showY " w" showW " h" showH " NoActivate"
 
@@ -141,7 +144,7 @@
 				local winHandle := TrayNotifications_Handles[A_Index]
 				if WinExist("ahk_id " winHandle) {
 					WinGetPos, , _y, , _h, ahk_id %winHandle%
-					WinMove, ahk_id %winHandle%, , ,% _y-guiHeight-10
+					WinMove, ahk_id %winHandle%, , ,% _y- ((guiHeight+10)*resDPI)
 				}
 			}
 		}

@@ -33,6 +33,7 @@
 		static guiCreated, maxTabsToRender
 
 		scaleMult := PROGRAM.SETTINGS.SETTINGS_CUSTOMIZATION_SKINS.ScalingPercentage / 100
+		resDPI := PROGRAM.OS.RESOLUTION_DPI 
 
 		; Free ImageButton memory
 		for key, value in GuiTrades_Controls
@@ -121,6 +122,10 @@
 
 		TabUnderline_X := leftMost, TabUnderline_Y := TabButton1_Y+TabButton1_H, TabUnderline_W := guiWidth, TabUnderline_H := 2 ; TO_DO why cant i scaleMult TabUnderline_H?
 
+		; Background img
+		BackgroundImg_X := leftMost, BackgroundImg_Y := Header_Y+Header_H
+		BackgroundImg_W := Ceil( (guiWidth*reSDPI) ), BackgroundImg_H := (guiHeight-Header_H)*resDPI
+
 		; Trade infos text pos + time slot auto size
 		TradeInfos_X := leftMost+5, TradeInfos_Y := TabUnderline_Y+TabUnderline_H+5, TradeInfos_W := guiWidth-TradeInfos_X-5
 		Loop 10 { ; from 0 to 9
@@ -190,8 +195,8 @@
 		}
 
 			; = = BACKGROUND = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
-		Gui.Add("Trades", "Picture", "x" leftMost " y" upMost " hwndhIMG_Background BackgroundTrans", SKIN.Assets.Misc.Background)
-		TilePicture("Trades", GuiTrades_Controls.hIMG_Background, guiWidth, guiHeight) ; Fill the background
+		Gui.Add("Trades", "Picture", "x" BackgroundImg_X " y" BackgroundImg_Y " hwndhIMG_Background BackgroundTrans", SKIN.Assets.Misc.Background)
+		TilePicture("Trades", GuiTrades_Controls.hIMG_Background, BackgroundImg_W, BackgroundImg_H) ; Fill the background
 
 		; = = TITLE BAR = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 		Gui.Add("Trades", "Picture", "x" Header_X " y" Header_Y " w" Header_W " h" Header_H " hwndhIMG_Header BackgroundTrans", SKIN.Assets.Misc.Header) ; Title bar
@@ -327,7 +332,7 @@
 
 		isModeWindowed := PROGRAM.SETTINGS.SETTINGS_MAIN.TradesGUI_Mode = "Window" ? True : False
 		savedXPos := PROGRAM.SETTINGS.SETTINGS_MAIN.Pos_X, savedYPos := PROGRAM.SETTINGS.SETTINGS_MAIN.Pos_Y
-		winXPos := IsNum(savedXPos) && isModeWindowed ? savedXPos : A_ScreenWidth-guiFullWidth
+		winXPos := IsNum(savedXPos) && isModeWindowed ? savedXPos : (A_ScreenWidth-guiFullWidth)*resDPI
 		winYPos := IsNum(savedYPos) && isModeWindowed ? savedYPos : 0
 
 		if (imageBtnLog) {
@@ -1607,8 +1612,9 @@
 
 	Maximize(skipAnimation="") {
 		global GuiTrades, GuiTrades_Controls
+		global PROGRAM
 
-		WinMove,% "ahk_id " GuiTrades.Handle, , , , ,% GuiTrades.Height_Maximized ; change size first to avoid btn flicker
+		WinMove,% "ahk_id " GuiTrades.Handle, , , , ,% GuiTrades.Height_Maximized * PROGRAM.OS.RESOLUTION_DPI ; change size first to avoid btn flicker
 
 		GuiControl, Trades:Show,% GuiTrades_Controls.hBTN_Minimize
 		GuiControl, Trades:Hide,% GuiTrades_Controls.hBTN_Maximize
@@ -1623,8 +1629,9 @@
 
 	Minimize(skipAnimation="") {
 		global GuiTrades, GuiTrades_Controls
+		global PROGRAM
 		
-		WinMove,% "ahk_id " GuiTrades.Handle, , , , ,% GuiTrades.Height_Minimized
+		WinMove,% "ahk_id " GuiTrades.Handle, , , , ,% GuiTrades.Height_Minimized * PROGRAM.OS.RESOLUTION_DPI
 
 		GuiControl, Trades:Show,% GuiTrades_Controls.hBTN_Maximize
 		GuiControl, Trades:Hide,% GuiTrades_Controls.hBTN_Minimize
@@ -1684,9 +1691,9 @@
 		global PROGRAM, GuiTrades
 
 		try {
-			Gui, Trades:Show,% "NoActivate x" Floor(A_ScreenWidth-GuiTrades.Width) " y0"
+			Gui, Trades:Show,% "NoActivate x" Ceil(A_ScreenWidth - (GuiTrades.Width * PROGRAM.OS.RESOLUTION_DPI) ) " y0"
 			if !(dontWrite) {
-				INI.Set(PROGRAM.INI_FILE, "SETTINGS_MAIN", "Pos_X", Floor(A_ScreenWidth-GuiTrades.Width) )
+				INI.Set(PROGRAM.INI_FILE, "SETTINGS_MAIN", "Pos_X", Ceil(A_ScreenWidth - (GuiTrades.Width * PROGRAM.OS.RESOLUTION_DPI) ) )
 				INI.Set(PROGRAM.INI_FILE, "SETTINGS_MAIN", "Pos_Y", 0)
 			}
 		}
