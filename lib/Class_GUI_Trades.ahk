@@ -255,7 +255,7 @@
 		__f := GUI_Trades.ScrollTabs.bind(GUI_Trades, "Right")
 		GuiControl, Trades:+g,% GuiTrades_Controls["hBTN_RightArrow"],% __f
 
-		__f := GUI_Trades.RemoveTab.bind(GUI_Trades, "")
+		__f := GUI_Trades.RemoveTab.bind(GUI_Trades, tabName:="", massRemove:=False)
 		GuiControl, Trades:+g,% GuiTrades_Controls["hBTN_CloseTab"],% __f
 
 			; = = TABS CONTENT = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
@@ -1593,18 +1593,16 @@
 				GuiControl, Trades:-Disabled,% GuiTrades["Tab_" A_Index]
 		}
 
-
+		tabContent := GUI_Trades.GetTabContent(tabName)
+		if (tabContent.IsBuyerInvited = True)
+			GUI_Trades.ShowActiveTabItemGrid()
+		else
+			GUI_Trades.DestroyItemGrid()
 		; Don't do these if only the tab style changed.
 		; Avoid an issue where upon removing a tab, it would copy the item infos again due to the tab style func re-activating the tab
-		if (styleChanged) {
+		if (styleChanged=False) {
 			if (PROGRAM.SETTINGS.SETTINGS_MAIN.CopyItemInfosOnTabChange = "True" && IsNum(tabName))
 				Gui_Trades.CopyItemInfos(tabName)
-
-			tabContent := GUI_Trades.GetTabContent(tabName)
-			if (tabContent.IsBuyerInvited = True)
-				GUI_Trades.ShowActiveTabItemGrid()
-			else
-				GUI_Trades.DestroyItemGrid()
 		}
 
 		GuiTrades.Active_Tab := tabName
