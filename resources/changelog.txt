@@ -1,9 +1,46 @@
+1.13.2 (06 Sept 2018)
+
+
+	Changes:
+	- Fonts that could not be loaded by the app will no longer appear in the Settings menu.
+	- If your button contains a "Copy tab item infos" action, it will only be done once all actions are finished.
+	This is also done to fix the issue described above, but it would send the item name instead.
+	- Minor visual adjustments in the Settings GUI.
+	- No longer reset the clipboard after clicking on a button.
+	This is done in order to fix an issue where it wouldn't send any message at all.
+	- Improvements to assets extracting.
+	In case files fails to extract, you will only be greeted by a single message box instead of one for each file.
+	- Minor improvements to logging.
+
+	Fixes:
+	- The item grid would appear upon clicking the small "Trade" button instead of the "Invite" button.
+	- Fonts added by the user would have their size/quality as "ERROR" instead of the default values.
+	- Price verify: Some currency names would not be detected as "valid". Additionally, fixed an issue where it would be unable to check items where the price contains a decimal number.
+	- Upon enabling Advanced Hotkeys, if one of them didn't have a key bound to it, any following hotkeys would not be enabled.
+	- Using the "Only show while in game" setting, transparency settings would not work correctly.
+	- The Item Grid (aka Stash Highlight) would not disappear upon closing a tab.
+	- %itemPrice% would send the item name instead of its price.
+	- Various issues related to OS Scaling.
+	The background image would be too small. This would cause the GUI to appear "cut" in height.
+	When resetting the Trades GUI to the top right of the monitor, it would be too far on the right.
+	Tray notifications would not appear on the correct position. They would appear too far to the right, and to the bottom.
+	Moving Custom Buttons from the Settings GUI would be a bit buggy.
+	- Would be unable to use cyrillic characters.
+	This was due to the wrong encoding of the Preferences.ini file.
+	If you are having this issue, your file format will automatically be converted on the application's start.
+	You can then re-configure your hotkeys/buttons that used such characters and they will be saved correctly.
+	- In  the Settings' Updating tab, the top box would always say "You are up to date".
+	This was only a visual bug, it was not interfering with updating in any way.
+	- The game chat key is now correctly defaulting to ENTER if it couldn't be detected.
+
+
+= = = = = = = = = = = = =	
 1.13.1 (01 Sept 2018)
 
 	If you are stuck unable to use the tool due to the Import GUI not showing up, please download this update manually.
 	Update checking is done after showing the said GUI, and so you wouldn't be able to autoupdate.
 
-Fixes:
+	Fixes:
 	- Toggling off the automatic whisper setting would only make it so you don't have to press CTRL.
 	Having the setting disabled will now correclty disable this feature.
 	- Could fail to show the import GUI on startup.
