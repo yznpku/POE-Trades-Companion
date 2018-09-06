@@ -3443,7 +3443,7 @@ Class GUI_Settings {
 		; Set groupbox title
 		isStableBetter := IsStableBetter(thisTabSettings.LatestStable, thisTabSettings.LatestBeta)
 		updAvailable := isStableBetter ? thisTabSettings.LatestStable: thisTabSettings.LatestBeta
-		if (updAvailable != PROGRAM.VERSION)
+		if (updAvailable != PROGRAM.VERSION && updAvailable)
 			GuiControl, Settings:,% GuiSettings_Controls.hGB_UpdateCheck,% updAvailable " is available!"
 		else GuiControl, Settings:,% GuiSettings_Controls.hGB_UpdateCheck,% "You are up to date!"
 
