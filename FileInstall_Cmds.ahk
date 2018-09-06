@@ -4474,5 +4474,6 @@ if (ErrorLevel) {
 
 if (errorLog)
 	MsgBox, 4096, POE Trades Companion,% "One or multiple files failed to be extracted. Please check the logs file for details."
-	.	"H:\UserLibrary\Documents\lemasato\POE Trades Companion\Logs\2018-09-06 13h37m32s.txt"
+	.	PROGRAM.LOGS_FILE 
+
 }

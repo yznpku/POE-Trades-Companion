@@ -138,7 +138,8 @@
 	. "`n"	
 	. "`n"	"if (errorLog)"
 	. "`n"	"	MsgBox, 4096, POE Trades Companion,% ""One or multiple files failed to be extracted. Please check the logs file for details."""
-	. "`n"	"	.	""" PROGRAM.LOGS_FILE """"
+	. "`n"	"	.	PROGRAM.LOGS_FILE "
+	. "`n"
 	. "`n"	"}"
 
 ;	ADD TO FILE
