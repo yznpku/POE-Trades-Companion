@@ -526,7 +526,7 @@
 
 				if (actionType) {
 					Do_Action(actionType, actionContent)
-					if (actionType = "TRADE_BUYER")
+					if (actionType = "INVITE_BUYER")
 						GUI_Trades.ShowActiveTabItemGrid()
 				}
 			}
