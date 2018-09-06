@@ -50,12 +50,16 @@ FileInstall(source, dest, flag=0) {
 		appendToFile .= "FileInstall, " sourceNoQuotes ", " destWithPercent ", " flag
 	}
 
+	errorTxt := """Failed to extract file!"""
+		.	"`n	.	""``nSource: " sourceNoQuotes """"
+		.	"`n	.	""``nDest: "" " dest
+		.	"`n	.	""``nFlag: "" " flag
+
 	appendToFile .= ""
-	. "`n"			"if (ErrorLevel)"
-	. "`n"			"	Msgbox % ""Failed to extract file!"""
-	. "`n"			"	. ""``nSource: " sourceNoQuotes """"
-	. "`n"			"	. ""``nDest: "" " dest 
-	. "`n"			"	. ""``nFlag: " flag """"
+	. "`n"			"if (ErrorLevel) {"
+	. "`n"			"	AppendToLogs(" errorTxt ")"
+	. "`n"			"	errorLog .= ""``n``n""" errorTxt
+	. "`n"			"}"
 
 	appendToFile .= "`n`n; ----------------------------`n"
 	Return appendToFile

@@ -15,6 +15,7 @@
 ;	Pass PROGRAM to file
 	appendToFile .= ""
 	.		"if (!A_IsCompiled && A_ScriptName = ""FileInstall_Cmds.ahk"") {"
+	. "`n"	"	#Include %A_ScriptDir%/lib/Logs.ahk"
 	. "`n"	"	#Include %A_ScriptDir%/lib/third-party/Get_ResourceSize.ahk"
 	. "`n"
 	. "`n"	"	if (!PROGRAM)"
@@ -133,13 +134,18 @@
 	}
 
 	; - - - - 
-	appendToFile .= "`n}"
+	appendToFile .= ""
+	. "`n"	
+	. "`n"	"if (errorLog)"
+	. "`n"	"	MsgBox, 4096, POE Trades Companion,% ""One or multiple files failed to be extracted. Please check the logs file for details."""
+	. "`n"	"	.	""" PROGRAM.LOGS_FILE """"
+	. "`n"	"}"
 
 ;	ADD TO FILE
 	FileAppend,% appendToFile "`n",% installFile
 	Sleep 10
 
-	RunWait,% installFile " /f"
+	RunWait,% installFile " /r"
 	.		" /MAIN_FOLDER=" 	"""" PROGRAM.MAIN_FOLDER """"
 	.		" /SFX_FOLDER=" 	"""" PROGRAM.SFX_FOLDER """"
 	.		" /LOGS_FOLDER=" 	"""" PROGRAM.LOGS_FOLDER """"
@@ -147,5 +153,6 @@
 	.		" /FONTS_FOLDER=" 	"""" PROGRAM.FONTS_FOLDER """"
 	.		" /DATA_FOLDER=" 	"""" PROGRAM.DATA_FOLDER """"
 	.		" /IMAGES_FOLDER=" 	"""" PROGRAM.IMAGES_FOLDER """"
-	.		" /ICONS_FOLDER=" 	"""" PROGRAM.ICONS_FOLDER """",% A_ScriptDir
+	.		" /ICONS_FOLDER=" 	"""" PROGRAM.ICONS_FOLDER """"
+	.		" /LOGS_FILE="		"""" PROGRAM.LOGS_FILE """",% A_ScriptDir
 }

@@ -1,4 +1,5 @@
 ﻿if (!A_IsCompiled && A_ScriptName = "FileInstall_Cmds.ahk") {
+	#Include %A_ScriptDir%/lib/Logs.ahk
 	#Include %A_ScriptDir%/lib/third-party/Get_ResourceSize.ahk
 
 	if (!PROGRAM)
@@ -36,11 +37,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, lib\third-party\curl.exe, % PROGRAM.MAIN_FOLDER "\curl.exe", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: lib\third-party\curl.exe"
-	. "`nDest: " PROGRAM.MAIN_FOLDER "\curl.exe"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: lib\third-party\curl.exe"
+	.	"`nDest: " PROGRAM.MAIN_FOLDER "\curl.exe"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: lib\third-party\curl.exe"
+	.	"`nDest: " PROGRAM.MAIN_FOLDER "\curl.exe"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.DATA_FOLDER ""), "D")
@@ -56,11 +62,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, data\CurrencyNames.txt, % PROGRAM.DATA_FOLDER "\CurrencyNames.txt", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: data\CurrencyNames.txt"
-	. "`nDest: " PROGRAM.DATA_FOLDER "\CurrencyNames.txt"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: data\CurrencyNames.txt"
+	.	"`nDest: " PROGRAM.DATA_FOLDER "\CurrencyNames.txt"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: data\CurrencyNames.txt"
+	.	"`nDest: " PROGRAM.DATA_FOLDER "\CurrencyNames.txt"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.DATA_FOLDER ""), "D")
@@ -76,11 +87,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, data\poeTradeCurrencyData.json, % PROGRAM.DATA_FOLDER "\poeTradeCurrencyData.json", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: data\poeTradeCurrencyData.json"
-	. "`nDest: " PROGRAM.DATA_FOLDER "\poeTradeCurrencyData.json"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: data\poeTradeCurrencyData.json"
+	.	"`nDest: " PROGRAM.DATA_FOLDER "\poeTradeCurrencyData.json"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: data\poeTradeCurrencyData.json"
+	.	"`nDest: " PROGRAM.DATA_FOLDER "\poeTradeCurrencyData.json"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.MAIN_FOLDER ""), "D")
@@ -96,11 +112,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\changelog.txt, % PROGRAM.MAIN_FOLDER "\changelog.txt", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\changelog.txt"
-	. "`nDest: " PROGRAM.MAIN_FOLDER "\changelog.txt"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\changelog.txt"
+	.	"`nDest: " PROGRAM.MAIN_FOLDER "\changelog.txt"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\changelog.txt"
+	.	"`nDest: " PROGRAM.MAIN_FOLDER "\changelog.txt"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.MAIN_FOLDER ""), "D")
@@ -116,11 +137,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\changelog_beta.txt, % PROGRAM.MAIN_FOLDER "\changelog_beta.txt", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\changelog_beta.txt"
-	. "`nDest: " PROGRAM.MAIN_FOLDER "\changelog_beta.txt"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\changelog_beta.txt"
+	.	"`nDest: " PROGRAM.MAIN_FOLDER "\changelog_beta.txt"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\changelog_beta.txt"
+	.	"`nDest: " PROGRAM.MAIN_FOLDER "\changelog_beta.txt"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.MAIN_FOLDER ""), "D")
@@ -136,11 +162,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\icon.ico, % PROGRAM.MAIN_FOLDER "\icon.ico", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\icon.ico"
-	. "`nDest: " PROGRAM.MAIN_FOLDER "\icon.ico"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\icon.ico"
+	.	"`nDest: " PROGRAM.MAIN_FOLDER "\icon.ico"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\icon.ico"
+	.	"`nDest: " PROGRAM.MAIN_FOLDER "\icon.ico"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.FONTS_FOLDER ""), "D")
@@ -156,11 +187,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\fonts\Consolas.ttf, % PROGRAM.FONTS_FOLDER "\Consolas.ttf", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\fonts\Consolas.ttf"
-	. "`nDest: " PROGRAM.FONTS_FOLDER "\Consolas.ttf"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\fonts\Consolas.ttf"
+	.	"`nDest: " PROGRAM.FONTS_FOLDER "\Consolas.ttf"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\fonts\Consolas.ttf"
+	.	"`nDest: " PROGRAM.FONTS_FOLDER "\Consolas.ttf"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.FONTS_FOLDER ""), "D")
@@ -176,11 +212,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\fonts\Fontin-Regular.ttf, % PROGRAM.FONTS_FOLDER "\Fontin-Regular.ttf", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\fonts\Fontin-Regular.ttf"
-	. "`nDest: " PROGRAM.FONTS_FOLDER "\Fontin-Regular.ttf"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\fonts\Fontin-Regular.ttf"
+	.	"`nDest: " PROGRAM.FONTS_FOLDER "\Fontin-Regular.ttf"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\fonts\Fontin-Regular.ttf"
+	.	"`nDest: " PROGRAM.FONTS_FOLDER "\Fontin-Regular.ttf"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.FONTS_FOLDER ""), "D")
@@ -196,11 +237,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\fonts\Fontin-SmallCaps.ttf, % PROGRAM.FONTS_FOLDER "\Fontin-SmallCaps.ttf", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\fonts\Fontin-SmallCaps.ttf"
-	. "`nDest: " PROGRAM.FONTS_FOLDER "\Fontin-SmallCaps.ttf"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\fonts\Fontin-SmallCaps.ttf"
+	.	"`nDest: " PROGRAM.FONTS_FOLDER "\Fontin-SmallCaps.ttf"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\fonts\Fontin-SmallCaps.ttf"
+	.	"`nDest: " PROGRAM.FONTS_FOLDER "\Fontin-SmallCaps.ttf"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.FONTS_FOLDER ""), "D")
@@ -216,11 +262,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\fonts\Segoe UI.ttf, % PROGRAM.FONTS_FOLDER "\Segoe UI.ttf", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\fonts\Segoe UI.ttf"
-	. "`nDest: " PROGRAM.FONTS_FOLDER "\Segoe UI.ttf"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\fonts\Segoe UI.ttf"
+	.	"`nDest: " PROGRAM.FONTS_FOLDER "\Segoe UI.ttf"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\fonts\Segoe UI.ttf"
+	.	"`nDest: " PROGRAM.FONTS_FOLDER "\Segoe UI.ttf"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.FONTS_FOLDER ""), "D")
@@ -236,11 +287,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\fonts\Settings.ini, % PROGRAM.FONTS_FOLDER "\Settings.ini", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\fonts\Settings.ini"
-	. "`nDest: " PROGRAM.FONTS_FOLDER "\Settings.ini"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\fonts\Settings.ini"
+	.	"`nDest: " PROGRAM.FONTS_FOLDER "\Settings.ini"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\fonts\Settings.ini"
+	.	"`nDest: " PROGRAM.FONTS_FOLDER "\Settings.ini"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.FONTS_FOLDER ""), "D")
@@ -256,11 +312,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\fonts\TC_Symbols.ttf, % PROGRAM.FONTS_FOLDER "\TC_Symbols.ttf", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\fonts\TC_Symbols.ttf"
-	. "`nDest: " PROGRAM.FONTS_FOLDER "\TC_Symbols.ttf"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\fonts\TC_Symbols.ttf"
+	.	"`nDest: " PROGRAM.FONTS_FOLDER "\TC_Symbols.ttf"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\fonts\TC_Symbols.ttf"
+	.	"`nDest: " PROGRAM.FONTS_FOLDER "\TC_Symbols.ttf"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.ICONS_FOLDER ""), "D")
@@ -276,11 +337,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\icons\chart.ico, % PROGRAM.ICONS_FOLDER "\chart.ico", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\icons\chart.ico"
-	. "`nDest: " PROGRAM.ICONS_FOLDER "\chart.ico"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\icons\chart.ico"
+	.	"`nDest: " PROGRAM.ICONS_FOLDER "\chart.ico"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\icons\chart.ico"
+	.	"`nDest: " PROGRAM.ICONS_FOLDER "\chart.ico"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.ICONS_FOLDER ""), "D")
@@ -296,11 +362,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\icons\gear.ico, % PROGRAM.ICONS_FOLDER "\gear.ico", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\icons\gear.ico"
-	. "`nDest: " PROGRAM.ICONS_FOLDER "\gear.ico"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\icons\gear.ico"
+	.	"`nDest: " PROGRAM.ICONS_FOLDER "\gear.ico"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\icons\gear.ico"
+	.	"`nDest: " PROGRAM.ICONS_FOLDER "\gear.ico"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.ICONS_FOLDER ""), "D")
@@ -316,11 +387,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\icons\POE.ico, % PROGRAM.ICONS_FOLDER "\POE.ico", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\icons\POE.ico"
-	. "`nDest: " PROGRAM.ICONS_FOLDER "\POE.ico"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\icons\POE.ico"
+	.	"`nDest: " PROGRAM.ICONS_FOLDER "\POE.ico"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\icons\POE.ico"
+	.	"`nDest: " PROGRAM.ICONS_FOLDER "\POE.ico"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.ICONS_FOLDER ""), "D")
@@ -336,11 +412,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\icons\qmark.ico, % PROGRAM.ICONS_FOLDER "\qmark.ico", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\icons\qmark.ico"
-	. "`nDest: " PROGRAM.ICONS_FOLDER "\qmark.ico"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\icons\qmark.ico"
+	.	"`nDest: " PROGRAM.ICONS_FOLDER "\qmark.ico"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\icons\qmark.ico"
+	.	"`nDest: " PROGRAM.ICONS_FOLDER "\qmark.ico"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.ICONS_FOLDER ""), "D")
@@ -356,11 +437,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\icons\refresh.ico, % PROGRAM.ICONS_FOLDER "\refresh.ico", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\icons\refresh.ico"
-	. "`nDest: " PROGRAM.ICONS_FOLDER "\refresh.ico"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\icons\refresh.ico"
+	.	"`nDest: " PROGRAM.ICONS_FOLDER "\refresh.ico"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\icons\refresh.ico"
+	.	"`nDest: " PROGRAM.ICONS_FOLDER "\refresh.ico"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.ICONS_FOLDER ""), "D")
@@ -376,11 +462,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\icons\x.ico, % PROGRAM.ICONS_FOLDER "\x.ico", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\icons\x.ico"
-	. "`nDest: " PROGRAM.ICONS_FOLDER "\x.ico"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\icons\x.ico"
+	.	"`nDest: " PROGRAM.ICONS_FOLDER "\x.ico"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\icons\x.ico"
+	.	"`nDest: " PROGRAM.ICONS_FOLDER "\x.ico"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.IMAGES_FOLDER ""), "D")
@@ -396,11 +487,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\imgs\Discord.png, % PROGRAM.IMAGES_FOLDER "\Discord.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\imgs\Discord.png"
-	. "`nDest: " PROGRAM.IMAGES_FOLDER "\Discord.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\imgs\Discord.png"
+	.	"`nDest: " PROGRAM.IMAGES_FOLDER "\Discord.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\imgs\Discord.png"
+	.	"`nDest: " PROGRAM.IMAGES_FOLDER "\Discord.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.IMAGES_FOLDER ""), "D")
@@ -416,11 +512,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\imgs\DonatePaypal.png, % PROGRAM.IMAGES_FOLDER "\DonatePaypal.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\imgs\DonatePaypal.png"
-	. "`nDest: " PROGRAM.IMAGES_FOLDER "\DonatePaypal.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\imgs\DonatePaypal.png"
+	.	"`nDest: " PROGRAM.IMAGES_FOLDER "\DonatePaypal.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\imgs\DonatePaypal.png"
+	.	"`nDest: " PROGRAM.IMAGES_FOLDER "\DonatePaypal.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.IMAGES_FOLDER ""), "D")
@@ -436,11 +537,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\imgs\GitHub.png, % PROGRAM.IMAGES_FOLDER "\GitHub.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\imgs\GitHub.png"
-	. "`nDest: " PROGRAM.IMAGES_FOLDER "\GitHub.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\imgs\GitHub.png"
+	.	"`nDest: " PROGRAM.IMAGES_FOLDER "\GitHub.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\imgs\GitHub.png"
+	.	"`nDest: " PROGRAM.IMAGES_FOLDER "\GitHub.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.IMAGES_FOLDER ""), "D")
@@ -456,11 +562,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\imgs\POE.png, % PROGRAM.IMAGES_FOLDER "\POE.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\imgs\POE.png"
-	. "`nDest: " PROGRAM.IMAGES_FOLDER "\POE.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\imgs\POE.png"
+	.	"`nDest: " PROGRAM.IMAGES_FOLDER "\POE.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\imgs\POE.png"
+	.	"`nDest: " PROGRAM.IMAGES_FOLDER "\POE.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.IMAGES_FOLDER ""), "D")
@@ -476,11 +587,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\imgs\Reddit.png, % PROGRAM.IMAGES_FOLDER "\Reddit.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\imgs\Reddit.png"
-	. "`nDest: " PROGRAM.IMAGES_FOLDER "\Reddit.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\imgs\Reddit.png"
+	.	"`nDest: " PROGRAM.IMAGES_FOLDER "\Reddit.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\imgs\Reddit.png"
+	.	"`nDest: " PROGRAM.IMAGES_FOLDER "\Reddit.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SFX_FOLDER ""), "D")
@@ -496,11 +612,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\sfx\MM_Tatl_Gleam.wav, % PROGRAM.SFX_FOLDER "\MM_Tatl_Gleam.wav", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\sfx\MM_Tatl_Gleam.wav"
-	. "`nDest: " PROGRAM.SFX_FOLDER "\MM_Tatl_Gleam.wav"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\sfx\MM_Tatl_Gleam.wav"
+	.	"`nDest: " PROGRAM.SFX_FOLDER "\MM_Tatl_Gleam.wav"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\sfx\MM_Tatl_Gleam.wav"
+	.	"`nDest: " PROGRAM.SFX_FOLDER "\MM_Tatl_Gleam.wav"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SFX_FOLDER ""), "D")
@@ -516,11 +637,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\sfx\MM_Tatl_Hey.wav, % PROGRAM.SFX_FOLDER "\MM_Tatl_Hey.wav", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\sfx\MM_Tatl_Hey.wav"
-	. "`nDest: " PROGRAM.SFX_FOLDER "\MM_Tatl_Hey.wav"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\sfx\MM_Tatl_Hey.wav"
+	.	"`nDest: " PROGRAM.SFX_FOLDER "\MM_Tatl_Hey.wav"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\sfx\MM_Tatl_Hey.wav"
+	.	"`nDest: " PROGRAM.SFX_FOLDER "\MM_Tatl_Hey.wav"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SFX_FOLDER ""), "D")
@@ -536,11 +662,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\sfx\Rhodesmas_Notif_1.wav, % PROGRAM.SFX_FOLDER "\Rhodesmas_Notif_1.wav", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\sfx\Rhodesmas_Notif_1.wav"
-	. "`nDest: " PROGRAM.SFX_FOLDER "\Rhodesmas_Notif_1.wav"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\sfx\Rhodesmas_Notif_1.wav"
+	.	"`nDest: " PROGRAM.SFX_FOLDER "\Rhodesmas_Notif_1.wav"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\sfx\Rhodesmas_Notif_1.wav"
+	.	"`nDest: " PROGRAM.SFX_FOLDER "\Rhodesmas_Notif_1.wav"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SFX_FOLDER ""), "D")
@@ -556,11 +687,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\sfx\Rhodesmas_Notif_2.wav, % PROGRAM.SFX_FOLDER "\Rhodesmas_Notif_2.wav", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\sfx\Rhodesmas_Notif_2.wav"
-	. "`nDest: " PROGRAM.SFX_FOLDER "\Rhodesmas_Notif_2.wav"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\sfx\Rhodesmas_Notif_2.wav"
+	.	"`nDest: " PROGRAM.SFX_FOLDER "\Rhodesmas_Notif_2.wav"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\sfx\Rhodesmas_Notif_2.wav"
+	.	"`nDest: " PROGRAM.SFX_FOLDER "\Rhodesmas_Notif_2.wav"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SFX_FOLDER ""), "D")
@@ -576,11 +712,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\sfx\Rhodesmas_Up_1.wav, % PROGRAM.SFX_FOLDER "\Rhodesmas_Up_1.wav", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\sfx\Rhodesmas_Up_1.wav"
-	. "`nDest: " PROGRAM.SFX_FOLDER "\Rhodesmas_Up_1.wav"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\sfx\Rhodesmas_Up_1.wav"
+	.	"`nDest: " PROGRAM.SFX_FOLDER "\Rhodesmas_Up_1.wav"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\sfx\Rhodesmas_Up_1.wav"
+	.	"`nDest: " PROGRAM.SFX_FOLDER "\Rhodesmas_Up_1.wav"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SFX_FOLDER ""), "D")
@@ -596,11 +737,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\sfx\Rhodesmas_Up_2.wav, % PROGRAM.SFX_FOLDER "\Rhodesmas_Up_2.wav", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\sfx\Rhodesmas_Up_2.wav"
-	. "`nDest: " PROGRAM.SFX_FOLDER "\Rhodesmas_Up_2.wav"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\sfx\Rhodesmas_Up_2.wav"
+	.	"`nDest: " PROGRAM.SFX_FOLDER "\Rhodesmas_Up_2.wav"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\sfx\Rhodesmas_Up_2.wav"
+	.	"`nDest: " PROGRAM.SFX_FOLDER "\Rhodesmas_Up_2.wav"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SFX_FOLDER ""), "D")
@@ -616,11 +762,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\sfx\Rhodesmas_Up_3.wav, % PROGRAM.SFX_FOLDER "\Rhodesmas_Up_3.wav", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\sfx\Rhodesmas_Up_3.wav"
-	. "`nDest: " PROGRAM.SFX_FOLDER "\Rhodesmas_Up_3.wav"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\sfx\Rhodesmas_Up_3.wav"
+	.	"`nDest: " PROGRAM.SFX_FOLDER "\Rhodesmas_Up_3.wav"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\sfx\Rhodesmas_Up_3.wav"
+	.	"`nDest: " PROGRAM.SFX_FOLDER "\Rhodesmas_Up_3.wav"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SFX_FOLDER ""), "D")
@@ -636,11 +787,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\sfx\WW_MainMenu_CopyErase_Start.wav, % PROGRAM.SFX_FOLDER "\WW_MainMenu_CopyErase_Start.wav", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\sfx\WW_MainMenu_CopyErase_Start.wav"
-	. "`nDest: " PROGRAM.SFX_FOLDER "\WW_MainMenu_CopyErase_Start.wav"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\sfx\WW_MainMenu_CopyErase_Start.wav"
+	.	"`nDest: " PROGRAM.SFX_FOLDER "\WW_MainMenu_CopyErase_Start.wav"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\sfx\WW_MainMenu_CopyErase_Start.wav"
+	.	"`nDest: " PROGRAM.SFX_FOLDER "\WW_MainMenu_CopyErase_Start.wav"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SFX_FOLDER ""), "D")
@@ -656,11 +812,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\sfx\WW_MainMenu_Letter.wav, % PROGRAM.SFX_FOLDER "\WW_MainMenu_Letter.wav", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\sfx\WW_MainMenu_Letter.wav"
-	. "`nDest: " PROGRAM.SFX_FOLDER "\WW_MainMenu_Letter.wav"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\sfx\WW_MainMenu_Letter.wav"
+	.	"`nDest: " PROGRAM.SFX_FOLDER "\WW_MainMenu_Letter.wav"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\sfx\WW_MainMenu_Letter.wav"
+	.	"`nDest: " PROGRAM.SFX_FOLDER "\WW_MainMenu_Letter.wav"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SFX_FOLDER ""), "D")
@@ -676,11 +837,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\sfx\ZSS_Calibrate1.wav, % PROGRAM.SFX_FOLDER "\ZSS_Calibrate1.wav", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\sfx\ZSS_Calibrate1.wav"
-	. "`nDest: " PROGRAM.SFX_FOLDER "\ZSS_Calibrate1.wav"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\sfx\ZSS_Calibrate1.wav"
+	.	"`nDest: " PROGRAM.SFX_FOLDER "\ZSS_Calibrate1.wav"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\sfx\ZSS_Calibrate1.wav"
+	.	"`nDest: " PROGRAM.SFX_FOLDER "\ZSS_Calibrate1.wav"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SFX_FOLDER ""), "D")
@@ -696,11 +862,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\sfx\ZSS_Calibrate2.wav, % PROGRAM.SFX_FOLDER "\ZSS_Calibrate2.wav", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\sfx\ZSS_Calibrate2.wav"
-	. "`nDest: " PROGRAM.SFX_FOLDER "\ZSS_Calibrate2.wav"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\sfx\ZSS_Calibrate2.wav"
+	.	"`nDest: " PROGRAM.SFX_FOLDER "\ZSS_Calibrate2.wav"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\sfx\ZSS_Calibrate2.wav"
+	.	"`nDest: " PROGRAM.SFX_FOLDER "\ZSS_Calibrate2.wav"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SFX_FOLDER ""), "D")
@@ -716,11 +887,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\sfx\ZSS_Calibrate3.wav, % PROGRAM.SFX_FOLDER "\ZSS_Calibrate3.wav", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\sfx\ZSS_Calibrate3.wav"
-	. "`nDest: " PROGRAM.SFX_FOLDER "\ZSS_Calibrate3.wav"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\sfx\ZSS_Calibrate3.wav"
+	.	"`nDest: " PROGRAM.SFX_FOLDER "\ZSS_Calibrate3.wav"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\sfx\ZSS_Calibrate3.wav"
+	.	"`nDest: " PROGRAM.SFX_FOLDER "\ZSS_Calibrate3.wav"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SFX_FOLDER ""), "D")
@@ -736,11 +912,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\sfx\ZSS_Calibrate4.wav, % PROGRAM.SFX_FOLDER "\ZSS_Calibrate4.wav", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\sfx\ZSS_Calibrate4.wav"
-	. "`nDest: " PROGRAM.SFX_FOLDER "\ZSS_Calibrate4.wav"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\sfx\ZSS_Calibrate4.wav"
+	.	"`nDest: " PROGRAM.SFX_FOLDER "\ZSS_Calibrate4.wav"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\sfx\ZSS_Calibrate4.wav"
+	.	"`nDest: " PROGRAM.SFX_FOLDER "\ZSS_Calibrate4.wav"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Dark Blue"), "D")
@@ -756,11 +937,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\Dark Blue\ArrowLeft.png, % PROGRAM.SKINS_FOLDER "\Dark Blue\ArrowLeft.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Dark Blue\ArrowLeft.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\ArrowLeft.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\ArrowLeft.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\ArrowLeft.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\ArrowLeft.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\ArrowLeft.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Dark Blue"), "D")
@@ -776,11 +962,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\Dark Blue\ArrowLeftHover.png, % PROGRAM.SKINS_FOLDER "\Dark Blue\ArrowLeftHover.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Dark Blue\ArrowLeftHover.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\ArrowLeftHover.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\ArrowLeftHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\ArrowLeftHover.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\ArrowLeftHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\ArrowLeftHover.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Dark Blue"), "D")
@@ -796,11 +987,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\Dark Blue\ArrowLeftPress.png, % PROGRAM.SKINS_FOLDER "\Dark Blue\ArrowLeftPress.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Dark Blue\ArrowLeftPress.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\ArrowLeftPress.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\ArrowLeftPress.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\ArrowLeftPress.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\ArrowLeftPress.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\ArrowLeftPress.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Dark Blue"), "D")
@@ -816,11 +1012,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\Dark Blue\ArrowRight.png, % PROGRAM.SKINS_FOLDER "\Dark Blue\ArrowRight.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Dark Blue\ArrowRight.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\ArrowRight.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\ArrowRight.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\ArrowRight.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\ArrowRight.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\ArrowRight.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Dark Blue"), "D")
@@ -836,11 +1037,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\Dark Blue\ArrowRightHover.png, % PROGRAM.SKINS_FOLDER "\Dark Blue\ArrowRightHover.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Dark Blue\ArrowRightHover.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\ArrowRightHover.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\ArrowRightHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\ArrowRightHover.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\ArrowRightHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\ArrowRightHover.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Dark Blue"), "D")
@@ -856,22 +1062,32 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\Dark Blue\ArrowRightPress.png, % PROGRAM.SKINS_FOLDER "\Dark Blue\ArrowRightPress.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Dark Blue\ArrowRightPress.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\ArrowRightPress.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\ArrowRightPress.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\ArrowRightPress.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\ArrowRightPress.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\ArrowRightPress.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Dark Blue"), "D")
 	FileCreateDir,% PROGRAM.SKINS_FOLDER "\Dark Blue"
 
 FileInstall, resources\skins\Dark Blue\Assets.ini, % PROGRAM.SKINS_FOLDER "\Dark Blue\Assets.ini", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Dark Blue\Assets.ini"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\Assets.ini"
-	. "`nFlag: 1"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\Assets.ini"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\Assets.ini"
+	.	"`nFlag: " 1)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\Assets.ini"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\Assets.ini"
+	.	"`nFlag: " 1
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Dark Blue"), "D")
@@ -887,11 +1103,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\Dark Blue\Background.png, % PROGRAM.SKINS_FOLDER "\Dark Blue\Background.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Dark Blue\Background.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\Background.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\Background.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\Background.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\Background.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\Background.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Dark Blue"), "D")
@@ -907,11 +1128,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\Dark Blue\ButtonOneThird.png, % PROGRAM.SKINS_FOLDER "\Dark Blue\ButtonOneThird.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Dark Blue\ButtonOneThird.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\ButtonOneThird.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\ButtonOneThird.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\ButtonOneThird.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\ButtonOneThird.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\ButtonOneThird.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Dark Blue"), "D")
@@ -927,11 +1153,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\Dark Blue\ButtonOneThirdHover.png, % PROGRAM.SKINS_FOLDER "\Dark Blue\ButtonOneThirdHover.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Dark Blue\ButtonOneThirdHover.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\ButtonOneThirdHover.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\ButtonOneThirdHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\ButtonOneThirdHover.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\ButtonOneThirdHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\ButtonOneThirdHover.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Dark Blue"), "D")
@@ -947,11 +1178,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\Dark Blue\ButtonOneThirdPress.png, % PROGRAM.SKINS_FOLDER "\Dark Blue\ButtonOneThirdPress.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Dark Blue\ButtonOneThirdPress.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\ButtonOneThirdPress.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\ButtonOneThirdPress.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\ButtonOneThirdPress.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\ButtonOneThirdPress.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\ButtonOneThirdPress.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Dark Blue"), "D")
@@ -967,11 +1203,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\Dark Blue\ButtonSpecial.png, % PROGRAM.SKINS_FOLDER "\Dark Blue\ButtonSpecial.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Dark Blue\ButtonSpecial.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\ButtonSpecial.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\ButtonSpecial.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\ButtonSpecial.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\ButtonSpecial.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\ButtonSpecial.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Dark Blue"), "D")
@@ -987,11 +1228,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\Dark Blue\ButtonSpecialHover.png, % PROGRAM.SKINS_FOLDER "\Dark Blue\ButtonSpecialHover.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Dark Blue\ButtonSpecialHover.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\ButtonSpecialHover.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\ButtonSpecialHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\ButtonSpecialHover.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\ButtonSpecialHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\ButtonSpecialHover.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Dark Blue"), "D")
@@ -1007,11 +1253,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\Dark Blue\ButtonSpecialPress.png, % PROGRAM.SKINS_FOLDER "\Dark Blue\ButtonSpecialPress.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Dark Blue\ButtonSpecialPress.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\ButtonSpecialPress.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\ButtonSpecialPress.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\ButtonSpecialPress.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\ButtonSpecialPress.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\ButtonSpecialPress.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Dark Blue"), "D")
@@ -1027,11 +1278,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\Dark Blue\ButtonThreeThird.png, % PROGRAM.SKINS_FOLDER "\Dark Blue\ButtonThreeThird.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Dark Blue\ButtonThreeThird.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\ButtonThreeThird.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\ButtonThreeThird.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\ButtonThreeThird.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\ButtonThreeThird.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\ButtonThreeThird.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Dark Blue"), "D")
@@ -1047,11 +1303,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\Dark Blue\ButtonThreeThirdHover.png, % PROGRAM.SKINS_FOLDER "\Dark Blue\ButtonThreeThirdHover.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Dark Blue\ButtonThreeThirdHover.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\ButtonThreeThirdHover.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\ButtonThreeThirdHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\ButtonThreeThirdHover.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\ButtonThreeThirdHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\ButtonThreeThirdHover.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Dark Blue"), "D")
@@ -1067,11 +1328,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\Dark Blue\ButtonThreeThirdPress.png, % PROGRAM.SKINS_FOLDER "\Dark Blue\ButtonThreeThirdPress.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Dark Blue\ButtonThreeThirdPress.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\ButtonThreeThirdPress.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\ButtonThreeThirdPress.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\ButtonThreeThirdPress.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\ButtonThreeThirdPress.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\ButtonThreeThirdPress.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Dark Blue"), "D")
@@ -1087,11 +1353,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\Dark Blue\ButtonTwoThird.png, % PROGRAM.SKINS_FOLDER "\Dark Blue\ButtonTwoThird.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Dark Blue\ButtonTwoThird.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\ButtonTwoThird.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\ButtonTwoThird.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\ButtonTwoThird.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\ButtonTwoThird.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\ButtonTwoThird.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Dark Blue"), "D")
@@ -1107,11 +1378,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\Dark Blue\ButtonTwoThirdHover.png, % PROGRAM.SKINS_FOLDER "\Dark Blue\ButtonTwoThirdHover.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Dark Blue\ButtonTwoThirdHover.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\ButtonTwoThirdHover.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\ButtonTwoThirdHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\ButtonTwoThirdHover.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\ButtonTwoThirdHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\ButtonTwoThirdHover.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Dark Blue"), "D")
@@ -1127,11 +1403,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\Dark Blue\ButtonTwoThirdPress.png, % PROGRAM.SKINS_FOLDER "\Dark Blue\ButtonTwoThirdPress.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Dark Blue\ButtonTwoThirdPress.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\ButtonTwoThirdPress.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\ButtonTwoThirdPress.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\ButtonTwoThirdPress.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\ButtonTwoThirdPress.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\ButtonTwoThirdPress.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Dark Blue"), "D")
@@ -1147,11 +1428,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\Dark Blue\CloseTab.png, % PROGRAM.SKINS_FOLDER "\Dark Blue\CloseTab.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Dark Blue\CloseTab.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\CloseTab.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\CloseTab.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\CloseTab.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\CloseTab.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\CloseTab.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Dark Blue"), "D")
@@ -1167,11 +1453,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\Dark Blue\CloseTabHover.png, % PROGRAM.SKINS_FOLDER "\Dark Blue\CloseTabHover.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Dark Blue\CloseTabHover.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\CloseTabHover.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\CloseTabHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\CloseTabHover.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\CloseTabHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\CloseTabHover.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Dark Blue"), "D")
@@ -1187,11 +1478,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\Dark Blue\CloseTabPress.png, % PROGRAM.SKINS_FOLDER "\Dark Blue\CloseTabPress.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Dark Blue\CloseTabPress.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\CloseTabPress.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\CloseTabPress.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\CloseTabPress.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\CloseTabPress.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\CloseTabPress.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Dark Blue"), "D")
@@ -1207,11 +1503,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\Dark Blue\Header.png, % PROGRAM.SKINS_FOLDER "\Dark Blue\Header.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Dark Blue\Header.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\Header.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\Header.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\Header.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\Header.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\Header.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Dark Blue"), "D")
@@ -1227,11 +1528,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\Dark Blue\Icon.ico, % PROGRAM.SKINS_FOLDER "\Dark Blue\Icon.ico", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Dark Blue\Icon.ico"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\Icon.ico"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\Icon.ico"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\Icon.ico"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\Icon.ico"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\Icon.ico"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Dark Blue"), "D")
@@ -1247,11 +1553,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\Dark Blue\Maximize.png, % PROGRAM.SKINS_FOLDER "\Dark Blue\Maximize.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Dark Blue\Maximize.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\Maximize.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\Maximize.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\Maximize.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\Maximize.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\Maximize.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Dark Blue"), "D")
@@ -1267,11 +1578,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\Dark Blue\MaximizeHover.png, % PROGRAM.SKINS_FOLDER "\Dark Blue\MaximizeHover.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Dark Blue\MaximizeHover.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\MaximizeHover.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\MaximizeHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\MaximizeHover.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\MaximizeHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\MaximizeHover.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Dark Blue"), "D")
@@ -1287,11 +1603,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\Dark Blue\MaximizePress.png, % PROGRAM.SKINS_FOLDER "\Dark Blue\MaximizePress.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Dark Blue\MaximizePress.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\MaximizePress.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\MaximizePress.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\MaximizePress.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\MaximizePress.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\MaximizePress.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Dark Blue"), "D")
@@ -1307,11 +1628,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\Dark Blue\Minimize.png, % PROGRAM.SKINS_FOLDER "\Dark Blue\Minimize.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Dark Blue\Minimize.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\Minimize.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\Minimize.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\Minimize.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\Minimize.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\Minimize.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Dark Blue"), "D")
@@ -1327,11 +1653,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\Dark Blue\MinimizeHover.png, % PROGRAM.SKINS_FOLDER "\Dark Blue\MinimizeHover.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Dark Blue\MinimizeHover.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\MinimizeHover.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\MinimizeHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\MinimizeHover.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\MinimizeHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\MinimizeHover.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Dark Blue"), "D")
@@ -1347,11 +1678,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\Dark Blue\MinimizePress.png, % PROGRAM.SKINS_FOLDER "\Dark Blue\MinimizePress.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Dark Blue\MinimizePress.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\MinimizePress.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\MinimizePress.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\MinimizePress.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\MinimizePress.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\MinimizePress.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Dark Blue"), "D")
@@ -1367,22 +1703,32 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\Dark Blue\Preview.png, % PROGRAM.SKINS_FOLDER "\Dark Blue\Preview.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Dark Blue\Preview.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\Preview.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\Preview.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\Preview.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\Preview.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\Preview.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Dark Blue"), "D")
 	FileCreateDir,% PROGRAM.SKINS_FOLDER "\Dark Blue"
 
 FileInstall, resources\skins\Dark Blue\Settings.ini, % PROGRAM.SKINS_FOLDER "\Dark Blue\Settings.ini", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Dark Blue\Settings.ini"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\Settings.ini"
-	. "`nFlag: 1"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\Settings.ini"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\Settings.ini"
+	.	"`nFlag: " 1)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\Settings.ini"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\Settings.ini"
+	.	"`nFlag: " 1
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Dark Blue"), "D")
@@ -1398,11 +1744,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\Dark Blue\TabActive.png, % PROGRAM.SKINS_FOLDER "\Dark Blue\TabActive.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Dark Blue\TabActive.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\TabActive.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\TabActive.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\TabActive.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\TabActive.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\TabActive.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Dark Blue"), "D")
@@ -1418,11 +1769,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\Dark Blue\TabHover.png, % PROGRAM.SKINS_FOLDER "\Dark Blue\TabHover.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Dark Blue\TabHover.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\TabHover.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\TabHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\TabHover.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\TabHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\TabHover.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Dark Blue"), "D")
@@ -1438,11 +1794,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\Dark Blue\TabInactive.png, % PROGRAM.SKINS_FOLDER "\Dark Blue\TabInactive.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Dark Blue\TabInactive.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\TabInactive.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\TabInactive.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\TabInactive.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\TabInactive.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\TabInactive.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Dark Blue"), "D")
@@ -1458,11 +1819,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\Dark Blue\TabJoinedActive.png, % PROGRAM.SKINS_FOLDER "\Dark Blue\TabJoinedActive.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Dark Blue\TabJoinedActive.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\TabJoinedActive.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\TabJoinedActive.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\TabJoinedActive.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\TabJoinedActive.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\TabJoinedActive.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Dark Blue"), "D")
@@ -1478,11 +1844,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\Dark Blue\TabJoinedHover.png, % PROGRAM.SKINS_FOLDER "\Dark Blue\TabJoinedHover.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Dark Blue\TabJoinedHover.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\TabJoinedHover.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\TabJoinedHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\TabJoinedHover.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\TabJoinedHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\TabJoinedHover.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Dark Blue"), "D")
@@ -1498,11 +1869,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\Dark Blue\TabJoinedInactive.png, % PROGRAM.SKINS_FOLDER "\Dark Blue\TabJoinedInactive.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Dark Blue\TabJoinedInactive.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\TabJoinedInactive.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\TabJoinedInactive.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\TabJoinedInactive.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\TabJoinedInactive.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\TabJoinedInactive.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Dark Blue"), "D")
@@ -1518,11 +1894,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\Dark Blue\TabsBackground.png, % PROGRAM.SKINS_FOLDER "\Dark Blue\TabsBackground.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Dark Blue\TabsBackground.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\TabsBackground.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\TabsBackground.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\TabsBackground.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\TabsBackground.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\TabsBackground.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Dark Blue"), "D")
@@ -1538,11 +1919,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\Dark Blue\TabsUnderline.png, % PROGRAM.SKINS_FOLDER "\Dark Blue\TabsUnderline.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Dark Blue\TabsUnderline.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\TabsUnderline.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\TabsUnderline.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\TabsUnderline.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\TabsUnderline.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\TabsUnderline.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Dark Blue"), "D")
@@ -1558,11 +1944,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\Dark Blue\TabWhisperActive.png, % PROGRAM.SKINS_FOLDER "\Dark Blue\TabWhisperActive.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Dark Blue\TabWhisperActive.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\TabWhisperActive.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\TabWhisperActive.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\TabWhisperActive.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\TabWhisperActive.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\TabWhisperActive.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Dark Blue"), "D")
@@ -1578,11 +1969,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\Dark Blue\TabWhisperHover.png, % PROGRAM.SKINS_FOLDER "\Dark Blue\TabWhisperHover.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Dark Blue\TabWhisperHover.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\TabWhisperHover.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\TabWhisperHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\TabWhisperHover.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\TabWhisperHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\TabWhisperHover.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Dark Blue"), "D")
@@ -1598,11 +1994,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\Dark Blue\TabWhisperInactive.png, % PROGRAM.SKINS_FOLDER "\Dark Blue\TabWhisperInactive.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Dark Blue\TabWhisperInactive.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\TabWhisperInactive.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\TabWhisperInactive.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\TabWhisperInactive.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\TabWhisperInactive.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\TabWhisperInactive.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Dark Blue"), "D")
@@ -1618,11 +2019,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\Dark Blue\TradeVerifyGreen.png, % PROGRAM.SKINS_FOLDER "\Dark Blue\TradeVerifyGreen.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Dark Blue\TradeVerifyGreen.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\TradeVerifyGreen.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\TradeVerifyGreen.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\TradeVerifyGreen.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\TradeVerifyGreen.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\TradeVerifyGreen.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Dark Blue"), "D")
@@ -1638,11 +2044,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\Dark Blue\TradeVerifyGrey.png, % PROGRAM.SKINS_FOLDER "\Dark Blue\TradeVerifyGrey.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Dark Blue\TradeVerifyGrey.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\TradeVerifyGrey.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\TradeVerifyGrey.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\TradeVerifyGrey.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\TradeVerifyGrey.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\TradeVerifyGrey.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Dark Blue"), "D")
@@ -1658,11 +2069,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\Dark Blue\TradeVerifyOrange.png, % PROGRAM.SKINS_FOLDER "\Dark Blue\TradeVerifyOrange.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Dark Blue\TradeVerifyOrange.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\TradeVerifyOrange.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\TradeVerifyOrange.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\TradeVerifyOrange.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\TradeVerifyOrange.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\TradeVerifyOrange.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Dark Blue"), "D")
@@ -1678,11 +2094,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\Dark Blue\TradeVerifyRed.png, % PROGRAM.SKINS_FOLDER "\Dark Blue\TradeVerifyRed.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Dark Blue\TradeVerifyRed.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\TradeVerifyRed.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\TradeVerifyRed.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\TradeVerifyRed.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\TradeVerifyRed.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\TradeVerifyRed.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile"), "D")
@@ -1698,11 +2119,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\Path of Exile\ArrowLeft.png, % PROGRAM.SKINS_FOLDER "\Path of Exile\ArrowLeft.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Path of Exile\ArrowLeft.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\ArrowLeft.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\ArrowLeft.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\ArrowLeft.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\ArrowLeft.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\ArrowLeft.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile"), "D")
@@ -1718,11 +2144,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\Path of Exile\ArrowLeftHover.png, % PROGRAM.SKINS_FOLDER "\Path of Exile\ArrowLeftHover.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Path of Exile\ArrowLeftHover.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\ArrowLeftHover.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\ArrowLeftHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\ArrowLeftHover.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\ArrowLeftHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\ArrowLeftHover.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile"), "D")
@@ -1738,11 +2169,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\Path of Exile\ArrowLeftPress.png, % PROGRAM.SKINS_FOLDER "\Path of Exile\ArrowLeftPress.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Path of Exile\ArrowLeftPress.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\ArrowLeftPress.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\ArrowLeftPress.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\ArrowLeftPress.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\ArrowLeftPress.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\ArrowLeftPress.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile"), "D")
@@ -1758,11 +2194,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\Path of Exile\ArrowRight.png, % PROGRAM.SKINS_FOLDER "\Path of Exile\ArrowRight.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Path of Exile\ArrowRight.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\ArrowRight.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\ArrowRight.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\ArrowRight.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\ArrowRight.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\ArrowRight.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile"), "D")
@@ -1778,11 +2219,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\Path of Exile\ArrowRightHover.png, % PROGRAM.SKINS_FOLDER "\Path of Exile\ArrowRightHover.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Path of Exile\ArrowRightHover.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\ArrowRightHover.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\ArrowRightHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\ArrowRightHover.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\ArrowRightHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\ArrowRightHover.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile"), "D")
@@ -1798,22 +2244,32 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\Path of Exile\ArrowRightPress.png, % PROGRAM.SKINS_FOLDER "\Path of Exile\ArrowRightPress.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Path of Exile\ArrowRightPress.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\ArrowRightPress.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\ArrowRightPress.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\ArrowRightPress.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\ArrowRightPress.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\ArrowRightPress.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile"), "D")
 	FileCreateDir,% PROGRAM.SKINS_FOLDER "\Path of Exile"
 
 FileInstall, resources\skins\Path of Exile\Assets.ini, % PROGRAM.SKINS_FOLDER "\Path of Exile\Assets.ini", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Path of Exile\Assets.ini"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Assets.ini"
-	. "`nFlag: 1"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Assets.ini"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Assets.ini"
+	.	"`nFlag: " 1)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Assets.ini"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Assets.ini"
+	.	"`nFlag: " 1
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile"), "D")
@@ -1829,11 +2285,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\Path of Exile\Background.png, % PROGRAM.SKINS_FOLDER "\Path of Exile\Background.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Path of Exile\Background.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Background.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Background.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Background.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Background.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Background.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile"), "D")
@@ -1849,11 +2310,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\Path of Exile\ButtonOneThird.png, % PROGRAM.SKINS_FOLDER "\Path of Exile\ButtonOneThird.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Path of Exile\ButtonOneThird.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\ButtonOneThird.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\ButtonOneThird.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\ButtonOneThird.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\ButtonOneThird.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\ButtonOneThird.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile"), "D")
@@ -1869,11 +2335,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\Path of Exile\ButtonOneThirdHover.png, % PROGRAM.SKINS_FOLDER "\Path of Exile\ButtonOneThirdHover.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Path of Exile\ButtonOneThirdHover.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\ButtonOneThirdHover.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\ButtonOneThirdHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\ButtonOneThirdHover.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\ButtonOneThirdHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\ButtonOneThirdHover.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile"), "D")
@@ -1889,11 +2360,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\Path of Exile\ButtonOneThirdPress.png, % PROGRAM.SKINS_FOLDER "\Path of Exile\ButtonOneThirdPress.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Path of Exile\ButtonOneThirdPress.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\ButtonOneThirdPress.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\ButtonOneThirdPress.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\ButtonOneThirdPress.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\ButtonOneThirdPress.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\ButtonOneThirdPress.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile"), "D")
@@ -1909,11 +2385,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\Path of Exile\ButtonSpecial.png, % PROGRAM.SKINS_FOLDER "\Path of Exile\ButtonSpecial.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Path of Exile\ButtonSpecial.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\ButtonSpecial.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\ButtonSpecial.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\ButtonSpecial.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\ButtonSpecial.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\ButtonSpecial.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile"), "D")
@@ -1929,11 +2410,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\Path of Exile\ButtonSpecialHover.png, % PROGRAM.SKINS_FOLDER "\Path of Exile\ButtonSpecialHover.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Path of Exile\ButtonSpecialHover.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\ButtonSpecialHover.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\ButtonSpecialHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\ButtonSpecialHover.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\ButtonSpecialHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\ButtonSpecialHover.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile"), "D")
@@ -1949,11 +2435,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\Path of Exile\ButtonSpecialPress.png, % PROGRAM.SKINS_FOLDER "\Path of Exile\ButtonSpecialPress.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Path of Exile\ButtonSpecialPress.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\ButtonSpecialPress.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\ButtonSpecialPress.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\ButtonSpecialPress.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\ButtonSpecialPress.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\ButtonSpecialPress.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile"), "D")
@@ -1969,11 +2460,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\Path of Exile\ButtonThreeThird.png, % PROGRAM.SKINS_FOLDER "\Path of Exile\ButtonThreeThird.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Path of Exile\ButtonThreeThird.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\ButtonThreeThird.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\ButtonThreeThird.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\ButtonThreeThird.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\ButtonThreeThird.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\ButtonThreeThird.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile"), "D")
@@ -1989,11 +2485,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\Path of Exile\ButtonThreeThirdHover.png, % PROGRAM.SKINS_FOLDER "\Path of Exile\ButtonThreeThirdHover.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Path of Exile\ButtonThreeThirdHover.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\ButtonThreeThirdHover.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\ButtonThreeThirdHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\ButtonThreeThirdHover.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\ButtonThreeThirdHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\ButtonThreeThirdHover.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile"), "D")
@@ -2009,11 +2510,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\Path of Exile\ButtonThreeThirdPress.png, % PROGRAM.SKINS_FOLDER "\Path of Exile\ButtonThreeThirdPress.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Path of Exile\ButtonThreeThirdPress.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\ButtonThreeThirdPress.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\ButtonThreeThirdPress.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\ButtonThreeThirdPress.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\ButtonThreeThirdPress.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\ButtonThreeThirdPress.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile"), "D")
@@ -2029,11 +2535,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\Path of Exile\ButtonTwoThird.png, % PROGRAM.SKINS_FOLDER "\Path of Exile\ButtonTwoThird.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Path of Exile\ButtonTwoThird.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\ButtonTwoThird.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\ButtonTwoThird.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\ButtonTwoThird.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\ButtonTwoThird.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\ButtonTwoThird.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile"), "D")
@@ -2049,11 +2560,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\Path of Exile\ButtonTwoThirdHover.png, % PROGRAM.SKINS_FOLDER "\Path of Exile\ButtonTwoThirdHover.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Path of Exile\ButtonTwoThirdHover.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\ButtonTwoThirdHover.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\ButtonTwoThirdHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\ButtonTwoThirdHover.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\ButtonTwoThirdHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\ButtonTwoThirdHover.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile"), "D")
@@ -2069,11 +2585,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\Path of Exile\ButtonTwoThirdPress.png, % PROGRAM.SKINS_FOLDER "\Path of Exile\ButtonTwoThirdPress.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Path of Exile\ButtonTwoThirdPress.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\ButtonTwoThirdPress.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\ButtonTwoThirdPress.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\ButtonTwoThirdPress.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\ButtonTwoThirdPress.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\ButtonTwoThirdPress.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile"), "D")
@@ -2089,11 +2610,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\Path of Exile\CloseTab.png, % PROGRAM.SKINS_FOLDER "\Path of Exile\CloseTab.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Path of Exile\CloseTab.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\CloseTab.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\CloseTab.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\CloseTab.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\CloseTab.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\CloseTab.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile"), "D")
@@ -2109,11 +2635,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\Path of Exile\CloseTabHover.png, % PROGRAM.SKINS_FOLDER "\Path of Exile\CloseTabHover.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Path of Exile\CloseTabHover.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\CloseTabHover.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\CloseTabHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\CloseTabHover.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\CloseTabHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\CloseTabHover.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile"), "D")
@@ -2129,11 +2660,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\Path of Exile\CloseTabPress.png, % PROGRAM.SKINS_FOLDER "\Path of Exile\CloseTabPress.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Path of Exile\CloseTabPress.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\CloseTabPress.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\CloseTabPress.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\CloseTabPress.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\CloseTabPress.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\CloseTabPress.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile"), "D")
@@ -2149,11 +2685,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\Path of Exile\Header.png, % PROGRAM.SKINS_FOLDER "\Path of Exile\Header.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Path of Exile\Header.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Header.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Header.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Header.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Header.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Header.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile"), "D")
@@ -2169,11 +2710,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\Path of Exile\Icon.ico, % PROGRAM.SKINS_FOLDER "\Path of Exile\Icon.ico", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Path of Exile\Icon.ico"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Icon.ico"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Icon.ico"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Icon.ico"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Icon.ico"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Icon.ico"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile"), "D")
@@ -2189,11 +2735,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\Path of Exile\Maximize.png, % PROGRAM.SKINS_FOLDER "\Path of Exile\Maximize.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Path of Exile\Maximize.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Maximize.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Maximize.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Maximize.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Maximize.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Maximize.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile"), "D")
@@ -2209,11 +2760,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\Path of Exile\MaximizeHover.png, % PROGRAM.SKINS_FOLDER "\Path of Exile\MaximizeHover.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Path of Exile\MaximizeHover.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\MaximizeHover.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\MaximizeHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\MaximizeHover.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\MaximizeHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\MaximizeHover.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile"), "D")
@@ -2229,11 +2785,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\Path of Exile\MaximizePress.png, % PROGRAM.SKINS_FOLDER "\Path of Exile\MaximizePress.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Path of Exile\MaximizePress.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\MaximizePress.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\MaximizePress.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\MaximizePress.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\MaximizePress.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\MaximizePress.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile"), "D")
@@ -2249,11 +2810,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\Path of Exile\Minimize.png, % PROGRAM.SKINS_FOLDER "\Path of Exile\Minimize.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Path of Exile\Minimize.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Minimize.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Minimize.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Minimize.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Minimize.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Minimize.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile"), "D")
@@ -2269,11 +2835,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\Path of Exile\MinimizeHover.png, % PROGRAM.SKINS_FOLDER "\Path of Exile\MinimizeHover.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Path of Exile\MinimizeHover.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\MinimizeHover.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\MinimizeHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\MinimizeHover.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\MinimizeHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\MinimizeHover.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile"), "D")
@@ -2289,11 +2860,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\Path of Exile\MinimizePress.png, % PROGRAM.SKINS_FOLDER "\Path of Exile\MinimizePress.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Path of Exile\MinimizePress.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\MinimizePress.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\MinimizePress.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\MinimizePress.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\MinimizePress.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\MinimizePress.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile"), "D")
@@ -2309,22 +2885,32 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\Path of Exile\Preview.png, % PROGRAM.SKINS_FOLDER "\Path of Exile\Preview.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Path of Exile\Preview.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Preview.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Preview.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Preview.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Preview.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Preview.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile"), "D")
 	FileCreateDir,% PROGRAM.SKINS_FOLDER "\Path of Exile"
 
 FileInstall, resources\skins\Path of Exile\Settings.ini, % PROGRAM.SKINS_FOLDER "\Path of Exile\Settings.ini", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Path of Exile\Settings.ini"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Settings.ini"
-	. "`nFlag: 1"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Settings.ini"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Settings.ini"
+	.	"`nFlag: " 1)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Settings.ini"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Settings.ini"
+	.	"`nFlag: " 1
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile"), "D")
@@ -2340,11 +2926,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\Path of Exile\TabActive.png, % PROGRAM.SKINS_FOLDER "\Path of Exile\TabActive.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Path of Exile\TabActive.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\TabActive.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\TabActive.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\TabActive.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\TabActive.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\TabActive.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile"), "D")
@@ -2360,11 +2951,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\Path of Exile\TabHover.png, % PROGRAM.SKINS_FOLDER "\Path of Exile\TabHover.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Path of Exile\TabHover.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\TabHover.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\TabHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\TabHover.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\TabHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\TabHover.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile"), "D")
@@ -2380,11 +2976,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\Path of Exile\TabInactive.png, % PROGRAM.SKINS_FOLDER "\Path of Exile\TabInactive.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Path of Exile\TabInactive.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\TabInactive.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\TabInactive.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\TabInactive.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\TabInactive.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\TabInactive.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile"), "D")
@@ -2400,11 +3001,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\Path of Exile\TabJoinedActive.png, % PROGRAM.SKINS_FOLDER "\Path of Exile\TabJoinedActive.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Path of Exile\TabJoinedActive.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\TabJoinedActive.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\TabJoinedActive.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\TabJoinedActive.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\TabJoinedActive.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\TabJoinedActive.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile"), "D")
@@ -2420,11 +3026,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\Path of Exile\TabJoinedHover.png, % PROGRAM.SKINS_FOLDER "\Path of Exile\TabJoinedHover.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Path of Exile\TabJoinedHover.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\TabJoinedHover.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\TabJoinedHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\TabJoinedHover.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\TabJoinedHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\TabJoinedHover.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile"), "D")
@@ -2440,11 +3051,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\Path of Exile\TabJoinedInactive.png, % PROGRAM.SKINS_FOLDER "\Path of Exile\TabJoinedInactive.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Path of Exile\TabJoinedInactive.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\TabJoinedInactive.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\TabJoinedInactive.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\TabJoinedInactive.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\TabJoinedInactive.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\TabJoinedInactive.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile"), "D")
@@ -2460,11 +3076,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\Path of Exile\TabsBackground.png, % PROGRAM.SKINS_FOLDER "\Path of Exile\TabsBackground.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Path of Exile\TabsBackground.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\TabsBackground.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\TabsBackground.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\TabsBackground.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\TabsBackground.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\TabsBackground.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile"), "D")
@@ -2480,11 +3101,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\Path of Exile\TabsUnderline.png, % PROGRAM.SKINS_FOLDER "\Path of Exile\TabsUnderline.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Path of Exile\TabsUnderline.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\TabsUnderline.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\TabsUnderline.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\TabsUnderline.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\TabsUnderline.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\TabsUnderline.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile"), "D")
@@ -2500,11 +3126,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\Path of Exile\TabWhisperActive.png, % PROGRAM.SKINS_FOLDER "\Path of Exile\TabWhisperActive.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Path of Exile\TabWhisperActive.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\TabWhisperActive.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\TabWhisperActive.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\TabWhisperActive.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\TabWhisperActive.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\TabWhisperActive.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile"), "D")
@@ -2520,11 +3151,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\Path of Exile\TabWhisperHover.png, % PROGRAM.SKINS_FOLDER "\Path of Exile\TabWhisperHover.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Path of Exile\TabWhisperHover.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\TabWhisperHover.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\TabWhisperHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\TabWhisperHover.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\TabWhisperHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\TabWhisperHover.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile"), "D")
@@ -2540,11 +3176,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\Path of Exile\TabWhisperInactive.png, % PROGRAM.SKINS_FOLDER "\Path of Exile\TabWhisperInactive.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Path of Exile\TabWhisperInactive.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\TabWhisperInactive.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\TabWhisperInactive.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\TabWhisperInactive.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\TabWhisperInactive.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\TabWhisperInactive.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile"), "D")
@@ -2560,11 +3201,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\Path of Exile\TradeVerifyGreen.png, % PROGRAM.SKINS_FOLDER "\Path of Exile\TradeVerifyGreen.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Path of Exile\TradeVerifyGreen.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\TradeVerifyGreen.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\TradeVerifyGreen.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\TradeVerifyGreen.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\TradeVerifyGreen.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\TradeVerifyGreen.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile"), "D")
@@ -2580,11 +3226,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\Path of Exile\TradeVerifyGrey.png, % PROGRAM.SKINS_FOLDER "\Path of Exile\TradeVerifyGrey.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Path of Exile\TradeVerifyGrey.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\TradeVerifyGrey.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\TradeVerifyGrey.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\TradeVerifyGrey.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\TradeVerifyGrey.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\TradeVerifyGrey.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile"), "D")
@@ -2600,11 +3251,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\Path of Exile\TradeVerifyOrange.png, % PROGRAM.SKINS_FOLDER "\Path of Exile\TradeVerifyOrange.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Path of Exile\TradeVerifyOrange.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\TradeVerifyOrange.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\TradeVerifyOrange.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\TradeVerifyOrange.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\TradeVerifyOrange.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\TradeVerifyOrange.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile"), "D")
@@ -2620,11 +3276,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\Path of Exile\TradeVerifyRed.png, % PROGRAM.SKINS_FOLDER "\Path of Exile\TradeVerifyRed.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\Path of Exile\TradeVerifyRed.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\TradeVerifyRed.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\TradeVerifyRed.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\TradeVerifyRed.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\TradeVerifyRed.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\TradeVerifyRed.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\White"), "D")
@@ -2640,11 +3301,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\White\ArrowLeft.png, % PROGRAM.SKINS_FOLDER "\White\ArrowLeft.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\White\ArrowLeft.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\White\ArrowLeft.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\White\ArrowLeft.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\ArrowLeft.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\White\ArrowLeft.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\ArrowLeft.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\White"), "D")
@@ -2660,11 +3326,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\White\ArrowLeftHover.png, % PROGRAM.SKINS_FOLDER "\White\ArrowLeftHover.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\White\ArrowLeftHover.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\White\ArrowLeftHover.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\White\ArrowLeftHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\ArrowLeftHover.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\White\ArrowLeftHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\ArrowLeftHover.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\White"), "D")
@@ -2680,11 +3351,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\White\ArrowLeftPress.png, % PROGRAM.SKINS_FOLDER "\White\ArrowLeftPress.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\White\ArrowLeftPress.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\White\ArrowLeftPress.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\White\ArrowLeftPress.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\ArrowLeftPress.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\White\ArrowLeftPress.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\ArrowLeftPress.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\White"), "D")
@@ -2700,11 +3376,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\White\ArrowRight.png, % PROGRAM.SKINS_FOLDER "\White\ArrowRight.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\White\ArrowRight.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\White\ArrowRight.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\White\ArrowRight.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\ArrowRight.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\White\ArrowRight.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\ArrowRight.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\White"), "D")
@@ -2720,11 +3401,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\White\ArrowRightHover.png, % PROGRAM.SKINS_FOLDER "\White\ArrowRightHover.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\White\ArrowRightHover.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\White\ArrowRightHover.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\White\ArrowRightHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\ArrowRightHover.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\White\ArrowRightHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\ArrowRightHover.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\White"), "D")
@@ -2740,22 +3426,32 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\White\ArrowRightPress.png, % PROGRAM.SKINS_FOLDER "\White\ArrowRightPress.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\White\ArrowRightPress.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\White\ArrowRightPress.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\White\ArrowRightPress.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\ArrowRightPress.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\White\ArrowRightPress.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\ArrowRightPress.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\White"), "D")
 	FileCreateDir,% PROGRAM.SKINS_FOLDER "\White"
 
 FileInstall, resources\skins\White\Assets.ini, % PROGRAM.SKINS_FOLDER "\White\Assets.ini", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\White\Assets.ini"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\White\Assets.ini"
-	. "`nFlag: 1"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\White\Assets.ini"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\Assets.ini"
+	.	"`nFlag: " 1)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\White\Assets.ini"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\Assets.ini"
+	.	"`nFlag: " 1
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\White"), "D")
@@ -2771,11 +3467,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\White\Background.png, % PROGRAM.SKINS_FOLDER "\White\Background.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\White\Background.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\White\Background.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\White\Background.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\Background.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\White\Background.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\Background.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\White"), "D")
@@ -2791,11 +3492,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\White\ButtonOneThird.png, % PROGRAM.SKINS_FOLDER "\White\ButtonOneThird.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\White\ButtonOneThird.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\White\ButtonOneThird.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\White\ButtonOneThird.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\ButtonOneThird.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\White\ButtonOneThird.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\ButtonOneThird.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\White"), "D")
@@ -2811,11 +3517,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\White\ButtonOneThirdHover.png, % PROGRAM.SKINS_FOLDER "\White\ButtonOneThirdHover.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\White\ButtonOneThirdHover.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\White\ButtonOneThirdHover.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\White\ButtonOneThirdHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\ButtonOneThirdHover.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\White\ButtonOneThirdHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\ButtonOneThirdHover.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\White"), "D")
@@ -2831,11 +3542,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\White\ButtonOneThirdPress.png, % PROGRAM.SKINS_FOLDER "\White\ButtonOneThirdPress.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\White\ButtonOneThirdPress.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\White\ButtonOneThirdPress.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\White\ButtonOneThirdPress.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\ButtonOneThirdPress.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\White\ButtonOneThirdPress.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\ButtonOneThirdPress.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\White"), "D")
@@ -2851,11 +3567,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\White\ButtonSpecial.png, % PROGRAM.SKINS_FOLDER "\White\ButtonSpecial.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\White\ButtonSpecial.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\White\ButtonSpecial.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\White\ButtonSpecial.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\ButtonSpecial.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\White\ButtonSpecial.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\ButtonSpecial.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\White"), "D")
@@ -2871,11 +3592,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\White\ButtonSpecialHover.png, % PROGRAM.SKINS_FOLDER "\White\ButtonSpecialHover.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\White\ButtonSpecialHover.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\White\ButtonSpecialHover.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\White\ButtonSpecialHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\ButtonSpecialHover.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\White\ButtonSpecialHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\ButtonSpecialHover.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\White"), "D")
@@ -2891,11 +3617,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\White\ButtonSpecialPress.png, % PROGRAM.SKINS_FOLDER "\White\ButtonSpecialPress.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\White\ButtonSpecialPress.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\White\ButtonSpecialPress.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\White\ButtonSpecialPress.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\ButtonSpecialPress.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\White\ButtonSpecialPress.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\ButtonSpecialPress.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\White"), "D")
@@ -2911,11 +3642,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\White\ButtonThreeThird.png, % PROGRAM.SKINS_FOLDER "\White\ButtonThreeThird.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\White\ButtonThreeThird.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\White\ButtonThreeThird.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\White\ButtonThreeThird.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\ButtonThreeThird.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\White\ButtonThreeThird.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\ButtonThreeThird.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\White"), "D")
@@ -2931,11 +3667,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\White\ButtonThreeThirdHover.png, % PROGRAM.SKINS_FOLDER "\White\ButtonThreeThirdHover.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\White\ButtonThreeThirdHover.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\White\ButtonThreeThirdHover.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\White\ButtonThreeThirdHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\ButtonThreeThirdHover.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\White\ButtonThreeThirdHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\ButtonThreeThirdHover.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\White"), "D")
@@ -2951,11 +3692,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\White\ButtonThreeThirdPress.png, % PROGRAM.SKINS_FOLDER "\White\ButtonThreeThirdPress.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\White\ButtonThreeThirdPress.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\White\ButtonThreeThirdPress.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\White\ButtonThreeThirdPress.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\ButtonThreeThirdPress.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\White\ButtonThreeThirdPress.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\ButtonThreeThirdPress.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\White"), "D")
@@ -2971,11 +3717,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\White\ButtonTwoThird.png, % PROGRAM.SKINS_FOLDER "\White\ButtonTwoThird.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\White\ButtonTwoThird.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\White\ButtonTwoThird.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\White\ButtonTwoThird.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\ButtonTwoThird.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\White\ButtonTwoThird.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\ButtonTwoThird.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\White"), "D")
@@ -2991,11 +3742,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\White\ButtonTwoThirdHover.png, % PROGRAM.SKINS_FOLDER "\White\ButtonTwoThirdHover.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\White\ButtonTwoThirdHover.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\White\ButtonTwoThirdHover.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\White\ButtonTwoThirdHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\ButtonTwoThirdHover.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\White\ButtonTwoThirdHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\ButtonTwoThirdHover.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\White"), "D")
@@ -3011,11 +3767,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\White\ButtonTwoThirdPress.png, % PROGRAM.SKINS_FOLDER "\White\ButtonTwoThirdPress.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\White\ButtonTwoThirdPress.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\White\ButtonTwoThirdPress.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\White\ButtonTwoThirdPress.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\ButtonTwoThirdPress.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\White\ButtonTwoThirdPress.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\ButtonTwoThirdPress.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\White"), "D")
@@ -3031,11 +3792,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\White\CloseTab.png, % PROGRAM.SKINS_FOLDER "\White\CloseTab.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\White\CloseTab.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\White\CloseTab.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\White\CloseTab.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\CloseTab.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\White\CloseTab.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\CloseTab.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\White"), "D")
@@ -3051,11 +3817,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\White\CloseTabHover.png, % PROGRAM.SKINS_FOLDER "\White\CloseTabHover.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\White\CloseTabHover.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\White\CloseTabHover.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\White\CloseTabHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\CloseTabHover.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\White\CloseTabHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\CloseTabHover.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\White"), "D")
@@ -3071,11 +3842,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\White\CloseTabPress.png, % PROGRAM.SKINS_FOLDER "\White\CloseTabPress.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\White\CloseTabPress.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\White\CloseTabPress.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\White\CloseTabPress.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\CloseTabPress.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\White\CloseTabPress.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\CloseTabPress.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\White"), "D")
@@ -3091,11 +3867,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\White\Header.png, % PROGRAM.SKINS_FOLDER "\White\Header.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\White\Header.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\White\Header.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\White\Header.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\Header.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\White\Header.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\Header.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\White"), "D")
@@ -3111,11 +3892,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\White\Icon.ico, % PROGRAM.SKINS_FOLDER "\White\Icon.ico", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\White\Icon.ico"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\White\Icon.ico"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\White\Icon.ico"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\Icon.ico"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\White\Icon.ico"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\Icon.ico"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\White"), "D")
@@ -3131,11 +3917,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\White\Maximize.png, % PROGRAM.SKINS_FOLDER "\White\Maximize.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\White\Maximize.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\White\Maximize.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\White\Maximize.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\Maximize.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\White\Maximize.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\Maximize.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\White"), "D")
@@ -3151,11 +3942,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\White\MaximizeHover.png, % PROGRAM.SKINS_FOLDER "\White\MaximizeHover.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\White\MaximizeHover.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\White\MaximizeHover.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\White\MaximizeHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\MaximizeHover.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\White\MaximizeHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\MaximizeHover.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\White"), "D")
@@ -3171,11 +3967,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\White\MaximizePress.png, % PROGRAM.SKINS_FOLDER "\White\MaximizePress.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\White\MaximizePress.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\White\MaximizePress.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\White\MaximizePress.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\MaximizePress.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\White\MaximizePress.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\MaximizePress.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\White"), "D")
@@ -3191,11 +3992,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\White\Minimize.png, % PROGRAM.SKINS_FOLDER "\White\Minimize.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\White\Minimize.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\White\Minimize.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\White\Minimize.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\Minimize.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\White\Minimize.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\Minimize.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\White"), "D")
@@ -3211,11 +4017,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\White\MinimizeHover.png, % PROGRAM.SKINS_FOLDER "\White\MinimizeHover.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\White\MinimizeHover.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\White\MinimizeHover.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\White\MinimizeHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\MinimizeHover.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\White\MinimizeHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\MinimizeHover.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\White"), "D")
@@ -3231,11 +4042,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\White\MinimizePress.png, % PROGRAM.SKINS_FOLDER "\White\MinimizePress.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\White\MinimizePress.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\White\MinimizePress.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\White\MinimizePress.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\MinimizePress.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\White\MinimizePress.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\MinimizePress.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\White"), "D")
@@ -3251,22 +4067,32 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\White\Preview.png, % PROGRAM.SKINS_FOLDER "\White\Preview.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\White\Preview.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\White\Preview.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\White\Preview.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\Preview.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\White\Preview.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\Preview.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\White"), "D")
 	FileCreateDir,% PROGRAM.SKINS_FOLDER "\White"
 
 FileInstall, resources\skins\White\Settings.ini, % PROGRAM.SKINS_FOLDER "\White\Settings.ini", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\White\Settings.ini"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\White\Settings.ini"
-	. "`nFlag: 1"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\White\Settings.ini"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\Settings.ini"
+	.	"`nFlag: " 1)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\White\Settings.ini"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\Settings.ini"
+	.	"`nFlag: " 1
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\White"), "D")
@@ -3282,11 +4108,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\White\TabActive.png, % PROGRAM.SKINS_FOLDER "\White\TabActive.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\White\TabActive.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\White\TabActive.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\White\TabActive.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\TabActive.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\White\TabActive.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\TabActive.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\White"), "D")
@@ -3302,11 +4133,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\White\TabHover.png, % PROGRAM.SKINS_FOLDER "\White\TabHover.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\White\TabHover.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\White\TabHover.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\White\TabHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\TabHover.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\White\TabHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\TabHover.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\White"), "D")
@@ -3322,11 +4158,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\White\TabInactive.png, % PROGRAM.SKINS_FOLDER "\White\TabInactive.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\White\TabInactive.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\White\TabInactive.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\White\TabInactive.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\TabInactive.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\White\TabInactive.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\TabInactive.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\White"), "D")
@@ -3342,11 +4183,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\White\TabJoinedActive.png, % PROGRAM.SKINS_FOLDER "\White\TabJoinedActive.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\White\TabJoinedActive.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\White\TabJoinedActive.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\White\TabJoinedActive.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\TabJoinedActive.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\White\TabJoinedActive.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\TabJoinedActive.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\White"), "D")
@@ -3362,11 +4208,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\White\TabJoinedHover.png, % PROGRAM.SKINS_FOLDER "\White\TabJoinedHover.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\White\TabJoinedHover.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\White\TabJoinedHover.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\White\TabJoinedHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\TabJoinedHover.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\White\TabJoinedHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\TabJoinedHover.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\White"), "D")
@@ -3382,11 +4233,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\White\TabJoinedInactive.png, % PROGRAM.SKINS_FOLDER "\White\TabJoinedInactive.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\White\TabJoinedInactive.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\White\TabJoinedInactive.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\White\TabJoinedInactive.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\TabJoinedInactive.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\White\TabJoinedInactive.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\TabJoinedInactive.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\White"), "D")
@@ -3402,11 +4258,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\White\TabsBackground.png, % PROGRAM.SKINS_FOLDER "\White\TabsBackground.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\White\TabsBackground.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\White\TabsBackground.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\White\TabsBackground.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\TabsBackground.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\White\TabsBackground.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\TabsBackground.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\White"), "D")
@@ -3422,11 +4283,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\White\TabsUnderline.png, % PROGRAM.SKINS_FOLDER "\White\TabsUnderline.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\White\TabsUnderline.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\White\TabsUnderline.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\White\TabsUnderline.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\TabsUnderline.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\White\TabsUnderline.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\TabsUnderline.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\White"), "D")
@@ -3442,11 +4308,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\White\TabWhisperActive.png, % PROGRAM.SKINS_FOLDER "\White\TabWhisperActive.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\White\TabWhisperActive.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\White\TabWhisperActive.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\White\TabWhisperActive.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\TabWhisperActive.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\White\TabWhisperActive.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\TabWhisperActive.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\White"), "D")
@@ -3462,11 +4333,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\White\TabWhisperHover.png, % PROGRAM.SKINS_FOLDER "\White\TabWhisperHover.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\White\TabWhisperHover.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\White\TabWhisperHover.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\White\TabWhisperHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\TabWhisperHover.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\White\TabWhisperHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\TabWhisperHover.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\White"), "D")
@@ -3482,11 +4358,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\White\TabWhisperInactive.png, % PROGRAM.SKINS_FOLDER "\White\TabWhisperInactive.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\White\TabWhisperInactive.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\White\TabWhisperInactive.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\White\TabWhisperInactive.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\TabWhisperInactive.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\White\TabWhisperInactive.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\TabWhisperInactive.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\White"), "D")
@@ -3502,11 +4383,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\White\TradeVerifyGreen.png, % PROGRAM.SKINS_FOLDER "\White\TradeVerifyGreen.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\White\TradeVerifyGreen.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\White\TradeVerifyGreen.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\White\TradeVerifyGreen.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\TradeVerifyGreen.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\White\TradeVerifyGreen.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\TradeVerifyGreen.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\White"), "D")
@@ -3522,11 +4408,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\White\TradeVerifyGrey.png, % PROGRAM.SKINS_FOLDER "\White\TradeVerifyGrey.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\White\TradeVerifyGrey.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\White\TradeVerifyGrey.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\White\TradeVerifyGrey.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\TradeVerifyGrey.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\White\TradeVerifyGrey.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\TradeVerifyGrey.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\White"), "D")
@@ -3542,11 +4433,16 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\White\TradeVerifyOrange.png, % PROGRAM.SKINS_FOLDER "\White\TradeVerifyOrange.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\White\TradeVerifyOrange.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\White\TradeVerifyOrange.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\White\TradeVerifyOrange.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\TradeVerifyOrange.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\White\TradeVerifyOrange.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\TradeVerifyOrange.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\White"), "D")
@@ -3562,12 +4458,21 @@ else {
 }
 if (sourceFileSize != destFileSize)
 	FileInstall, resources\skins\White\TradeVerifyRed.png, % PROGRAM.SKINS_FOLDER "\White\TradeVerifyRed.png", 1
-if (ErrorLevel)
-	Msgbox % "Failed to extract file!"
-	. "`nSource: resources\skins\White\TradeVerifyRed.png"
-	. "`nDest: " PROGRAM.SKINS_FOLDER "\White\TradeVerifyRed.png"
-	. "`nFlag: 2"
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\White\TradeVerifyRed.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\TradeVerifyRed.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\White\TradeVerifyRed.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\TradeVerifyRed.png"
+	.	"`nFlag: " 2
+}
 
 ; ----------------------------
 
+
+if (errorLog)
+	MsgBox, 4096, POE Trades Companion,% "One or multiple files failed to be extracted. Please check the logs file for details."
+	.	"H:\UserLibrary\Documents\lemasato\POE Trades Companion\Logs\2018-09-06 13h37m32s.txt"
 }
