@@ -16,8 +16,10 @@ IsUpdateAvailable() {
 	INI.Set(iniFile, "UPDATING", "LastUpdateCheck", A_Now)
 
 	recentRels := GitHubAPI_GetRecentReleases(PROGRAM.GITHUB_USER, PROGRAM.GITHUB_REPO)
-	if !(recentRels)
+	if !(recentRels) {
+		AppendToLogs(A_ThisFunc "(): Recent releases is empty!")
 		return
+	}
 	latestRel := recentRels.1
 	for index, value in recentRels {
 		if (foundStableTag && foundBetaTag)
@@ -56,12 +58,15 @@ IsUpdateAvailable() {
 	relDL := A_IsCompiled?exeDL : zipDL
 
 	if (relTag && relDL) && (relTag != PROGRAM.VERSION) {
+		AppendToLogs(A_ThisFunc "(): Update check: Update found. Tag: " updateRel.tag_name ", Download: " relDL)
 		Return {tag:updateRel.tag_name, notes:updateRel.body, download:relDL}
 	}
 	else if (relTag = PROGRAM.VERSION) {
+		AppendToLogs(A_ThisFunc "(): Update check: No update available.")
 		return False
 	}
 	else {
+		AppendToLogs(A_ThisFunc "(): Update check: Failed to retrieve releases from GitHub API.")
 		SplashTextOn(PROGRAM.NAME " - Updating Error", "There was an issue when retrieving the latest release from GitHub API"
 		.											"`nIf this keeps on happening, please try updating manually."
 		.											"`nYou can find the GitHub repository link in the Settings menu.", 1, 1)

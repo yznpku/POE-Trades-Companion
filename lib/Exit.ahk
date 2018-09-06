@@ -34,12 +34,14 @@ Close_PreviousInstance() {
 		Detect_HiddenWindows()
 
 		if ( existingPName = prevPName ) { ; Match found, close the previous instance
+			AppendToLogs(A_ThisFunc "(): Detected previous instance with id " prevHwnd ".")
 			Detect_HiddenWindows("On")
 			WinClose, ahk_id %prevHwnd%
 			WinWaitClose, ahk_id %prevHwnd%,,5
 			err := ErrorLevel
 			Detect_HiddenWindows()
 			if (err) {
+				AppendToLogs(A_ThisFunc "(): Failed to close previous instance with id " prevHwnd ".")
 				GUI_SimpleWarn.Show("", "Previous instance detected."
 								. "`nUnable to close PID " existingPID " (could be due to missing admin rights)."
 								. "`nPlease close it before continuing."
@@ -47,6 +49,8 @@ Close_PreviousInstance() {
 				Process, WaitClose, %existingPID%
 				GUI_SimpleWarn.Destroy()
 			}
+			else
+				AppendToLogs(A_ThisFunc "(): Successfully closed previous instance with id " prevHwnd ".")
 		}
 	}
 }

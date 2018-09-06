@@ -46,6 +46,8 @@
 	chatKeyVK := StringToHex(chr(chatKeySC+0))
 	chatKeyName := GetKeyName("VK" chatKeyVK)
 
+	AppendToLogs("Chat key: " """" chatKeySC """" . "   VK: " """" chatKeyVK """" . "   SC: " """" chatKeyName """" . "   Fullscreen: " fullscreen)
+
 	returnObj := { ChatKey_SC: chatKeySC
 				  ,ChatKey_VK:chatKeyVK
 				  ,ChatKey_Name: chatKeyName

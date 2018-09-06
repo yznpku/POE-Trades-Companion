@@ -68,6 +68,7 @@
 			if (A_LoopField)
 				gitLeagues .= A_LoopField ","
 		StringTrimRight, gitLeagues, gitLeagues, 1
+		AppendToLogs("Leagues API: Couldn't retrieve leagues from Leagues API. Retrieving list from GitHub repo: " gitLeagues)
 	}
 
 	; Set LEAGUES var content
@@ -79,6 +80,8 @@
 			tradingLeagues := tradingLeagues ? tradingLeagues "," loopedLeague : loopedLeague
 	}
 	LEAGUES := tradingLeagues
+
+	AppendToLogs("Leagues API: Retrieved leagues: " tradingLeagues)
 
 	return tradingLeagues
 }
@@ -250,10 +253,11 @@ Monitor_GameLogs() {
 		else
 			logsFile := Get_GameLogsFile()
 
-		if (logsFile)
+		if (logsFile) {
 			SetTimer,% A_ThisFunc, 500
+			AppendToLogs("Monitoring logs file: """ logsFile """.")
+		}
 		else {
-			AppendToLogs(A_ThisFunc "(): No game instance found. Retrying in 10 seconds")
 			SetTimer,% A_ThisFunc, -10000
 		}
 	}
@@ -282,7 +286,7 @@ Parse_GameLogs(strToParse) {
 										, Other:1, Item:2, Price:3, League:4}
 	static poeAppUnpricedRegex 		:= {String:"(.*)wtb (.*) in (.*)" ; 1: Other, 2: Item, 3: League + Tab + Other
 										, Other:1, Item:2, League:3}
-	static poeAppStashRegex 		:= {String:"\(stash ""(.*)""; left (\d+), top(\d+)\)(.*)" ; 1: Tab, 2: Left, 3: Top, 4: Other
+	static poeAppStashRegex 		:= {String:"\(stash ""(.*)""; left (\d+), top (\d+)\)(.*)" ; 1: Tab, 2: Left, 3: Top, 4: Other
 										, Tab:1, Left:2, Top:3, Other:4}
 	static poeAppQualityRegEx 		:= {String:"(.*) \((.*)/(.*)%\)" ; 1: Item name, 2: Item level, 3: Item quality
 										, Item:1, Level:2, Quality:3}
@@ -466,7 +470,6 @@ Read_GameLogs(logsFile) {
 	if (!logsFileObj && logsFile) {
 		logsFileObj := FileOpen(logsFile, "r")
 		logsFileObj.Read()
-		AppendToLogs(A_ThisFunc "(logsFile=" logsFile "): Now monitoring logs file.")
 	}
 
 	if ( logsFileObj.pos < logsFileObj.length ) {

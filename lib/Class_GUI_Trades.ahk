@@ -35,6 +35,8 @@
 		scaleMult := PROGRAM.SETTINGS.SETTINGS_CUSTOMIZATION_SKINS.ScalingPercentage / 100
 		resDPI := PROGRAM.OS.RESOLUTION_DPI 
 
+		AppendToLogs("Trades GUI: Creating with max tabs """ _maxTabsToRender """.")
+
 		; Free ImageButton memory
 		for key, value in GuiTrades_Controls
 			if IsIn(key, "hBTN_Minimize,hBTN_Maximize,hBTN_LeftArrow,hBTN_RightArrow,hBTN_CloseTab")

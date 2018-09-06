@@ -194,6 +194,19 @@ Start_Script() {
 		}
 	}
 
+	; Logs files
+	Create_LogsFile()
+	Delete_OldLogsFile()
+
+	Load_DebugJSON()
+
+	if (!RUNTIME_PARAMETERS.NewInstance)
+		Close_PreviousInstance()
+	TrayRefresh()
+
+	if !(DEBUG.settings.skip_assets_extracting)
+		AssetsExtract()
+
 	; Currency names for stats gui - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	PROGRAM.DATA := {}
 	FileRead, allCurrency,% PROGRAM.DATA_FOLDER "\CurrencyNames.txt"
@@ -211,15 +224,6 @@ Start_Script() {
 
 	; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-	Load_DebugJSON()
-
-	if (!RUNTIME_PARAMETERS.NewInstance)
-		Close_PreviousInstance()
-	TrayRefresh()
-
-	if !(DEBUG.settings.skip_assets_extracting)
-		AssetsExtract()
-
 	GDIP_Startup()
 
 	; Fonts related
@@ -229,13 +233,15 @@ Start_Script() {
 	oldIni := MyDocuments "\AutoHotkey\POE Trades Companion\Preferences.ini"
 	if FileExist(oldIni) {
 		hasAsked := INI.Get(PROGRAM.INI_File, "GENERAL", "HasAskedForImport")
+		INI.Set(PROGRAM.INI_File, "GENERAL", "HasAskedForImport", "True")
 		if (hasAsked != "True") {
+			AppendToLogs("Showing import pre1.13 settings GUI.")
 			GUI_ImportPre1dot13Settings.Show()
 			global GuiImportPre1dot13Settings
 			WinWait,% "ahk_id " GuiImportPre1dot13Settings.Handle
 			WinWaitClose,% "ahk_id " GuiImportPre1dot13Settings.Handle
+			AppendToLogs("Successfully closed pre1.13 settings GUI.")
 		}
-		INI.Set(PROGRAM.INI_File, "GENERAL", "HasAskedForImport", "True")
 	}
 	
 	; Local settings
@@ -250,10 +256,6 @@ Start_Script() {
 	Declare_GameSettings(gameSettings)
 
 	Declare_SkinAssetsAndSettings()
-
-	; Logs files
-	Create_LogsFile()
-	Delete_OldLogsFile()
 
 	; Update checking
 	if !(DEBUG.settings.skip_update_check) {
@@ -279,7 +281,7 @@ Start_Script() {
 	TrayMenu()
 	EnableHotkeys()
 
-	ImageButton_TestDelay() ;
+	ImageButton_TestDelay()
 	Gui_Trades.Create()
 	GUI_Trades.LoadBackup()
 

@@ -3,6 +3,16 @@
 
 	quote := """"
 
+	FileRead, prefs,% PROGRAM.INI_FILE
+	RegExMatch(prefs, "iO)PushBulletToken=(.*)(`n|`r)", out)
+	
+	out := out.1
+	trim := A_AutoTrim
+	AutoTrim, On
+	out = %out%
+	AutoTrim, %trim%
+
+	prefs := RegExReplace(prefs, "PushBulletToken=(.*)", "PushBulletToken=" StrLen(out))
 	FileAppend,% "",% PROGRAM.LOGS_FILE
 	os3264bits := A_Is64bitOS?"x64":"x86"
 	appendToFile := "OS Informations: " quote A_OSType A_Space . A_OSVersion A_Space . os3264bits quote
@@ -16,9 +26,11 @@
 	. "`n"			"Program version: " quote PROGRAM.VERSION quote
 	. "`n"			"Main folder: " quote PROGRAM.MAIN_FOLDER quote
 	. "`n"			"Program path: " quote A_ScriptFullPath quote
-	. "`n"			"Chat key: " quote GAME.SETTINGS.ChatKey_Name quote . "     " "VK: " quote GAME.SETTINGS.ChatKey_VK quote . "     " "SC: " quote GAME.SETTINGS.ChatKey_SC quote
 	. "`n"			
 	. "`n"
+	. "`n"			"Dumping Preferences.ini: "
+	. "`n"			prefs
+	. "`n"			
 	. "`n"
 
 	FileAppend,% appendToFile,% PROGRAM.LOGS_FILE
@@ -43,8 +55,11 @@ Delete_OldLogsFile(_daysLimit=10) {
 }
 
 
-AppendToLogs(string) {
+AppendToLogs(string="") {
 	global PROGRAM
+
+	if (string="")
+		Return
 
 	timeStamp := "[" A_YYYY "/" A_MM "/" A_DD " " A_Hour ":" A_Min ":" A_Sec "]"
 	appendtoFile := timeStamp . A_Space . string . "`n"

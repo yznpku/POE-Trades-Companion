@@ -69,7 +69,13 @@ Get_LocalSettings_DefaultValues() {
 	settings.SETTINGS_CUSTOMIZATION_SKINS.ScalingPercentage 							:= "100"
 
 	settings.SETTINGS_CUSTOMIZATION_SKINS_UserDefined 									:= {}
-	settings.SETTINGS_CUSTOMIZATION_SKINS_UserDefined.Skin 								:= "Path of Exile"
+	settings.SETTINGS_CUSTOMIZATION_SKINS_UserDefined.UseRecommendedFontSettings 		:= settings.SETTINGS_CUSTOMIZATION_SKINS.UseRecommendedFontSettings
+	settings.SETTINGS_CUSTOMIZATION_SKINS_UserDefined.FontSize 							:= settings.SETTINGS_CUSTOMIZATION_SKINS.FontSize
+	settings.SETTINGS_CUSTOMIZATION_SKINS_UserDefined.Preset 							:= settings.SETTINGS_CUSTOMIZATION_SKINS.Preset
+	settings.SETTINGS_CUSTOMIZATION_SKINS_UserDefined.FontQuality 						:= settings.SETTINGS_CUSTOMIZATION_SKINS.FontQuality
+	settings.SETTINGS_CUSTOMIZATION_SKINS_UserDefined.Skin 								:= settings.SETTINGS_CUSTOMIZATION_SKINS.Skin
+	settings.SETTINGS_CUSTOMIZATION_SKINS_UserDefined.Font 								:= settings.SETTINGS_CUSTOMIZATION_SKINS.Font
+	settings.SETTINGS_CUSTOMIZATION_SKINS_UserDefined.ScalingPercentage 				:= settings.SETTINGS_CUSTOMIZATION_SKINS.ScalingPercentage
 
 	settings.SETTINGS_CUSTOM_BUTTON_1 													:= {}
 	settings.SETTINGS_CUSTOM_BUTTON_1.Name												:= "Ask to wait"
@@ -210,15 +216,15 @@ LocalSettings_IsValueValid(iniSect, iniKey, iniValue) {
 	if (iniSect = "SETTINGS_MAIN") {
 		if (iniKey = "TradingWhisperSFXPath") {
 			sfxToggle := INI.Get(PROGRAM.INI_FILE, iniSect, "TradingWhisperSFXToggle")
-			isValueValid := FileExist(iniValue) || (!iniValue && sfxToggle="False") ? True : False	
+			isValueValid := FileExist(iniValue) || (!iniValue && sfxToggle="False") || (iniValue = "") ? True : False	
 		}
 		else if (iniKey = "RegularWhisperSFXPath") {
 			sfxToggle := INI.Get(PROGRAM.INI_FILE, iniSect, "RegularWhisperSFXToggle")
-			isValueValid := FileExist(iniValue) || (!iniValue && sfxToggle="False") ? True : False	
+			isValueValid := FileExist(iniValue) || (!iniValue && sfxToggle="False") || (iniValue = "") ? True : False	
 		}
 		else if (iniKey = "BuyerJoinedAreaSFXPath") {
 			sfxToggle := INI.Get(PROGRAM.INI_FILE, iniSect, "BuyerJoinedAreaSFXToggle")
-			isValueValid := FileExist(iniValue) || (!iniValue && sfxToggle="False") ? True : False	
+			isValueValid := FileExist(iniValue) || (!iniValue && sfxToggle="False") || (iniValue = "") ? True : False	
 		}
 		else if (iniKey = "NoTabsTransparency")
 			isValueValid := IsBetween(iniValue, 0, 100) ? True : False	
@@ -435,7 +441,6 @@ Set_LocalSettings() {
 				if (IsFirstTimeRunning != "True" && !IsIn(iniKey, "IsFirstTimeRunning,AddShowGridActionToInviteButtons"))
 					warnMsg .= "Section: " iniSect "`nKey: " iniKey "`nValue: " iniValue "`nDefault value: " defValue "`n`n"
 				Restore_LocalSettings(iniSect, iniKey)
-				; INI.Set(iniFile, iniSect, iniKey, defValue)
 			}
 		}
 	}

@@ -106,11 +106,17 @@ Load_Or_Unload_Fonts(whatDo) {
 			DllCall( "GDI32.DLL\AddFontResourceEx", Str, fontFile,UInt,(FR_PRIVATE:=0x10), Int,0)
 			DllCall("gdiplus\GdipPrivateAddFontFile", "uint", hCollection, "uint", &fontFile)
 			DllCall("gdiplus\GdipCreateFontFamilyFromName", "uint", &fontTitle, "uint", hCollection, "uint*", hFamily)
-			PROGRAM.FONTS[fontTitle] := hFamily
+			if (hFamily) {
+				PROGRAM.FONTS[fontTitle] := hFamily
+				AppendToLogs(A_ThisFunc "(): Loaded font file """ A_LoopFileName """ with title """ fontTitle """ inside family """ hFamily """.")
+			}
+			else
+				AppendToLogs(A_ThisFunc "(): Couldn't load font file """ A_LoopFileName """ with title """ fontTitle """ (family=""" hFamily """)!")
 		}
 		else if ( whatDo="UNLOAD") {
 			Gdip_DeleteFontFamily(PROGRAM.FONTS[fontTitle])
 			DllCall( "GDI32.DLL\RemoveFontResourceEx",Str, A_LoopFileFullPath,UInt,(FR_PRIVATE:=0x10),Int,0)
+			AppendToLogs(A_ThisFunc "(): Unloaded font with title """ fontTitle ".")
 		}
 	}
 

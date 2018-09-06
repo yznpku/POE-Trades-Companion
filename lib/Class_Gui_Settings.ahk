@@ -1235,6 +1235,11 @@ Class GUI_Settings {
 
 		fontSize := INI.Get(PROGRAM.FONTS_SETTINGS_FILE, "Size", fontName,1)
 		fontQuality := INI.Get(PROGRAM.FONTS_SETTINGS_FILE, "Quality", fontName,1)
+		
+		if !IsNum(fontSize)
+			fontSize := INI.Get(PROGRAM.FONTS_SETTINGS_FILE, "Size", "Default",1)
+		if !IsNum(fontQuality)
+			fontQuality := INI.Get(PROGRAM.FONTS_SETTINGS_FILE, "Quality", "Default",1)
 
 		Return {Size:fontSize,Quality:fontQuality}
 	}
