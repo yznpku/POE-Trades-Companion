@@ -29,12 +29,12 @@
 			SetTimer, %A_ThisFunc%, Off
 		LongCopy := A_TickCount, Clipboard := "", LongCopy -= A_TickCount ; LongCopy gauges the amount of time it takes to empty the clipboard which can predict how long the subsequent clipwait will need
 		If (Text = "") {
-			SendInput, ^{sc02e}
+			SendInput, ^C
 			ClipWait, LongCopy ? 0.6 : 0.2, True
 		} Else {
 			Clipboard := LastClip := Text
 			ClipWait, 10
-			SendInput, ^{sc02F}
+			SendInput, ^V
 		}
 		SetTimer, %A_ThisFunc%, -700
 		Sleep 50 ; Short sleep in case Clip() is followed by more keystrokes such as {Enter}
