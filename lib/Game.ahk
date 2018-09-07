@@ -118,8 +118,22 @@ Send_GameMessage(actionType, msgString, gamePID="") {
 
 	if (actionType = "WRITE_SEND") {
 		if (sendMsgMode = "Clipboard") {
-			Set_Clipboard(msgString)
-			SendInput, ^{sc02F}
+			While (Clipboard != msgString) {
+				Set_Clipboard(msgString)
+
+				if (Clipboard = msgString)
+					break
+
+				else if (A_Index > 100) {
+					err := True
+					break
+				}
+				Sleep 50
+			}
+			if (!err)
+				SendEvent, ^{sc02F}
+			else
+				TrayNotifications.Show("Failed to send message.", "The clipboard couldn't be updated with the message content.`nClipboard: " Clipboard "`nMessage: " msgString)
 			; SetTimer, Reset_Clipboard, -700
 		}
 		else if (sendMsgMode = "SendInput")
@@ -131,12 +145,26 @@ Send_GameMessage(actionType, msgString, gamePID="") {
 	}
 	else if (actionType = "WRITE_DONT_SEND") {
 		if (sendMsgMode = "Clipboard") {
-			Set_Clipboard(msgString)
-			SendInput, ^{sc02F}
+			While (Clipboard != msgString) {
+				Set_Clipboard(msgString)
+
+				if (Clipboard = msgString)
+					break
+
+				else if (A_Index > 100) {
+					err := True
+					break
+				}
+				Sleep 50
+			}
+			if (!err)
+				SendEvent, ^{sc02F}
+			else
+				TrayNotifications.Show("Failed to send message.", "The clipboard couldn't be updated with the message content.`nClipboard: " Clipboard "`nMessage: " msgString)
 			; SetTimer, Reset_Clipboard, -700
 		}
 		else if (sendMsgMode = "SendInput")
-			SendInput,%msgString%
+			SendEvent,%msgString%
 		else if (sendMsgMode = "SendEvent")
 			SendEvent,%msgString%
 	}
@@ -145,8 +173,22 @@ Send_GameMessage(actionType, msgString, gamePID="") {
 		msgString := StrReplace(msgString, "{X}", "")
 
 		if (sendMsgMode = "Clipboard") {
-			Set_Clipboard(msgString)
-			SendInput, ^{sc02F}
+			While (Clipboard != msgString) {
+				Set_Clipboard(msgString)
+
+				if (Clipboard = msgString)
+					break
+
+				else if (A_Index > 100) {
+					err := True
+					break
+				}
+				Sleep 50
+			}
+			if (!err)
+				SendEvent, ^{sc02F}
+			else
+				TrayNotifications.Show("Failed to send message.", "The clipboard couldn't be updated with the message content.`nClipboard: " Clipboard "`nMessage: " msgString)
 			; SetTimer, Reset_Clipboard, -700
 		}
 		else if (sendMsgMode = "SendInput")
@@ -154,7 +196,8 @@ Send_GameMessage(actionType, msgString, gamePID="") {
 		else if (sendMsgMode = "SendEvent")
 			SendEvent,%msgString%
 
-		SendInput {Left %leftPresses%}
+		if (!err)
+			SendInput {Left %leftPresses%}
 	}
 
 	SetTitleMatchMode, %titleMatchMode%
@@ -162,7 +205,7 @@ Send_GameMessage(actionType, msgString, gamePID="") {
 
 	Send_GameMessage_ClearChat:
 		if !IsIn(firstChar, "/,`%,&,#,@") ; Not a command. We send / then remove it to make sure chat is empty
-			SendEvent,{sc035}{BackSpace} ; Slash		
+			SendEvent,/{BackSpace} ; Slash
 	Return
 
 	Send_GameMessage_OpenChat:

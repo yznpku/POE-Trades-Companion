@@ -160,8 +160,8 @@ Set_Clipboard(str) {
 	global PROGRAM
 	global SET_CLIPBOARD_CONTENT
 
-	Clipboard := ""
-	Sleep 10
+	; Clipboard := ""
+	; Sleep 10
 	Clipboard := str
 	ClipWait, 10, 1
 	if (ErrorLevel) {
@@ -170,6 +170,7 @@ Set_Clipboard(str) {
 		return 1
 	}
 	SET_CLIPBOARD_CONTENT := str
+	Sleep 20
 }
 
 Reset_Clipboard() {
