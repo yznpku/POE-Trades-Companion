@@ -9,7 +9,6 @@
 	*PrintScreen::
 	*Space::
 	*Tab::
-	*XButton1::
 	modifier := ""
 	if GetKeyState("Shift","P")
 		modifier .= "+"
@@ -613,6 +612,8 @@ Class GUI_Settings {
 				hotkeysHKHandles.Push(GuiSettings_Controls["hHK_HotkeyKeys" hkIndex])
 				hotkeysEDITHandles.Push(GuiSettings_Controls["hEDIT_HotkeyActionContent" hkIndex])
 
+				if ( thisTabCtrlsList && SubStr(thisTabCtrlsList, 0, 1) != ",")
+					thisTabCtrlsList .= ","
 				thisTabCtrlsList .= "hDDL_HotkeyActionType" hkIndex ",hCB_HotkeyToggle" hkIndex ",hHK_HotkeyKeys" hkIndex ",hEDIT_HotkeyActionContent" hkIndex ","
 
 				if (A_Index = 1 && prevIndex > 1) 
@@ -2482,30 +2483,30 @@ Class GUI_Settings {
 
 		Loop, Parse, thisTabCtrls,% ","
 		{
-				loopedCtrl := A_LoopField
+			loopedCtrl := A_LoopField
 
-				RegExMatch(loopedCtrl, "\D+", loopedCtrl_NoNum)
-				RegExMatch(loopedCtrl, "\d+", loopedCtrl_NumOnly)
+			RegExMatch(loopedCtrl, "\D+", loopedCtrl_NoNum)
+			RegExMatch(loopedCtrl, "\d+", loopedCtrl_NumOnly)
 
-				if (enableOrDisable = "Disable")
-					GuiControl, Settings:-g,% GuiSettings_Controls[loopedCtrl]
-				else if (enableOrDisable = "Enable") {
-					if (loopedCtrl_NoNum = "hDDL_HotkeyActionType")
-						__f := GUI_Settings.TabHotkeysBasic_OnHotkeyActionTypeChange.bind(GUI_Settings, loopedCtrl_NumOnly)
-					else if (loopedCtrl_NoNum = "hCB_HotkeyToggle")
-						__f := GUI_Settings.TabHotkeysBasic_OnHotkeyToggle.bind(GUI_Settings, loopedCtrl_NumOnly)
-					else if (loopedCtrl_NoNum = "hHK_HotkeyKeys")
-						__f := GUI_Settings.TabHotkeysBasic_OnHotkeyKeysChange.bind(GUI_Settings, loopedCtrl_NumOnly)
-					else if (loopedCtrl_NoNum = "hEDIT_HotkeyActionContent")
-						__f := GUI_Settings.TabHotkeysBasic_OnHotkeyActionContentChange.bind(GUI_Settings, loopedCtrl_NumOnly)
-					else 
-						__f := 
+			if (enableOrDisable = "Disable")
+				GuiControl, Settings:-g,% GuiSettings_Controls[loopedCtrl]
+			else if (enableOrDisable = "Enable") {
+				if (loopedCtrl_NoNum = "hDDL_HotkeyActionType")
+					__f := GUI_Settings.TabHotkeysBasic_OnHotkeyActionTypeChange.bind(GUI_Settings, loopedCtrl_NumOnly)
+				else if (loopedCtrl_NoNum = "hCB_HotkeyToggle")
+					__f := GUI_Settings.TabHotkeysBasic_OnHotkeyToggle.bind(GUI_Settings, loopedCtrl_NumOnly)
+				else if (loopedCtrl_NoNum = "hHK_HotkeyKeys")
+					__f := GUI_Settings.TabHotkeysBasic_OnHotkeyKeysChange.bind(GUI_Settings, loopedCtrl_NumOnly)
+				else if (loopedCtrl_NoNum = "hEDIT_HotkeyActionContent")
+					__f := GUI_Settings.TabHotkeysBasic_OnHotkeyActionContentChange.bind(GUI_Settings, loopedCtrl_NumOnly)
+				else 
+					__f := 
 
-					if (__f)
-						GuiControl, Settings:+g,% GuiSettings_Controls[loopedCtrl],% __f 
-				}
+				if (__f)
+					GuiControl, Settings:+g,% GuiSettings_Controls[loopedCtrl],% __f 
 			}
 		}
+	}
 
 
 	/* * * * * GET * * * * *
@@ -2655,29 +2656,29 @@ Class GUI_Settings {
 		Declare_LocalSettings()
 	}
 
-		TabHotkeysBasic_OnHotkeyKeysChange(CtrlHwnd_Or_CtrlNum) {
-			global PROGRAM, GuiSettings, GuiSettings_Controls
-			isHex := IsHex(CtrlHwnd_Or_CtrlNum)
-			isDigit := IsDigit(CtrlHwnd_Or_CtrlNum)
+	TabHotkeysBasic_OnHotkeyKeysChange(CtrlHwnd_Or_CtrlNum) {
+		global PROGRAM, GuiSettings, GuiSettings_Controls
+		isHex := IsHex(CtrlHwnd_Or_CtrlNum)
+		isDigit := IsDigit(CtrlHwnd_Or_CtrlNum)
 
-			if (isDigit) {
-				CtrlHwnd := GuiSettings_Controls["hHK_HotkeyKeys" CtrlHwnd_Or_CtrlNum]
-				CtrlName := Get_MatchingIndex_From_Object_Using_Value(GuiSettings_Controls, CtrlHwnd)
-				CtrlNum := CtrlHwnd_Or_CtrlNum
-			}
-			else if (isHex) {
-				CtrlHwnd := CtrlHwnd_Or_CtrlNum
-				CtrlName := Get_MatchingIndex_From_Object_Using_Value(GuiSettings_Controls, CtrlHwnd)
-				RegExMatch(CtrlName, "\d+", CtrlNum)
-			}
-			else
-				MsgBox YOU SOULD NOT SEE THIS`nFunc: %A_ThisFunc%`nCtrl: %CtrlHwnd_Or_CtrlNum%
-
-			hkKeys := GUI_Settings.Submit(CtrlName)
-
-			INI.Set(PROGRAM.Ini_File, "SETTINGS_HOTKEY_" CtrlNum, "Hotkey", hkKeys)	
-			Declare_LocalSettings()
+		if (isDigit) {
+			CtrlHwnd := GuiSettings_Controls["hHK_HotkeyKeys" CtrlHwnd_Or_CtrlNum]
+			CtrlName := Get_MatchingIndex_From_Object_Using_Value(GuiSettings_Controls, CtrlHwnd)
+			CtrlNum := CtrlHwnd_Or_CtrlNum
 		}
+		else if (isHex) {
+			CtrlHwnd := CtrlHwnd_Or_CtrlNum
+			CtrlName := Get_MatchingIndex_From_Object_Using_Value(GuiSettings_Controls, CtrlHwnd)
+			RegExMatch(CtrlName, "\d+", CtrlNum)
+		}
+		else
+			MsgBox YOU SOULD NOT SEE THIS`nFunc: %A_ThisFunc%`nCtrl: %CtrlHwnd_Or_CtrlNum%
+
+		hkKeys := GUI_Settings.Submit(CtrlName)
+
+		INI.Set(PROGRAM.Ini_File, "SETTINGS_HOTKEY_" CtrlNum, "Hotkey", hkKeys)	
+		Declare_LocalSettings()
+	}
 
 	TabHotkeysBasic_OnHotkeyActionContentChange(CtrlHwnd_Or_CtrlNum) {
 		global PROGRAM, GuiSettings, GuiSettings_Controls 
