@@ -1,5 +1,26 @@
-1.13.2 (06 Sept 2018)
+1.13.3 (07 Sept 2018)
 
+	Changes / Improvements:
+	- Prevent from sending a message using a variable if its content is empty.
+	Example: Trying to use a last %lastWhisper% hotkey when no one has whispered you yet.
+	Or using a %buyer% hotkey when no tab is currently open.
+	- Using the %price% variable on an unpriced item will now say "[unpriced]".
+	- Default values for skin settings have been added.
+	This will prevent from being forced to reset your settings when your "User Defined" skin settings are incorrect.
+	- Slight improvements to the way messages are sent when using the clipboard.
+	If you still experience an issue where the tab item name is being sent in place of your message, please let me know.
+	- Adjusted the "Click here to preview..." button position.
+
+	Fixes:
+	- The Trades GUI would not minimize/maximize itself while having "Hide the interface when not in game" enabled and being tabbed out of the game.
+	- Basic Hotkeys 3,6,9 content were not being saved.
+	- Basic Hotkeys 4,7,10,13 action were not being saved.
+	- When choosing not to import pre1.13 settings, the file would not be renamed.
+	Therefore, upon resetting your settings to default, you would once again be asked if you wanted to import or not.
+	
+
+= = = = = = = = = = = = =	
+1.13.2 (06 Sept 2018)
 
 	Changes:
 	- Fonts that could not be loaded by the app will no longer appear in the Settings menu.
