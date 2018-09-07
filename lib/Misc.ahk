@@ -200,73 +200,73 @@ Replace_TradeVariables(string) {
 
 
 Get_SkinAssetsAndSettings() {
-		global PROGRAM
-		iniFile := PROGRAM.INI_FILE
+	global PROGRAM
+	iniFile := PROGRAM.INI_FILE
 
-		presetName := INI.Get(iniFile, "SETTINGS_CUSTOMIZATION_SKINS",, 1).Preset
-		skinName := INI.Get(iniFile, "SETTINGS_CUSTOMIZATION_SKINS",, 1).Skin
-		skinFolder := PROGRAM.SKINS_FOLDER "\" skinName
-		skinAssetsFile := PROGRAM.SKINS_FOLDER "\" skinName "\Assets.ini"
+	presetName := INI.Get(iniFile, "SETTINGS_CUSTOMIZATION_SKINS",, 1).Preset
+	skinName := INI.Get(iniFile, "SETTINGS_CUSTOMIZATION_SKINS",, 1).Skin
+	skinFolder := PROGRAM.SKINS_FOLDER "\" skinName
+	skinAssetsFile := PROGRAM.SKINS_FOLDER "\" skinName "\Assets.ini"
+	skinSettingsFile := PROGRAM.SKINS_FOLDER "\" skinName "\Settings.ini"
+
+	skinAssets := {}
+	iniSections := Ini.Get(skinAssetsFile)
+	Loop, Parse, iniSections, `n, `r
+	{
+		skinAssets[A_LoopField] := {}
+		keysAndValues := INI.Get(skinAssetsFile, A_LoopField,, 1)
+
+		for key, value in keysAndValues	{
+			if IsIn(key, "Normal,Hover,Press,Active,Inactive,Background,Icon,Header,Tabs_Background,Tabs_Underline")
+			|| (A_LoopField = "Trade_Verify" && IsIn(key, "Grey,Orange,Green,Red"))
+				skinAssets[A_LoopField][key] := skinFolder "\" value
+			else {
+				skinAssets[A_LoopField][key] := value
+			}
+		}
+	}
+
+	skinSettings := {}
+	if (presetName = "User Defined") {
+		userSkinSettings := INI.Get(iniFile, "SETTINGS_CUSTOMIZATION_SKINS_UserDefined",, 1)
+		skinSettings.FONT := {}
+		skinSettings.COLORS := {}
+
+		skinSettings.FONT.Name := userSkinSettings.Font
+		skinSettings.FONT.Size := userSkinSettings.FontSize
+		skinSettings.FONT.Quality := userSkinSettings.FontQuality
+
+		for iniKey, iniValue in userSkinSettings {
+			iniKeySubStr := SubStr(iniKey, 1, 6)
+			if (iniKeySubStr = "Color_" ) {
+				iniKeyRestOfStr := SubStr(iniKey, 7)
+				skinSettings.COLORS[iniKeyRestOfStr] := iniValue
+			}
+		}
+	}
+	else {
 		skinSettingsFile := PROGRAM.SKINS_FOLDER "\" skinName "\Settings.ini"
-
-		skinAssets := {}
-		iniSections := Ini.Get(skinAssetsFile)
+		iniSections := INI.Get(skinSettingsFile)
 		Loop, Parse, iniSections, `n, `r
 		{
-			skinAssets[A_LoopField] := {}
-			keysAndValues := INI.Get(skinAssetsFile, A_LoopField,, 1)
+			skinSettings[A_LoopField] := {}
+			keysAndValues := INI.Get(skinSettingsFile, A_LoopField,, 1)
 
-			for key, value in keysAndValues	{
-				if IsIn(key, "Normal,Hover,Press,Active,Inactive,Background,Icon,Header,Tabs_Background,Tabs_Underline")
-				|| (A_LoopField = "Trade_Verify" && IsIn(key, "Grey,Orange,Green,Red"))
-					skinAssets[A_LoopField][key] := skinFolder "\" value
-				else {
-					skinAssets[A_LoopField][key] := value
-				}
+			for key, value in keysAndValues {
+				skinSettings[A_LoopField][key] := value
 			}
 		}
-
-		skinSettings := {}
-		if (presetName = "User Defined") {
-			userSkinSettings := INI.Get(iniFile, "SETTINGS_CUSTOMIZATION_SKINS_UserDefined",, 1)
-			skinSettings.FONT := {}
-			skinSettings.COLORS := {}
-
-			skinSettings.FONT.Name := userSkinSettings.Font
-			skinSettings.FONT.Size := userSkinSettings.FontSize
-			skinSettings.FONT.Quality := userSkinSettings.FontQuality
-
-			for iniKey, iniValue in userSkinSettings {
-				iniKeySubStr := SubStr(iniKey, 1, 6)
-				if (iniKeySubStr = "Color_" ) {
-					iniKeyRestOfStr := SubStr(iniKey, 7)
-					skinSettings.COLORS[iniKeyRestOfStr] := iniValue
-				}
-			}
-		}
-		else {
-			skinSettingsFile := PROGRAM.SKINS_FOLDER "\" skinName "\Settings.ini"
-			iniSections := INI.Get(skinSettingsFile)
-			Loop, Parse, iniSections, `n, `r
-			{
-				skinSettings[A_LoopField] := {}
-				keysAndValues := INI.Get(skinSettingsFile, A_LoopField,, 1)
-
-				for key, value in keysAndValues {
-					skinSettings[A_LoopField][key] := value
-				}
-			}
-		}
-
-		Skin := {}
-		Skin.Preset := presetName
-		Skin.Skin := skinName
-		Skin.Skin_Folder := skinFolder
-		Skin.Assets := skinAssets
-		Skin.Settings := skinSettings
-
-		return Skin
 	}
+
+	Skin := {}
+	Skin.Preset := presetName
+	Skin.Skin := skinName
+	Skin.Skin_Folder := skinFolder
+	Skin.Assets := skinAssets
+	Skin.Settings := skinSettings
+
+	return Skin
+}
 
 Declare_SkinAssetsAndSettings(_skinSettingsAll="") {
 	global SKIN
