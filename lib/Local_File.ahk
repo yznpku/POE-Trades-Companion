@@ -68,14 +68,48 @@ Get_LocalSettings_DefaultValues() {
 	settings.SETTINGS_CUSTOMIZATION_SKINS.Font 											:= "Fontin SmallCaps"
 	settings.SETTINGS_CUSTOMIZATION_SKINS.ScalingPercentage 							:= "100"
 
-	settings.SETTINGS_CUSTOMIZATION_SKINS_UserDefined 									:= {}
-	settings.SETTINGS_CUSTOMIZATION_SKINS_UserDefined.UseRecommendedFontSettings 		:= settings.SETTINGS_CUSTOMIZATION_SKINS.UseRecommendedFontSettings
-	settings.SETTINGS_CUSTOMIZATION_SKINS_UserDefined.FontSize 							:= settings.SETTINGS_CUSTOMIZATION_SKINS.FontSize
-	settings.SETTINGS_CUSTOMIZATION_SKINS_UserDefined.Preset 							:= settings.SETTINGS_CUSTOMIZATION_SKINS.Preset
-	settings.SETTINGS_CUSTOMIZATION_SKINS_UserDefined.FontQuality 						:= settings.SETTINGS_CUSTOMIZATION_SKINS.FontQuality
-	settings.SETTINGS_CUSTOMIZATION_SKINS_UserDefined.Skin 								:= settings.SETTINGS_CUSTOMIZATION_SKINS.Skin
-	settings.SETTINGS_CUSTOMIZATION_SKINS_UserDefined.Font 								:= settings.SETTINGS_CUSTOMIZATION_SKINS.Font
-	settings.SETTINGS_CUSTOMIZATION_SKINS_UserDefined.ScalingPercentage 				:= settings.SETTINGS_CUSTOMIZATION_SKINS.ScalingPercentage
+	settings.SETTINGS_CUSTOMIZATION_SKINS.Color_Border									:= "0x715d46"
+	settings.SETTINGS_CUSTOMIZATION_SKINS.Color_Title_No_Trades							:= "0xC18F55"
+	settings.SETTINGS_CUSTOMIZATION_SKINS.Color_Title_Trades							:= "0xFFFFFF"
+	settings.SETTINGS_CUSTOMIZATION_SKINS.Color_Trade_Info_1							:= "0xC18F55"
+	settings.SETTINGS_CUSTOMIZATION_SKINS.Color_Trade_Info_2							:= "0xFFFFFF"
+	settings.SETTINGS_CUSTOMIZATION_SKINS.Color_Tab_Active								:= "0xFFFFFF"
+	settings.SETTINGS_CUSTOMIZATION_SKINS.Color_Tab_Inactive							:= "0xC18F55"
+	settings.SETTINGS_CUSTOMIZATION_SKINS.Color_Tab_Hover								:= "0xFFFFFF"
+	settings.SETTINGS_CUSTOMIZATION_SKINS.Color_Tab_Press								:= "0xC18F55"
+	settings.SETTINGS_CUSTOMIZATION_SKINS.Color_Tab_Joined_Active						:= "0xFFFFFF"
+	settings.SETTINGS_CUSTOMIZATION_SKINS.Color_Tab_Joined_Inactive						:= "0xC18F55"
+	settings.SETTINGS_CUSTOMIZATION_SKINS.Color_Tab_Joined_Hover						:= "0xFFFFFF"
+	settings.SETTINGS_CUSTOMIZATION_SKINS.Color_Tab_Joined_Press						:= "0xC18F55"
+	settings.SETTINGS_CUSTOMIZATION_SKINS.Color_Tab_Whisper_Active						:= "0xFFFFFF"
+	settings.SETTINGS_CUSTOMIZATION_SKINS.Color_Tab_Whisper_Inactive					:= "0xC18F55"
+	settings.SETTINGS_CUSTOMIZATION_SKINS.Color_Tab_Whisper_Hover						:= "0xFFFFFF"
+	settings.SETTINGS_CUSTOMIZATION_SKINS.Color_Tab_Whisper_Press						:= "0xC18F55"
+	settings.SETTINGS_CUSTOMIZATION_SKINS.Color_Button_Normal							:= "0xC18F55"
+	settings.SETTINGS_CUSTOMIZATION_SKINS.Color_Button_Hover							:= "0xFFFFFF"
+	settings.SETTINGS_CUSTOMIZATION_SKINS.Color_Button_Press							:= "0xC18F55"
+
+	curPreset := INI.Get(PROGRAM.INI_FILE, "SETTINGS_CUSTOMIZATION_SKINS", "Preset")
+	if (curPreset = "User Defined")
+		curSkin := INI.Get(PROGRAM.INI_FILE, "SETTINGS_CUSTOMIZATION_SKINS_UserDefined", "Skin")
+	else 
+		curSkin := INI.Get(PROGRAM.INI_FILE, "SETTINGS_CUSTOMIZATION_SKINS_UserDefined", "Skin")
+
+	curSkin := (curSkin && curSkin != "" && curSkin != "ERROR") ? curSkin : settings.SETTINGS_CUSTOMIZATION_SKINS.Skin
+	defSkinSettings := GUI_Settings.TabCustomizationSkins_GetSkinDefaultSettings(curSkin)
+
+	for key, value in defSkinSettings {
+		if (key = "UseRecommendedFontSettings")
+			value := value = 0 ? "False" : "True"
+
+		if (value != "" && value != "ERROR")
+			settings.SETTINGS_CUSTOMIZATION_SKINS[key] := value
+	}
+
+	settings.SETTINGS_CUSTOMIZATION_SKINS_UserDefined := {}
+	for key, value in settings.SETTINGS_CUSTOMIZATION_SKINS
+		settings.SETTINGS_CUSTOMIZATION_SKINS_UserDefined[key] := value
+
 
 	settings.SETTINGS_CUSTOM_BUTTON_1 													:= {}
 	settings.SETTINGS_CUSTOM_BUTTON_1.Name												:= "Ask to wait"
@@ -295,7 +329,11 @@ LocalSettings_IsValueValid(iniSect, iniKey, iniValue) {
 			isValueValid := IsIn(iniValue, fontsList) ? True : False	
 		}
 		else if (iniKey = "ScalingPercentage")
-			isValueValid := IsNum(iniValue) ? True : False	
+			isValueValid := IsNum(iniValue) ? True : False
+		
+		else if IsContaining(iniKey, "Color_") {
+			isValueValid := IsHex(iniValue) && (StrLen(iniValue) = 8) ? True : False
+		}
 	}
 
 	else if IsContaining(iniSect, "SETTINGS_CUSTOM_BUTTON_") {
