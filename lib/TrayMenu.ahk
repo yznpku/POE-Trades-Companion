@@ -1,11 +1,14 @@
 ﻿TrayMenu() {
-	global PROGRAM
+	global PROGRAM, DEBUG
 
 	Menu,Tray,DeleteAll
 	if ( !A_IsCompiled && FileExist(A_ScriptDir "\resources\icon.ico") )
 		Menu, Tray, Icon, %A_ScriptDir%\resources\icon.ico
 	Menu,Tray,Tip,POE Trades Companion
 	Menu,Tray,NoStandard
+	if (DEBUG.settings.open_settings_gui) {
+			Menu,Tray,Add,Recreate Settings GUI, Tray_CreateSettings
+	}
 	Menu,Tray,Add,Settings, Tray_OpenSettings
 	Menu,Tray,Add,My Stats, Tray_OpenStats
 	if (PROGRAM.IS_BETA = "True")
@@ -60,6 +63,10 @@ Tray_Reload() {
 }
 Tray_Exit() {
 	ExitApp
+}
+Tray_CreateSettings() {
+	GUI_Settings.Create()
+	GUI_Settings.Show()
 }
 Tray_OpenSettings() {
 	GUI_Settings.Show()
