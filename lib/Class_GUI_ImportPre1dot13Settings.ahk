@@ -125,30 +125,27 @@ Class GUI_ImportPre1dot13Settings {
         newHistoryFilePath := PROGRAM.TRADES_HISTORY_FILE
         oldSettingsFilePath := MyDocuments "\AutoHotkey\POE Trades Companion\Preferences.ini"
         newSettingsFilePath := PROGRAM.INI_FILE
+
+        ; Rename old prefs file, to avoid detecing again
+        if FileExist(oldSettingsFilePath) {
+            SplitPath, oldSettingsFilePath, , folder
+            FileMove,% oldSettingsFilePath,% folder "\" A_Now "_Preferences.ini", 1
+        }
         if (what="Yes") {
-            ; Rename old prefs file, to avoid detecing again
-            FileRead, fileContent,% oldSettingsFilePath
-            if (fileContent) {
-                SplitPath, oldSettingsFilePath, , folder
-                FileMove,% oldSettingsFilePath,% folder "\" A_Now "_Preferences.ini", 1
-            }
             ; Rename current prefs file, set new content
-            FileRead, fileContent,% newSettingsFilePath
-            if (fileContent) {
+            if FileExist(newSettingsFilePath) {
                 SplitPath, newSettingsFilePath, , folder
                 FileMove,% newSettingsFilePath,% folder "\" A_Now "_Preferences.ini", 1
             }
             FileAppend,% "`n" settingsAppend,% newSettingsFilePath
         }
         ; Rename old history file, to avoid detecing again
-        FileRead, fileContent,% oldHistoryFilePath
-        if (fileContent) {
+        if FileExist(oldHistoryFilePath) {
             SplitPath, oldHistoryFilePath, , folder
             FileMove,% oldHistoryFilePath,% folder "\" A_Now "_Trades_History.ini", 1
         }
         ; Rename current history file, set new content
-        FileRead, fileContent,% newHistoryFilePath
-        if (fileContent) {
+        if FileExist(newHistoryFilePath) {
             SplitPath, newHistoryFilePath, , folder
             FileMove,% newHistoryFilePath,% folder "\" A_Now "_Trades_History.ini", 1
         }
