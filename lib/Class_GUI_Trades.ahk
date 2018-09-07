@@ -1617,7 +1617,10 @@
 		global GuiTrades, GuiTrades_Controls
 		global PROGRAM
 
+		hiddenWin := A_DetectHiddenWindows
+		DetectHiddenWindows, On
 		WinMove,% "ahk_id " GuiTrades.Handle, , , , ,% GuiTrades.Height_Maximized * PROGRAM.OS.RESOLUTION_DPI ; change size first to avoid btn flicker
+		DetectHiddenWindows, %hiddenWin%
 
 		GuiControl, Trades:Show,% GuiTrades_Controls.hBTN_Minimize
 		GuiControl, Trades:Hide,% GuiTrades_Controls.hBTN_Maximize
@@ -1633,8 +1636,11 @@
 	Minimize(skipAnimation="") {
 		global GuiTrades, GuiTrades_Controls
 		global PROGRAM
-		
+
+		hiddenWin := A_DetectHiddenWindows
+		DetectHiddenWindows, On
 		WinMove,% "ahk_id " GuiTrades.Handle, , , , ,% GuiTrades.Height_Minimized * PROGRAM.OS.RESOLUTION_DPI
+		DetectHiddenWindows, %hiddenWin%
 
 		GuiControl, Trades:Show,% GuiTrades_Controls.hBTN_Maximize
 		GuiControl, Trades:Hide,% GuiTrades_Controls.hBTN_Minimize
