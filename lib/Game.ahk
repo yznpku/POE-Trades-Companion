@@ -479,7 +479,9 @@ Parse_GameLogs(strToParse) {
 
 					if !WinActive("ahk_pid " instancePID) { ; If the instance is not active
 						if ( PROGRAM.SETTINGS.SETTINGS_MAIN.ShowTabbedTrayNotificationOnWhisper = "True" ) {
-							; TrayNotifications.Show("Buying request from " whispName ":", "Item: " A_Tab tradeItemFull "`nPrice: " A_Tab tradePrice "`nStash: " A_Tab tradeStashFull)
+							notifTxt := "Item: " A_Tab tradeItemFull "`nPrice: " A_Tab tradePrice "`nStash: " A_Tab tradeStashFull
+							notifTxt .= tradeOther ? "`nOther: " A_Tab tradeOther : ""
+							TrayNotifications.Show("Buying request from " whispName ":", notifTxt)
 						}
 					}
 				}
