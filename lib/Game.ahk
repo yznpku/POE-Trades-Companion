@@ -461,6 +461,14 @@ Parse_GameLogs(strToParse) {
 					if (PROGRAM.SETTINGS.SETTINGS_MAIN.TradingWhisperSFXToggle = "True") && FileExist(PROGRAM.SETTINGS.SETTINGS_MAIN.TradingWhisperSFXPath)
 						SoundPlay,% PROGRAM.SETTINGS.SETTINGS_MAIN.TradingWhisperSFXPath
 
+					if !WinActive("ahk_pid " instancePID) { ; If the instance is not active
+						if ( PROGRAM.SETTINGS.SETTINGS_MAIN.ShowTabbedTrayNotificationOnWhisper = "True" ) {
+							notifTxt := "Item: " A_Tab tradeItemFull "`nPrice: " A_Tab tradePrice "`nStash: " A_Tab tradeStashFull
+							notifTxt .= tradeOther ? "`nOther: " A_Tab tradeOther : ""
+							TrayNotifications.Show("Buying request from " whispName ":", notifTxt)
+						}
+					}
+
 					pbNoteOnTradingWhisper := PROGRAM.SETTINGS.SETTINGS_MAIN.PushBulletOnTradingWhisper
 					if (pbNoteOnTradingWhisper = "True") {
 						if (PROGRAM.SETTINGS.SETTINGS_MAIN.PushBulletOnlyWhenAFK = "True" && GuiTrades[instancePID "_AfkState"] = True)
@@ -470,19 +478,12 @@ Parse_GameLogs(strToParse) {
 					}
 
 					if (doPBNote = True) && StrLen(PROGRAM.SETTINGS.SETTINGS_MAIN.PushBulletToken) > 5 {
-						pbErr := PB_PushNote(PROGRAM.SETTINGS.SETTINGS_MAIN.PushBulletToken, "Buying request from " whispName ":"
-						, "Item: " tradeItemFull "\nPrice: " tradePrice "\nStash: " tradeStashFull)
+						pbTxt := "Item: " tradeItemFull "\nPrice: " tradePrice "\nStash: " tradeStashFull
+						pbTxt .= tradeOther ? "\nOther: " tradeOther : ""
+						pbErr := PB_PushNote(PROGRAM.SETTINGS.SETTINGS_MAIN.PushBulletToken, "Buying request from " whispName ":", pbTxt)
 						if (pbErr && pbErr != 200)
 							AppendToLogs(A_ThisFunc "(): Error sending PushBullet notification."
 							. "Code: """ pbErr """ - Token length: """ StrLen(PROGRAM.SETTINGS.SETTINGS_MAIN.PushBulletToken) """")
-					}
-
-					if !WinActive("ahk_pid " instancePID) { ; If the instance is not active
-						if ( PROGRAM.SETTINGS.SETTINGS_MAIN.ShowTabbedTrayNotificationOnWhisper = "True" ) {
-							notifTxt := "Item: " A_Tab tradeItemFull "`nPrice: " A_Tab tradePrice "`nStash: " A_Tab tradeStashFull
-							notifTxt .= tradeOther ? "`nOther: " A_Tab tradeOther : ""
-							TrayNotifications.Show("Buying request from " whispName ":", notifTxt)
-						}
 					}
 				}
 			}
@@ -502,6 +503,22 @@ Parse_GameLogs(strToParse) {
 					if ( PROGRAM.SETTINGS.SETTINGS_MAIN.ShowTabbedTrayNotificationOnWhisper = "True" ) {
 						TrayNotifications.Show("Whisper from " whispName ":", whispMsg)
 					}
+				}
+
+				pbNoteOnRegularWhisper := PROGRAM.SETTINGS.SETTINGS_MAIN.PushBulletOnWhisperMessage
+				if (pbNoteOnRegularWhisper = "True") {
+					if (PROGRAM.SETTINGS.SETTINGS_MAIN.PushBulletOnlyWhenAFK = "True" && GuiTrades[instancePID "_AfkState"] = True)
+						doPBNote := True
+					else if (PROGRAM.SETTINGS.SETTINGS_MAIN.PushBulletOnlyWhenAFK = "False")
+						doPBNote := True
+				}
+
+				if (doPBNote = True) && StrLen(PROGRAM.SETTINGS.SETTINGS_MAIN.PushBulletToken) > 5 {
+					pbErr := PB_PushNote(PROGRAM.SETTINGS.SETTINGS_MAIN.PushBulletToken, "Whisper from " whispName ":"
+					, whispMsg)
+					if (pbErr && pbErr != 200)
+						AppendToLogs(A_ThisFunc "(): Error sending PushBullet notification."
+						. "Code: """ pbErr """ - Token length: """ StrLen(PROGRAM.SETTINGS.SETTINGS_MAIN.PushBulletToken) """")
 				}
 			}
 		}

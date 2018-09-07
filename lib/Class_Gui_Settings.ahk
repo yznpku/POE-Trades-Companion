@@ -401,10 +401,10 @@ Class GUI_Settings {
 		Gui.Add("Settings", "Text", "x" leftMost2+25 " y+7", "Token: ")
 		Gui.Add("Settings", "Edit", "x+5 yp-3 w250 hwndhEDIT_PushBulletToken")
 		Gui.Add("Settings", "Text", "x" leftMost2+25 " y+10", "Get PB notifications for:")
-		Gui.Add("Settings", "CheckBox", "x+5 yp hwndhCB_PushBulletOnTradingWhisper", "Trading whisper")
+		Gui.Add("Settings", "CheckBox", "x+5 yp hwndhCB_PushBulletOnTradingWhisper", "Trading whispers")
 		; Gui.Add("Settings", "CheckBox", "x+0 yp hwndhCB_PushBulletOnGlobalMessage", "#")
-		Gui.Add("Settings", "CheckBox", "x+0 yp hwndhCB_PushBulletOnPartyMessage", "%")
-		Gui.Add("Settings", "CheckBox", "x+0 yp hwndhCB_PushBulletOnWhisperMessage", "@")
+		Gui.Add("Settings", "CheckBox", "x+0 yp hwndhCB_PushBulletOnWhisperMessage", "Regular whispers")
+		; Gui.Add("Settings", "CheckBox", "x+0 yp hwndhCB_PushBulletOnPartyMessage", "Party messages")
 		; Gui.Add("Settings", "CheckBox", "x+0 yp hwndhCB_PushBulletOnTradeMessage", "$")
 		Gui.Add("Settings", "CheckBox", "x" leftMost2+25 " y+7 hwndhCB_PushBulletOnlyWhenAfk", "Get PB notifications only when /afk")
 		
