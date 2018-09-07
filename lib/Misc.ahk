@@ -68,7 +68,16 @@ Do_Action(actionType, actionContent="", isHotkey=False, uniqueNum="") {
 	if (ACTIONS_FORCED_CONTENT[actionType]) && !(actionContent)
 		actionContent := ACTIONS_FORCED_CONTENT[actionType]
 
-	actionContent := Replace_TradeVariables(actionContent)
+	actionContentWithVariables := Replace_TradeVariables(actionContent)
+	StringSplit, contentWords, actionContentWithVariables,% A_Space
+	if ( SubStr(actionContentWithVariables, 1, 2) = "@ ") {
+		TrayNotifications.Show("Canceled message.", "Canceled from sending a message to " contentWords1 " because the variable content is empty: " actionContent)
+		return
+	}
+	else if ( SubStr(contentWords1, 2, 1) = "%" || SubStr(contentWords1, 0, 1) = "%" ) {
+		TrayNotifications.Show("Canceled message.", "Canceled from sending a message because the variable name is mistyped: " actionContent)
+		return
+	}
 
 	if IsIn(prevActionType, "COPY_ITEM_INFOS,WRITE_SEND,WRITE_DONT_SEND,WRITE_GO_BACK,SENDINPUT,SENDINPUT_RAW,SENDEVENT,SENDEVENT_RAW") {
 		; AppendToLogs(A_thisFunc "(actionType=" actionType ", actionContent=" actionContent ", isHotkey=" isHotkey ", uniqueNum=" uniqueNum "):"
@@ -86,13 +95,13 @@ Do_Action(actionType, actionContent="", isHotkey=False, uniqueNum="") {
 	}
 
 	else if IsIn(actionType, WRITE_SEND_ACTIONS)
-		Send_GameMessage("WRITE_SEND", actionContent, tabPID)
+		Send_GameMessage("WRITE_SEND", actionContentWithVariables, tabPID)
 	else if IsIn(actionType, WRITE_DONT_SEND_ACTIONS) {
-		Send_GameMessage("WRITE_DONT_SEND", actionContent, tabPID)
+		Send_GameMessage("WRITE_DONT_SEND", actionContentWithVariables, tabPID)
 		ignoreFollowingActions := True
 	}
 	else if IsIn(actionType, WRITE_GO_BACK_ACTIONS) {
-		Send_GameMessage("WRITE_GO_BACK", actionContent, tabPID)
+		Send_GameMessage("WRITE_GO_BACK", actionContentWithVariables, tabPID)
 		ignoreFollowingActions := True
 	}
 
@@ -114,21 +123,21 @@ Do_Action(actionType, actionContent="", isHotkey=False, uniqueNum="") {
 		GUI_Trades.SaveStats(activeTab)
 
 	else if (actionType = "SLEEP")
-		Sleep %actionContent%
+		Sleep %actionContentWithVariables%
 	else if (actionType = "SENDINPUT")
-		SendInput,%actionContent%
+		SendInput,%actionContentWithVariables%
 	else if (actionType = "SENDINPUT_RAW")
-		SendInput,{Raw}%actionContent%
+		SendInput,{Raw}%actionContentWithVariables%
 	else if (actionType = "SENDEVENT")
-		SendEvent,%actionContent%
+		SendEvent,%actionContentWithVariables%
 	else if (actionType = "SENDEVENT_RAW")
-		SendEvent,{Raw}%actionContent%
+		SendEvent,{Raw}%actionContentWithVariables%
 	else if (actionType = "IGNORE_SIMILAR_TRADE")
 		GUI_Trades.AddActiveTrade_To_IgnoreList()
 	else if (actionType = "SHOW_GRID")
 		GUI_Trades.ShowActiveTabItemGrid()
 
-	prevNum := uniqueNum, prevActionType := actionType, prevActionContent := actionContent	
+	prevNum := uniqueNum, prevActionType := actionType, prevActionContent := actionContentWithVariables	
 }
 
 Get_Changelog(removeTrails=False) {
@@ -179,8 +188,8 @@ Replace_TradeVariables(string) {
 	string := StrReplace(string, "`%buyerName`%", tabContent.Buyer)
 	string := StrReplace(string, "`%item`%", tabContent.Item)
 	string := StrReplace(string, "`%itemName`%", tabContent.Item)
-	string := StrReplace(string, "`%price`%", tabContent.Price)
-	string := StrReplace(string, "`%itemPrice`%", tabContent.Price)
+	string := StrReplace(string, "`%price`%", tabContent.Price != ""?tabContent.Price : "[unpriced]")
+	string := StrReplace(string, "`%itemPrice`%", tabContent.Price != ""?tabContent.Price : "[unpriced]")
 
 	string := StrReplace(string, "`%lastWhisper`%", GuiTrades.Last_Whisper_Name)
 
