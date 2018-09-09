@@ -78,6 +78,31 @@ if !InStr(FileExist(PROGRAM.DATA_FOLDER ""), "D")
 	FileCreateDir,% PROGRAM.DATA_FOLDER ""
 
 if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("data\poeDotComCurrencyData.json")
+	FileGetSize, destFileSize, % PROGRAM.DATA_FOLDER "\poeDotComCurrencyData.json"
+}
+else {
+	FileGetSize, sourceFileSize, data\poeDotComCurrencyData.json
+	FileGetSize, destFileSize, % PROGRAM.DATA_FOLDER "\poeDotComCurrencyData.json"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, data\poeDotComCurrencyData.json, % PROGRAM.DATA_FOLDER "\poeDotComCurrencyData.json", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: data\poeDotComCurrencyData.json"
+	.	"`nDest: " PROGRAM.DATA_FOLDER "\poeDotComCurrencyData.json"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: data\poeDotComCurrencyData.json"
+	.	"`nDest: " PROGRAM.DATA_FOLDER "\poeDotComCurrencyData.json"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.DATA_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.DATA_FOLDER ""
+
+if (A_IsCompiled) {
 	sourceFileSize := Get_ResourceSize("data\poeTradeCurrencyData.json")
 	FileGetSize, destFileSize, % PROGRAM.DATA_FOLDER "\poeTradeCurrencyData.json"
 }

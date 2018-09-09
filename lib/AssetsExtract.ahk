@@ -51,7 +51,7 @@
 	appendToFile .= FileInstall("""" filePath """", "PROGRAM.MAIN_FOLDER """ "\" "curl.exe" """", 2)
 
 ;	- - - - DATA
-	allowedFiles := "CurrencyNames.txt,poetradeCurrencyNames.json,poeTradeCurrencyData.json"
+	allowedFiles := "CurrencyNames.txt,poetradeCurrencyNames.json,poeTradeCurrencyData.json,poeDotComCurrencyData.json"
 	Loop, Files,% A_ScriptDir "\data\*"
 	{
 		RegExMatch(A_LoopFileFullPath, "O)\\data\\(.*)", path)
