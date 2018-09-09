@@ -1,6 +1,8 @@
 ﻿#SingleInstance, Force
 #NoEnv
 
+PROGRAM := {"CURL_EXECUTABLE": A_ScriptDir "\lib\third-party\curl.exe"}
+
 ; Basic tray menu
 if ( !A_IsCompiled && FileExist(A_ScriptDir "\resources\icon.ico") )
 	Menu, Tray, Icon, %A_ScriptDir%\resources\icon.ico
@@ -17,16 +19,29 @@ ver := RegExReplace(ver, "[a-zA-Z]") ; Remove any possible alpha char
 ver := StrReplace(ver, "_", "99.") ; If _ detected (beta), use 99 as ver
 StringReplace ver,ver,`.,`.,UseErrorLevel
 
+
+ToolTip, Compiling POE Trades Companion.exe
 CompileFile(A_ScriptDir "\POE Trades Companion.ahk", A_ScriptDir "\POE Trades Companion.exe")
 ; CompileFile(A_ScriptDir "\POE Trades Companion.ahk", A_ScriptDir "\POE Trades Companion.exe", "POE Trades Companion", ver, "© lemasato.github.io " A_YYYY)
 
 ; Updater file 
+ToolTip, Compiling Updater.exe
 CompileFile(A_ScriptDir "\Updater.ahk", A_ScriptDir "\Updater.exe")
 ; CompileFile(A_ScriptDir "\Updater.ahk", A_ScriptDir "\Updater.exe", "POE Trades Companion: Updater", "1.0", "© lemasato.github.io " A_YYYY)
 
 ; Updater file v2
+ToolTip, Updater_v2.exe
 CompileFile(A_ScriptDir "\Updater_v2.ahk", A_ScriptDir "\Updater_v2.exe")
 ; CompileFile(A_ScriptDir "\Updater_v2.ahk", A_ScriptDir "\Updater_v2.exe", "POE Trades Companion: Updater", "2.1", "© lemasato.github.io " A_YYYY)
+
+ToolTip, Creating poeTradeCurrencyData.json
+PoeTrade_GenerateCurrencyData()
+
+; ToolTip, Creating poeDotComCurrencyData.json
+PoeDotCom_GenerateCurrencyData()
+
+ToolTip, Creating TradingLeagues.txt
+
 
 ; End
 SoundPlay, *32
@@ -81,7 +96,14 @@ CompileFile(source, dest, fileDesc="NONE", fileVer="NONE", fileCopyright="NONE")
 
 #Include %A_ScriptDir%\lib\
 #Include CompileAhk2Exe.ahk
+#Include EasyFuncs.ahk
+#Include Logs.ahk
 #Include SetFileInfos.ahk
+#Include PoeTrade.ahk
 
 #Include %A_ScriptDir%\lib\third-party\
+#Include cURL.ahk
 #Include FGP.ahk
+#Include IEComObj.ahk
+#Include JSON.ahk
+#Include StdOutStream.ahk

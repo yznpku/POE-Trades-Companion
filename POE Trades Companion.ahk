@@ -220,8 +220,6 @@ Start_Script() {
 
 	PROGRAM["DATA"]["POETRADE_CURRENCY_DATA"] := PoeTrade_GetCurrencyData()
 
-	; PoeTrade_GenerateCurrencyData() ; Disabled by default. Used to re-generate currency data json/txt
-
 	; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 	GDIP_Startup()
