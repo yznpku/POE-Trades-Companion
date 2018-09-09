@@ -1,26 +1,28 @@
 ﻿PoeTrade_GenerateCurrencyData() {
-    returnVal := PoeTrade_GetCurrencyData(createData:=True)
-    jsonData := returnVal.1, txtData := returnVal.2
+    jsonData := PoeTrade_GetCurrencyData()
 
     if !(jsonData) {
         MsgBox(4096, "", "Function: " A_ThisFunc "`nCurrency JSON data is invalid, cancelling.")
         return
     }
-    if !(txtData) {
-        MsgBox(4096, "", "Function: " A_ThisFunc "`nCurrency TXT data is invalid, cancelling.")
-        return
+
+    nice := JSON.Beautify(jsondata)
+    for key, value in jsonData {
+        if !(jsonData[value].Abridged = key) {
+            dataTxt .= dataTxt ? "`n" key : key
+        }           
     }
 
     fileLocation := A_ScriptDir "/data/poeTradeCurrencyData.json"
     FileDelete,% fileLocation
-    FileAppend,% jsonData,% fileLocation
+    FileAppend,% nice,% fileLocation
 
     fileLocation := A_ScriptDir "/data/CurrencyNames.txt"
     FileDelete,% fileLocation
-    FileAppend,% txtData,% fileLocation
+    FileAppend,% dataTxt,% fileLocation
 }
 
-PoeTrade_GetCurrencyData(createData=False) {
+PoeTrade_GetCurrencyData() {
     global PROGRAM
 
     Url := "http://currency.poe.trade/"
@@ -67,8 +69,10 @@ PoeTrade_GetCurrencyData(createData=False) {
 
                 if (curTitle) {
                     currenciesObj[curTitle] := {}
-                    currenciesObj[curTitle]["Full"] := curTitle
-                    currenciesObj[curTitle]["Abridged"] := curDataTitle
+                    if (curTitle != curDataTitle) {
+                        currenciesObj[curTitle]["Abridged"] := curDataTitle
+                        ; currenciesObj[curTitle]["Full"] := curTitle
+                    }
                     currenciesObj[curTitle]["ID"] := curDataID
                 }
                 if (curDataTitle && curDataTitle != curTitle) {
@@ -87,38 +91,6 @@ PoeTrade_GetCurrencyData(createData=False) {
         AppendToLogs(A_ThisFunc "(createData=" createData "): Couldn't retrieve currency data from poe.trade, falling back to json.")
         FileRead, JSONFile,% PROGRAM.DATA_FOLDER "\poeTradeCurrencyData.json"
         currenciesObj := JSON.Load(JSONFile)
-    }
-
-    if (createData=True) {
-        if !(currenciesObj["Chaos Orb"])
-            return 0
-
-        txtData := ""
-        jsonData := "{`n"
-        for key, value in currenciesObj {
-            fName := currenciesObj[key].Full, cID := currenciesObj[key].ID, sName := currenciesObj[key].Abridged
-
-            if (sName && fName && cID) && (sName != fName) {
-                jsonData .= A_Tab """" fName """: {"
-                . "`n" A_Tab A_Tab """Abridged"": " """" sName ""","
-                . "`n" A_Tab A_Tab """ID"": " """" cID """"
-                . "`n" A_Tab "},"
-                . "`n" A_Tab """" sName """: """ fName """,`n"
-            }
-            else if (fName && cID) {
-                jsonData .= A_Tab """" fName """: {"
-                . "`n" A_Tab A_Tab """ID"": " """" cID """"
-                .  "`n" A_Tab "},`n"
-            }
-
-            if (fName)
-                txtData .= txtData?"`n" fName : fName
-            
-        }
-        StringTrimRight, jsonData, jsonData, 2
-        jsonData .= "`n}"
-
-        return [jsonData, txtData]
     }
 
     Return currenciesObj
