@@ -16,7 +16,9 @@
 		StringTrimRight, currencyWithoutS, currency, 1
 
 	if !IsIn(currency, PROGRAM.DATA.CURRENCY_LIST) {
-		currencyFullName := PROGRAM.DATA.POETRADE_CURRENCY_DATA[currency]
+		currencyFullName := PROGRAM.DATA.POETRADE_CURRENCY_DATA[currency] ? PROGRAM.DATA.POETRADE_CURRENCY_DATA[currency]
+			:	PROGRAM.DATA.POEDOTCOM_CURRENCY_DATA[currency] ? PROGRAM.DATA.POEDOTCOM_CURRENCY_DATA[currency]
+			:	""
 		if (currencyFullName)
 			isCurrencyListed := True
 	}
