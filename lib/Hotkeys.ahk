@@ -7,8 +7,10 @@
 	isHKBasic := hkSettings.Type ? True : False
 	isHKAdvanced := hkSettings.Action_1_Type ? True : False
 
+	KeyWait, Ctrl, U
 	KeyWait, Shift, U
-	KeyWait, RAlt, U
+	KeyWait, Alt, U
+	keysState := GetKeyStateFunc("Ctrl,LCtrl,RCtrl")
 	if (isHKBasic) {
 		Do_Action(hkSettings.Type, hkSettings.Content, True)
 	}
@@ -25,6 +27,7 @@
 		if (doCopyActionAtEnd)
 			Do_Action("COPY_ITEM_INFOS", "", True, uniqueNum)
 	}
+	SetKeyStateFunc(keysState)
 }
 
 UpdateHotkeys() {

@@ -496,6 +496,7 @@
 
 		if WinExist("ahk_group POEGameGroup ahk_pid " tabPID) {
 			uniqueNum := !uniqueNum
+			keysState := GetKeyStateFunc("Ctrl,LCtrl,RCtrl")
 			if (btnType = "Custom") {
 				Loop {
 					actionIndex := A_Index
@@ -532,6 +533,7 @@
 						GUI_Trades.ShowActiveTabItemGrid()
 				}
 			}
+			SetKeyStateFunc(keysState)
 		}
 		else { ; Instance doesn't exist anymore, replace and do btn action
 			runningInstances := Get_RunningInstances()
