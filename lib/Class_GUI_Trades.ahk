@@ -237,7 +237,7 @@
 				GuiTrades["TabButton" A_Index "_W"] := TabButton%A_Index%_W, GuiTrades["TabButton" A_Index "_H"] := TabButton%A_Index%_H
 			}
 
-			__f := GUI_Trades.SetActiveTab.bind(Gui_Trades, A_Index, "") ; tabName, autoScroll
+			__f := GUI_Trades.SetActiveTab.bind(Gui_Trades, tabName:=A_Index, autoScroll:=True, skipError:=False, styleChanged:=False) ; tabName, autoScroll
 			GuiControl, Trades:+g,% GuiTrades_Controls["hBTN_TabDefault" A_Index],% __f
 			GuiControl, Trades:+g,% GuiTrades_Controls["hBTN_TabJoinedArea" A_Index],% __f
 			GuiControl, Trades:+g,% GuiTrades_Controls["hBTN_TabWhisperReceived" A_Index],% __f
@@ -1606,8 +1606,9 @@
 		; Don't do these if only the tab style changed.
 		; Avoid an issue where upon removing a tab, it would copy the item infos again due to the tab style func re-activating the tab
 		if (styleChanged=False) {
-			if (PROGRAM.SETTINGS.SETTINGS_MAIN.CopyItemInfosOnTabChange = "True" && IsNum(tabName))
-				Gui_Trades.CopyItemInfos(tabName)
+			if (PROGRAM.SETTINGS.SETTINGS_MAIN.CopyItemInfosOnTabChange = "True" && IsNum(tabName)) {
+				GoSub, GUI_Trades_CopyItemInfos_CurrentTab_Timer
+			}
 		}
 
 		GuiTrades.Active_Tab := tabName

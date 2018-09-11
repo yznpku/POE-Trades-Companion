@@ -86,8 +86,12 @@ GUI_Trades_RefreshIgnoreList:
 	GUI_Trades.RefreshIgnoreList()
 return
 
-RefreshIgnoreList:
-GUI_Trades.RefreshIgnoreList()
+GUI_Trades_CopyItemInfos_CurrentTab_Timer:
+	SetTimer, GUI_Trades_CopyItemInfos_CurrentTab, Delete
+	SetTimer, GUI_Trades_CopyItemInfos_CurrentTab, -500
+return
+GUI_Trades_CopyItemInfos_CurrentTab:
+	Gui_Trades.CopyItemInfos()
 return
 
 ; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

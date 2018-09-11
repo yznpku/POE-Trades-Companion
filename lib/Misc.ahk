@@ -108,7 +108,7 @@ Do_Action(actionType, actionContent="", isHotkey=False, uniqueNum="") {
 	}
 
 	else if (actionType = "COPY_ITEM_INFOS")
-		GUI_Trades.CopyItemInfos(activeTab)
+		GoSub, GUI_Trades_CopyItemInfos_CurrentTab_Timer
 	else if (actionType = "GO_TO_NEXT_TAB")
 		GUI_Trades.SelectNextTab()
 	else if (actionType = "GO_TO_PREVIOUS_TAB")
@@ -162,10 +162,10 @@ Set_Clipboard(str) {
 	global PROGRAM
 	global SET_CLIPBOARD_CONTENT
 
-	; Clipboard := ""
-	; Sleep 10
+	Clipboard := ""
+	Sleep 10
 	Clipboard := str
-	ClipWait, 10, 1
+	ClipWait, 2, 1
 	if (ErrorLevel) {
 		TrayNotifications.Show(PROGRAM.NAME, "Unable to clipboard the following content: " str
 			.	"`nThis may be due to an external clipboard manager creating conflict.")
