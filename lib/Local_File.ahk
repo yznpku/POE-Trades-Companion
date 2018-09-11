@@ -28,6 +28,7 @@ Get_LocalSettings_DefaultValues() {
 	settings.GENERAL.IsFirstTimeRunning 												:= "True"
 	settings.GENERAL.AddShowGridActionToInviteButtons									:= "True"
 	settings.GENERAL.HasAskedForImport													:= "True"
+	settings.GENERAL.RemoveCopyItemInfosIfGridActionExists								:= "True"
 
 	settings.SETTINGS_MAIN 																:= {}
 	settings.SETTINGS_MAIN.TradingWhisperSFXPath 										:= PROGRAM.SFX_FOLDER "\WW_MainMenu_Letter.wav" 
@@ -241,7 +242,7 @@ LocalSettings_IsValueValid(iniSect, iniKey, iniValue) {
 	isFirstTimeRunning := INI.Get(PROGRAM.INI_FILE, "GENERAL", "IsFirstTimeRunning")
 
 	if (iniSect = "GENERAL") {
-		if IsIn(iniKey, "IsFirstTimeRunning,AddShowGridActionToInviteButtons,HasAskedForImport")
+		if IsIn(iniKey, "IsFirstTimeRunning,AddShowGridActionToInviteButtons,HasAskedForImport,RemoveCopyItemInfosIfGridActionExists")
 			isValueValid := IsIn(iniValue, "True,False") ? True : False	
 	}
 
@@ -475,7 +476,7 @@ Set_LocalSettings() {
 			}
 
 			if (!isValueValid) {
-				if (IsFirstTimeRunning != "True" && !IsIn(iniKey, "IsFirstTimeRunning,AddShowGridActionToInviteButtons"))
+				if (IsFirstTimeRunning != "True" && !IsIn(iniKey, "IsFirstTimeRunning,AddShowGridActionToInviteButtons,RemoveCopyItemInfosIfGridActionExists"))
 					warnMsg .= "Section: " iniSect "`nKey: " iniKey "`nValue: " iniValue "`nDefault value: " defValue "`n`n"
 				Restore_LocalSettings(iniSect, iniKey)
 			}
@@ -574,6 +575,58 @@ Update_LocalSettings() {
 		}
 		AppendToLogs(A_ThisFunc "(): Finished adding SHOW_GRID action.")
 		INI.Set(iniFile, "GENERAL", "AddShowGridActionToInviteButtons", "False")
+	}
+
+	if (localSettings.GENERAL.RemoveCopyItemInfosIfGridActionExists = "True") {
+		AppendToLogs(A_ThisFunc "(): RemoveCopyItemInfosIfGridActionExists detected as True."
+		. "`n" "Removing COPY_ITEM_INFOS action to all buttons containing the SHOW_GRID action.")
+		Loop {
+			cbIndex := A_Index
+			loopedSetting := localSettings["SETTINGS_CUSTOM_BUTTON_" cbIndex]
+			if IsObject(loopedSetting) {
+				hasCopy := False, hasGrid := False
+				Loop {
+					loopActionIndex := A_Index
+					loopedActionContent := loopedSetting["Action_" loopActionIndex "_Content"]
+					loopedActionType := loopedSetting["Action_" loopActionIndex "_Type"]
+
+					if (!loopedActionType) || (loopedActionType = "") || (loopActionIndex > 50) {
+						loopActionIndex--
+						Break
+					}
+					
+					else if (loopedActionType = "COPY_ITEM_INFOS")
+						hasCopy := True, copyActionIndex := loopActionIndex
+
+					else if (loopedActionType = "SHOW_GRID")
+						hasGrid := True, gridActionIndex:= loopActionIndex
+				}
+				if (hasCopy = True && hasGrid = True) {
+					AppendToLogs(A_ThisFunc "(): Removing COPY_ITEM_INFOS action to button with"
+					. "`n" "ID: """ cbIndex """ - Action index: """ loopActionIndex """. Action ID: """ copyActionIndex """")
+
+					; Reduce action num by one, for every action after COPY_ITEM_INFOS
+					startReplaceIndex := copyActionIndex
+					Loop % loopActionIndex - copyActionIndex {
+						INI.Set(iniFile, "SETTINGS_CUSTOM_BUTTON_" cbIndex, "Action_" startReplaceIndex "_Content", """" loopedSetting["Action_" startReplaceIndex+1 "_Content"] """")
+						INI.Set(iniFile, "SETTINGS_CUSTOM_BUTTON_" cbIndex, "Action_" startReplaceIndex "_Type", loopedSetting["Action_" startReplaceIndex+1 "_Type"])
+						startReplaceIndex++
+
+						AppendToLogs(A_ThisFunc "(): Reducing action index by one for button with"
+						. "`n" "ID: """ cbIndex """ - Action index: """ loopActionIndex """. Action ID: """ startReplaceIndex+1 """")
+					}
+					; Remove COPY_ITEM_INFOS action
+					INI.Remove(iniFile, "SETTINGS_CUSTOM_BUTTON_" cbIndex, "Action_" loopActionIndex "_Content")
+					INI.Remove(iniFile, "SETTINGS_CUSTOM_BUTTON_" cbIndex, "Action_" loopActionIndex "_Type")					
+				}
+			}
+			else if (cbIndex > 20)
+				Break
+			else
+				Break
+		}
+		AppendToLogs(A_ThisFunc "(): Finished removing COPY_ITEM_INFOS action to buttons with SHOW_GRID action.")
+		INI.Set(iniFile, "GENERAL", "RemoveCopyItemInfosIfGridActionExists", "False")
 	}
 	
 	if (localSettings.GENERAL.IsFirstTimeRunning = "True") {
