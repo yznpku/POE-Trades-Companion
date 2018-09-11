@@ -1,5 +1,6 @@
 ﻿if (!A_IsCompiled && A_ScriptName = "FileInstall_Cmds.ahk") {
 	#Include %A_ScriptDir%/lib/Logs.ahk
+	#Include %A_ScriptDir%/lib/WindowsSettings.ahk
 	#Include %A_ScriptDir%/lib/third-party/Get_ResourceSize.ahk
 
 	if (!PROGRAM)
