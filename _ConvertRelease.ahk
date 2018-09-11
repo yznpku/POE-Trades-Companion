@@ -2,6 +2,8 @@
 #NoEnv
 
 PROGRAM := {"CURL_EXECUTABLE": A_ScriptDir "\lib\third-party\curl.exe"}
+generateCurrencyData := False
+generateLeagueTxt := False
 
 ; Basic tray menu
 if ( !A_IsCompiled && FileExist(A_ScriptDir "\resources\icon.ico") )
@@ -34,13 +36,18 @@ ToolTip, Updater_v2.exe
 CompileFile(A_ScriptDir "\Updater_v2.ahk", A_ScriptDir "\Updater_v2.exe")
 ; CompileFile(A_ScriptDir "\Updater_v2.ahk", A_ScriptDir "\Updater_v2.exe", "POE Trades Companion: Updater", "2.1", "© lemasato.github.io " A_YYYY)
 
-ToolTip, Creating poeTradeCurrencyData.json
-PoeTrade_GenerateCurrencyData()
+if (generateCurrencyData) {
+	ToolTip, Creating poeTradeCurrencyData.json
+	PoeTrade_GenerateCurrencyData()
 
-; ToolTip, Creating poeDotComCurrencyData.json
-PoeDotCom_GenerateCurrencyData()
-
-ToolTip, Creating TradingLeagues.txt
+	ToolTip, Creating poeDotComCurrencyData.json
+	PoeDotCom_GenerateCurrencyData()
+}
+if (generateLeagueTxt) {
+	/*	TO_DO coming later
+	*/
+	; ToolTip, Creating TradingLeagues.txt
+}
 
 
 ; End
@@ -100,6 +107,7 @@ CompileFile(source, dest, fileDesc="NONE", fileVer="NONE", fileCopyright="NONE")
 #Include Logs.ahk
 #Include SetFileInfos.ahk
 #Include PoeTrade.ahk
+#Include WindowsSettings.ahk
 
 #Include %A_ScriptDir%\lib\third-party\
 #Include cURL.ahk
