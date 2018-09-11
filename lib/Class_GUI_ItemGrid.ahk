@@ -45,6 +45,11 @@
         global GuiItemGridQuad, GuiItemGridQuad_Controls, GuiItemGridQuad_Submit
         global GuiItemGridTabName, GuiItemGridTabName_Controls, GuiItemGridTabName_Submit
 
+        resDPI := PROGRAM.OS.RESOLUTION_DPI
+        winH := winH / resDPI ; os dpi fix
+        winX := winX / resDPI ; os dpi fix
+        winY := winY / resDPI ; os dpi fix
+
         ; Get default border size if unspecified
         ; SysGet, SM_CXSIZEFRAME, 32
         ; SysGet, SM_CYSIZEFRAME, 33
@@ -55,6 +60,9 @@
         ; Set border size at 0 if unspecified (borderless)
         winBorderTop := winBorderTop?winBorderTop:0
         winBorderSide := winBorderSide?winBorderSide:0
+
+        winBorderSide := winBorderSide / resDPI
+        winBorderTop := winBorderTop / resDPI
 
         xStart := this.xRoot * winH, yStart := this.yRoot * winH ; Calc first case x/y start pos
         gridItemX--, gridItemY-- ; Minus one, so we can get correct case multiplier
@@ -115,15 +123,15 @@
         Gui.Add("ItemGridTabName", "Text", "x0 y0 cBlack Center BackgroundTrans w" guiSizeW " h" guiSizeH " 0x200", "Tab: " gridItemTab)
 
         if (showNormalTabGrid) {
-            Gui.Show("ItemGrid", "x" stashXRelative " y" stashYRelative " AutoSize NoActivate")
+            Gui.Show("ItemGrid", "x" stashXRelative*resDPI " y" stashYRelative*resDPI " AutoSize NoActivate")
             Gui, ItemGrid:+LastFound
             WinSet, ExStyle, +0x20
         }
-        Gui.Show("ItemGridQuad", "x" stashQuadXRelative " y" stashQuadYRelative " AutoSize NoActivate")
+        Gui.Show("ItemGridQuad", "x" stashQuadXRelative*resDPI " y" stashQuadYRelative*resDPI " AutoSize NoActivate")
         Gui, ItemGridQuad:+LastFound
         WinSet, ExStyle, +0x20
 
-        Gui.Show("ItemGridTabName", "x" stashTabNameXRelative " y" stashTabNameYRelative " w" guiSizeW " h" guiSizeH " NoActivate")
+        Gui.Show("ItemGridTabName", "x" stashTabNameXRelative*resDPI " y" stashTabNameYRelative*resDPI " w" guiSizeW " h" guiSizeH " NoActivate")
         Gui, ItemGridTabName:+LastFound
         WinSet, Transparent, 254
         WinSet, ExStyle, +0x20
