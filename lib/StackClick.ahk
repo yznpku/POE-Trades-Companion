@@ -86,7 +86,7 @@
 		return
 	StackClick_GetKeyStates:
 		shiftState := (GetKeyState("Shift"))?("Down"):("Up")
-		ctrlState := (GetKeyState("Shift"))?("Down"):("Up")
+		ctrlState := (GetKeyState("Ctrl"))?("Down"):("Up")
 		Hotkey, *Shift, DoNothing, On
 		Hotkey, *Ctrl, DoNothing, On
 		sleep 10
