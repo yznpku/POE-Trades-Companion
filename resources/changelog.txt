@@ -1,3 +1,26 @@
+1.13.4 (11 Sept 2018)
+
+	I will not be able to work on new fixes or features as I will be going away for a week, from the 12th to the 20th.
+	Thank you everyone for using Trades Companion. Happy trading!
+
+	Changes / Improvements:
+	- Price checking now also works for english whispers from GGG official trading website.
+	- Any button containing both "Copy item infos" and "Show item grid" actions will be automatically modified to only keep the "Show item grid" action.  
+	This is done in order to fix issues where the item name could be sent instead of the message.  
+	This will only occur once, so if you really need both actions together and don't experience the said issue, you can just add it back.
+	- Revert the CTRL key state after sending a message through a hotkey or custom button.  
+	- "Copy the item infos on tab change" is now disabled on default settings.  
+	Additionally, the "Copy item infos" action has been removed for the default settings of the "Invite" custom button.
+	This feature is not really needed anymore, as the "Show item grid" action is far more superior.
+	- "Copy the item infos on tab change" would not work when manually switching tabs.  
+	- Minor clipboard improvements, to further prevent sending the item name instead of the message.  
+	The item name will now only be copied 500ms later, to prevent clipboard issues.
+	
+	Fixes:
+	- The item grid would appear offset when using a OS scaling different than 100%.
+	
+	
+= = = = = = = = = = = = =	
 1.13.3 (07 Sept 2018)
 
 	Changes / Improvements:
