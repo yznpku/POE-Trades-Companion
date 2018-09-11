@@ -36,7 +36,7 @@ Get_LocalSettings_DefaultValues() {
 	settings.SETTINGS_MAIN.NoTabsTransparency 											:= "30"
 	settings.SETTINGS_MAIN.TabsOpenTransparency 										:= "100"
 	settings.SETTINGS_MAIN.HideInterfaceWhenOutOfGame 									:= "False"
-	settings.SETTINGS_MAIN.CopyItemInfosOnTabChange 									:= "True"
+	settings.SETTINGS_MAIN.CopyItemInfosOnTabChange 									:= "False"
 	settings.SETTINGS_MAIN.AutoFocusNewTabs 											:= "False"
 	settings.SETTINGS_MAIN.AutoMinimizeOnAllTabsClosed 									:= "True"
 	settings.SETTINGS_MAIN.AutoMaximizeOnFirstNewTab 									:= "False"
@@ -134,14 +134,12 @@ Get_LocalSettings_DefaultValues() {
 	settings.SETTINGS_CUSTOM_BUTTON_3.Size												:= "Small"
 	settings.SETTINGS_CUSTOM_BUTTON_3.Slot												:= "3"
 	settings.SETTINGS_CUSTOM_BUTTON_3.Enabled											:= "True"
-	settings.SETTINGS_CUSTOM_BUTTON_3.Action_1_Type										:= "COPY_ITEM_INFOS"
-	settings.SETTINGS_CUSTOM_BUTTON_3.Action_1_Content									:= ""
-	settings.SETTINGS_CUSTOM_BUTTON_3.Action_2_Type										:= "INVITE_BUYER"
-	settings.SETTINGS_CUSTOM_BUTTON_3.Action_2_Content									:= """/invite %buyer%"""
-	settings.SETTINGS_CUSTOM_BUTTON_3.Action_3_Type										:= "SEND_TO_BUYER"
-	settings.SETTINGS_CUSTOM_BUTTON_3.Action_3_Content									:= """@%buyer% Ready to be picked up: %item% listed for %price%"""
-	settings.SETTINGS_CUSTOM_BUTTON_3.Action_4_Type										:= "SHOW_GRID"
-	settings.SETTINGS_CUSTOM_BUTTON_3.Action_4_Content									:= ""
+	settings.SETTINGS_CUSTOM_BUTTON_3.Action_1_Type										:= "INVITE_BUYER"
+	settings.SETTINGS_CUSTOM_BUTTON_3.Action_1_Content									:= """/invite %buyer%"""
+	settings.SETTINGS_CUSTOM_BUTTON_3.Action_2_Type										:= "SEND_TO_BUYER"
+	settings.SETTINGS_CUSTOM_BUTTON_3.Action_2_Content									:= """@%buyer% Ready to be picked up: %item% listed for %price%"""
+	settings.SETTINGS_CUSTOM_BUTTON_3.Action_3_Type										:= "SHOW_GRID"
+	settings.SETTINGS_CUSTOM_BUTTON_3.Action_3_Content									:= ""
 
 	settings.SETTINGS_CUSTOM_BUTTON_4 													:= {}
 	settings.SETTINGS_CUSTOM_BUTTON_4.Name												:= "Sold already"
@@ -250,7 +248,7 @@ LocalSettings_IsValueValid(iniSect, iniKey, iniValue) {
 	if (iniSect = "SETTINGS_MAIN") {
 		if (iniKey = "TradingWhisperSFXPath") {
 			sfxToggle := INI.Get(PROGRAM.INI_FILE, iniSect, "TradingWhisperSFXToggle")
-			isValueValid := FileExist(iniValue) || (!iniValue && sfxToggle="False") || (iniValue = "") ? True : False	
+			isValueValid := FileExist(iniValue) || (!iniValue && sfxToggle="False") ? True : False	
 		}
 		else if (iniKey = "RegularWhisperSFXPath") {
 			sfxToggle := INI.Get(PROGRAM.INI_FILE, iniSect, "RegularWhisperSFXToggle")
@@ -260,6 +258,13 @@ LocalSettings_IsValueValid(iniSect, iniKey, iniValue) {
 			sfxToggle := INI.Get(PROGRAM.INI_FILE, iniSect, "BuyerJoinedAreaSFXToggle")
 			isValueValid := FileExist(iniValue) || (!iniValue && sfxToggle="False") || (iniValue = "") ? True : False	
 		}
+		else if (iniKey = "TradingWhisperSFXToggle")
+			isValueValid := IsIn(iniValue, "True,False") ? True : False	
+		else if (iniKey = "RegularWhisperSFXToggle")
+			isValueValid := IsIn(iniValue, "True,False") ? True : False	
+		else if (iniKey = "BuyerJoinedAreaSFXToggle")
+			isValueValid := IsIn(iniValue, "True,False") ? True : False	
+
 		else if (iniKey = "NoTabsTransparency")
 			isValueValid := IsBetween(iniValue, 0, 100) ? True : False	
 		else if (iniKey = "TabsOpenTransparency")
@@ -273,12 +278,6 @@ LocalSettings_IsValueValid(iniSect, iniKey, iniValue) {
 		else if (iniKey = "AutoMinimizeOnAllTabsClosed")
 			isValueValid := IsIn(iniValue, "True,False") ? True : False	
 		else if (iniKey = "AutoMaximizeOnFirstNewTab")
-			isValueValid := IsIn(iniValue, "True,False") ? True : False	
-		else if (iniKey = "TradingWhisperSFXToggle")
-			isValueValid := IsIn(iniValue, "True,False") ? True : False	
-		else if (iniKey = "RegularWhisperSFXToggle")
-			isValueValid := IsIn(iniValue, "True,False") ? True : False	
-		else if (iniKey = "BuyerJoinedAreaSFXToggle")
 			isValueValid := IsIn(iniValue, "True,False") ? True : False	
 		else if (iniKey = "SendTradingWhisperUponCopyWhenHoldingCTRL")
 			isValueValid := IsIn(iniValue, "True,False") ? True : False	
