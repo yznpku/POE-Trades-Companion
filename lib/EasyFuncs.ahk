@@ -1,4 +1,54 @@
-﻿GetWindowClientInfos(winName) {
+﻿GetKeyStateFunc(which) {
+
+	if (which = "All") {
+		shiftState := (GetKeyState("Shift"))?("Down"):("Up")
+		shiftStateL := (GetKeyState("LShift"))?("Down"):("Up")
+		shiftStateR := (GetKeyState("RShift"))?("Down"):("Up")
+
+		ctrlState := (GetKeyState("Ctrl"))?("Down"):("Up")
+		ctrlStateL := (GetKeyState("LCtrl"))?("Down"):("Up")
+		ctrlStateR := (GetKeyState("RCtrl"))?("Down"):("Up")
+
+		altState := (GetKeyState("Alt"))?("Down"):("Up")
+		altStateL := (GetKeyState("LAlt"))?("Down"):("Up")
+		altStateR := (GetKeyState("RAlt"))?("Down"):("Up")
+
+		WinStateL := (GetKeyState("LWin"))?("Down"):("Up")
+		WinStateR := (GetKeyState("RWin"))?("Down"):("Up")
+
+		obj := {Shift: shiftState, LShift: shiftStateL, RShift: shiftStateR
+			, Ctrl: ctrlState, LCtrl: ctrlStateL, RCtrl: ctrlStateR
+			, Alt: altState, LAlt: altStateL, RAlt: altStateR
+			, LWin: WinStateL, RWin: WinStateR}
+
+		return obj
+	}
+	else {
+		obj := {}
+		Loop, Parse, which,% ","
+		{
+			key := A_LoopField, _count := A_Index
+			%key%State := (GetKeyState(key))?("Down"):("Up")
+			obj[key] := %key%State
+		}
+
+		if (_count = 1) {
+			return %key%State
+		}
+		else 
+			return obj
+	}
+}
+
+SetKeyStateFunc(which) {
+	for key, state in which
+		str .= "{" key " " state "}"
+
+	if (str)
+		Send %str%
+}
+
+GetWindowClientInfos(winName) {
 /*	Source:
 		noname: 		http://autohotkey.com/board/topic/77915-get-client-window/?p=495250
 		arcaine.net: 	http://arcaine.net/l2/AtomixMacro/Unsupported/CP&CTRL.ahk
