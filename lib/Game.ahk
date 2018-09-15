@@ -63,7 +63,7 @@
 			. "`nrawFile: """ rawFile """")
 			rawFile := ""
 		}
-		gitLeagues := ""		
+		gitLeagues := ""
 		Loop, Parse, rawFile,% "`n",% "`r"
 			if (A_LoopField)
 				gitLeagues .= A_LoopField ","
@@ -131,7 +131,7 @@ Send_GameMessage(actionType, msgString, gamePID="") {
 				Sleep 50
 			}
 			if (!err)
-				SendEvent, ^{sc02F}
+				SendEvent, ^v
 			else
 				TrayNotifications.Show("Failed to send message.", "The clipboard couldn't be updated with the message content.`nClipboard: " Clipboard "`nMessage: " msgString)
 			; SetTimer, Reset_Clipboard, -700
@@ -158,7 +158,7 @@ Send_GameMessage(actionType, msgString, gamePID="") {
 				Sleep 50
 			}
 			if (!err)
-				SendEvent, ^{sc02F}
+				SendEvent, ^v
 			else
 				TrayNotifications.Show("Failed to send message.", "The clipboard couldn't be updated with the message content.`nClipboard: " Clipboard "`nMessage: " msgString)
 			; SetTimer, Reset_Clipboard, -700
@@ -186,7 +186,7 @@ Send_GameMessage(actionType, msgString, gamePID="") {
 				Sleep 50
 			}
 			if (!err)
-				SendEvent, ^{sc02F}
+				SendEvent, ^v
 			else
 				TrayNotifications.Show("Failed to send message.", "The clipboard couldn't be updated with the message content.`nClipboard: " Clipboard "`nMessage: " msgString)
 			; SetTimer, Reset_Clipboard, -700
@@ -254,7 +254,7 @@ Get_RunningInstances() {
 		runningInstances[A_Index]["File"] := pFile
 		runningInstances[A_Index]["PID"] := pPID
 	}
-	
+
 	return runningInstances
 }
 
@@ -341,9 +341,9 @@ Parse_GameLogs(strToParse) {
 							  ,"poeApp":poeAppRegEx
 							  ,"poeApp_Unpriced":poeAppUnpricedRegex}
 
-	static areaRegexStr := ("^(?:[^ ]+ ){6}(\d+)\] : (.*?) (?:has) (joined|left) (?:the area.*)") 
+	static areaRegexStr := ("^(?:[^ ]+ ){6}(\d+)\] : (.*?) (?:has) (joined|left) (?:the area.*)")
 
-	static afkRegexStr := ("^(?:[^ ]+ ){6}(\d+)\] : AFK mode is now (ON|OFF)") 
+	static afkRegexStr := ("^(?:[^ ]+ ){6}(\d+)\] : AFK mode is now (ON|OFF)")
 
 	Loop, Parse,% strToParse,`n,`r ; For each line
 	{
@@ -351,7 +351,7 @@ Parse_GameLogs(strToParse) {
 			instancePID := areaPat.1, playerName := areaPat.2, joinedOrLeft := areaPat.3
 			if (joinedOrLeft = "Joined")
 				GUI_Trades.SetTabStyleJoinedArea(playerName)
-			else 
+			else
 				GUI_Trades.UnSetTabStyleJoinedArea(playerName)
 		}
 		else if RegExMatch(A_LoopField, "iSO)" afkRegexStr, afkPat) {
@@ -536,7 +536,7 @@ Read_GameLogs(logsFile) {
 
 	if ( logsFileObj.pos < logsFileObj.length ) {
 		newFileContent := logsFileObj.Read()
-		return newFileContent 
+		return newFileContent
 	}
 	else if (logsFileObj.pos > logsFileObj.length) || (logsFileObj.pos < 0) && (logsFileObj) {
 		AppendToLogs(A_ThisFunc "(logsFile=" logsFile "): Restarting logs file monitor."
