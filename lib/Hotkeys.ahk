@@ -43,7 +43,7 @@ DisableHotkeys() {
 	for hk, nothing in PROGRAM.HOTKEYS {
 		if (hk != "") {
 			Hotkey, IfWinActive, ahk_group POEGameGroup
-			Hotkey,% hk, Off
+			try Hotkey,% hk, Off
 
 			logsStr := "Disabled hotkey with key """ hk """"
 			logsAppend .= logsAppend ? "`n" logsStr : logsStr
@@ -76,7 +76,7 @@ EnableHotkeys() {
 			PROGRAM.HOTKEYS[hkSC].Content := acContent
 			PROGRAM.HOTKEYS[hkSC].Type := acType
 			Hotkey, IfWinActive, ahk_group POEGameGroup
-			Hotkey,% hkSC, OnHotkeyPress, On
+			try Hotkey,% hkSC, OnHotkeyPress, On
 			logsStr := "Enabled hotkey with key """ hk """ (scan code: """ hkSC """)"
 			logsAppend .= logsAppend ? "`n" logsStr : logsStr
 		}
@@ -89,7 +89,7 @@ EnableHotkeys() {
 		hk := thisHotkeySettings.Hotkey
 		hkSC := GetKeySC(hk), hkSC := Format("SC{:X}", hkSC)
 
-		if (hk != "") || (acType != "") {
+		if (hk != "") && (acType != "") {
 			PROGRAM.HOTKEYS[hkSC] := {}
 
 			Loop {
@@ -104,6 +104,7 @@ EnableHotkeys() {
 				PROGRAM.HOTKEYS[hkSC]["Actions_Count"] := A_Index
 			}
 			if (hk != "") {
+				
 				Hotkey, IfWinActive, ahk_group POEGameGroup
 				Hotkey,% hkSC, OnHotkeyPress, On
 				logsStr := "Enabled hotkey with key """ hk """ (scan code: """ hkSC """)"
