@@ -662,7 +662,7 @@
 		tabID := _tabID="" ? GuiTrades.Active_Tab : _tabID
 
 		tabContent := GUI_Trades.GetTabContent(tabID)
-		item := tabContent.Item
+		item := tabContent.Item, whisLang := tabContent.WhisperLang
 		if RegExMatch(item, "O)(.*?) \(Lvl:(.*?) \/ Qual:(.*?)%\)", itemPat) {
 			gemName := itemPat.1, gemLevel := itemPat.2, gemQual := itemPat.3
 		}
@@ -672,7 +672,26 @@
 
 		if (gemName) {
 			Gui_Trades_CopyItemInfos_GemString:
-			searchGemStr := """" gemName """", searchLvlStr := """l: " gemLevel """", searchQualStr := """y: +" gemQual "%"""
+			searchLvlPrefix := whisLang = "ENG" ? "l" ; level
+				: whisLang = "RUS" ? "ь" ; Уровень
+				: whisLang = "FRE" ? "u" ; Niveau
+				: whisLang = "POR" ? "l" ; Nível
+				: whisLang = "THA" ? "ล" ; เลเวล
+				: whisLang = "GER" ? "e" ; Stufe
+				: whisLang = "SPA" ? "l" ; Nivel
+				: "l"
+			searchQualPrefix := whisLang = "ENG" ? "y" ; quality
+				: whisLang = "RUS" ? "о" ; Качество
+				: whisLang = "FRE" ? "é" ; Qualité
+				: whisLang = "POR" ? "e" ; Qualidade
+				: whisLang = "THA" ? "พ" ; คุณภาพ
+				: whisLang = "GER" ? "t" ; Qualität
+				: whisLang = "SPA" ? "d" ; Calidad
+				: "y"
+
+			searchGemStr := """" gemName """"
+			searchLvlStr := """" searchLvlPrefix ": " gemLevel """"
+			searchQualStr := """" searchQualPrefix ": +" gemQual "%"""
 			searchString := searchGemStr
 			searchString .= (gemLevel && !gemQual)?(" " searchLvlStr):(gemLevel && gemQual)?(" " searchLvlStr " " searchQualStr):("")
 
@@ -1397,6 +1416,8 @@
 				invisibleInfosArr.TradeVerifyInfos := tradeVerifyInfosPat.1
 			else if RegExMatch(A_LoopField, "O)IsBuyerInvited:" A_Tab "(.*)", isBuyerInvitedPat)
 				invisibleInfosArr.IsBuyerInvited := isBuyerInvitedPat.1
+			else if RegExMatch(A_LoopField, "O)WhisperLang:" A_Tab "(.*)", whisperLangPat)
+				invisibleInfosArr.WhisperLang := whisperLangPat.1
 		}
 
 		tabContent := {}
@@ -1489,10 +1510,11 @@
 		newWhisperSite := updateOnly && !tabInfos.WhisperSite ? cTabCont.WhisperSite : tabInfos.WhisperSite
 		newTradeVerifyInfos := updateOnly && !tabInfos.TradeVerifyInfos ? cTabCont.TradeVerifyInfos : tabInfos.TradeVerifyInfos
 		newIsBuyerInvited := updateOnly && !tabInfos.IsBuyerInvited ? cTabCont.IsBuyerInvited : tabInfos.IsBuyerInvited
+		newWhisperLang := updateOnly && !tabInfos.WhisperLang ? cTabCont.WhisperLang : tabInfos.WhisperLang
 
 		AutoTrimStr(newTabBuyer, newTabItem, newTabPrice, newTabStash, newTabOther, newTabBuyerGuild, newTabTimeStamp, newTabPID, newTabIsInArea, newTabHasNewMessage)
 		AutoTrimStr(newTabWithdrawTally, newTabItemName, newTabItemLevel, newTabItemQuality, newTabStashLeague, newTabStashTab, newTabStashPosition)
-		AutoTrimStr(newTabUniqueID, newTradeVerify, newWhisperSite, newTradeVerifyInfos, newIsBuyerInvited)
+		AutoTrimStr(newTabUniqueID, newTradeVerify, newWhisperSite, newTradeVerifyInfos, newIsBuyerInvited, newWhisperLang)
 				
 		invisibleText := ""
 		. 		"BuyerGuild:"		A_Tab newTabBuyerGuild
@@ -1518,6 +1540,7 @@
 		. "`n"	"WhisperSite:"		A_Tab newWhisperSite
 		. "`n" 	"TradeVerifyInfos:"	A_Tab newTradeVerifyInfos
 		. "`n" 	"IsBuyerInvited:"	A_Tab newIsBuyerInvited
+		. "`n" 	"WhisperLang:"		A_Tab newWhisperLang
 
 		; newTimeReceived := (currentTabContent.Time)?(currentTabContent.Time):(timeReceived)
 		newTimeReceived := updateOnly && !tabInfos.Time ? cTabCont.Time : tabInfos.Time
@@ -2058,6 +2081,9 @@
 		activeTabInfos := GUI_Trades.GetTabContent(activeTabID)
 		tabStashPos := StrSplit(activeTabInfos.StashPosition, ";")
 		tabXPos := tabStashPos.1, tabYPos := tabStashPos.2, tabStashTab := activeTabInfos.StashTab
+
+		if !IsNum(tabXPos) || !IsNum(tabYPos)
+			return
 
 		if (tabXPos && tabYPos) && WinExist("ahk_pid " activeTabInfos.PID " ahk_group POEGameGroup") {
 			WinGetPos, winX, winY, winW, winH,% "ahk_pid " activeTabInfos.PID " ahk_group POEGameGroup"
