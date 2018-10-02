@@ -2090,7 +2090,10 @@
 			clientInfos := GetWindowClientInfos("ahk_pid" activeTabInfos.PID " ahk_group POEGameGroup")
 
 			if RegExMatch(activeTabInfos.Item, ".* \(T(\d+)\)$")
-				itemType := "Map"				
+				itemType := "Map"
+
+			if (clientInfos.Y = 0) && IsIn(clientInfos.H, "606,774,870,726,806,966,1030,1056,1086,1206") ; Fix issue where +6 is added to res H
+				clientInfos.H -= 6
 
 			Gui_Trades.UpdateSlotContent(activeTabID, "IsBuyerInvited", True)
 			GUI_ItemGrid.Create(tabXPos, tabYPos, tabStashTab, winX, winY, clientInfos.H, clientInfos.X, clientInfos.Y, itemType)
