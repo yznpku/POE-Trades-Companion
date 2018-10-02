@@ -2089,8 +2089,11 @@
 			WinGetPos, winX, winY, winW, winH,% "ahk_pid " activeTabInfos.PID " ahk_group POEGameGroup"
 			clientInfos := GetWindowClientInfos("ahk_pid" activeTabInfos.PID " ahk_group POEGameGroup")
 
+			if RegExMatch(activeTabInfos.Item, ".* \(T(\d+)\)$")
+				itemType := "Map"				
+
 			Gui_Trades.UpdateSlotContent(activeTabID, "IsBuyerInvited", True)
-			GUI_ItemGrid.Create(tabXPos, tabYPos, tabStashTab, winX, winY, clientInfos.H, clientInfos.X, clientInfos.Y)
+			GUI_ItemGrid.Create(tabXPos, tabYPos, tabStashTab, winX, winY, clientInfos.H, clientInfos.X, clientInfos.Y, itemType)
 			GuiTrades.ItemGrid_PID := activeTabInfos.PID
 		}
 		else
