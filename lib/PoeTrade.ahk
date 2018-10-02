@@ -232,6 +232,18 @@ PoeTrade_CreateCurrencyPayload(obj, addDefaultParams=False) {
         }
     }
 
+    if (poeTradeObj.have = "") {
+        logsLine := "Failed to get currency ID for """ obj.have """ (have)"
+        logsAppend := logsAppend ? "`n" logsLine : logsLine, payload := ""
+    }
+    if (poeTradeObj.want = "") {
+        logsLine := "Failed to get currency ID for """ obj.want """ (want)"
+        logsAppend := logsAppend ? "`n" logsLine : logsLine, payload := ""
+    }
+
+    if (logsAppend)
+        AppendToLogs(logsAppend)
+
     return payload
 }
 

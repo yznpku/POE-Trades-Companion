@@ -1145,7 +1145,8 @@
 				poeTradeObj.buycurrency := giveID, poeTradeObj.buyvalue := giveCount
 				poeTradeObj.sellBuyRatio := sellBuyRatio
 
-				matchingObj := PoETrade_GetMatchingCurrencyTradeData(poeTradeObj, itemURL)
+				if (itemURL)
+					matchingObj := PoETrade_GetMatchingCurrencyTradeData(poeTradeObj, itemURL)
 
 				if matchingObj.MaxIndex() {
 					foundMatch := True
@@ -1190,10 +1191,17 @@
 				}
 			}
 			else {
-				_infos := "Could not find any item matching the same currency trade."
-				. "\nMake sure to set your account name in the settings."
-				. "\nAccounts: " accounts
-				vColor := "Orange"
+				if (tabInfos.WhisperLang != "ENG") {
+					_infos := "Cannot verify price for"
+					. "\npathofexile.com/trade translated whispers."
+					vColor := "Orange"
+				}
+				else {
+					_infos := "Could not find any item matching the same currency trade."
+					. "\nMake sure to set your account name in the settings."
+					. "\nAccounts: " accounts
+					vColor := "Orange"
+				}
 			}
 
 			GUI_Trades.SetTabVerifyColor(tabID, vColor)
@@ -1262,10 +1270,17 @@
 				}
 			}
 			else {
-				_infos := "Could not find any item matching the same stash location"
-				. "\nMake sure to set your account name in the settings."
-				. "\nAccounts: " accounts
-				vColor := "Orange"
+				if (tabInfos.WhisperLang != "ENG") {
+					_infos := "Cannot verify price for"
+					. "\npathofexile.com/trade translated whispers."
+					vColor := "Orange"
+				}
+				else {
+					_infos := "Could not find any item matching the same stash location"
+					. "\nMake sure to set your account name in the settings."
+					. "\nAccounts: " accounts
+					vColor := "Orange"
+				}
 			}
 
 			GUI_Trades.SetTabVerifyColor(tabID, vColor)
