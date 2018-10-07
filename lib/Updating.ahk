@@ -65,12 +65,21 @@ IsUpdateAvailable() {
 		AppendToLogs(A_ThisFunc "(): Update check: No update available.")
 		return False
 	}
+	else if (relTag && !relDL) {
+		AppendToLogs(A_ThisFunc "(): Update check: Update found but missing asset download. Tag: " updateRel.tag_name ", Download (exe): " exeDL ", Download (zip): " zipDL)
+		SplashTextOn(PROGRAM.NAME " - Updating Error", "An update has been detected but cannot be downloaded yet."
+		.											"`nPlease try again in a few minutes."
+		.											"`n"
+		.											"`nIf this keeps on happening, please try updating manually."
+		.											"`nYou can find the GitHub repository link in the Settings menu.", 1, 1)
+		return "ERROR"
+	}
 	else {
 		AppendToLogs(A_ThisFunc "(): Update check: Failed to retrieve releases from GitHub API.")
 		SplashTextOn(PROGRAM.NAME " - Updating Error", "There was an issue when retrieving the latest release from GitHub API"
 		.											"`nIf this keeps on happening, please try updating manually."
 		.											"`nYou can find the GitHub repository link in the Settings menu.", 1, 1)
-		return False
+		return "ERROR"
 	}
 }
 
@@ -96,7 +105,11 @@ UpdateCheck(checkType="normal", notifOrBox="notif") {
 	if !(updateRel) {
 		TrayNotifications.Show(PROGRAM.NAME, "You are up to date!")
 		return
-	}	
+	}
+	if (updateRel = "ERROR") {
+		TrayNotifications.Show(PROGRAM.NAME, "An error occured when checking for updates`nPlease try again later or update manually.")
+		return
+	}
 
 	updTag := updateRel.tag, updDL := updateRel.download, updNotes := updateRel.notes
 	global UPDATE_TAGNAME, UPDATE_DOWNLOAD, UPDATE_NOTES
