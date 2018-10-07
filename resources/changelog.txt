@@ -1,3 +1,35 @@
+1.13.5 (07 Oct 2018)
+
+	Changes / Improvements:
+	- Advanced hotkeys key-combination can now be typed manually.
+	Accessed by the new "HK Type Switch" button next to the hotkey control.
+	This allows some key-combinations that are not normally possible with AHK's default "Hotkey" control (such as mouse buttons).
+	Refer to https://autohotkey.com/docs/KeyList.htm
+	
+	- Added a new variable to send a message to the last person you whispered: %sentWhisper% / %lastWhisperSent% / %lws%
+	Also added two alternative to %lastWhisper% (used to whisper the last person who whispered you): %lastWhisperReceived% / %lwr%
+	
+	- Added support for pathofexile.com/trade translated whispers.
+	- Can now detect if the buyer joined your area in other languages (used for the Trades GUI "Joined" tab style).
+	- Can now detect if you are AFK in other languages (used for PushBullet notifications "only while afk" setting).
+	- Can now use the "clipboard" button and then use in-game stash search for quality items (gems) in other languages.	
+	- Added Item Grid support for map tab.
+	- Changed the Item Grid colour for regular and quad tab to green.
+	- Changed the Item Grid tab name background colour to grey.
+	- Improved the accuracy of the Item Grid overall.
+	- In case the league cannot be detected in a trading whisper, it will no longer be ignored and instead the league will appear as "???".
+	
+	Fixes:
+	- Some keys wouldn't work correctly in hotkeys.
+	- The Item Grid for regular tabs would appear for items at position 13.
+	
+	Misc:
+	- Delete the _UPDATE folder after updating (inside /MyDocuments/lemasato/POE Trades Companion/).
+	- Make the FileInstall_Cmds.ahk file hidden.
+	- Removed ".gitattributes,.gitignore,_ConvertRelease.ahk,Debug.json,README.md,Updater.ahk,Updater_v2.ahk,VerPatch.exe" files and "others,screenshots" folders from the release .zip as they are not required to the user.
+
+
+= = = = = = = = = = = = =	
 1.13.4 (11 Sept 2018)
 
 	I will not be able to work on new fixes or features as I will be going away for a week, from the 12th to the 20th.
