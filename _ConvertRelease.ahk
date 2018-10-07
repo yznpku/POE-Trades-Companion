@@ -27,13 +27,13 @@ CompileFile(A_ScriptDir "\POE Trades Companion.ahk", A_ScriptDir "\POE Trades Co
 ; CompileFile(A_ScriptDir "\POE Trades Companion.ahk", A_ScriptDir "\POE Trades Companion.exe", "POE Trades Companion", ver, "© lemasato.github.io " A_YYYY)
 
 ; Updater file 
-ToolTip, Compiling Updater.exe
-CompileFile(A_ScriptDir "\Updater.ahk", A_ScriptDir "\Updater.exe")
+; ToolTip, Compiling Updater.exe
+; CompileFile(A_ScriptDir "\Updater.ahk", A_ScriptDir "\Updater.exe")
 ; CompileFile(A_ScriptDir "\Updater.ahk", A_ScriptDir "\Updater.exe", "POE Trades Companion: Updater", "1.0", "© lemasato.github.io " A_YYYY)
 
 ; Updater file v2
-ToolTip, Updater_v2.exe
-CompileFile(A_ScriptDir "\Updater_v2.ahk", A_ScriptDir "\Updater_v2.exe")
+; ToolTip, Updater_v2.exe
+; CompileFile(A_ScriptDir "\Updater_v2.ahk", A_ScriptDir "\Updater_v2.exe")
 ; CompileFile(A_ScriptDir "\Updater_v2.ahk", A_ScriptDir "\Updater_v2.exe", "POE Trades Companion: Updater", "2.1", "© lemasato.github.io " A_YYYY)
 
 if (generateCurrencyData) {
