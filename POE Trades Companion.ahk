@@ -39,6 +39,12 @@ Menu,Tray,Add,Reload,Tray_Reload
 Menu,Tray,Add,Close,Tray_Exit
 Menu,Tray,Icon
 
+Hotkey, IfWinActive, ahk_group POEGameGroup
+Hotkey, ^+LButton, StackClick
+
+Hotkey, IfWinActive,% "ahk_pid " DllCall("GetCurrentProcessId")
+Hotkey, ~*Space, SpaceRoutine
+
 ; try {
 	Start_Script()
 ; }
@@ -46,19 +52,13 @@ Menu,Tray,Icon
 ; 	MsgBox, 16,, % "Exception thrown!`n`nwhat: " e.what "`nfile: " e.file
 ;         . "`nline: " e.line "`nmessage: " e.message "`nextra: " e.extra
 ; }
-; msgbox
+Return
 
 ; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  
+SpaceRoutine() {
+	global PROGRAM, AUTOWHISPER_CANCEL, AUTOWHISPER_WAITKEYUP, SPACEBAR_WAIT
 
-Hotkey, IfWinActive, ahk_group POEGameGroup
-Hotkey, ^+LButton, StackClick
-
-Hotkey, IfWinActive
-Hotkey, ~*Space, SpaceRoutine
-return
-
-SpaceRoutine:
-	global PROGRAM, AUTOWHISPER_CANCEL, AUTOWHISPER_WAITKEYUP
 	if (SPACEBAR_WAIT) {
 		SplashTextOff()
 	}
@@ -66,7 +66,7 @@ SpaceRoutine:
 		AUTOWHISPER_CANCEL := True
 		ShowToolTip(PROGRAM.NAME "`nEasy whisper cancelled.")
 	}
-Return
+}
 
 ; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
