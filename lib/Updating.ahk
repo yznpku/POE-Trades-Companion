@@ -179,7 +179,8 @@ DownloadAndRunUpdater(dl="") {
 			FileRemoveDir, updateFolder, 1
 			return
 		}
-		
+
+		FileRemoveDir, updateFolder, 1
 		Reload()
 	}
 	else {
