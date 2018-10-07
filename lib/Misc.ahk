@@ -156,8 +156,8 @@ Get_Changelog(removeTrails=False) {
 	}
 
 	len := StrLen(changelog)
-	if ( len > 65000 ) {
-		trim := len - 65000
+	if ( len > 60000 ) {
+		trim := len - 60000
 		StringTrimRight, changelog, changelog, %trim%
 		changelog .= "`n`n`n[ Changelog file trimmed. See full changelog file GitHub ]"
 	}

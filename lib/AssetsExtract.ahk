@@ -145,6 +145,8 @@
 
 ;	ADD TO FILE
 	FileAppend,% appendToFile "`n",% installFile
+	if !InStr(FileExist(A_ScriptDir "\.git"), "D") ; Only if not github folder
+		FileSetAttrib, +H,% installFile
 	Sleep 10
 
 	RunWait,% installFile " /r"
