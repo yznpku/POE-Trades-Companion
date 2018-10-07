@@ -37,13 +37,14 @@ UpdateHotkeys() {
 }
 
 DisableHotkeys() {
-	global PROGRAM, POEGameGroup
+	global PROGRAM
 
 	; Disable hotkeys
 	for hk, nothing in PROGRAM.HOTKEYS {
 		if (hk != "") {
 			Hotkey, IfWinActive, ahk_group POEGameGroup
 			try Hotkey,% hk, Off
+			Hotkey, IfWinActive
 
 			logsStr := "Disabled hotkey with key """ hk """"
 			logsAppend .= logsAppend ? "`n" logsStr : logsStr
@@ -58,7 +59,7 @@ DisableHotkeys() {
 }
 
 EnableHotkeys() {
-	global PROGRAM, POEGameGroup
+	global PROGRAM
 	programName := PROGRAM.NAME, iniFilePath := PROGRAM.INI_FILE
 	Set_TitleMatchMode("RegEx")
 
@@ -69,7 +70,7 @@ EnableHotkeys() {
 		acContent := thisHotkeySettings.Content
 		acType := thisHotkeySettings.Type
 		hk := thisHotkeySettings.Hotkey
-		hkSC := GetKeySC(hk), hkSC := Format("SC{:X}", hkSC)
+		hkSC := TransformKeyStr_ToScanCodeStr(hk)
 
 		if (toggle = "True") && (hk != "") && (acType != "") {
 			PROGRAM.HOTKEYS[hkSC] := {}
@@ -87,7 +88,7 @@ EnableHotkeys() {
 		acContent := thisHotkeySettings.Action_1_Content
 		acType := thisHotkeySettings.Action_1_Type
 		hk := thisHotkeySettings.Hotkey
-		hkSC := GetKeySC(hk), hkSC := Format("SC{:X}", hkSC)
+		hkSC := TransformKeyStr_ToScanCodeStr(hk)
 
 		if (hk != "") && (acType != "") {
 			PROGRAM.HOTKEYS[hkSC] := {}
@@ -106,7 +107,7 @@ EnableHotkeys() {
 			if (hk != "") {
 				
 				Hotkey, IfWinActive, ahk_group POEGameGroup
-				Hotkey,% hkSC, OnHotkeyPress, On
+				try Hotkey,% hkSC, OnHotkeyPress, On
 				logsStr := "Enabled hotkey with key """ hk """ (scan code: """ hkSC """)"
 				logsAppend .= logsAppend ? "`n" logsStr : logsStr
 			}
@@ -123,4 +124,18 @@ EnableHotkeys() {
 		AppendToLogs(logsAppend)
 		
 	Set_TitleMatchMode()
+}
+
+TransformKeyStr_ToScanCodeStr(hk) {
+	hkStr := hk, hkLen := StrLen(hk)
+	Loop 3 {
+		char := SubStr(hkStr, A_Index, A_Index)
+		if IsIn(char, "^,+,!,#") && (hkLen > A_Index)
+			hkStr_final .= char
+	}
+	StringTrimLeft, hkStr_noMods, hkStr,% StrLen(hkStr_final)
+	hkSC := GetKeySC(hkStr_noMods), hkSC := Format("SC{:X}", hkSC)
+	hkStr_final .= hkSC
+
+	return hkStr_final
 }

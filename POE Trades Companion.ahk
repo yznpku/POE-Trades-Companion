@@ -47,31 +47,17 @@ Menu,Tray,Icon
 ;         . "`nline: " e.line "`nmessage: " e.message "`nextra: " e.extra
 ; }
 ; msgbox
-Return
 
 ; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-#IfWinActive ahk_group POEGameGroup
-^+LButton::StackClick()
+Hotkey, IfWinActive, ahk_group POEGameGroup
+Hotkey, ^+LButton, StackClick
 
-#IfWinActive ahk_group GUITradesGroup
-^SC00F::GUI_Trades.SelectNextTab() ; Ctrl Tab
-^+SC00F::GUI_Trades.SelectPreviousTab() ; Ctrl Shift Tab 
-^SC002::GUI_Trades.SetActiveTab(1) ; 1
-^SC003::GUI_Trades.SetActiveTab(2) ; 2
-^SC004::GUI_Trades.SetActiveTab(3) ; 3
-^SC005::GUI_Trades.SetActiveTab(4) ; 4
-^SC006::GUI_Trades.SetActiveTab(5) ; 5
-^SC007::GUI_Trades.SetActiveTab(6) ; 6
-^SC008::GUI_Trades.SetActiveTab(7) ; 7
-^SC009::GUI_Trades.SetActiveTab(8) ; 8
-^SC00A::GUI_Trades.SetActiveTab(9) ; 9
-^WheelDown::GUI_Trades.SelectNextTab() ; Ctrl WheelDown
-^^WheelUp::GUI_Trades.SelectPreviousTab() ; Ctrl WheelUp
+Hotkey, IfWinActive
+Hotkey, ~*Space, SpaceRoutine
+return
 
-#IfWinActive
-
-~*Space::
+SpaceRoutine:
 	global PROGRAM, AUTOWHISPER_CANCEL, AUTOWHISPER_WAITKEYUP
 	if (SPACEBAR_WAIT) {
 		SplashTextOff()
@@ -81,18 +67,6 @@ Return
 		ShowToolTip(PROGRAM.NAME "`nEasy whisper cancelled.")
 	}
 Return
-
-GUI_Trades_RefreshIgnoreList:
-	GUI_Trades.RefreshIgnoreList()
-return
-
-GUI_Trades_CopyItemInfos_CurrentTab_Timer:
-	SetTimer, GUI_Trades_CopyItemInfos_CurrentTab, Delete
-	SetTimer, GUI_Trades_CopyItemInfos_CurrentTab, -500
-return
-GUI_Trades_CopyItemInfos_CurrentTab:
-	Gui_Trades.CopyItemInfos()
-return
 
 ; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 

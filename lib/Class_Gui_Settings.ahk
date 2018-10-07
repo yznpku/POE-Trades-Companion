@@ -657,8 +657,17 @@ Class GUI_Settings {
 		Gui.Add("Settings", "DropDownList", "x" leftMost2+20 " y" upMost2+20 " w430 R20 hwndhDDL_HotkeyAdvExistingList")
 		Gui.Add("Settings", "Button", "x+5 yp-1 w30 R1 hwndhBTN_HotkeyAdvAddNewProfile", "+")
 		Gui.Add("Settings", "Button", "x+5 yp w30 R1 hwndhBTN_HotkeyAdvDeleteCurrentProfile", "-")
-		Gui.Add("Settings", "Edit", "x" leftMost2+20 " y+16 w295 hwndhEDIT_HotkeyAdvName")
-		Gui.Add("Settings", "Hotkey", "x+5 yp w200 hwndhHK_HotkeyAdvHotkey")
+		Gui.Add("Settings", "Edit", "x" leftMost2+20 " y+16 w260 hwndhEDIT_HotkeyAdvName")
+
+		Gui.Add("Settings", "Hotkey", "x+5 yp w165 hwndhHK_HotkeyAdvHotkey")
+		Gui.Add("Settings", "Edit", "xp yp wp hp Hidden hwndhEDIT_HotkeyAdvHotkey")
+		Gui.Add("Settings", "Button", "x+0 yp hp hwndhBTN_ChangeHKType", "HK Type Switch")
+		coords := Get_ControlCoords("Settings", GuiSettings_Controls.hBTN_ChangeHKType)
+		GuiControl, Settings:Move,% GuiSettings_Controls.hHK_HotkeyAdvHotkey,% "w" 235-coords.W
+		GuiControl, Settings:Move,% GuiSettings_Controls.hEDIT_HotkeyAdvHotkey,% "w" 235-coords.W
+		coords := Get_ControlCoords("Settings", GuiSettings_Controls.hEDIT_HotkeyAdvHotkey)
+		GuiControl, Settings:Move,% GuiSettings_Controls.hBTN_ChangeHKType,% "x" coords.X + coords.W + 1
+
 		Gui.Add("Settings", "DropDownList", "x" leftMost2+20 " y+7 w200 R50 hwndhDDL_HotkeyAdvActionType")
 		Gui.Add("Settings", "Edit", "x+5 yp w295 hwndhEDIT_HotkeyAdvActionContent")
 		Gui.Add("Settings", "Button", "x" leftMost2+20 " y+7 w160 hwndhBTN_HotkeyAdvReplace", "Replace selected")
@@ -683,7 +692,7 @@ Class GUI_Settings {
 		GUI_Settings.TabHotkeysAdvanced_UpdateRegisteredHotkeysList()
 		GuiSettings.Hotkeys_Advanced_TabControls := "hDDL_HotkeyAdvExistingList,hEDIT_HotkeyAdvName,hHK_HotkeyAdvHotkey,hDDL_HotkeyAdvActionType"
 			. ",hEDIT_HotkeyAdvActionContent,hBTN_HotkeyAdvReplace,hBTN_HotkeyAdvAddHere,hBTN_HotkeyAdvAddEnd,hLV_HotkeyAdvActionsList"
-			. ",hBTN_HotkeyAdvAddNewProfile,hBTN_HotkeyAdvDeleteCurrentProfile"
+			. ",hBTN_HotkeyAdvAddNewProfile,hBTN_HotkeyAdvDeleteCurrentProfile,hEDIT_HotkeyAdvHotkey,hBTN_ChangeHKType"
 		GUI_Settings.TabHotkeysAdvanced_EnableSubroutines()
 
 		/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
@@ -2818,6 +2827,10 @@ Class GUI_Settings {
 					__f := GUI_Settings.TabHotkeysAdvanced_AddAction.bind(GUI_Settings, "Add_End")
 				else if (loopedCtrl = "hLV_HotkeyAdvActionsList")
 					__f := GUI_Settings.TabHotkeysAdvanced_OnListClick.bind(GUI_Settings)
+				else if (loopedCtrl = "hEDIT_HotkeyAdvHotkey")
+					__f := GUI_Settings.TabHotkeysAdvanced_OnHotkeyKeysChange.bind(GUI_Settings)
+				else if (loopedCtrl = "hBTN_ChangeHKType")
+					__f := GUI_Settings.TabHotkeysAdvanced_ShowHKTypeMenu.bind(GUI_Settings)
 				else 
 					__f := 
 
@@ -2846,6 +2859,7 @@ Class GUI_Settings {
 
 			profiles[profileIndex].Name := PROGRAM.SETTINGS["SETTINGS_HOTKEY_ADV_" profileIndex].Name
 			profiles[profileIndex].Hotkey := PROGRAM.SETTINGS["SETTINGS_HOTKEY_ADV_" profileIndex].Hotkey
+			profiles[profileIndex].Hotkey_Type := PROGRAM.SETTINGS["SETTINGS_HOTKEY_ADV_" profileIndex].Hotkey_Type
 			profiles.Profiles_Count := profileIndex
 
 			actionIndex := 0
@@ -2871,15 +2885,20 @@ Class GUI_Settings {
 
 		profile := GUI_Settings.Submit("hDDL_HotkeyAdvExistingList")
 		name := GUI_Settings.Submit("hEDIT_HotkeyAdvName")
-		hk := GUI_Settings.Submit("hHK_HotkeyAdvHotkey")
+		hkEasy := GUI_Settings.Submit("hHK_HotkeyAdvHotkey")
+		hkManual := GUI_Settings.Submit("hEDIT_HotkeyAdvHotkey")
 		acType := GUI_Settings.Submit("hDDL_HotkeyAdvActionType")
 		acContent := GUI_Settings.Submit("hEDIT_HotkeyAdvActionContent")
+
+		GuiControlGet, isHKEZVisible, Settings:Visible,% GuiSettings_Controls.hHK_HotkeyAdvHotkey
+		GuiControlGet, isHKManualVisible, Settings:Visible,% GuiSettings_Controls.hEDIT_HotkeyAdvHotkey
+		hk := isHKEZVisible ? hkEasy : hkManual, hkType := isHKEZVisible ? "Easy" : "Manual"
 
 		GuiControl, Settings:+AltSubmit,% GuiSettings_Controls.hDDL_HotkeyAdvExistingList
 		num := GUI_Settings.Submit("hDDL_HotkeyAdvExistingList")
 		GuiControl, Settings:-AltSubmit,% GuiSettings_Controls.hDDL_HotkeyAdvExistingList
 
-		return {Profile:profile, Name:name, Hotkey:hk, Action_Type:acType, Action_Content: acContent, Num:num}
+		return {Profile:profile, Name:name, Hotkey:hk, Hotkey_Type:hkType, Action_Type:acType, Action_Content: acContent, Num:num}
 	}
 
 	TabHotkeysAdvanced_GetMatchingProfile(hkName, hkKeys) {
@@ -2913,6 +2932,7 @@ Class GUI_Settings {
 	TabHotkeysAdvanced_SetHotkeyKeys(hkKeys) {
 		global GuiSettings_Controls
 		GuiControl, Settings:,% GuiSettings_Controls.hHK_HotkeyAdvHotkey,% hkKeys
+		GuiControl, Settings:,% GuiSettings_Controls.hEDIT_HotkeyAdvHotkey,% hkKeys
 	}
 	TabHotkeysAdvanced_SetActionType(actionType) {
 		global GuiSettings_Controls
@@ -2970,6 +2990,7 @@ Class GUI_Settings {
 			GUI_Settings.TabHotkeysAdvanced_SetHotkeyKeys("")
 			GUI_Settings.TabHotkeysAdvanced_SetActionContent("")
 			GUI_Settings.TabHotkeysAdvanced_SetHotkeyActionsList("")
+			GUI_Settings.TabHotkeysAdvanced_SetHkType("Easy")
 		}
 		else if Isnum(chosenItemNum) { ; Avoid triggering when no item is selected
 			GuiControl, Settings:Choose,% GuiSettings_Controls.hDDL_HotkeyAdvExistingList,% chosenItemNum
@@ -3011,6 +3032,7 @@ Class GUI_Settings {
 		GUI_Settings.TabHotkeysAdvanced_SetHotkeyKeys(loopedHK.Hotkey)
 		GUI_Settings.TabHotkeysAdvanced_SetHotkeyActionsList(loopedHK)
 		GUI_Settings.TabHotkeysAdvanced_EnableSubroutines()
+		GUI_Settings.TabHotkeysAdvanced_SetHkType(loopedHK.Hotkey_Type)
 	}
 
 	TabHotkeysAdvanced_OnHotkeyNameChange() {
@@ -3040,6 +3062,11 @@ Class GUI_Settings {
 
 		INI.Set(PROGRAM.Ini_File, "SETTINGS_HOTKEY_ADV_" hkInfos.Num, "Hotkey", hkInfos.Hotkey)	
 		Declare_LocalSettings()
+
+		if (hkInfos.Hotkey_Type = "Manual")
+			GuiControl, Settings:,% GuiSettings_Controls.hHK_HotkeyAdvHotkey,% hkInfos.Hotkey
+		else
+			GuiControl, Settings:,% GuiSettings_Controls.hEDIT_HotkeyAdvHotkey,% hkInfos.Hotkey
 
 		GUI_Settings.TabHotkeysAdvanced_UpdateRegisteredHotkeysList()
 	}
@@ -3231,6 +3258,7 @@ Class GUI_Settings {
 		}
 		INI.Set(iniFile, "SETTINGS_HOTKEY_ADV_" loopIndex, "Name", newHKProf)
 		INI.Set(iniFile, "SETTINGS_HOTKEY_ADV_" loopIndex, "Hotkey", "")
+		INI.Set(iniFile, "SETTINGS_HOTKEY_ADV_" loopIndex, "Hotkey_Type", "Easy")
 		Declare_LocalSettings()
 
 		GUI_Settings.TabHotkeysAdvanced_UpdateRegisteredHotkeysList()
@@ -3359,6 +3387,48 @@ Class GUI_Settings {
 			LV_Delete(rowNum)
 		}
 		GUI_Settings.TabHotkeysAdvanced_SaveSelectedHotkeyActions()
+	}
+
+	TabHotkeysAdvanced_ShowHKTypeMenu() {
+		global GuiSettings, TabHotkeysAdvanced_SetHkType, PROGRAM
+		iniFile := PROGRAM.INI_FILE
+
+		try Menu, HKTypeMenu, DeleteAll
+		Menu, HKTypeMenu, Add, Easy (automatically detect key pressed), HkTypeMenu_Easy
+		Menu, HKTypeMenu, Add, Manual (type key combination manually), HKTypeMenu_Manual
+		Menu, HKTypeMenu, Show
+		return
+
+		HKTypeMenu_Easy:
+			hkInfos := GUI_Settings.TabHotkeysAdvanced_GetActiveHotkeyProfileInfos()
+			GUI_Settings.TabHotkeysAdvanced_SetHkType("Easy")
+			if !IsNum(hkInfos.Num)
+				return
+
+			iniSect := "SETTINGS_HOTKEY_ADV_" hkInfos.Num
+			INI.Set(iniFile, iniSect, "Hotkey_Type", "Easy")
+		return
+		HKTypeMenu_Manual:
+			hkInfos := GUI_Settings.TabHotkeysAdvanced_GetActiveHotkeyProfileInfos()
+			GUI_Settings.TabHotkeysAdvanced_SetHkType("Manual")
+			if !IsNum(hkInfos.Num)
+				return
+
+			iniSect := "SETTINGS_HOTKEY_ADV_" hkInfos.Num
+			INI.Set(iniFile, iniSect, "Hotkey_Type", "Manual")
+		return
+	}
+	TabHotkeysAdvanced_SetHkType(which) {
+		global GuiSettings_Controls
+
+		if (which="Manual") {
+			GuiControl, Settings:Show,% GuiSettings_Controls.hEDIT_HotkeyAdvHotkey
+			GuiControl, Settings:Hide,% GuiSettings_Controls.hHK_HotkeyAdvHotkey
+		}
+		else { ; Easy
+			GuiControl, Settings:Hide,% GuiSettings_Controls.hEDIT_HotkeyAdvHotkey
+			GuiControl, Settings:Show,% GuiSettings_Controls.hHK_HotkeyAdvHotkey
+		}
 	}
 
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 

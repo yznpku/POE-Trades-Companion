@@ -32,6 +32,8 @@
 		global GuiTrades, GuiTrades_Controls, GuiTrades_Submit
 		static guiCreated, maxTabsToRender
 
+		GUI_Trades.DisableHotkeys()
+
 		scaleMult := PROGRAM.SETTINGS.SETTINGS_CUSTOMIZATION_SKINS.ScalingPercentage / 100
 		resDPI := PROGRAM.OS.RESOLUTION_DPI 
 
@@ -364,7 +366,7 @@
 		if (PROGRAM.SETTINGS.SETTINGS_MAIN.AllowClicksToPassThroughWhileInactive = "True")
 			GUI_Trades.Enable_ClickThrough()
 
-		GroupAdd, GUITradesGroup,% "ahk_id " GuiTrades.Handle " ahk_pid " PROGRAM.PID
+		GUI_Trades.EnableHotkeys()
 		Return
 
 		Gui_Trades_ContextMenu:
@@ -643,6 +645,8 @@
 
 		if (tabsCount > activeTab)
 			GUI_Trades.SetActiveTab(activeTab+1)
+		else if (tabsCount = activeTab)
+			GUI_Trades.SetActiveTab(1)
 	}
 
 	SelectPreviousTab() {
@@ -655,6 +659,8 @@
 
 		if (activeTab != 1)
 			GUI_Trades.SetActiveTab(activeTab-1)
+		else if (activeTab = 1)
+			GUI_Trades.SetActiveTab(tabsCount)
 	}
 
 	CopyItemInfos(_tabID="") {
@@ -2120,4 +2126,54 @@
 	DestroyItemGrid() {
 		GUI_ItemGrid.Destroy()
 	}
+
+	EnableHotkeys() {
+		global GuiTrades, PROGRAM
+
+		codes := ["^SCF","^+SCF","^SC2","^SC3","^SC4","^SC5","^SC6","^SC7","^SC8","^SC9","^SCA","^WheelDown","^WheelUp"]
+		for index, code in codes {
+			if !IsObject(PROGRAM.HOTKEYS[code]) { ; Don't declare if user has custom hotkey for that. Fix HK working only IG or on TradesGUI (???)
+				Hotkey, IfWinActive,% "ahk_id " GuiTrades.Handle
+				Hotkey, %code%, GUI_Trades_SelectTab, On
+			}
+		} 
+	}
+
+	DisableHotkeys() {
+		global GuiTrades
+		if !(GuiTrades.Handle)
+			return
+
+		try {
+			codes := ["^SCF","^+SCF","^SC2","^SC3","^SC4","^SC5","^SC6","^SC7","^SC8","^SC9","^SCA","^WheelDown","^WheelUp"]
+			for index, code in codes { 
+				Hotkey, IfWinActive,% "ahk_id " GuiTrades.Handle
+				Hotkey, %code%, Off
+			}
+		}
+	}
 }
+
+GUI_Trades_SelectTab:
+	if IsIn(A_ThisHotkey, "^SC00F,^WheelDown")
+		GUI_Trades.SelectNextTab(returnToFirst:=True)
+	else if IsIn(A_ThisHotkey, "^+SC00F,^WheelUp")
+		GUI_Trades.SelectPreviousTab(returnToFirst:=True)
+	else if IsIn(A_ThisHotkey, "^SC002,^SC003,^SC004,^SC005,^SC006,^SC007,^SC008^SC009^SC00A") {
+		lastChar := SubStr(A_ThisHotkey, 0, 1)
+		tabNum := IsNum(lastChar) ? lastChar-1 : lastChar = "A" ? 9 : 1
+		GUI_Trades.SetActiveTab(tabNum, autoScroll:=True, skipWarn:=True)
+	}
+return
+
+GUI_Trades_RefreshIgnoreList:
+	GUI_Trades.RefreshIgnoreList()
+return
+
+GUI_Trades_CopyItemInfos_CurrentTab_Timer:
+	SetTimer, GUI_Trades_CopyItemInfos_CurrentTab, Delete
+	SetTimer, GUI_Trades_CopyItemInfos_CurrentTab, -500
+return
+GUI_Trades_CopyItemInfos_CurrentTab:
+	Gui_Trades.CopyItemInfos()
+return
