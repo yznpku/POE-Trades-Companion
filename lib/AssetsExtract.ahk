@@ -51,6 +51,12 @@
 	filePath := "lib\third-party\curl.exe"
 	appendToFile .= FileInstall("""" filePath """", "PROGRAM.MAIN_FOLDER """ "\" "curl.exe" """", 2)
 
+;	- - - - LINK SHORTCUTS
+	filePath := "Wiki.url"
+	appendToFile .= FileInstall("""" filePath """", "PROGRAM.MAIN_FOLDER """ "\" "Wiki.url" """", 2)
+	filePath := "GitHub.url"
+	appendToFile .= FileInstall("""" filePath """", "PROGRAM.MAIN_FOLDER """ "\" "GitHub.url" """", 2)
+
 ;	- - - - DATA
 	allowedFiles := "CurrencyNames.txt,poetradeCurrencyNames.json,poeTradeCurrencyData.json,poeDotComCurrencyData.json"
 	Loop, Files,% A_ScriptDir "\data\*"

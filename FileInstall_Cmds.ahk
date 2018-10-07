@@ -50,6 +50,56 @@ if (ErrorLevel) {
 }
 
 ; ----------------------------
+if !InStr(FileExist(PROGRAM.MAIN_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.MAIN_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("Wiki.url")
+	FileGetSize, destFileSize, % PROGRAM.MAIN_FOLDER "\Wiki.url"
+}
+else {
+	FileGetSize, sourceFileSize, Wiki.url
+	FileGetSize, destFileSize, % PROGRAM.MAIN_FOLDER "\Wiki.url"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, Wiki.url, % PROGRAM.MAIN_FOLDER "\Wiki.url", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: Wiki.url"
+	.	"`nDest: " PROGRAM.MAIN_FOLDER "\Wiki.url"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: Wiki.url"
+	.	"`nDest: " PROGRAM.MAIN_FOLDER "\Wiki.url"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.MAIN_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.MAIN_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("GitHub.url")
+	FileGetSize, destFileSize, % PROGRAM.MAIN_FOLDER "\GitHub.url"
+}
+else {
+	FileGetSize, sourceFileSize, GitHub.url
+	FileGetSize, destFileSize, % PROGRAM.MAIN_FOLDER "\GitHub.url"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, GitHub.url, % PROGRAM.MAIN_FOLDER "\GitHub.url", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: GitHub.url"
+	.	"`nDest: " PROGRAM.MAIN_FOLDER "\GitHub.url"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: GitHub.url"
+	.	"`nDest: " PROGRAM.MAIN_FOLDER "\GitHub.url"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
 if !InStr(FileExist(PROGRAM.DATA_FOLDER ""), "D")
 	FileCreateDir,% PROGRAM.DATA_FOLDER ""
 
