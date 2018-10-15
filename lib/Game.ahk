@@ -473,6 +473,8 @@ Parse_GameLogs(strToParse) {
 			if RegExMatch(A_LoopField, "SO)" regexStr, joinedPat) {
 				instancePID := joinedPat.1, playerName := joinedPat.2
 				GUI_Trades.SetTabStyleJoinedArea(playerName)
+				if (PROGRAM.SETTINGS.SETTINGS_MAIN.BuyerJoinedAreaSFXToggle = "True") && FileExist(PROGRAM.SETTINGS.SETTINGS_MAIN.BuyerJoinedAreaSFXPath)
+					SoundPlay,% PROGRAM.SETTINGS.SETTINGS_MAIN.BuyerJoinedAreaSFXPath
 				break
 			}
 		}
