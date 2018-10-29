@@ -1,4 +1,4 @@
-### The README.md is being reworked and some parts will be missing for now.
+### The README.md is being reworked and some parts will be missing for now.  
 &nbsp;  
 
 <a href="https://www.paypal.me/masato/"><img src="https://github.com/lemasato/POE-Trades-Companion/raw/master/others/Banners/Donate using PayPal.png" height=40></a> <!-- Paypal Banner -->  
@@ -33,7 +33,7 @@ Using the `%buyer%`, `%item%`, `%price%` variables in your messages, communicati
 With the precise Item Grid overlay, you will be able to find your item as fast as possible.  
 Works with regular stash tabs, quad stash tabs, and the map stash tab.  
 Requires no set-up from the user. All automated.  
-- **Price check against scammers.**
+- **Price check against scammers.**  
 Compare your item's price on poe.trade with the price sent in the whisper to avoid scammers that change the price in the whisper.  
 - **Path of Exile themed skin.**  
 Additionally, two simplistic skins "White" and its night counterpart "Dark Blue" are available.  
@@ -43,7 +43,7 @@ This allows to know which trades should be prioritized first.
 Additionally, a tab will turn purple if you receive another whisper from the same person.  
 All whispers from the buyer can be seen from the interface.  
 - **Sound notifications.**  
-Play custom sound files upon receiving a trading whisper / regular whisper / when the buyer joins your area.
+Play custom sound files upon receiving a trading whisper / regular whisper / when the buyer joins your area.  
 - **PushBullet notifications.**  
 Receive notifications on your phone when receiving trading whispers.  
 You may also enable these notifications only if you are AFK in game.  
@@ -52,12 +52,13 @@ Receive a notification on your screen when you receive a whisper while tabbed ou
 - **Instantly send a trading whisper upon copying.**  
 If you are holding CTRL upon copying a trading whisper, it will automatically be sent in-game upon releasing.  
 You can press SPACE when the pop-up appears to prevent this behaviour.  
-- **Minimized / Maximized states**
-While minimized, the interface takes much less space on your screen.
+- **Minimized / Maximized states**  
+While minimized, the interface takes much less space on your screen.  
 - **Completely hide the interface when all tabs are closed.**  
 By setting the "No tab remaining" transparency to 0 and enabling the "click-through" setting, the interface will be effectively invisible.  
-- **Take a look at your previously completed trades, by using the "My Stats" interface.**  
-- **Automatic updates.**
+- **Take a look at your previously completed trades**  
+Closing a tab with a button containing the "Save trade stats" action will add it to the "My Stats" interface.  
+- **Automatic updates.**  
 Receive a notification when an update is available.  
 The entire updating process is automated.  
 
@@ -70,7 +71,7 @@ The entire updating process is automated.
 |Based on Path of Exile, blends perfectly with the game.|A sleek, simplistic combination of white and blue|The "night" alternative to the White skin.|
 |![](https://github.com/lemasato/POE-Trades-Companion/raw/master/resources/skins/Path%20of%20Exile/Preview.png)|![](https://github.com/lemasato/POE-Trades-Companion/raw/master/resources/skins/White/Preview.png)|![](https://github.com/lemasato/POE-Trades-Companion/raw/master/resources/skins/Dark%20Blue/Preview.png)
 
-If interested, you may as well [make your own skin](https://github.com/lemasato/POE-Trades-Companion/wiki/Creating-Your-Skin)
+If interested, you may as well **[make your own skin](https://github.com/lemasato/POE-Trades-Companion/wiki/Creating-Your-Skin)**
 
 ***
 
