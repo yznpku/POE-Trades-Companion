@@ -765,20 +765,50 @@ IsTradingWhisper(str) {
 	firstChar := SubStr(str, 1, 1)
 
 	; poe.trade regex
-	poeTradeRegex := "@.* Hi, I would like to buy your .* listed for .* in"
-	poeTradeUnpricedRegex := "@.* Hi, I would like to buy your .* in"
-	currencyPoeTradeRegex := "@.* Hi, I'd like to buy your .* for my .* in"
+	poeTradeRegex := "@.* Hi, I would like to buy your .* listed for .* in .*"
+	poeTradeUnpricedRegex := "@.* Hi, I would like to buy your .* in .*"
+	currencyPoeTradeRegex := "@.* Hi, I'd like to buy your .* for my .* in .*"
 	; poeapp.com regex
 	poeAppRegex := "@.* wtb .* listed for .* in .*"
-	poeAppUnpricedRegex := "@.* wtb .* in"
+	poeAppUnpricedRegex := "@.* wtb .* in .*"
+	; ggg regex
+	RUS_gggRegEx			:= "@.* Здравствуйте, хочу купить у вас .* за (.*) в лиге.*"
+	RUS_gggUnpricedRegEx	:= "@.* Здравствуйте, хочу купить у вас .* в лиге.*"
+	RUS_gggCurrencyRegEx	:= "@.* Здравствуйте, хочу купить у вас .* за (.*) в лиге.*"
+
+	POR_gggRegEx 			:= "@.* Olá, eu gostaria de comprar o seu item .* listado por .* na.*"
+	POR_gggUnpricedRegEx 	:= "@.* Olá, eu gostaria de comprar o seu item .* na.*"
+	POR_gggCurrencyRegEx 	:= "@.* Olá, eu gostaria de comprar seu\(s\) .* pelo\(s\) meu\(s\).*"
+
+	THA_gggRegEx			:= "@.* สวัสดี, เราต้องการจะชื้อของคุณ .* ใน ราคา .* ใน.*"
+	THA_gggUnpricedRegEx	:= "@.* สวัสดี, เราต้องการจะชื้อของคุณ .* ใน.*"
+	THA_gggCurrencyRegEx	:= "@.* สวัสดี เรามีความต้องการจะชื้อ .* ของคุณ ฉันมี .* ใน.*"
+
+	GER_gggRegEx 			:= "@.* Hi, ich möchte '.*' zum angebotenen Preis von .* in der '.*'-Liga kaufen.*"
+	GER_gggUnpricedRegEx	:= "@.* Hi, ich möchte '.*' in der '.*'-Liga kaufen.*"
+	GER_gggCurrencyRegEx	:= "@.* Hi, ich möchte '.*' zum angebotenen Preis von '(.*)' in der '(.*)'-Liga kaufen(.*)"
+
+	FRE_gggRegEx			:= "@.* Bonjour, je souhaiterais t'acheter .* pour .* dans la ligue.*"
+	FRE_gggUnpricedRegEx	:= "@.* Bonjour, je souhaiterais t'acheter .* dans la ligue.*"
+	FRE_gggCurrencyRegEx	:= "@.* Bonjour, je voudrais t'acheter .* contre .* dans la ligue.*"
+
+	SPA_gggRegEx			:= "@.* Hola, quisiera comprar tu .* listado por .* en.*"
+	SPA_gggUnpricedRegEx 	:= "@.* Hola, quisiera comprar tu .* en.*"
+	SPA_gggCurrencyRegEx	:= "@.* Hola, me gustaría comprar tu\(s\) .* por mi .* en.*"
 
 	allRegexes := []
 	allRegexes.Push(poeTradeRegex, poeTradeUnpricedRegex, currencyPoeTradeRegex
-		, poeAppRegex, poeAppUnpricedRegex)
+		, poeAppRegex, poeAppUnpricedRegex
+		, RUS_gggRegEx, RUS_gggUnpricedRegEx, RUS_gggCurrencyRegEx
+		, POR_gggRegEx, POR_gggUnpricedRegEx, POR_gggCurrencyRegEx
+		, THA_gggRegEx, THA_gggUnpricedRegEx, THA_gggCurrencyRegEx
+		, GER_gggRegEx, GER_gggUnpricedRegEx, GER_gggCurrencyRegEx
+		, FRE_gggRegEx, FRE_gggUnpricedRegEx, FRE_gggCurrencyRegEx
+		, SPA_gggRegEx, SPA_gggUnpricedRegEx, SPA_gggCurrencyRegEx)
 
 	; Make sure it starts with @ and doesnt contain line break
 	if InStr(str, "`n") || (firstChar != "@")  {
-		Return 0
+		Return False
 	}
 
 	; Check if trading whisper
