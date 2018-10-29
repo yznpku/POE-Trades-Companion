@@ -669,9 +669,8 @@ Class GUI_Settings {
 
 		Gui.Add("Settings", "DropDownList", "x" leftMost2+20 " y+7 w200 R50 hwndhDDL_HotkeyAdvActionType")
 		Gui.Add("Settings", "Edit", "x+5 yp w295 hwndhEDIT_HotkeyAdvActionContent")
-		Gui.Add("Settings", "Button", "x" leftMost2+20 " y+7 w160 hwndhBTN_HotkeyAdvReplace", "Replace selected")
-		Gui.Add("Settings", "Button", "x+10 yp wp hwndhBTN_HotkeyAdvAddHere", "Push at selected")
-		Gui.Add("Settings", "Button", "x+10 yp wp hwndhBTN_HotkeyAdvAddEnd", "Push at the end")
+		Gui.Add("Settings", "Button","x" leftMost2+20 " y+7 w245 hwndhBTN_HotkeyAdvSaveChangesToAction", "Save changes to action...")
+		Gui.Add("Settings", "Button","x+10 yp wp hwndhBTN_HotkeyAdvAddAsNewAction", "Add as a new action")
 		Gui.Add("Settings", "ListView", "x" leftMost2+20 " y+10 w500 hwndhLV_HotkeyAdvActionsList -Multi AltSubmit +LV0x10000 R8", "#|Type|Content")
 		Gui, Settings:ListView,% GuiSettings_Controls.hLV_HotkeyAdvActionsList
 		loopIndex := 1
@@ -690,7 +689,7 @@ Class GUI_Settings {
 		GUI_Settings.TabHotkeysAdvanced_UpdateActionsList()
 		GUI_Settings.TabHotkeysAdvanced_UpdateRegisteredHotkeysList()
 		GuiSettings.Hotkeys_Advanced_TabControls := "hDDL_HotkeyAdvExistingList,hEDIT_HotkeyAdvName,hHK_HotkeyAdvHotkey,hDDL_HotkeyAdvActionType"
-			. ",hEDIT_HotkeyAdvActionContent,hBTN_HotkeyAdvReplace,hBTN_HotkeyAdvAddHere,hBTN_HotkeyAdvAddEnd,hLV_HotkeyAdvActionsList"
+			. ",hEDIT_HotkeyAdvActionContent,hBTN_HotkeyAdvSaveChangesToAction,hBTN_HotkeyAdvAddAsNewAction,hLV_HotkeyAdvActionsList"
 			. ",hBTN_HotkeyAdvAddNewProfile,hBTN_HotkeyAdvDeleteCurrentProfile,hEDIT_HotkeyAdvHotkey,hBTN_ChangeHKType"
 		GUI_Settings.TabHotkeysAdvanced_EnableSubroutines()
 
@@ -1744,8 +1743,7 @@ Class GUI_Settings {
 		global GuiSettings_Controls
 		global ACTIONS_READONLY, ACTIONS_FORCED_CONTENT
 
-		actionType := GUI_Settings.Submit("hDDL_ActionType")
-		AutoTrimStr(actionType)
+		actionType := GUI_Settings.Submit("hDDL_ActionType"), AutoTrimStr(actionType)
 		CtrlHwnd := GuiSettings_Controls.hDDL_ActionType
 		ActionContentCtrlHwnd := GuiSettings_Controls.hEDIT_ActionContent
 		actionContent := GUI_Settings.Submit("hEDIT_ActionContent")
@@ -1883,20 +1881,20 @@ Class GUI_Settings {
 		Gui, Settings:Default
 		Gui, Settings:ListView,% GuiSettings_Controls.hLV_ButtonsActions
 
-		lvCount := LV_GetCount(), LV_GetText(lastAction, lvCount, 2)
-		lastActionShortName := GUI_Settings.Get_ActionShortName_From_LongName(lastAction)
-
-		if (whatDo = "Replace" && whichPos < lvCount) && IsIn(lastActionShortName, "WRITE_THEN_GO_BACK,WRITE_MSG,WRITE_TO_LAST_WHISPER,WRITE_TO_BUYER,CLOSE_TAB") {
-			MsgBox(4096, "", "This action can only be set as the last action for this button. Please remove or re-order actions.")
-			Return
-		}
-
-		actionType := GUI_Settings.Submit("hDDL_ActionType")
+		actionType := GUI_Settings.Submit("hDDL_ActionType"), AutoTrimStr(actionType)
 		actionContent := GUI_Settings.Submit("hEDIT_ActionContent")
 		actionShortName := GUI_Settings.Get_ActionShortName_From_LongName(actionType)
 
-		AutoTrimStr(actionType)
-		if (!actionType) || IsContaining(actionType, "----") || 
+		lvCount := LV_GetCount(), LV_GetText(lastAction, lvCount, 2)
+		lastActionShortName := GUI_Settings.Get_ActionShortName_From_LongName(lastAction)
+
+		if (whatDo = "Replace" && whichPos < lvCount)
+		&& IsIn(actionShortName, "WRITE_THEN_GO_BACK,WRITE_MSG,WRITE_TO_LAST_WHISPER,WRITE_TO_BUYER,CLOSE_TAB") {
+			MsgBox(4096, "", "This action can only be set as the last action for this button. Please remove or re-order actions.")
+			Return
+		}
+		
+		if (!actionType) || IsContaining(actionType, "----")
 			Return
 
 		if (whatDo = "Replace") {
@@ -2942,12 +2940,10 @@ Class GUI_Settings {
 					__f := GUI_Settings.TabHotkeysAdvanced_OnActionTypeChange.bind(GUI_Settings, "")
 				else if (loopedCtrl = "hEDIT_HotkeyAdvActionContent")
 					__f := GUI_Settings.TabHotkeysAdvanced_OnActionContentChange.bind(GUI_Settings, "")
-				else if (loopedCtrl = "hBTN_HotkeyAdvReplace")
-					__f := GUI_Settings.TabHotkeysAdvanced_AddAction.bind(GUI_Settings, "Replace")
-				else if (loopedCtrl = "hBTN_HotkeyAdvAddHere")
-					__f := GUI_Settings.TabHotkeysAdvanced_AddAction.bind(GUI_Settings, "Add_Here")
-				else if (loopedCtrl = "hBTN_HotkeyAdvAddEnd")
-					__f := GUI_Settings.TabHotkeysAdvanced_AddAction.bind(GUI_Settings, "Add_End")
+				else if (loopedCtrl = "hBTN_HotkeyAdvSaveChangesToAction")
+					__f := GUI_Settings.TabHotkeysAdvanced_ShowSaveChangesMenu.bind(GUI_Settings)
+				else if (loopedCtrl = "hBTN_HotkeyAdvAddAsNewAction")
+					__f := GUI_Settings.TabHotkeysAdvanced_AddAction.bind(GUI_Settings, "Push", whichPos:="")
 				else if (loopedCtrl = "hLV_HotkeyAdvActionsList")
 					__f := GUI_Settings.TabHotkeysAdvanced_OnListClick.bind(GUI_Settings)
 				else if (loopedCtrl = "hEDIT_HotkeyAdvHotkey")
@@ -3204,7 +3200,7 @@ Class GUI_Settings {
 		if !(hkInfos.Num > 0)
 			Return
 
-		actionType := GUI_Settings.Submit("hDDL_HotkeyAdvActionType")
+		actionType := GUI_Settings.Submit("hDDL_HotkeyAdvActionType"), AutoTrimStr(actionType)
 		CtrlHwnd := GuiSettings_Controls.hDDL_HotkeyAdvActionType
 		ActionContentCtrlHwnd := GuiSettings_Controls.hEDIT_HotkeyAdvActionContent
 		actionContent := GUI_Settings.Submit("hEDIT_HotkeyAdvActionContent")
@@ -3214,7 +3210,7 @@ Class GUI_Settings {
 		SetEditCueBanner(GuiSettings_Controls.hEDIT_HotkeyAdvActionContent, contentPlaceholder)
 		ShowToolTip(contentPlaceholder)
 
-		if IsContaining(actionType, "----") {
+		if IsContaining(actionType, "----") || (!actionType) {
 			GetKeyState, isUpArrowPressed, Up, P
 			GetKeyState, isDownArrowPressed, Down, P
 
@@ -3222,8 +3218,11 @@ Class GUI_Settings {
 			chosenItemNum := GUI_Settings.Submit("hDDL_HotkeyAdvActionType")
 			GuiControl, Settings:-AltSubmit,% CtrlHwnd
 
-			if (isUpArrowPressed = "D")
-				GuiControl, Settings:Choose,% CtrlHwnd,% chosenItemNum-1 ; TO_DO apparently bug, chose first space instead of closest one, though it works fine in custom button
+			if (isUpArrowPressed = "D") {
+				if (chosenItemNum = 1)
+					GuiControl, Settings:Choose,% CtrlHwnd,% 2
+				else GuiControl, Settings:Choose,% CtrlHwnd,% chosenItemNum-1 ; TO_DO apparently bug, chose first space instead of closest one, though it works fine in custom button
+			}
 			else ; just go down
 				GuiControl, Settings:Choose,% CtrlHwnd,% chosenItemNum+1
 
@@ -3235,7 +3234,7 @@ Class GUI_Settings {
 			Return
 		}
 		else {
-			if (actionType != " ")
+			if (actionType)
 				GuiControl, Settings:ChooseString,% CtrlHwnd,% actionType
 		}
 
@@ -3329,14 +3328,25 @@ Class GUI_Settings {
 			GoSub %thisFunc%_Get_Selected
 
 			try Menu, RClickMenu, DeleteAll
-			Menu, RClickMenu, Add, Remove Selected, TabHotkeysAdvanced_OnListClick_Menu
+			Menu, RClickMenu, Add, Move up, TabHotkeysAdvanced_OnListClick_Menu
+			Menu, RClickMenu, Add, Move down, TabHotkeysAdvanced_OnListClick_Menu
+			Menu, RClickMenu, Add
+			Menu, RClickMenu, Add, Remove this action, TabHotkeysAdvanced_OnListClick_Menu
 			Menu, RClickMenu, Show
 		}
 		Return
 
 		TabHotkeysAdvanced_OnListClick_Menu:
-			if (A_ThisMenuItem = "Remove Selected") {
-				GUI_Settings.TabHotkeysAdvanced_AddAction("Remove")
+			Gui, Settings:Default
+			Gui, Settings:ListView,% GuiSettings_Controls.hLV_ButtonsActions
+
+			if (A_ThisMenu = "RClickMenu") {
+				if (A_ThisMenuItem = "Remove this action")
+					GUI_Settings.TabHotkeysAdvanced_AddAction("Remove", GuiSettings.HotkeysAdvanced_Selected_LV_Row)
+				else if (A_ThisMenuItem = "Move up")
+					GUI_Settings.TabHotkeysAdvanced_MoveAction("Up", rowID)
+				else if (A_ThisMenuItem = "Move down")
+					GUI_Settings.TabHotkeysAdvanced_MoveAction("Down", rowID)
 			}
 		Return
 
@@ -3369,6 +3379,29 @@ Class GUI_Settings {
 
 	/* * * * * Misc * * * * *
 	*/
+
+	TabHotkeysAdvanced_ShowSaveChangesMenu() {
+		global GuiSettings
+		selected := GuiSettings.HotkeysAdvanced_Selected_LV_Row
+
+		Gui, Settings:Default
+		Gui, Settings:ListView,% GuiSettings_Controls.hLV_HotkeyAdvActionsList
+
+		try Menu, HKAdv_SaveChangesMenu, DeleteAll
+		Menu, HKAdv_SaveChangesMenu, Add, Currently selected (%selected%), TabHotkeysAdvanced_ShowSaveChangesMenu_MenuHandler
+		Loop % LV_GetCount()
+			Menu, HKAdv_SaveChangesMenu, Add,% A_Index, TabHotkeysAdvanced_ShowSaveChangesMenu_MenuHandler
+		Menu, HKAdv_SaveChangesMenu, Show
+		return
+
+		TabHotkeysAdvanced_ShowSaveChangesMenu_MenuHandler:
+			RegExMatch(A_ThisMenuItem, "\d+", num)
+			if IsNum(num)
+				GUI_Settings.TabHotkeysAdvanced_AddAction("Replace", num)
+			else
+				Msgbox(4096, "", "An error occured when retrieveing the number from """ A_ThisMenuItem """")
+		return
+	}
 
 	TabHotkeysAdvanced_AddNewHotkeyProfile() {
 		global PROGRAM, GuiSettings, GuiSettings_Controls
@@ -3451,70 +3484,154 @@ Class GUI_Settings {
 		Declare_LocalSettings()
 	}
 
-	TabHotkeysAdvanced_AddAction(whatDo) {
+	TabHotkeysAdvanced_AddAction(whatDo, whichPos) {
 		global PROGRAM, GuiSettings, GuiSettings_Controls
+
+		Gui, Settings:Default
+		Gui, Settings:ListView,% GuiSettings_Controls.hLV_HotkeyAdvActionsList
 
 		hkInfos := GUI_Settings.TabHotkeysAdvanced_GetActiveHotkeyProfileInfos()
 		if !(hkInfos.Num > 0)
 			Return
 
-		Gui, Settings:Default
-		Gui, Settings:ListView,% GuiSettings_Controls.hLV_HotkeyAdvActionsList
-
-		LV_GetText(lastAction, LV_GetCount(), 2)
-		lastActionShortName := GUI_Settings.Get_ActionShortName_From_LongName(lastAction)
-		if IsIn(whatDo, "Replace,Add_Here,Add_End") && IsIn(lastActionShortName, "WRITE_THEN_GO_BACK,WRITE_MSG,WRITE_TO_LAST_WHISPER,WRITE_TO_BUYER") {
-			MsgBox(4096, "", "You cannot add more action for this button because the last action """ lastAction """ does not send the message.")
-			Return
-		}
-		else if IsIn(whatDo, "Replace,Add_Here,Add_End") && (lastActionShortName = "CLOSE_TAB") {
-			MsgBox(4096, "", "You cannot add more action for this button because the last action """ lastAction """ closes the tab.")
-			Return
-		}
-
-		hkInfos := GUI_Settings.TabHotkeysAdvanced_GetActiveHotkeyProfileInfos()
-		
-		actionType := GUI_Settings.Submit("hDDL_HotkeyAdvActionType")
+		actionType := GUI_Settings.Submit("hDDL_HotkeyAdvActionType"), AutoTrimStr(actionType)
 		actionContent := GUI_Settings.Submit("hEDIT_HotkeyAdvActionContent")
 		actionShortName := GUI_Settings.Get_ActionShortName_From_LongName(actionType)
 
-		lvCount := LV_GetCount()
-		GuiSettings.HotkeysAdvanced_Selected_LV_Row := lvCount=0 ? 1 : GuiSettings.HotkeysAdvanced_Selected_LV_Row
-		rowNum := GuiSettings.HotkeysAdvanced_Selected_LV_Row
+		lvCount := LV_GetCount(), LV_GetText(lastAction, lvCount, 2)
+		lastActionShortName := GUI_Settings.Get_ActionShortName_From_LongName(lastAction)
+
+		if (whatDo = "Replace" && whichPos < lvCount)
+		&& IsIn(actionShortName, "WRITE_THEN_GO_BACK,WRITE_MSG,WRITE_TO_LAST_WHISPER,WRITE_TO_BUYER,CLOSE_TAB") {
+			MsgBox(4096, "", "This action can only be set as the last action for this button. Please remove or re-order actions.")
+			Return
+		}
 
 		if (!actionType) || IsContaining(actionType, "----") || (!hkInfos.Name)
 			Return
 
 		if (whatDo = "Replace") {
-			LV_Modify(rowNum, "" , rowNum, actionType, actionContent)
+			LV_Modify(whichPos, "" , whichPos, actionType, actionContent)
 		}
-		else if (whatDo = "Add_Here") {
+		else if (whatDo = "Push") {
+			allActions := GUI_Settings.TabHotkeysAdvanced_GetCurrentHotkeysActionsList()
+			newAllActions := GUI_Settings.TabHotkeysAdvanced_GetCurrentHotkeysActionsList()
 
-			Loop % lvCount {
-				LV_GetText(retrievedRowNum, A_Index, 1)
-				if (retrievedRowNum >= rowNum) {
-					LV_GetText(retrievedRowType, retrievedRowNum, 2)
-					LV_GetText(retrievedRowContent, retrievedRowNum, 3)
-					LV_Modify(retrievedRowNum, "", retrievedRowNum+1, retrievedRowType, retrievedRowContent)
+			if (whichPos = "") {
+				if IsIn(actionShortName, "WRITE_THEN_GO_BACK,WRITE_MSG,WRITE_TO_LAST_WHISPER,WRITE_TO_BUYER,CLOSE_TAB")
+				&& IsIn(lastActionShortName, "WRITE_THEN_GO_BACK,WRITE_MSG,WRITE_TO_LAST_WHISPER,WRITE_TO_BUYER") {
+					MsgBox(4096, "", "You may not add this action (" actionType ") because the last action (" lastAction ") does not send the message.")
+					return
 				}
+				else if IsIn(actionShortName, "WRITE_THEN_GO_BACK,WRITE_MSG,WRITE_TO_LAST_WHISPER,WRITE_TO_BUYER,CLOSE_TAB")
+				&& IsIn(lastActionShortName, "CLOSE_TAB") {
+					MsgBox(4096, "", "You may not add this action (" actionType ") because the last action (" lastAction ") is closing the tab.")
+					return
+				}
+				else if IsIn(lastActionShortName, "WRITE_THEN_GO_BACK,WRITE_MSG,WRITE_TO_LAST_WHISPER,WRITE_TO_BUYER,CLOSE_TAB")
+					whichPos := lvCount
+				else whichPos := lvCount+1
 			}
-			LV_Insert(rowNum, "", rowNum, actionType, actionContent)
-		}
-		else if (whatDo = "Add_End") {
-			LV_Add("", lvCount+1, actionType, actionContent)
+				
+			if (whichPos > lvCount) {
+				newAllActions[whichPos] := {Num:whichPos, ActionType: actionType, ActionContent: actionContent}
+			}
+			else {
+				for index, nothing in allActions {
+					if (index >= whichPos) {
+						diff := (index - whichPos) + 1
+						newAllActions[index+diff] := allActions[index], newAllActions[index+diff].Num := index+diff
+					}
+				}
+				newAllActions[whichPos] := {Num:whichPos, ActionType: actionType, ActionContent: actionContent}
+			}
+
+			Loop % LV_GetCount()
+				LV_Delete()
+			for index, nothing in newAllActions
+				LV_Add("", newAllActions[index].Num, newAllActions[index].Actiontype, newAllActions[index].ActionContent)
 		}
 		else if (whatDo = "Remove") {
 			Loop % lvCount {
 				LV_GetText(retrievedRowNum, A_Index, 1)
-				if (retrievedRowNum >= rowNum) {
+				if (retrievedRowNum >= whichPos) {
 					LV_GetText(retrievedRowType, retrievedRowNum, 2)
 					LV_GetText(retrievedRowContent, retrievedRowNum, 3)
 					LV_Modify(retrievedRowNum, "", retrievedRowNum-1, retrievedRowType, retrievedRowContent)
 				}
 			}
-			LV_Delete(rowNum)
+			LV_Delete(whichPos)
 		}
+
 		GUI_Settings.TabHotkeysAdvanced_SaveSelectedHotkeyActions()
+	}
+
+	TabHotkeysAdvanced_GetCurrentHotkeysActionsList() {
+		global GuiSettings, GuiSettings_Controls
+
+		Gui, Settings:Default
+		Gui, Settings:ListView,% GuiSettings_Controls.hLV_HotkeyAdvActionsList
+		
+		actions := {}
+		Loop % LV_GetCount() {			
+			LV_GetText(rowNum, A_Index, 1)
+			LV_GetText(actionType, A_Index, 2)
+			LV_GetText(actionContent, A_Index, 3)
+			actions[A_Index] := {Num:rowNum, ActionType:actionType, ActionContent:actioncontent}
+		}
+
+		return actions
+	}
+
+	TabHotkeysAdvanced_MoveAction(side, acNum) {
+		global GuiSettings_Controls
+
+		Gui, Settings:Default
+		Gui, Settings:ListView,% GuiSettings_Controls.hLV_HotkeyAdvActionsList
+
+		LV_GetText(lastActionNum, LV_GetCount(), 1)
+		LV_GetText(lastActionType, LV_GetCount(), 2)
+		lastActionShortName := GUI_Settings.Get_ActionShortName_From_LongName(lastActionType)
+
+		if IsIn(lastActionShortName, "WRITE_THEN_GO_BACK,WRITE_MSG,WRITE_TO_LAST_WHISPER,WRITE_TO_BUYER")
+		&& (lastActionNum = acNum+1) && (side = "Down") {
+			MsgBox(4096, "", "You cannot move this action down because the last action """ lastActionType """ does not send the message.")
+			Return
+		}
+		else if IsIn(lastActionShortName, "WRITE_THEN_GO_BACK,WRITE_MSG,WRITE_TO_LAST_WHISPER,WRITE_TO_BUYER")
+		&& (lastActionNum = acNum) && (side = "Up") {
+			MsgBox(4096, "", "You cannot move this action up because it does not send the message.")
+			Return
+		}
+		else if (lastActionShortName = "CLOSE_TAB")
+		&& (lastActionNum = acNum+1) && (side = "Down") {
+			MsgBox(4096, "", "You cannot move this action down because the last action """ lastActionType """ closes the tab.")
+			Return
+		}	
+		else if (lastActionShortName = "CLOSE_TAB")
+		&& (lastActionNum = acNum) && (side = "Up") {
+			MsgBox(4096, "", "You cannot move this action up because it closes the tab.")
+			Return
+		}
+		else if ( (acNum = LV_GetCount()) && (side = "Down") )
+		|| ( (acNum = 1) && (side = "Up") )
+			return
+
+		allActions := GUI_Settings.TabHotkeysAdvanced_GetCurrentHotkeysActionsList()
+		newAllActions := GUI_Settings.TabHotkeysAdvanced_GetCurrentHotkeysActionsList()
+		if (side = "Up") {
+			newAllActions[acNum] := allActions[acNum-1]
+			newAllActions[acNum-1] := allActions[acNum]
+		}
+		else if (side = "Down") {
+			newAllActions[acNum] := allActions[acNum+1]
+			newAllActions[acNum+1] := allActions[acNum]
+		}
+	
+		Loop % LV_GetCount()
+			LV_Delete()
+		for index, nothing in newAllActions
+			LV_Add("", index, newAllActions[index].Actiontype, newAllActions[index].ActionContent)
 	}
 
 	TabHotkeysAdvanced_ShowHKTypeMenu() {
