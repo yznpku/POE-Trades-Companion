@@ -4090,9 +4090,9 @@ Class GUI_Settings {
 		,	"hHK_HotkeyAdvHotkey":"Hotkey profile keys."
 		,	"hDDL_HotkeyAdvActionType":"Actions list. Choose one of the actions that should be performed."
 		,	"hEDIT_HotkeyAdvActionContent":"Action content. Set the message that should be sent with this action."
-		,	"hBTN_HotkeyAdvReplace":"Replace the currently selected action in the list."
-		,	"hBTN_HotkeyAdvAddHere":"Add the new action at the currently selected line of the list."
-		,	"hBTN_HotkeyAdvAddEnd":"Add the new action at the end of the list."
+		, 	"hBTN_HotkeyAdvSaveChangesToAction": "Show a menu to select which button to save the changes to."
+		,	"hBTN_HotkeyAdvAddAsNewAction": "Add as a new action to the end of the list."
+		.	.					   "`nIf the last action is ""Close tab"" or a ""Write Message"" action, it will be added before it."
 		,	"hLV_HotkeyAdvActionsList":"List of actions that will be performed upon pressing this hotkey."
 
 		
