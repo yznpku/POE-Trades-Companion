@@ -237,16 +237,16 @@ Class GUI_Settings {
 		. "|" ACTIONS_TEXT_NAME.KICK_BUYER
 		. "| "
 		. "|------------ Special ------------|"
-		. "|" ACTIONS_TEXT_NAME.SAVE_TRADE_STATS
-		. "|" ACTIONS_TEXT_NAME.COPY_ITEM_INFOS
-		. "|" ACTIONS_TEXT_NAME.GO_TO_NEXT_TAB
-		. "|" ACTIONS_TEXT_NAME.GO_TO_PREVIOUS_TAB
 		. "|" ACTIONS_TEXT_NAME.CLOSE_TAB
+		. "|" ACTIONS_TEXT_NAME.SAVE_TRADE_STATS
+		. "|" ACTIONS_TEXT_NAME.SHOW_GRID
+		. "|" ACTIONS_TEXT_NAME.IGNORE_SIMILAR_TRADE
+		. "|" ACTIONS_TEXT_NAME.COPY_ITEM_INFOS
 		. "|" ACTIONS_TEXT_NAME.TOGGLE_MIN_MAX
 		. "|" ACTIONS_TEXT_NAME.FORCE_MIN
-		. "|" ACTIONS_TEXT_NAME.FORCE_MAX
-		. "|" ACTIONS_TEXT_NAME.IGNORE_SIMILAR_TRADE
-		. "|" ACTIONS_TEXT_NAME.SHOW_GRID
+		. "|" ACTIONS_TEXT_NAME.FORCE_MAX		
+		. "|" ACTIONS_TEXT_NAME.GO_TO_NEXT_TAB
+		. "|" ACTIONS_TEXT_NAME.GO_TO_PREVIOUS_TAB
 		. "| "
 		. "|--------- Commands ---------|"
 		. "|" ACTIONS_TEXT_NAME.CMD_AFK
@@ -563,14 +563,13 @@ Class GUI_Settings {
 		; ** Actions list & buttons
 		Gui.Add("Settings", "DropDownList", "x" leftMost2+15 " y+15 w175 R50 hwndhDDL_ActionType Disabled")
 		Gui.Add("Settings", "Edit", "x+5 w320 hwndhEDIT_ActionContent Disabled")
-		Gui.Add("Settings", "Button","x" leftMost2+15 " y+5 w160 hwndhBTN_ReplaceCurrentLine Disabled", "Replace selected")
-		Gui.Add("Settings", "Button","x+10 yp wp hwndhBTN_AddActionAtCurrentLine Disabled", "Push at selected")
-		Gui.Add("Settings", "Button","x+10 yp wp hwndhBTN_AddActionAtEnd Disabled", "Push at the end")
+		Gui.Add("Settings", "Button","x" leftMost2+15 " y+5 w245 hwndhBTN_SaveChangesToAction Disabled", "Save changes to action...")
+		Gui.Add("Settings", "Button","x+10 yp wp hwndhBTN_AddAsNewAction Disabled", "Add as a new action")
 		Gui.Add("Settings", "ListView", "x" leftMost2+15 " y+5 w500 hwndhLV_ButtonsActions -Multi AltSubmit +LV0x10000 R7 Disabled", "#|Type|Content")
-		; Gui.Add("Settings", "Text", "xp yp wp hp Center 0x200 hwndhTEXT_ListViewButtonsAction", "Click on any button to see its actions listed here")
 
-		thisTabCtrlsList .= ",hDDL_ActionType,hEDIT_ActionContent,hBTN_ReplaceCurrentLine,hBTN_AddActionAtCurrentLine,hBTN_AddActionAtEnd,hLV_ButtonsActions"
+		thisTabCtrlsList .= ",hDDL_ActionType,hEDIT_ActionContent,hBTN_SaveChangesToAction,hBTN_AddAsNewAction,hLV_ButtonsActions"
 
+		Gui, Settings:Default
 		Gui, Settings:ListView,% GuiSettings_Controls.hLV_ButtonsActions
 		Loop, Parse, ACTIONS_AVAILABLE,% "|"
 		{
@@ -1688,12 +1687,10 @@ Class GUI_Settings {
 					__f := GUI_Settings.TabCustomizationButtons_OnActionContentChange.bind(GUI_Settings)
 				else if (loopedCtrl = "hLV_ButtonsActions")
 					__f := GUI_Settings.TabCustomizationButtons_OnActionsListClick.bind(GUI_Settings)
-				else if (loopedCtrl = "hBTN_ReplaceCurrentLine")
-					__f := GUI_Settings.TabCustomizationButtons_AddAction.bind(GUI_Settings, "Replace")
-				else if (loopedCtrl = "hBTN_AddActionAtCurrentLine")
-					__f := GUI_Settings.TabCustomizationButtons_AddAction.bind(GUI_Settings, "Add_Here")
-				else if (loopedCtrl = "hBTN_AddActionAtEnd")
-					__f := GUI_Settings.TabCustomizationButtons_AddAction.bind(GUI_Settings, "Add_End")
+				else if (loopedCtrl = "hBTN_SaveChangesToAction")
+					__f := GUI_Settings.TabCustomizationButtons_ShowSaveChangesMenu.bind(GUI_Settings)
+				else if (loopedCtrl = "hBTN_AddAsNewAction")
+					__f := GUI_Settings.TabCustomizationButtons_AddAction.bind(GUI_Settings, "Push", whichPos:="")
 				else 
 					__f := 
 
@@ -1748,6 +1745,7 @@ Class GUI_Settings {
 		global ACTIONS_READONLY, ACTIONS_FORCED_CONTENT
 
 		actionType := GUI_Settings.Submit("hDDL_ActionType")
+		AutoTrimStr(actionType)
 		CtrlHwnd := GuiSettings_Controls.hDDL_ActionType
 		ActionContentCtrlHwnd := GuiSettings_Controls.hEDIT_ActionContent
 		actionContent := GUI_Settings.Submit("hEDIT_ActionContent")
@@ -1757,7 +1755,7 @@ Class GUI_Settings {
 		SetEditCueBanner(GuiSettings_Controls.hEDIT_ActionContent, contentPlaceholder)
 		ShowToolTip(contentPlaceholder)
 
-		if IsContaining(actionType, "----") {
+		if IsContaining(actionType, "----") || (!actionType) {
 			GetKeyState, isUpArrowPressed, Up, P
 			GetKeyState, isDownArrowPressed, Down, P
 
@@ -1765,8 +1763,11 @@ Class GUI_Settings {
 			chosenItemNum := GUI_Settings.Submit("hDDL_ActionType")
 			GuiControl, Settings:-AltSubmit,% CtrlHwnd
 
-			if (isUpArrowPressed = "D")
-				GuiControl, Settings:Choose,% CtrlHwnd,% chosenItemNum-1 ; TO_DO apparently bug, chose first space instead of closest one, though it works fine in custom button
+			if (isUpArrowPressed = "D") {
+				if (chosenItemNum = 1)
+					GuiControl, Settings:Choose,% CtrlHwnd,% 2
+				else GuiControl, Settings:Choose,% CtrlHwnd,% chosenItemNum-1 ; TO_DO apparently bug, chose first space instead of closest one, though it works fine in custom button
+			}
 			else ; just go down
 				GuiControl, Settings:Choose,% CtrlHwnd,% chosenItemNum+1
 
@@ -1778,7 +1779,7 @@ Class GUI_Settings {
 			Return
 		}
 		else {
-			if (actionType != " ")
+			if (actionType)
 				GuiControl, Settings:ChooseString,% CtrlHwnd,% actionType
 		}
 
@@ -1853,21 +1854,40 @@ Class GUI_Settings {
 		GuiControl, Settings:,% GuiSettings_Controls.hEDIT_ActionContent,% actionContent
 	}
 
+	TabCustomizationButtons_ShowSaveChangesMenu() {
+		global GuiSettings
+		selected := GuiSettings.CustomButtons_LV_SelectedRow
 
-	TabCustomizationButtons_AddAction(whatDo) {
+		Gui, Settings:Default
+		Gui, Settings:ListView,% GuiSettings_Controls.hLV_ButtonsActions
+
+		try Menu, SaveChangesMenu, DeleteAll
+		Menu, SaveChangesMenu, Add, Currently selected (%selected%), TabCustomizationButtons_ShowSaveChangesMenu_MenuHandler
+		Loop % LV_GetCount()
+			Menu, SaveChangesMenu, Add,% A_Index, TabCustomizationButtons_ShowSaveChangesMenu_MenuHandler
+		Menu, SaveChangesMenu, Show
+		return
+
+		TabCustomizationButtons_ShowSaveChangesMenu_MenuHandler:
+			RegExMatch(A_ThisMenuItem, "\d+", num)
+			if IsNum(num)
+				GUI_Settings.TabCustomizationButtons_AddAction("Replace", num)
+			else
+				Msgbox(4096, "", "An error occured when retrieveing the number from """ A_ThisMenuItem """")
+		return
+	}
+
+	TabCustomizationButtons_AddAction(whatDo, whichPos) {
 		global GuiSettings, GuiSettings_Controls
 
 		Gui, Settings:Default
 		Gui, Settings:ListView,% GuiSettings_Controls.hLV_ButtonsActions
 
-		LV_GetText(lastAction, LV_GetCount(), 2)
+		lvCount := LV_GetCount(), LV_GetText(lastAction, lvCount, 2)
 		lastActionShortName := GUI_Settings.Get_ActionShortName_From_LongName(lastAction)
-		if IsIn(whatDo, "Replace,Add_Here,Add_End") && IsIn(lastActionShortName, "WRITE_THEN_GO_BACK,WRITE_MSG,WRITE_TO_LAST_WHISPER,WRITE_TO_BUYER") {
-			MsgBox(4096, "", "You cannot add more action for this button because the last action """ lastAction """ does not send the message.")
-			Return
-		}
-		else if IsIn(whatDo, "Replace,Add_Here,Add_End") && (lastActionShortName = "CLOSE_TAB") {
-			MsgBox(4096, "", "You cannot add more action for this button because the last action """ lastAction """ closes the tab.")
+
+		if (whatDo = "Replace" && whichPos < lvCount) && IsIn(lastActionShortName, "WRITE_THEN_GO_BACK,WRITE_MSG,WRITE_TO_LAST_WHISPER,WRITE_TO_BUYER,CLOSE_TAB") {
+			MsgBox(4096, "", "This action can only be set as the last action for this button. Please remove or re-order actions.")
 			Return
 		}
 
@@ -1875,40 +1895,62 @@ Class GUI_Settings {
 		actionContent := GUI_Settings.Submit("hEDIT_ActionContent")
 		actionShortName := GUI_Settings.Get_ActionShortName_From_LongName(actionType)
 
-		lvCount := LV_GetCount()
-		GuiSettings.CustomButtons_LV_SelectedRow := lvCount=0 ? 1 : GuiSettings.CustomButtons_LV_SelectedRow
-		rowNum := GuiSettings.CustomButtons_LV_SelectedRow
-
-		if (!actionType) || IsContaining(actionType, "----")
+		AutoTrimStr(actionType)
+		if (!actionType) || IsContaining(actionType, "----") || 
 			Return
 
 		if (whatDo = "Replace") {
-			LV_Modify(rowNum, "" , rowNum, actionType, actionContent)
+			LV_Modify(whichPos, "" , whichPos, actionType, actionContent)
 		}
-		else if (whatDo = "Add_Here") {
-			Loop % lvCount {
-				LV_GetText(retrievedRowNum, A_Index, 1)
-				if (retrievedRowNum >= rowNum) {
-					LV_GetText(retrievedRowType, retrievedRowNum, 2)
-					LV_GetText(retrievedRowContent, retrievedRowNum, 3)
-					LV_Modify(retrievedRowNum, "", retrievedRowNum+1, retrievedRowType, retrievedRowContent)
+		else if (whatDo = "Push") {
+			allActions := GUI_Settings.TabCustomizationButtons_GetCurrentButtonActionsList()
+			newAllActions := GUI_Settings.TabCustomizationButtons_GetCurrentButtonActionsList()
+
+
+			if (whichPos = "") {
+				if IsIn(actionShortName, "WRITE_THEN_GO_BACK,WRITE_MSG,WRITE_TO_LAST_WHISPER,WRITE_TO_BUYER,CLOSE_TAB")
+				&& IsIn(lastActionShortName, "WRITE_THEN_GO_BACK,WRITE_MSG,WRITE_TO_LAST_WHISPER,WRITE_TO_BUYER") {
+					MsgBox(4096, "", "You may not add this action (" actionType ") because the last action (" lastAction ") does not send the message.")
+					return
 				}
+				else if IsIn(actionShortName, "WRITE_THEN_GO_BACK,WRITE_MSG,WRITE_TO_LAST_WHISPER,WRITE_TO_BUYER,CLOSE_TAB")
+				&& IsIn(lastActionShortName, "CLOSE_TAB") {
+					MsgBox(4096, "", "You may not add this action (" actionType ") because the last action (" lastAction ") is closing the tab.")
+					return
+				}
+				else if IsIn(lastActionShortName, "WRITE_THEN_GO_BACK,WRITE_MSG,WRITE_TO_LAST_WHISPER,WRITE_TO_BUYER,CLOSE_TAB")
+					whichPos := lvCount
+				else whichPos := lvCount+1
 			}
-			LV_Insert(rowNum, "", rowNum, actionType, actionContent)
-		}
-		else if (whatDo = "Add_End") {
-			LV_Add("", lvCount+1, actionType, actionContent)
+				
+			if (whichPos > lvCount) {
+				newAllActions[whichPos] := {Num:whichPos, ActionType: actionType, ActionContent: actionContent}
+			}
+			else {
+				for index, nothing in allActions {
+					if (index >= whichPos) {
+						diff := (index - whichPos) + 1
+						newAllActions[index+diff] := allActions[index], newAllActions[index+diff].Num := index+diff
+					}
+				}
+				newAllActions[whichPos] := {Num:whichPos, ActionType: actionType, ActionContent: actionContent}
+			}
+
+			Loop % LV_GetCount()
+				LV_Delete()
+			for index, nothing in newAllActions
+				LV_Add("", newAllActions[index].Num, newAllActions[index].Actiontype, newAllActions[index].ActionContent)
 		}
 		else if (whatDo = "Remove") {
 			Loop % lvCount {
 				LV_GetText(retrievedRowNum, A_Index, 1)
-				if (retrievedRowNum >= rowNum) {
+				if (retrievedRowNum >= whichPos) {
 					LV_GetText(retrievedRowType, retrievedRowNum, 2)
 					LV_GetText(retrievedRowContent, retrievedRowNum, 3)
 					LV_Modify(retrievedRowNum, "", retrievedRowNum-1, retrievedRowType, retrievedRowContent)
 				}
 			}
-			LV_Delete(rowNum)
+			LV_Delete(whichPos)
 		}
 
 		GUI_Settings.TabCustomizationButtons_SaveSelectedButtonActions()
@@ -1923,6 +1965,7 @@ Class GUI_Settings {
 			return
 		}
 
+		Gui, Settings:Default
 		Gui, Settings:ListView,% GuiSettings_Controls.hLV_ButtonsActions
 
 		btnNum := GuiSettings.CUSTOM_BUTTON_SELECTED
@@ -1957,6 +2000,7 @@ Class GUI_Settings {
 	TabCustomizationButtons_OnActionsListClick(CtrlHwnd, GuiEvent, EventInfo, GuiEvent2="") {
 		global GuiSettings, GuiSettings_Controls
 
+		Gui, Settings:Default
 		Gui, Settings:ListView,% GuiSettings_Controls.hLV_ButtonsActions
 
 		thisFunc := "TabCustomizationButtons_OnActionsListClick"
@@ -1981,14 +2025,25 @@ Class GUI_Settings {
 			GoSub %thisFunc%_Get_Selected
 
 			try Menu, RClickMenu, DeleteAll
-			Menu, RClickMenu, Add, Remove Selected, TabCustomizationButtons_OnActionsListClick_Menu
+			Menu, RClickMenu, Add, Move up, TabCustomizationButtons_OnActionsListClick_Menu
+			Menu, RClickMenu, Add, Move down, TabCustomizationButtons_OnActionsListClick_Menu
+			Menu, RClickMenu, Add
+			Menu, RClickMenu, Add, Remove this action, TabCustomizationButtons_OnActionsListClick_Menu
 			Menu, RClickMenu, Show
 		}
 		Return
 
 		TabCustomizationButtons_OnActionsListClick_Menu:
-			if (A_ThisMenuItem = "Remove Selected") {
-				GUI_Settings.TabCustomizationButtons_AddAction("Remove")
+			Gui, Settings:Default
+			Gui, Settings:ListView,% GuiSettings_Controls.hLV_ButtonsActions
+
+			if (A_ThisMenu = "RClickMenu") {
+				if (A_ThisMenuItem = "Remove this action")
+					GUI_Settings.TabCustomizationButtons_AddAction("Remove", GuiSettings.CustomButtons_LV_SelectedRow)
+				else if (A_ThisMenuItem = "Move up")
+					GUI_Settings.TabCustomizationButtons_MoveAction("Up", rowID)
+				else if (A_ThisMenuItem = "Move down")
+					GUI_Settings.TabCustomizationButtons_MoveAction("Down", rowID)
 			}
 		Return
 
@@ -1997,7 +2052,7 @@ Class GUI_Settings {
 		; LV_GetNext() seems to be the best alternative. Though, it rises an issue when no row is selected.
 		;	Instead of retrieving a blank value, it will retrieve the same value as the previously selected row ID.
 		;	As workaround, when the user does not select any row, we re-highlight the previously selected one.
-
+			Gui, Settings:Default
 			Gui, Settings:ListView,% GuiSettings_Controls.hLV_ButtonsActions
 
 			rowID := LV_GetNext(0, "F")
@@ -2015,6 +2070,74 @@ Class GUI_Settings {
 
 			GuiSettings.CustomButtons_LV_SelectedRow := rowID
 		Return
+	}
+
+	TabCustomizationButtons_GetCurrentButtonActionsList() {
+		global GuiSettings, GuiSettings_Controls
+
+		Gui, Settings:Default
+		Gui, Settings:ListView,% GuiSettings_Controls.hLV_ButtonsActions
+		
+		actions := {}
+		Loop % LV_GetCount() {			
+			LV_GetText(rowNum, A_Index, 1)
+			LV_GetText(actionType, A_Index, 2)
+			LV_GetText(actionContent, A_Index, 3)
+			actions[A_Index] := {Num:rowNum, ActionType:actionType, ActionContent:actioncontent}
+		}
+
+		return actions
+	}
+
+	TabCustomizationButtons_MoveAction(side, acNum) {
+		global GuiSettings_Controls
+
+		Gui, Settings:Default
+		Gui, Settings:ListView,% GuiSettings_Controls.hLV_ButtonsActions
+
+		LV_GetText(lastActionNum, LV_GetCount(), 1)
+		LV_GetText(lastActionType, LV_GetCount(), 2)
+		lastActionShortName := GUI_Settings.Get_ActionShortName_From_LongName(lastActionType)
+
+		if IsIn(lastActionShortName, "WRITE_THEN_GO_BACK,WRITE_MSG,WRITE_TO_LAST_WHISPER,WRITE_TO_BUYER")
+		&& (lastActionNum = acNum+1) && (side = "Down") {
+			MsgBox(4096, "", "You cannot move this action down because the last action """ lastActionType """ does not send the message.")
+			Return
+		}
+		else if IsIn(lastActionShortName, "WRITE_THEN_GO_BACK,WRITE_MSG,WRITE_TO_LAST_WHISPER,WRITE_TO_BUYER")
+		&& (lastActionNum = acNum) && (side = "Up") {
+			MsgBox(4096, "", "You cannot move this action up because it does not send the message.")
+			Return
+		}
+		else if (lastActionShortName = "CLOSE_TAB")
+		&& (lastActionNum = acNum+1) && (side = "Down") {
+			MsgBox(4096, "", "You cannot move this action down because the last action """ lastActionType """ closes the tab.")
+			Return
+		}	
+		else if (lastActionShortName = "CLOSE_TAB")
+		&& (lastActionNum = acNum) && (side = "Up") {
+			MsgBox(4096, "", "You cannot move this action up because it closes the tab.")
+			Return
+		}
+		else if ( (acNum = LV_GetCount()) && (side = "Down") )
+		|| ( (acNum = 1) && (side = "Up") )
+			return
+
+		allActions := GUI_Settings.TabCustomizationButtons_GetCurrentButtonActionsList()
+		newAllActions := GUI_Settings.TabCustomizationButtons_GetCurrentButtonActionsList()
+		if (side = "Up") {
+			newAllActions[acNum] := allActions[acNum-1]
+			newAllActions[acNum-1] := allActions[acNum]
+		}
+		else if (side = "Down") {
+			newAllActions[acNum] := allActions[acNum+1]
+			newAllActions[acNum+1] := allActions[acNum]
+		}
+	
+		Loop % LV_GetCount()
+			LV_Delete()
+		for index, nothing in newAllActions
+			LV_Add("", index, newAllActions[index].Actiontype, newAllActions[index].ActionContent)
 	}
 
 	TabCustomizationButtons_UnicodeButton_SetSlotSettings() {
@@ -2141,15 +2264,15 @@ Class GUI_Settings {
 	*/
 		global GuiSettings, GuiSettings_Controls
 
+		Gui, Settings:Default
 		Gui, Settings:ListView,% GuiSettings_Controls.hLV_ButtonsActions
 
 		GUI_Settings.TabCustomizationButtons_CustomButton_UpdateSlots(CtrlHwnd)
 
 		GuiControl, Settings:-Disabled,% GuiSettings_Controls.hDDL_ActionType
 		GuiControl, Settings:-Disabled,% GuiSettings_Controls.hEDIT_ActionContent
-		GuiControl, Settings:-Disabled,% GuiSettings_Controls.hBTN_ReplaceCurrentLine
-		GuiControl, Settings:-Disabled,% GuiSettings_Controls.hBTN_AddActionAtCurrentLine
-		GuiControl, Settings:-Disabled,% GuiSettings_Controls.hBTN_AddActionAtEnd
+		GuiControl, Settings:-Disabled,% GuiSettings_Controls.hBTN_SaveChangesToAction
+		GuiControl, Settings:-Disabled,% GuiSettings_Controls.hBTN_AddAsNewAction
 		GuiControl, Settings:-Disabled,% GuiSettings_Controls.hLV_ButtonsActions
 
 		btnSettings := GUI_Settings.TabCustomizationButtons_GetCustomButtonSettings(btnNum)
@@ -2945,6 +3068,8 @@ Class GUI_Settings {
 	}
 	TabHotkeysAdvanced_SetHotkeyActionsList(actionsList) {
 		global GuiSettings_Controls
+
+		Gui, Settings:Default
 		Gui, Settings:ListView,% GuiSettings_Controls.hLV_HotkeyAdvActionsList
 
 		Loop % LV_GetCount()
@@ -3181,6 +3306,7 @@ Class GUI_Settings {
 		if !(hkInfos.Num > 0)
 			Return
 
+		Gui, Settings:Default
 		Gui, Settings:ListView,% GuiSettings_Controls.hLV_HotkeyAdvActionsList
 
 		thisFunc := "TabHotkeysAdvanced_OnListClick"
@@ -3219,7 +3345,8 @@ Class GUI_Settings {
 		; LV_GetNext() seems to be the best alternative. Though, it rises an issue when no row is selected.
 		;	Instead of retrieving a blank value, it will retrieve the same value as the previously selected row ID.
 		;	As workaround, when the user does not select any row, we re-highlight the previously selected one.
-
+		
+			Gui, Settings:Default
 			Gui, Settings:ListView,% GuiSettings_Controls.hLV_HotkeyAdvActionsList
 
 			hkInfos := GUI_Settings.TabHotkeysAdvanced_GetActiveHotkeyProfileInfos()
@@ -3296,6 +3423,7 @@ Class GUI_Settings {
 		global GuiSettings, GuiSettings_Controls, PROGRAM
 		iniFile := PROGRAM.INI_FILE
 
+		Gui, Settings:Default
 		Gui, Settings:ListView,% GuiSettings_Controls.hLV_HotkeyAdvActionsList
 		hkInfos := GUI_Settings.TabHotkeysAdvanced_GetActiveHotkeyProfileInfos()
 		iniSect := "SETTINGS_HOTKEY_ADV_" hkInfos.Num
@@ -3826,6 +3954,9 @@ Class GUI_Settings {
 		,	"hBTN_ReplaceCurrentLine":"Replace the currently selected action in the list."
 		,	"hBTN_AddActionAtCurrentLine":"Add the new action at the currently selected line of the list."
 		,	"hBTN_AddActionAtEnd":"Add the new action at the end of the list."
+		, 	"hBTN_SaveChangesToAction": "Show a menu to select which button to save the changes to."
+		,	"hBTN_AddAsNewAction": "Add as a new action to the end of the list."
+		.	.					   "`nIf the last action is ""Close tab"" or a ""Write Message"" action, it will be added before it."
 		,	"hLV_ButtonsActions":"List of actions that will be performed upon clicking this button."
 
 
