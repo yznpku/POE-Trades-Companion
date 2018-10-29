@@ -1085,8 +1085,7 @@
 		if (GuiTrades.Tabs_Count > 0) {
 			GuiControl,Trades:,% GuiTrades_Controls["hTEXT_Title"],% "POE Trades Companion (" GuiTrades.Tabs_Count ")"
 			GuiControl,% "Trades: +c" SKIN.Settings.COLORS.Title_Trades,% GuiTrades_Controls["hTEXT_Title"]
-			if (PROGRAM.SETTINGS.SETTINGS_MAIN.AllowClicksToPassThroughWhileInactive = "True")
-				Gui_Trades.Disable_ClickThrough()
+			Gui_Trades.Disable_ClickThrough()
 			Gui_Trades.Redraw()
 		}
 
@@ -1739,6 +1738,8 @@
 		global PROGRAM, GuiTrades
 		transPercent := PROGRAM.SETTINGS.SETTINGS_MAIN.NoTabsTransparency
 		Gui_Trades.SetTransparencyPercent(transPercent)
+		if (transPercent = 0)
+			GUI_Trades.Enable_ClickThrough()
 	}
 
 	SetTransparency_Active() {
