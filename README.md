@@ -7,7 +7,9 @@
 POE Trades Companion is and will always be free to use.  
 Your name will appear on a special "Hall of Fame" tab within the application and also on [this page](https://github.com/lemasato/POE-Trades-Companion/wiki/Support)!  
 
-If needed, you can contact me on **[Reddit](https://www.reddit.com/user/lemasato)** - **[GGG Forums Thread](https://www.pathofexile.com/forum/view-thread/1755148)**  - **[GGG Forums PM](https://www.pathofexile.com/account/view-profile/z0rhawk)** - **[Discord](https://discord.gg/UMxqtfC)**  
+If needed, you can contact me on **[Reddit](https://www.reddit.com/user/lemasato)** - **[GGG Forums Thread](https://www.pathofexile.com/forum/view-thread/1755148)**  - **[GGG Forums PM](https://www.pathofexile.com/account/view-profile/z0rhawk)** - **[Discord](https://discord.gg/UMxqtfC)**
+
+<a href="https://discord.gg/UMxqtfC"><img src="https://discordapp.com/assets/e4923594e694a21542a489471ecffa50.svg" height=50></a>
 
 ***
 
