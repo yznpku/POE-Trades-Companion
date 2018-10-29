@@ -1,4 +1,8 @@
-<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=BSWU76BLQBMCU"><img src="https://github.com/lemasato/POE-Trades-Companion/raw/master/others/Banners/Donate using PayPal.png" height=40></a> <!-- Paypal Banner -->
+### The README.md is being reworked and some parts will be missing for now.
+&nbsp;  
+
+<a href="https://www.paypal.me/masato/"><img src="https://github.com/lemasato/POE-Trades-Companion/raw/master/others/Banners/Donate using PayPal.png" height=40></a> <!-- Paypal Banner -->  
+[paypal.me/masato](https://www.paypal.me/masato) - [Alternative paypal cart button](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=BSWU76BLQBMCU)
     
 POE Trades Companion is and will always be free to use.  
 Your name will appear on a special "Hall of Fame" tab within the application and also on [this page](https://github.com/lemasato/POE-Trades-Companion/wiki/Support)!  
@@ -7,17 +11,15 @@ If needed, you can contact me on **[Reddit](https://www.reddit.com/user/lemasato
 
 ***
 
-<p align="center">
-  <img src="https://github.com/lemasato/POE-Trades-Companion/raw/master/others/Banners/Trades Companion.png" height=70>
-</p> <!-- TC Banner -->
-
 ## Usage
 - Download and install [AutoHotKey](https://autohotkey.com/download/) from the official website.  
 - Download and extract [POE-Trades-Companion-AHK.zip](https://github.com/lemasato/POE-Trades-Companion/releases) from the releases page.  
 - Run POE Trades Companion.ahk  
 
 You can access the Settings menu by right clicking the icon.  
-**[POE Trades Companion Wiki Page](https://github.com/lemasato/POE-Trades-Companion/wiki)**
+**[POE Trades Companion Wiki Page](https://github.com/lemasato/POE-Trades-Companion/wiki)**  
+
+You could also download the executable but some protections are flagging it as malicious.  
 
 ## Key Features  
 - **Keep track of your incoming trading whispers in a convenient interface.**  
@@ -57,43 +59,45 @@ By setting the "No tab remaining" transparency to 0 and enabling the "click-thro
 Receive a notification when an update is available.  
 The entire updating process is automated.  
 
-    
-There are many more features, but each of them will be explained in their own section.  
-
 ***
 
-<p align="center">
-  <img src="https://github.com/lemasato/POE-Trades-Companion/raw/dev/Resources/Others/Banners/Interface.png">
-</p> <!-- Interface Banner -->
+## Skins
 
 |White|Dark Blue|Path of Exile|  
 |---|---|---|  
-|A sleek, simplistic combination of white and blue|The "night" alternative to the White skin.|Based on Path of Exile, blends perfectly with the game.|
-|![](https://github.com/lemasato/POE-Trades-Companion/raw/dev/Resources/Skins/White/Preview.png)|![](https://github.com/lemasato/POE-Trades-Companion/raw/dev/Resources/Skins/Dark%20Blue/Preview.png)|![](https://github.com/lemasato/POE-Trades-Companion/raw/dev/Resources/Skins/Path%20of%20Exile/Preview.png)
+|Based on Path of Exile, blends perfectly with the game.|A sleek, simplistic combination of white and blue|The "night" alternative to the White skin.|
+|![](https://github.com/lemasato/POE-Trades-Companion/raw/master/resources/skins/Path%20of%20Exile/Preview.png)|![](https://github.com/lemasato/POE-Trades-Companion/raw/master/resources/skins/White/Preview.png)|![](https://github.com/lemasato/POE-Trades-Companion/raw/master/resources/skins/Dark%20Blue/Preview.png)
 <details>
   <summary>Here is a breakdown of the interface (click to show picture):
 .</summary>
  <img src="https://github.com/lemasato/POE-Trades-Companion/raw/dev/Resources/Others/Help/Trades GUI.png">
 </details>
 
-***
-
-<p align="center">
-  <img src="https://github.com/lemasato/POE-Trades-Companion/raw/dev/Resources/Others/Banners/Trading Stats.png">
-</p> <!-- Trading Stats Banner -->
-<details>
-  <summary>See all the trades you completed in a convenient interface.
-<br>Click to show a picture showcasing the features.</summary>
- <img src="https://github.com/lemasato/POE-Trades-Companion/raw/dev/Resources/Others/Help/My Stats GUI.png">
-</details>      
+If interested, you may as well [https://github.com/lemasato/POE-Trades-Companion/wiki/Creating-Your-Skin](make your own skin)
 
 ***
-<p align="center">
-  <img src="https://github.com/lemasato/POE-Trades-Companion/raw/dev/Resources/Others/Banners/Settings.png">
-</p> <!-- Settings Banner -->
-This tool offers lots of customization.    
-You can access the Settings menu by right clicking the tray icon and choosing "Settings"    
-    
+
+## Interface
+
+**Coming later**
+<!--
+interface screenshot with numbers pointing features 
+-->  
+
+
+## Item Grid
+
+**Coming later**
+<!--
+screenshot with item grid, reg tab and map tab
+-->  
+
+## Settings 
+
+**Coming later**
+<!--
+screenshot with all settings tab, prob hide with
+
 ### General Settings tab    
     
 <details>
@@ -150,3 +154,5 @@ You can access the Settings menu by right clicking the tray icon and choosing "S
 <br>Click to show a picture showcasing the features.</summary>
  <img src="https://github.com/lemasato/POE-Trades-Companion/raw/dev/Resources/Others/Help/Settings Hotkeys Special Tab.png">
 </details>        
+
+-->
