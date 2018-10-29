@@ -69,13 +69,8 @@ The entire updating process is automated.
 |---|---|---|  
 |Based on Path of Exile, blends perfectly with the game.|A sleek, simplistic combination of white and blue|The "night" alternative to the White skin.|
 |![](https://github.com/lemasato/POE-Trades-Companion/raw/master/resources/skins/Path%20of%20Exile/Preview.png)|![](https://github.com/lemasato/POE-Trades-Companion/raw/master/resources/skins/White/Preview.png)|![](https://github.com/lemasato/POE-Trades-Companion/raw/master/resources/skins/Dark%20Blue/Preview.png)
-<details>
-  <summary>Here is a breakdown of the interface (click to show picture):
-.</summary>
- <img src="https://github.com/lemasato/POE-Trades-Companion/raw/dev/Resources/Others/Help/Trades GUI.png">
-</details>
 
-If interested, you may as well [https://github.com/lemasato/POE-Trades-Companion/wiki/Creating-Your-Skin](make your own skin)
+If interested, you may as well [make your own skin](https://github.com/lemasato/POE-Trades-Companion/wiki/Creating-Your-Skin)
 
 ***
 
