@@ -1,7 +1,7 @@
 ### The README.md is being reworked and some parts will be missing for now.  
 &nbsp;  
 
-<a href="https://www.paypal.me/masato/"><img src="https://github.com/lemasato/POE-Trades-Companion/raw/master/others/Banners/Donate using PayPal.png" height=40></a> <!-- Paypal Banner -->  
+<a href="https://www.paypal.me/masato/"><img src="https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/others/Banners/Donate using PayPal.png" height=40></a> <!-- Paypal Banner -->  
 [paypal.me/masato](https://www.paypal.me/masato) - [Alternative paypal cart button](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=BSWU76BLQBMCU)
     
 POE Trades Companion is and will always be free to use.  
@@ -66,10 +66,10 @@ The entire updating process is automated.
 
 ## Skins
 
-|White|Dark Blue|Path of Exile|  
+|Path of Exile|White|Dark Blue|  
 |---|---|---|  
 |Based on Path of Exile, blends perfectly with the game.|A sleek, simplistic combination of white and blue|The "night" alternative to the White skin.|
-|![](https://github.com/lemasato/POE-Trades-Companion/raw/master/resources/skins/Path%20of%20Exile/Preview.png)|![](https://github.com/lemasato/POE-Trades-Companion/raw/master/resources/skins/White/Preview.png)|![](https://github.com/lemasato/POE-Trades-Companion/raw/master/resources/skins/Dark%20Blue/Preview.png)
+|![](https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/resources/skins/Path%20of%20Exile/Preview.png)|![](https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/resources/skins/White/Preview.png)|![](https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/resources/skins/Dark%20Blue/Preview.png)
 
 If interested, you may as well **[make your own skin](https://github.com/lemasato/POE-Trades-Companion/wiki/Creating-Your-Skin)**
 
@@ -77,22 +77,18 @@ If interested, you may as well **[make your own skin](https://github.com/lemasat
 
 ## Interface
 
-**Coming later**
-<!--
-Here is a breakdown of the main interface:
-
-interface screenshot with numbers pointing features 
--->  
+<img src="https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/others/Help/Trades%20Interface.png">
 
 ## Price checking
 
-**Coming later**
-<!--
-You can compare the price in the whisper with the price on poe.trade in a single click:
+Price checking compares your item's price on poe.trade and the price in the whisper.  
+This features allows to avoid scammers that edit the price before sending the whisper.  
+It can be done by clicking the grey dot as shown in the screenshot above.  
 
-screenshot of dot, also mb say different color codes
--->
-
+After verifying an item's price, the dot will change color based on the results.  
+Green means the price matches or is in your favour.  
+Orange means an error occured.  
+Red means the price is different.  
 
 ## Item Grid
 
@@ -110,64 +106,50 @@ screenshot with item grid, reg tab and map tab
 
 ## Settings 
 
-**Coming later**
-<!--
+*Pictures have been hidden. Click on each message to show them*
 
-    ### General Settings tab    
+<details>
+    <summary>Settings Main tab
+    <br>Set the behaviour of the interface.</summary>
+        <img src="https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/others/Help/Settings 1-Main.png">
+</details>
+&nbsp;  
     
-    <details>
-      <summary>This tab contains settings related to the way the tool works.
-    <br>Click to show a picture showcasing the settings.</summary>
-     <img src="https://github.com/lemasato/POE-Trades-Companion/raw/dev/Resources/Others/Help/Settings Tab.png">
-    </details>    
+<details>
+    <summary>Customization Skins tab
+    <br>Change the skin, or adjust it to your likings.</summary>
+        <img src="https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/others/Help/Settings 2-Skins.png">
+</details>
+&nbsp;  
+    
+<details>
+    <summary>Customization Buttons tab
+    <br>Move, disable, rename, customize your buttons.</summary>
+        <img src="https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/others/Help/Settings 3-Buttons.png">
+</details>
+&nbsp;  
+    
+<details>
+    <summary>Hotkeys Basic tab
+    <br>Set-up simple hotkeys limited to one action.</summary>
+        <img src="https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/others/Help/Settings 4-Basic.png">
+</details>
+&nbsp;  
 
-    ### Customization > Appearance tab    
-
-    <details>
-      <summary>Change the general appearance of the interface.
-    <br>Click to show a picture showcasing the features.</summary>
-     <img src="https://github.com/lemasato/POE-Trades-Companion/raw/dev/Resources/Others/Help/Settings Appearance Tab.png">
-    </details>     
-    <b><a href="https://github.com/lemasato/POE-Trades-Companion/wiki/Creating-Your-Skin">Or if you really feel like it, you could make your own skin!</a></b>
-
-    ### Customization > Custom Buttons tab    
-
-    <details>
-      <summary>Customize how your button work!
-    <br>Click to show a picture showcasing the features.</summary>
-     <img src="https://github.com/lemasato/POE-Trades-Companion/raw/dev/Resources/Others/Help/Settings Custom Buttons Tab.png">
-    </details>    
-
-    ### Customization > Smaller Buttons tab    
-
-    <details>
-      <summary>Re-arrange the smaller buttons, or disable them completly.
-    <br>Click to show a picture showcasing the features.</summary>
-     <img src="https://github.com/lemasato/POE-Trades-Companion/raw/dev/Resources/Others/Help/Settings Smaller Buttons Tab.png">
-    </details>    
-
-    ### Hotkeys > Basic tab    
-
-    <details>
-      <summary>Use hotkeys for commands such as /hideout and more.
-    <br>Click to show a picture showcasing the features.</summary>
-     <img src="https://github.com/lemasato/POE-Trades-Companion/raw/dev/Resources/Others/Help/Settings Hotkeys Basic Tab.png">
-    </details>    
-
-    ### Hotkeys > Advanced tab    
-
-    <details>
-      <summary>More advanced hotkeys, can be used to send multiple commands or messages.
-    <br>Click to show a picture showcasing the features.</summary>
-     <img src="https://github.com/lemasato/POE-Trades-Companion/raw/dev/Resources/Others/Help/Settings Hotkeys Advanced Tab.png">
-    </details>    
-
-    ### Hotkeys > Special tab    
-
-    <details>
-      <summary>Special hotkeys to control the interface.
-    <br>Click to show a picture showcasing the features.</summary>
-     <img src="https://github.com/lemasato/POE-Trades-Companion/raw/dev/Resources/Others/Help/Settings Hotkeys Special Tab.png">
-    </details>        
-
--->
+<details>
+    <summary>Hotkeys Advanced tab
+    <br>Set-up advanced hotkeys that can perform multiple actions.
+    <br>Some keys are not compatible with the hotkey control.
+    <br>In such cases, switch to a manual hotkey by using the "HK Type Switch" button.
+    <br>https://autohotkey.com/docs/Hotkeys.htm
+    <br>https://autohotkey.com/docs/KeyList.htm</summary>
+        <img src="https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/others/Help/Settings 5-Advanced.png">
+</details>
+&nbsp;  
+    
+<details>
+    <summary>Available actions
+    <br>Note that "Custom Buttons" actions are only available for hotkeys.
+    <br>This allows you to bind an hotkey to a Custom Button.</summary>
+        <img src="https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/others/Help/Settings 6-Actions List.png">
+</details>
