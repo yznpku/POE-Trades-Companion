@@ -108,6 +108,11 @@ screenshot with item grid, reg tab and map tab
 
 *Pictures have been hidden. Click on each message to show them*
 
+<a href="https://github.com/lemasato/POE-Trades-Companion/wiki/How-to-use#customizing-buttons">Wiki: Customizing buttons</a>
+<br><a href="https://github.com/lemasato/POE-Trades-Companion/wiki/How-to-use#explaining-some-actions
+">Wiki: Explaining some actions</a>
+<br><a href="https://github.com/lemasato/POE-Trades-Companion/wiki/How-to-use#variables">Wiki: Variables</a>
+
 <details>
     <summary>Settings Main tab
     <br>Set the behaviour of the interface.</summary>
