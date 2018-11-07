@@ -9,20 +9,29 @@
 	*PrintScreen::
 	*Space::
 	*Tab::
-	modifier := ""
+	modifiers := ""
 	if GetKeyState("Shift","P")
-		modifier .= "+"
+		modifiers .= "+"
 	if GetKeyState("Ctrl","P")
-		modifier .= "^"
+		modifiers .= "^"
 	if GetKeyState("Alt","P")
-		modifier .= "!"
+		modifiers .= "!"
 
-	if (A_ThisHotkey == "*BackSpace" && HK_CTRL[1] && !modifier)   ;if the control has text but no modifiers held,
-		GuiControl, Settings:,% HK_CTRL[2]                                       ;  allow BackSpace to clear that text.
+	modLen := StrLen(modifiers)
+	if (modLen)
+		StringTrimLeft, hotkeyNoMods, A_ThisHotkey, %modLen%
+	else hotkeyNoMods := A_ThisHotkey
+	
+	If IsIn(hotkeyNoMods, "*AppsKey,*BackSpace,*Delete,*Enter,*Escape,*Pause,*PrintScreen,*Space,*Tab")
+		StringTrimLeft, hotkeyNoMods, hotkeyNoMods, 1
+
+	if (hotkeyNoMods == "BackSpace" && HK_CTRL.Hwnd && !modifiers) {  ;if the control has text but no modifiers held,
+		GuiControl, Settings:,% HK_CTRL.Hwnd                                       ;  allow BackSpace to clear that text.
+		GUI_Settings.Hotkey_OnSpecialKeyPress(HK_CTRL.Hwnd, "")
+	}
 	else {                                                     ;Otherwise,
-		GuiControl, Settings:,% HK_CTRL[2],% modifier SubStr(A_ThisHotkey,3)  ;  show the hotkey.
-
-		GUI_Settings.Hotkey_OnSpecialKeyPress(HK_CTRL[2], modifier SubStr(A_ThisHotkey,3))
+		GuiControl, Settings:,% HK_CTRL.Hwnd,% modifiers hotkeyNoMods  ;  show the hotkey.
+		GUI_Settings.Hotkey_OnSpecialKeyPress(HK_CTRL.Hwnd, modifiers hotkeyNoMods)
 	}
 
 	return
@@ -43,7 +52,7 @@ HotkeyCtrlHasFocus() {
   			ctrlVar := bak2
 
   			bak2 := ctrlVar
-  		Return, [ctrlVar, ctrlHwnd, ctrlClassNN]
+  		Return, {Var:ctrlVar, Hwnd:ctrlHwnd, ClassNN:ctrlClassNN}
  	}
  	bak := ctrlClassNN
 }
