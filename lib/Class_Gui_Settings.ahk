@@ -3133,6 +3133,8 @@ Class GUI_Settings {
 				GUI_Settings.TabHotkeysAdvanced_OnHotkeyProfileChange("")
 			}
 		}
+		else if !IsNum(chosenItemNum) ; actualyl a str
+		 	GuiControl, Settings:ChooseString,% GuiSettings_Controls.hDDL_HotkeyAdvExistingList,% chosenItemNum
 	}
 
 	/* * * * * On Change * * * * *
