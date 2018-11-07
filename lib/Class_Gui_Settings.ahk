@@ -119,6 +119,11 @@ Class GUI_Settings {
 			, [3, "0xe60000", "0xff5c5c", "Black", 0]  ; press
 			, [3, "0xff5c5c", "0xe60000", "White", 0 ] ] ; default
 
+		Style_Section := [ [0, "0xc9c9c9", "0xc9c9c9", "Black", 0, , ""] ; normal
+			, [0, "0xc9c9c9", "0xc9c9c9", "White", 0] ; hover
+			, [3, "0xc9c9c9", "0xc9c9c9", "White", 0]  ; press
+			, [3, "0x89c5fd", "0x89c5fd", "White", 0 ] ] ; default
+
 		global ACTIONS_TEXT_NAME := { "":""
 			, "SEND_MSG":"Send message"
 			, "SEND_TO_LAST_WHISPER":"Send to last whisper"
@@ -321,33 +326,33 @@ Class GUI_Settings {
 		Gui, Settings:Tab ; Whatever comes next will be on all tabs
 
 		; * * Tab buttons
-		tabSectionW := 130, tabSectionH := 40, tabButtonW := tabSectionW, tabButtonH := 30, tabFirstItemY := upMost+25
+		tabSectionW := 130, tabSectionH := 40, tabButtonW := tabSectionW, tabButtonH := 30, tabFirstItemY := upMost+30
 		leftMost2 := tabSectionW+20, upMost2 := tabFirstItemY
 		rightMost2 := guiWidth-10, downMost2 := guiHeight-10
 
 		GuiSettings.Tabs_Controls := {}
-		Gui.Add("Settings", "Button", "x" leftMost " y" tabFirstItemY " w" tabSectionW " h" tabSectionH " Disabled", "Settings")
+		imageBtnLog .= Gui.Add("Settings", "ImageButton", "x" leftMost " y" tabFirstItemY " w" tabSectionW " h" tabSectionH " hwndhBTN_SectionSettings", "Settings", Style_Section, PROGRAM.FONTS["Segoe UI"], 8)
 		Loop % allTabs.Settings.MaxIndex() {
 			imageBtnLog .= Gui.Add("Settings", "ImageButton", "xp y+0 w" tabButtonW " h" tabButtonH " hwndhBTN_TabSettings" A_Index, allTabs.Settings[A_Index], Style_Tab, PROGRAM.FONTS["Segoe UI"], 8)
 			__f := GUI_Settings.OnTabBtnClick.bind(GUI_Settings, "Settings " allTabs.Settings[A_Index])
 			GuiControl, Settings:+g,% GuiSettings_Controls["hBTN_TabSettings" A_Index],% __f
 			GuiSettings.Tabs_Controls["Settings_" allTabs.Settings[A_Index]] := GuiSettings_Controls["hBTN_TabSettings" A_Index]
 		}
-		Gui.Add("Settings", "Button", "x" leftMost " y+10 w" tabSectionW " h" tabSectionH " Disabled", "Customization")
+		imageBtnLog .= Gui.Add("Settings", "ImageButton", "x" leftMost " y+10 w" tabSectionW " h" tabSectionH " hwndhBTN_SectionCustomization", "Customization", Style_Section, PROGRAM.FONTS["Segoe UI"], 8)
 		Loop % allTabs.Customization.MaxIndex() {
 			imageBtnLog .= Gui.Add("Settings", "ImageButton", "xp y+0 w" tabButtonW " h" tabButtonH " hwndhBTN_TabCustomization" A_Index, allTabs.Customization[A_Index], Style_Tab, PROGRAM.FONTS["Segoe UI"], 8)
 			__f := GUI_Settings.OnTabBtnClick.bind(GUI_Settings, "Customization " allTabs.Customization[A_Index])
 			GuiControl, Settings:+g,% GuiSettings_Controls["hBTN_TabCustomization" A_Index],% __f
 			GuiSettings.Tabs_Controls["Customization_" allTabs.Customization[A_Index]] := GuiSettings_Controls["hBTN_TabCustomization" A_Index]
 		}
-		Gui.Add("Settings", "Button", "x" leftMost " y+10 w" tabSectionW " h" tabSectionH " Disabled", "Hotkeys")
+		imageBtnLog .= Gui.Add("Settings", "ImageButton", "x" leftMost " y+10 w" tabSectionW " h" tabSectionH " hwndhBTN_SectionHotkeys", "Hotkeys", Style_Section, PROGRAM.FONTS["Segoe UI"], 8)
 		Loop % allTabs.Hotkeys.MaxIndex() {
 			imageBtnLog .= Gui.Add("Settings", "ImageButton", "xp y+0 w" tabButtonW " h" tabButtonH " hwndhBTN_TabHotkeys" A_Index, allTabs.Hotkeys[A_Index], Style_Tab, PROGRAM.FONTS["Segoe UI"], 8)
 			__f := GUI_Settings.OnTabBtnClick.bind(GUI_Settings, "Hotkeys " allTabs.Hotkeys[A_Index])
 			GuiControl, Settings:+g,% GuiSettings_Controls["hBTN_TabHotkeys" A_Index],% __f
 			GuiSettings.Tabs_Controls["Hotkeys_" allTabs.Hotkeys[A_Index]] := GuiSettings_Controls["hBTN_TabHotkeys" A_Index]
 		}
-		Gui.Add("Settings", "Button", "x" leftMost " y+10 w" tabSectionW " h" tabSectionH " Disabled", "Misc")
+		imageBtnLog .= Gui.Add("Settings", "ImageButton", "x" leftMost " y+10 w" tabSectionW " h" tabSectionH " hwndhBTN_SectionMisc", "Misc", Style_Section, PROGRAM.FONTS["Segoe UI"], 8)
 		Loop % allTabs.Misc.MaxIndex() {
 			imageBtnLog .= Gui.Add("Settings", "ImageButton", "xp y+0 w" tabButtonW " h" tabButtonH " hwndhBTN_TabMisc" A_Index, allTabs.Misc[A_Index], Style_Tab, PROGRAM.FONTS["Segoe UI"], 8)
 			__f := GUI_Settings.OnTabBtnClick.bind(GUI_Settings, "Misc " allTabs.Misc[A_Index])
@@ -364,7 +369,7 @@ Class GUI_Settings {
 		*	TAB SETTINGS MAIN
 		*/
 		Gui, Settings:Tab, Settings Main
-		Gui.Add("Settings", "GroupBox", "x" leftMost2 " y" upMost2 " cBlack w525 h" guiHeight-80 )
+		Gui.Add("Settings", "GroupBox", "x" leftMost2 " y" upMost2 " cBlack w525 h" guiHeight-80, "Settings Main" )
 
 		; * * First group
 		Gui.Add("Settings", "CheckBox", "x" leftMost2+10 " y" upMost2+20 "  BackgroundTrans hwndhCB_HideInterfaceWhenOutOfGame", "Hide the interface when not in game?")
@@ -418,7 +423,6 @@ Class GUI_Settings {
 		; Gui.Add("Settings", "Text", "x+20 yp hwndhTXT_SendMessagesModeTip", "Choose a mode to have informations about how it works.")
 
 		; * * Transparency
-		
 		Gui.Add("Settings", "Checkbox", "x" secondRowX " y" cbNotInGamePos.Y " hwndhCB_AllowClicksToPassThroughWhileInactive", "Allow clicks to pass through`nthe interface while no tabs remain.")
 		Gui.Add("Settings", "Text", "x" secondRowX " y+10 Center", "Interface transparency`nNo tab remaining")
 		Gui.Add("Settings", "Slider", "x+1 yp w120 AltSubmit ToolTip Range0-100 hwndhSLIDER_NoTabsTransparency")
@@ -440,7 +444,7 @@ Class GUI_Settings {
 		*	TAB CUSTOMIZATION SKINS
 		*/
 		Gui, Settings:Tab, Customization Skins
-		Gui.Add("Settings", "GroupBox", "x" leftMost2 " y" upMost2 " cBlack w525 h" guiHeight-80)
+		Gui.Add("Settings", "GroupBox", "x" leftMost2 " y" upMost2 " cBlack w525 h" guiHeight-80, "Customization Skins")
 
 		; * * Preset
 		Gui.Add("Settings", "Text", "xp yp+20 w525 Center BackgroundTrans","Preset: ")
@@ -487,7 +491,7 @@ Class GUI_Settings {
 		*	TAB CUSTOMIZATION BUTTONS
 		*/
 		Gui, Settings:Tab, Customization Buttons
-		Gui.Add("Settings", "GroupBox", "x" leftMost2 " y" upMost2 " cBlack w525 h" guiHeight-80)
+		Gui.Add("Settings", "GroupBox", "x" leftMost2 " y" upMost2 " cBlack w525 h" guiHeight-80, "Customization Buttons")
 		thisTabCtrlsList := ""
 
 		; Custom Buttons: Determine positions and sizes
@@ -652,7 +656,7 @@ Class GUI_Settings {
 		*/
 		Gui, Settings:Tab, Hotkeys Advanced
 
-		Gui.Add("Settings", "GroupBox", "x" leftMost2 " y" upMost2 " cBlack w540 h" guiHeight-80)
+		Gui.Add("Settings", "GroupBox", "x" leftMost2 " y" upMost2 " cBlack w540 h" guiHeight-80, "Hotkeys Advanced")
 		Gui.Add("Settings", "DropDownList", "x" leftMost2+20 " y" upMost2+20 " w430 R20 hwndhDDL_HotkeyAdvExistingList")
 		Gui.Add("Settings", "Button", "x+5 yp-1 w30 R1 hwndhBTN_HotkeyAdvAddNewProfile", "+")
 		Gui.Add("Settings", "Button", "x+5 yp w30 R1 hwndhBTN_HotkeyAdvDeleteCurrentProfile", "-")
@@ -3875,6 +3879,7 @@ Class GUI_Settings {
 
 	OnTabBtnClick(ClickedTab) {
 		global GuiSettings, GuiSettings_Controls
+		static prevSection, newSection
 
 		GuiControl, Settings:ChooseString,% GuiSettings_Controls.hTab_AllTabs,% ClickedTab
 
@@ -3885,6 +3890,20 @@ Class GUI_Settings {
 				GuiControl, Settings:+Disabled,% handle
 			else
 				GuiControl, Settings:-Disabled,% handle
+		}
+
+		newSection := IsIn(ClickedTab, "Settings Main") ? GuiSettings_Controls.hBTN_SectionSettings
+		:	IsIn(ClickedTab, "Customization Skins,Customization Buttons") ? GuiSettings_Controls.hBTN_SectionCustomization
+		:	IsIn(ClickedTab, "Hotkeys Basic,Hotkeys Advanced") ? GuiSettings_Controls.hBTN_SectionHotkeys
+		:	IsIn(ClickedTab, "Misc Updating,Misc About") ? GuiSettings_Controls.hBTN_SectionMisc
+		: 	"ERROR"
+
+		if (newSection != "ERROR") {
+			if (newSection != prevSection) {
+				GuiControl, Settings:+Disabled,% newSection
+				GuiControl, Settings:-Disabled,% prevSection
+			}
+			prevSection := newSection
 		}
 
 		if (ClickedTab = "Customization Buttons") {
