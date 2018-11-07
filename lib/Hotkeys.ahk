@@ -90,7 +90,12 @@ EnableHotkeys() {
 		hk := thisHotkeySettings.Hotkey
 		hkSC := TransformKeyStr_ToScanCodeStr(hk)
 
-		if (hk != "") && (acType != "") {
+		if (A_Index > 1000) {
+			AppendToLogs(A_ThisFunc "(): Broke out of loop after 1000.")
+			Break
+		}
+
+		if IsObject(thisHotkeySettings) {
 			PROGRAM.HOTKEYS[hkSC] := {}
 
 			Loop {
@@ -104,17 +109,18 @@ EnableHotkeys() {
 				PROGRAM.HOTKEYS[hkSC]["Action_" A_Index "_Content"] := LoopAcContent
 				PROGRAM.HOTKEYS[hkSC]["Actions_Count"] := A_Index
 			}
-			if (hk != "") {
-				
+			if (hk != "") && (hkSC != "") {
 				Hotkey, IfWinActive, ahk_group POEGameGroup
-				try Hotkey,% hkSC, OnHotkeyPress, On
-				logsStr := "Enabled hotkey with key """ hk """ (scan code: """ hkSC """)"
-				logsAppend .= logsAppend ? "`n" logsStr : logsStr
+				try {
+					Hotkey,% hkSC, OnHotkeyPress, On
+					logsStr := "Enabled hotkey with key """ hk """ (scan code: """ hkSC """)"
+					logsAppend .= logsAppend ? "`n" logsStr : logsStr
+				}
+				catch {
+					logsStr := "Failed to enable hotkey doe to key or scan code being empty: key """ hk """ (scan code: """ hkSC """)"
+					logsAppend .= logsAppend ? "`n" logsStr : logsStr
+				}
 			}
-		}
-		else if (A_Index > 1000) {
-			AppendToLogs(A_ThisFunc "(): Broke out of loop after 1000.")
-			Break
 		}
 		else
 			Break
