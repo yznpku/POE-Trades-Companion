@@ -219,13 +219,11 @@ class GUI_ItemGrid {
         Gui, ItemGridMap:Destroy
     }
 
-    Exists() {
-        global GuiItemGrid, GuiItemGrid_Controls, GuiItemGrid_Submit
-        global GuiItemGridQuad, GuiItemGridQuad_Controls, GuiItemGridQuad_Submit
-        global GuiItemGridTabName, GuiItemGridTabName_Controls, GuiItemGridTabName_Submit
+    Detect(_hw="Off") {
+        global GuiItemGrid, GuiItemGridQuad, GuiItemGridTabName
 
         hw := A_DetectHiddenWindows
-        DetectHiddenWindows, On
+        DetectHiddenWindows, %_hw%
 
         if WinExist("ahk_id " GuiItemGrid.Handle)
         || WinExist("ahk_id " GuiItemGridQuad.Handle)
@@ -236,6 +234,16 @@ class GUI_ItemGrid {
             exists := False
 
         DetectHiddenWindows, %hw%
+        return exists
+    }
+
+    IsVisible() {
+        isVisible := GUI_ItemGrid.Detect(_hw:="Off")
+        return isVisible
+    }
+
+    Exists() {
+        exists := GUI_ItemGrid.Detect(_hw:="On")
         return exists
     }
 
