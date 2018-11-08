@@ -105,14 +105,14 @@ Tray_ToggleLockPosition(toggle="") {
 	global PROGRAM
 	iniFile := PROGRAM.INI_FILE
 
-	if (toggle="") && (PROGRAM.SETTINGS.SETTINGS_MAIN.TradesGUI_Locked = "True")
-	|| (toggle="Uncheck") {
+	if ( (toggle = "") || (toggle = A_ThisMenuItem) ) && (PROGRAM.SETTINGS.SETTINGS_MAIN.TradesGUI_Locked = "True")
+	|| (toggle = "Uncheck") {
 		INI.Set(iniFile, "SETTINGS_MAIN", "TradesGUI_Locked", "False")
 		PROGRAM.SETTINGS.SETTINGS_MAIN.TradesGUI_Locked := "False"
 		Menu, Tray, Uncheck, Lock position?
 	}
-	else if (toggle = "") && (PROGRAM.SETTINGS.SETTINGS_MAIN.TradesGUI_Locked = "False")
-	|| (toggle="Check") {
+	else if ( (toggle = "") || (toggle = A_ThisMenuItem) ) && (PROGRAM.SETTINGS.SETTINGS_MAIN.TradesGUI_Locked = "False")
+	|| (toggle = "Check") {
 		INI.Set(iniFile, "SETTINGS_MAIN", "TradesGUI_Locked", "True")
 		PROGRAM.SETTINGS.SETTINGS_MAIN.TradesGUI_Locked := "True"
 		Menu, Tray, Check, Lock position?
