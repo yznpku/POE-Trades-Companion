@@ -1674,6 +1674,9 @@
 		GuiControl, Trades:Show,% GuiTrades_Controls.hPROGRESS_BorderBottom
 		GuiControl, Trades:Hide,% GuiTrades_Controls.hPROGRESS_BorderBottomMinimized
 
+		if ( GUI_ItemGrid.Exists())
+			GUI_Trades.ShowActiveTabItemGrid()
+
 		GuiTrades.Is_Maximized := True
 		GuiTrades.Is_Minimized := False
 		; GUI_Trades.ToggleTabSpecificAssets("On")
@@ -1693,6 +1696,9 @@
 
 		GuiControl, Trades:Show,% GuiTrades_Controls.hPROGRESS_BorderBottomMinimized
 		GuiControl, Trades:Hide,% GuiTrades_Controls.hPROGRESS_BorderBottom
+
+		if ( GUI_ItemGrid.Exists() )
+			GUI_ItemGrid.Hide()
 
 		GuiTrades.Is_Maximized := False
 		GuiTrades.Is_Minimized := True
@@ -2099,6 +2105,9 @@
 
 	ShowActiveTabItemGrid() {
 		global GuiTrades
+		static prev_tabXPos, prev_tabYPos, prev_tabStashTab
+		static prev_winX, prev_winY, prev_clientInfos
+
 		activeTabID := Gui_Trades.GetActiveTab()
 		activeTabInfos := GUI_Trades.GetTabContent(activeTabID)
 		tabStashPos := StrSplit(activeTabInfos.StashPosition, ";")
@@ -2117,12 +2126,21 @@
 			if (clientInfos.Y = 0) && IsIn(clientInfos.H, "606,774,870,726,806,966,1030,1056,1086,1206") ; Fix issue where +6 is added to res H
 				clientInfos.H -= 6
 
-			Gui_Trades.UpdateSlotContent(activeTabID, "IsBuyerInvited", True)
-			GUI_ItemGrid.Create(tabXPos, tabYPos, tabStashTab, winX, winY, clientInfos.H, clientInfos.X, clientInfos.Y, itemType)
-			GuiTrades.ItemGrid_PID := activeTabInfos.PID
+			isItemGridVisible := GUI_ItemGrid.IsVisible()
+			if !(isItemGridVisible) ; if not visible, or visible and one variable changed
+			|| (isItemGridVisible) && ( (prev_tabXPos != tabXPos) || (prev_tabYPos != tabYPos) || (prev_tabStashTab != tabStashTab)
+			 || (prev_winX != winX) || (prev_winY != winY)
+			 || (prev_clientInfos.X != clientInfos.X) || (prev_clientInfos.Y != clientInfos.Y) || (prev_clientInfos.H != clientInfos.H) ) {
+				Gui_Trades.UpdateSlotContent(activeTabID, "IsBuyerInvited", True)
+				GUI_ItemGrid.Create(tabXPos, tabYPos, tabStashTab, winX, winY, clientInfos.H, clientInfos.X, clientInfos.Y, itemType)
+				GuiTrades.ItemGrid_PID := activeTabInfos.PID
+			}
 		}
 		else
 			GUI_Trades.DestroyItemGrid()
+
+		prev_tabXPos := tabXPos, prev_tabYPos := tabYPos, prev_tabStashTab := tabStashTab
+		prev_winX := winX, prev_winY := winY, prev_clientInfos := clientInfos
 	}
 	DestroyItemGrid() {
 		GUI_ItemGrid.Destroy()
