@@ -230,7 +230,7 @@ class GUI_ItemGrid {
         if WinExist("ahk_id " GuiItemGrid.Handle)
         || WinExist("ahk_id " GuiItemGridQuad.Handle)
         || WinExist("ahk_id " GuiItemGridTabName.Handle) 
-        || WinExist("ahk_id " ItemGridMap.Handle) 
+        || WinExist("ahk_id " GuiItemGridMap.Handle) 
             exists := True
         else
             exists := False
