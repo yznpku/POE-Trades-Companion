@@ -116,44 +116,106 @@ RandomStr(l = 24, i = 48, x = 122) { ; length, lowest and highest Asc value
 	Return, s
 }
 
-Get_HotkeyString(_hotkey, simpleString=False) {
-	Loop 3 {
-		char := SubStr(_hotkey, A_Index, 1)
-		restOfString := SubStr(_hotkey, A_Index)
-		if (simpleString)
-			keyStr := (char="^")?("Ctrl"):(char="!")?("Alt"):(char="+")?("Shift"):("")
-		else 
-			keyStr := (char="^")?("{Ctrl Down}"):(char="!")?("{Alt Down}"):(char="+")?("{Shift Down}"):("")
+Transform_ReadableHotkeyString_Into_AHKHotkeyString(_hotkey, _delimiter="+") {
+	len := StrLen(_hotkey)
+    Loop 2 {
+        mainLoopIndex := A_Index
+        Loop, Parse,% _hotkey,% _delimiter
+        {
+            parseIndex := A_Index
 
-		if !(keyStr)
-			Break
+            if (mainLoopIndex = 1) 
+                parseTotal := parseIndex
+            else {
+                firstChar := SubStr(A_LoopField, 1, 1)
+                if IsIn(A_LoopField, "Ctrl,LCtrl,RCtrl") && (parseIndex < parseTotal)
+                    mod .= firstChar = "L" ? "<^" : firstChar = "R" ? ">^" : "^"
+                else if IsIn(A_LoopField, "Shift,LShift,RShift") && (parseIndex < parseTotal)
+                    mod .= firstChar = "L" ? "<+" : firstChar = "R" ? ">+" : "+"
+                else if IsIn(A_LoopField, "Alt,LAlt,RAlt") && (parseIndex < parseTotal)
+                    mod .= firstChar = "L" ? "<!" : firstChar = "R" ? ">!" : "!"
+                else if IsIn(A_LoopField, "LWin,RWin") && (parseIndex < parseTotal)
+                    mod .= "#" ; firstChar = "L" ? "<#" : firstChar = "R" ? ">#" : "#"
+                else
+                    hk := A_LoopField
+            }
+        }
+    }
 
-		if (simpleString)
-			hotkeyString .= (keyStr)?(keyStr "+"):("")
-		else 
-			hotkeyString .= (keyStr)?(keyStr):("")
-	}
+    lastChar := SubStr(_hotkey, 0, 1)
+    if (lastChar = _delimiter) && (hk = "")
+        hk := lastChar
 
-	if (simpleString) {
-		hotkeyString .= restOfString
-		Return hotkeyString
-	}
+    fullHk := mod . hk
+    return fullHk
+}
 
-	hotkeyString .= "{" restOfString " Down}"
+Transform_AHKHotkeyString_Into_InputSring(_hotkey) {
+	readable := Transform_AHKHotkeyString_Into_ReadableHotkeyString(_hotkey)
+	len := StrLen(_hotkey), inputsObj := {}
+    Loop 2 {
+        mainLoopIndex := A_Index
+        Loop, Parse,% readable,% "+"
+        {
+            parseIndex := A_Index
 
-	split := StrSplit(hotkeyString, "Down}")
-	for key, element in split {
-		if (element)
-			maxIndex++
-	}
-	splitIndex := maxIndex
-			
-	Loop, %maxIndex% {
-		hotkeyString .= split[splitIndex] "Up}"
-		splitIndex--
-	}
+            if (mainLoopIndex = 1) 
+                parseTotal := parseIndex
+            else {
+                firstChar := SubStr(A_LoopField, 1, 1)
+                if IsIn(A_LoopField, "Ctrl,LCtrl,RCtrl") && (parseIndex < parseTotal)
+                    inputsObj.Push(A_LoopField)
+                else if IsIn(A_LoopField, "Shift,LShift,RShift") && (parseIndex < parseTotal)
+                    inputsObj.Push(A_LoopField)
+                else if IsIn(A_LoopField, "Alt,LAlt,RAlt") && (parseIndex < parseTotal)
+                    inputsObj.Push(A_LoopField)
+                else if IsIn(A_LoopField, "LWin,RWin") && (parseIndex < parseTotal)
+                    inputsObj.Push(A_LoopField)
+                else
+                    inputsObj.Push(A_LoopField)
+            }
+        }
+    }
 
-	Return hotkeyString
+	for index, _input in inputsObj {
+        downInputs .= "{" _input " Down}"
+        upInputs := "{" _input " Up}" upInputs
+    }
+
+	downAndUpInputs := downInputs . upInputs
+    return downAndUpInputs
+}
+
+Transform_AHKHotkeyString_Into_ReadableHotkeyString(_hotkey, _delimiter="+") {
+	len := StrLen(_hotkey)
+
+	Loop, Parse,% _hotkey
+    {
+        parseIndex := A_Index
+        curChar := A_LoopField, nextChar := SubStr(_hotkey, parseIndex+1, 1), curAndNextChars := curChar . nextChar
+
+        if (skipNextChar) {
+            skipNextChar := False
+        }
+        else if IsIn(curAndNextChars, "<^,>^,<!,>!,<+,>+,<#,>#") {
+            mod := curChar = "<" ? "L" : curChar = ">" ? "R" : ""
+            mod .= nextChar = "^" ? "Ctrl" : nextChar = "!" ? "Alt" : nextChar = "+" ? "Shift" : nextChar = "#" ? "Win" : ""
+            modStr .= modStr ? "+" mod : mod
+            skipNextChar := True
+        }
+        else if IsIn(curChar, "^,!,+,#") && (parseIndex < len) {
+            mod := curChar = "^" ? "Ctrl" : curChar = "!" ? "Alt" : curChar = "+" ? "Shift" : curChar = "#" ? "Win" : ""
+            modStr .= modStr ? "+" mod : mod
+        }
+        else {
+            hk := SubStr(_hotkey, parseIndex)
+            StringUpper, hk, hk, T
+            Break
+        }
+    }
+
+    hkStr := modStr ? modStr "+" hk : hk
+    return hkStr
 }
 
 Get_UnderMouse_CtrlHwnd() {
