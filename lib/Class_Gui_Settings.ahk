@@ -128,10 +128,15 @@ Class GUI_Settings {
 			, [3, "0xe60000", "0xff5c5c", "Black", 0]  ; press
 			, [3, "0xff5c5c", "0xe60000", "White", 0 ] ] ; default
 
-		Style_Section := [ [0, "0xc9c9c9", "0xc9c9c9", "Black", 0, , ""] ; normal
-			, [0, "0xc9c9c9", "0xc9c9c9", "White", 0] ; hover
-			, [3, "0xc9c9c9", "0xc9c9c9", "White", 0]  ; press
-			, [3, "0x89c5fd", "0x89c5fd", "White", 0 ] ] ; default
+		Style_Section := [ [0, "0xc9c9c9", "", "Black", 0, , ""] ; normal
+			, [0, "0xc9c9c9", "", "White", 0] ; hover
+			, [0, "0xc9c9c9", "", "White", 0]  ; press
+			, [0, "0x89c5fd", "", "White", 0 ] ] ; default
+		
+		Style_ResetBtn := [ [0, "0xf9a231", "", "Black", 0, , ""] ; normal
+			, [0, "0xf9a231", "", "Red", 0] ; hover
+			, [3, "0xf9a231", "0xe7740e", "Red", 0]  ; press
+			, [0, "0xe7740e", "", "Red", 0 ] ] ; default
 
 		global ACTIONS_TEXT_NAME := { "":""
 			, "SEND_MSG":"Send message"
@@ -370,7 +375,7 @@ Class GUI_Settings {
 		}
 
 
-		Gui.Add("Settings", "Button", "x" leftMost " y+35 w" tabSectionW " h" tabSectionH " hwndhBTN_ResetToDefaultSettings", "Reset all settings`nto default")
+		Gui.Add("Settings", "ImageButton", "x" leftMost " y+35 w" tabSectionW " h" tabSectionH " hwndhBTN_ResetToDefaultSettings", "RESET SETTINGS`nTO DEFAULT", Style_ResetBtn, PROGRAM.FONTS["Segoe UI"], 8)
 		__f := GUI_Settings.ResetToDefaultSettings.bind(GUI_Settings)
 		GuiControl, Settings:+g,% GuiSettings_Controls.hBTN_ResetToDefaultSettings,% __f
 
@@ -420,7 +425,7 @@ Class GUI_Settings {
 		Gui.Add("Settings", "CheckBox", "x+0 yp hwndhCB_PushBulletOnWhisperMessage", "Regular whispers")
 		; Gui.Add("Settings", "CheckBox", "x+0 yp hwndhCB_PushBulletOnPartyMessage", "Party messages")
 		; Gui.Add("Settings", "CheckBox", "x+0 yp hwndhCB_PushBulletOnTradeMessage", "$")
-		Gui.Add("Settings", "CheckBox", "x" leftMost2+25 " y+7 hwndhCB_PushBulletOnlyWhenAfk", "Get PB notifications only when /afk")
+		Gui.Add("Settings", "CheckBox", "x" leftMost2+25 " y+7 hwndhCB_PushBulletOnlyWhenAfk", "Get PB notifications only when /afk?")
 		
 		; * * Accounts
 		Gui.Add("Settings", "Text", "x" leftMost2+10 " y+20 Center", "POE accounts list. Case sensitive. Separate using a comma:")
@@ -432,7 +437,7 @@ Class GUI_Settings {
 		; Gui.Add("Settings", "Text", "x+20 yp hwndhTXT_SendMessagesModeTip", "Choose a mode to have informations about how it works.")
 
 		; * * Transparency
-		Gui.Add("Settings", "Checkbox", "x" secondRowX " y" cbNotInGamePos.Y " hwndhCB_AllowClicksToPassThroughWhileInactive", "Allow clicks to pass through`nthe interface while no tabs remain.")
+		Gui.Add("Settings", "Checkbox", "x" secondRowX " y" cbNotInGamePos.Y " hwndhCB_AllowClicksToPassThroughWhileInactive", "Allow clicks to pass through`nthe interface while no tabs remain?")
 		Gui.Add("Settings", "Text", "x" secondRowX " y+10 Center", "Interface transparency`nNo tab remaining")
 		Gui.Add("Settings", "Slider", "x+1 yp w120 AltSubmit ToolTip Range0-100 hwndhSLIDER_NoTabsTransparency")
 		Gui.Add("Settings", "Text", "x" secondRowX " y+5 Center", "Interface transparency`nTabs still open")
@@ -879,12 +884,13 @@ Class GUI_Settings {
 	ResetToDefaultSettings() {
 		global PROGRAM
 
-		MsgBox(4096+4, "", "Are you sure to reset your settings to default?"
+		MsgBox(4096+48+4, "", "Are you sure to reset your settings to default?"
 		. "`n" "Your current settings file will be kept and renamed, in case you ever wish to revert the changes."
-		. "`n" "Settings file can be found at:"
-		. "`n" PROGRAM.INI_FILE)
 		. "`n"
-		. "`n" PROGRAM.NAME " will be reloading if you choose to continue."
+		. "`n" "Settings file can be found at:"
+		. "`n" PROGRAM.INI_FILE
+		. "`n"
+		. "`n" PROGRAM.NAME " will have to reload if you choose to continue.")
 
 		IfMsgBox, Yes
 		{
@@ -3112,7 +3118,8 @@ Class GUI_Settings {
 		hkProfiles := GUI_Settings.TabHotkeysAdvanced_GetHotkeyProfiles()
 		hkList := "|"
 		Loop % hkProfiles.Profiles_Count {
-			hkList .= hkProfiles[A_Index].Name "    (" hkProfiles[A_Index].Hotkey ")|"
+			hkStr := Transform_AHKHotkeyString_Into_ReadableHotkeyString(hkProfiles[A_Index].Hotkey)
+			hkList .= hkProfiles[A_Index].Name " (Hotkey: " hkStr ")|"
 		}
 		if (hkList != "|")
 			StringTrimRight, hkList, hkList, 1
@@ -3149,11 +3156,12 @@ Class GUI_Settings {
 			which := GUI_Settings.Submit("hDDL_HotkeyAdvExistingList")
 		}
 
-		RegExMatch(which, "O)(.*)    \((.*)\)", hkNamePat)		
+		RegExMatch(which, "O)(.*) \(Hotkey: (.*)\)$", hkNamePat)		
 		hkProfiles := GUI_Settings.TabHotkeysAdvanced_GetHotkeyProfiles()
 		Loop % hkProfiles.Profiles_Count {
 			loopedHK := hkProfiles[A_Index]
-			if (loopedHK.Name = hkNamePat.1) && (loopedHK.Hotkey = hkNamePat.2) {
+			simplifiedHK := Transform_ReadableHotkeyString_Into_AHKHotkeyString(hkNamePat.2)
+			if (loopedHK.Name = hkNamePat.1) && (loopedHK.Hotkey = simplifiedHK) {
 				matchFound := True
 				Break
 			}
@@ -3448,23 +3456,29 @@ Class GUI_Settings {
 		global GuiSettings, GuiSettings_Controls, PROGRAM
 		iniFile := PROGRAM.INI_FILE
 
-		hkProfiles := GUI_Settings.TabHotkeysAdvanced_GetHotkeyProfiles()
 		selectedProfile := GUI_Settings.TabHotkeysAdvanced_GetActiveHotkeyProfileInfos()
-		
-		diff := hkProfiles.Profiles_Count-selectedProfile.Num
-		if (diff) {
-			fromNum := selectedProfile.Num+1, toNum := selectedProfile.Num
-			Loop % diff {
-				INI.Rename(iniFile, "SETTINGS_HOTKEY_ADV_" fromNum, "", "SETTINGS_HOTKEY_ADV_" toNum)
-				fromNum++, toNum++
+		hkStr := Transform_AHKHotkeyString_Into_ReadableHotkeyString(selectedProfile.Hotkey)
+		MsgBox(4096+48+4, "", selectedProfile.Name " (Hotkey: " hkStr ")"
+		. "`nAre you sure you want to delete this hotkey profile?")
+		IfMsgBox, Yes
+		{
+			hkProfiles := GUI_Settings.TabHotkeysAdvanced_GetHotkeyProfiles()
+			
+			diff := hkProfiles.Profiles_Count-selectedProfile.Num
+			if (diff) {
+				fromNum := selectedProfile.Num+1, toNum := selectedProfile.Num
+				Loop % diff {
+					INI.Rename(iniFile, "SETTINGS_HOTKEY_ADV_" fromNum, "", "SETTINGS_HOTKEY_ADV_" toNum)
+					fromNum++, toNum++
+				}
 			}
-		}
-		else {
-			INI.Remove(iniFile, "SETTINGS_HOTKEY_ADV_" selectedProfile.Num)
-		}
+			else {
+				INI.Remove(iniFile, "SETTINGS_HOTKEY_ADV_" selectedProfile.Num)
+			}
 
-		Declare_LocalSettings()
-		GUI_Settings.TabHotkeysAdvanced_UpdateRegisteredHotkeysList()
+			Declare_LocalSettings()
+			GUI_Settings.TabHotkeysAdvanced_UpdateRegisteredHotkeysList()
+		}
 	}
 
 	TabHotkeysAdvanced_SaveSelectedHotkeyActions() {
