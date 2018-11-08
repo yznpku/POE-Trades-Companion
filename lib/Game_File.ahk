@@ -40,18 +40,31 @@
 		FileEncoding,% fileEncode
 	}
 
+	INI.Remove(gameFileCopy, "LOGIN", "username")
+
 	chatKeySC := INI.Get(gameFileCopy, "ACTION_KEYS", "chat")
 	fullscreen := INI.Get(gameFileCopy, "DISPLAY", "fullscreen")
-
+	borderless :=  INI.Get(gameFileCopy, "DISPLAY", "borderless_windowed_fullscreen")
+	height := INI.Get(gameFileCopy, "DISPLAY", "resolution_height")
+	width:= INI.Get(gameFileCopy, "DISPLAY", "resolution_width")
+	
 	chatKeyVK := StringToHex(chr(chatKeySC+0))
 	chatKeyName := GetKeyName("VK" chatKeyVK)
 
-	AppendToLogs("Chat key: " """" chatKeySC """" . "   VK: " """" chatKeyVK """" . "   SC: " """" chatKeyName """" . "   Fullscreen: " fullscreen)
+	AppendToLogs("Retrieved settings from game file."
+	. "Chat key: " """" chatKeySC """" . "   VK: " """" chatKeyVK """" . "   SC: " """" chatKeyName """"
+	. "Fullscreen: " fullscreen
+	. "Borderless: " borderless
+	. "Height: " height
+	. "Width: " width)
 
 	returnObj := { ChatKey_SC: chatKeySC
 				  ,ChatKey_VK:chatKeyVK
 				  ,ChatKey_Name: chatKeyName
-				  ,Fullscreen: fullscreen }
+				  ,Fullscreen: fullscreen
+				  ,Borderless: borderless
+				  ,Height: height
+				  ,Width: width}
 
 	return returnObj
 }
