@@ -18,7 +18,6 @@
 	This allow the user to move files individually without getting errors due to a missing file.
 	
 	Fixes:
-	- Wouldn't 
 	- Wouldn't play the buyer joined area sound (since 1.13.4 update)
 	- Wouldn't automatically run as admin (since 1.13.5 update)
 	- Woudnl't enable any following advanced hotkeys if one of the profiles had no hotkey set.
