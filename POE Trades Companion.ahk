@@ -142,10 +142,14 @@ Start_Script() {
 	SetWorkingDir,% PROGRAM.MAIN_FOLDER
 
 	; Auto admin reload - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	/* Disabled. TO_DO: Re enable but with GUI that ask if script should run as admin.
+	; Also possibly setting to "always run as admin"
+	; + adapt func from NSO manager to detect if game is running as admin but not the tool
+
 	if (!A_IsAdmin && !RUNTIME_PARAMETERS.SkipAdmin) {
-		; GUI_SimpleWarn.Show("", "Reloading to request admin privilieges in 3...`nClick on this window to reload now.", "Green", "White", {CountDown:True, CountDown_Timer:1000, CountDown_Count:3, WaitClose:1, CloseOnClick:True})
 		ReloadWithParams(" /MyDocuments=""" MyDocuments """", getCurrentParams:=True, asAdmin:=True)
 	}
+	*/
 
 	; Game executables groups - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	global POEGameArr := ["PathOfExile.exe", "PathOfExile_x64.exe", "PathOfExileSteam.exe", "PathOfExile_x64Steam.exe"]
@@ -260,7 +264,7 @@ Start_Script() {
 	TrayMenu()
 	EnableHotkeys()
 
-	ImageButton_TestDelay()
+	; ImageButton_TestDelay()
 	Gui_Trades.Create()
 	GUI_Trades.LoadBackup()
 
