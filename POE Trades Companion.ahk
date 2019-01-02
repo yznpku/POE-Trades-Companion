@@ -142,14 +142,9 @@ Start_Script() {
 	SetWorkingDir,% PROGRAM.MAIN_FOLDER
 
 	; Auto admin reload - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-	/* Disabled. TO_DO: Re enable but with GUI that ask if script should run as admin.
-	; Also possibly setting to "always run as admin"
-	; + adapt func from NSO manager to detect if game is running as admin but not the tool
-
 	if (!A_IsAdmin && !RUNTIME_PARAMETERS.SkipAdmin) {
 		ReloadWithParams(" /MyDocuments=""" MyDocuments """", getCurrentParams:=True, asAdmin:=True)
 	}
-	*/
 
 	; Game executables groups - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	global POEGameArr := ["PathOfExile.exe", "PathOfExile_x64.exe", "PathOfExileSteam.exe", "PathOfExile_x64Steam.exe"]
