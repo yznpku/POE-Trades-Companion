@@ -384,6 +384,7 @@
 		if (CtrlHwnd = GuiTrades_Controls.hBTN_CloseTab) {
 			try Menu, CloseTabMenu, DeleteAll
 			Menu, CloseTabMenu, Add, Close other tabs with same item, Gui_Trades_ContextMenu_CloseOtherTabsWithSameItem
+			Menu, CloseTabMenu, Add, Close all tabs, Gui_Trades_ContextMenu_CloseAllTabs
 			Menu, CloseTabMenu, Show
 		}
 		else if IsIn(CtrlHwnd, GuiTrades_Controls.hTXT_HeaderGhost "," GuiTrades_Controls.hTEXT_Title) {
@@ -398,6 +399,12 @@
 		Gui_Trades_ContextMenu_LockPosition:
 			Tray_ToggleLockPosition()
 		Return
+
+		Gui_Trades_ContextMenu_CloseAllTabs:
+			Loop % GuiTrades.Tabs_Count {
+				GUI_Trades.RemoveTab(A_LoopField, massRemove:=True)
+			}
+		return
 
 		Gui_Trades_ContextMenu_CloseOtherTabsWithSameItem:
 			activeTabID := Gui_Trades.GetActiveTab()
