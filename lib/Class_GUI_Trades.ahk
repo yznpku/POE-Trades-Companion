@@ -383,7 +383,7 @@
 
 		if (CtrlHwnd = GuiTrades_Controls.hBTN_CloseTab) {
 			try Menu, CloseTabMenu, DeleteAll
-			Menu, CloseTabMenu, Add, Close other tabs with same item, Gui_Trades_ContextMenu_CloseOtherTabsWithSameItem
+			Menu, CloseTabMenu, Add, Close other tabs for same item, Gui_Trades_ContextMenu_CloseOtherTabsWithSameItem
 			Menu, CloseTabMenu, Add, Close all tabs, Gui_Trades_ContextMenu_CloseAllTabs
 			Menu, CloseTabMenu, Show
 		}
@@ -401,33 +401,44 @@
 		Return
 
 		Gui_Trades_ContextMenu_CloseAllTabs:
-			Loop % GuiTrades.Tabs_Count {
-				GUI_Trades.RemoveTab(A_LoopField, massRemove:=True)
-			}
+			GUI_Trades.CloseAllTabs()
 		return
 
 		Gui_Trades_ContextMenu_CloseOtherTabsWithSameItem:
-			activeTabID := Gui_Trades.GetActiveTab()
-			activeTabInfos := Gui_Trades.GetTabContent(activeTabID)
-			tabsToLoop := GuiTrades.Tabs_Count
-
-			; Parse every tab, from highest to lowest so when we close it, it doesn't affect tab order
-			Loop % GuiTrades.Tabs_Count {
-				loopedTab := tabsToLoop
-				if (loopedTab != activeTabID) {
-					tabInfos := Gui_Trades.GetTabContent(loopedTab)
-					if (tabInfos.Item = activeTabInfos.Item)
-					&& (tabInfos.Price = activeTabInfos.Price)
-					&& (tabInfos.Stash =  activeTabInfos.Stash) {
-						Gui_Trades.RemoveTab(loopedTab, massRemove:=True)
-						AppendToLogs(A_ThisLabel ": Removed tab " loopedTab)
-					}
-				}
-				tabsToLoop--
-			}
+			GUI_Trades.CloseOtherTabsForSameItem()
 		Return
 	}
 
+	CloseAllTabs() {
+		global GuiTrades
+
+		Loop % GuiTrades.Tabs_Count {
+			GUI_Trades.RemoveTab(A_LoopField, massRemove:=True)
+		}
+	}
+
+	CloseOtherTabsForSameItem() {
+		global GuiTrades
+		
+		activeTabID := Gui_Trades.GetActiveTab()
+		activeTabInfos := Gui_Trades.GetTabContent(activeTabID)
+		tabsToLoop := GuiTrades.Tabs_Count
+
+		; Parse every tab, from highest to lowest so when we close it, it doesn't affect tab order
+		Loop % GuiTrades.Tabs_Count {
+			loopedTab := tabsToLoop
+			if (loopedTab != activeTabID) {
+				tabInfos := Gui_Trades.GetTabContent(loopedTab)
+				if (tabInfos.Item = activeTabInfos.Item)
+				&& (tabInfos.Price = activeTabInfos.Price)
+				&& (tabInfos.Stash =  activeTabInfos.Stash) {
+					Gui_Trades.RemoveTab(loopedTab, massRemove:=True)
+					AppendToLogs(A_ThisLabel ": Removed tab " loopedTab)
+				}
+			}
+			tabsToLoop--
+		}
+	}
 
 	SetButtonsPositions() {
 		global PROGRAM
