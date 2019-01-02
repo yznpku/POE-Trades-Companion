@@ -35,7 +35,7 @@
 		GUI_Trades.DisableHotkeys()
 
 		scaleMult := PROGRAM.SETTINGS.SETTINGS_CUSTOMIZATION_SKINS.ScalingPercentage / 100
-		resDPI := PROGRAM.OS.RESOLUTION_DPI 
+		resDPI := Get_DpiFactor() 
 
 		AppendToLogs("Trades GUI: Creating with max tabs """ _maxTabsToRender """.")
 
@@ -1686,9 +1686,11 @@
 		global GuiTrades, GuiTrades_Controls
 		global PROGRAM
 
+		resDPI := Get_DpiFactor()
+
 		hiddenWin := A_DetectHiddenWindows
 		DetectHiddenWindows, On
-		WinMove,% "ahk_id " GuiTrades.Handle, , , , ,% GuiTrades.Height_Maximized * PROGRAM.OS.RESOLUTION_DPI ; change size first to avoid btn flicker
+		WinMove,% "ahk_id " GuiTrades.Handle, , , , ,% GuiTrades.Height_Maximized * resDPI ; change size first to avoid btn flicker
 		DetectHiddenWindows, %hiddenWin%
 
 		GuiControl, Trades:Show,% GuiTrades_Controls.hBTN_Minimize
@@ -1709,9 +1711,11 @@
 		global GuiTrades, GuiTrades_Controls
 		global PROGRAM
 
+		resDPI := Get_DpiFactor()
+
 		hiddenWin := A_DetectHiddenWindows
 		DetectHiddenWindows, On
-		WinMove,% "ahk_id " GuiTrades.Handle, , , , ,% GuiTrades.Height_Minimized * PROGRAM.OS.RESOLUTION_DPI
+		WinMove,% "ahk_id " GuiTrades.Handle, , , , ,% GuiTrades.Height_Minimized * resDPI
 		DetectHiddenWindows, %hiddenWin%
 
 		GuiControl, Trades:Show,% GuiTrades_Controls.hBTN_Maximize
@@ -1792,10 +1796,12 @@
 	ResetPosition(dontWrite=False) {
 		global PROGRAM, GuiTrades
 
+		resDPI := Get_DpiFactor()
+
 		try {
-			Gui, Trades:Show,% "NoActivate x" Ceil(A_ScreenWidth - (GuiTrades.Width * PROGRAM.OS.RESOLUTION_DPI) ) " y0"
+			Gui, Trades:Show,% "NoActivate x" Ceil(A_ScreenWidth - (GuiTrades.Width * resDPI) ) " y0"
 			if !(dontWrite) {
-				INI.Set(PROGRAM.INI_FILE, "SETTINGS_MAIN", "Pos_X", Ceil(A_ScreenWidth - (GuiTrades.Width * PROGRAM.OS.RESOLUTION_DPI) ) )
+				INI.Set(PROGRAM.INI_FILE, "SETTINGS_MAIN", "Pos_X", Ceil(A_ScreenWidth - (GuiTrades.Width * resDPI) ) )
 				INI.Set(PROGRAM.INI_FILE, "SETTINGS_MAIN", "Pos_Y", 0)
 			}
 		}

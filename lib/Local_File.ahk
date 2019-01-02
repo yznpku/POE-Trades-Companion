@@ -519,8 +519,10 @@ Get_LocalSettings() {
 		}
 	}
 
+	/*	No longer used
 	PROGRAM.OS := {}
 	PROGRAM.OS.RESOLUTION_DPI := Get_DpiFactor()
+	*/
 
 	return settingsObj
 }
