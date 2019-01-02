@@ -942,17 +942,17 @@
 			tabIndex := tabName+1
 			Loop % tabsCount-tabName {
 				tabContent := GUI_Trades.GetTabContent(tabIndex) ; Get tab content
-				GUI_Trades.SetTabContent(tabIndex-1, tabContent, False, False, True) ; Set tab content to previous tab
+				GUI_Trades.SetTabContent(tabIndex-1, tabContent, isNewlyPushed:=False, updateOnly:=False, replaceTab:=True) ; Set tab content to previous tab
 
 				tabIndex++
 			}
 			GUI_Trades.SetTabContent(tabIndex-1, "") ; Make last tab empty
+			GUI_Trades.SetTabStyleDefault(tabIndex-1)
 		}
 		else if (tabName = tabsCount) {
 			GUI_Trades.SetTabContent(tabName, "")
+			GUI_Trades.SetTabStyleDefault(tabName)
 		}
-
-		GUI_Trades.SetTabStyleDefault(tabName)
 
 		; Move tabs if needed
 		if (lastVisibleTab = tabsCount) {
@@ -1468,7 +1468,7 @@
 		return tabContent
 	}
 
-	SetTabContent(tabName, tabInfos="", isNewlyPushed=False, updateOnly=False, debug=False) {
+	SetTabContent(tabName, tabInfos="", isNewlyPushed=False, updateOnly=False, replaceTab=False) {
 		global GuiTrades_Controls
 
 		if !IsNum(tabName) {
@@ -1583,16 +1583,21 @@
 		; newTimeReceived := (currentTabContent.Time)?(currentTabContent.Time):(timeReceived)
 		newTimeReceived := updateOnly && !tabInfos.Time ? cTabCont.Time : tabInfos.Time
 
-		if (debug=True) ; RemoveTab
-		{
-			; MsgBox % "Tab: " tabName "`nC: " cTabCont.TradeVerify "`nT: " tabInfos.TradeVerify "`nN: " newTradeVerify
-		}
-
 		GuiControl, Trades:,% GuiTrades_Controls["hTEXT_TradeInfos" tabName],% visibleText
 		GuiControl, Trades:,% GuiTrades_Controls["hTEXT_HiddenTradeInfos" tabName],% invisibleText
 		GuiControl, Trades:,% GuiTrades_Controls["hTEXT_TradeReceivedTime" tabName],% newTimeReceived
 		if (updateOnly=False && newTradeVerify)
 			GUI_Trades.SetTabVerifyColor(tabName, newTradeVerify)
+
+		if IsNum(tabName) && (updateOnly=True || replaceTab=True) {
+			if (newTabIsInArea && (!cTabCont.IsInArea || replaceTab=True) )
+				GUI_Trades.SetTabStyleJoinedArea(tabName)
+			if (newTabHasNewMessage && (!cTabCont.HasNewMessage || replaceTab=True) )
+				GUI_Trades.SetTabStyleWhisperReceived(tabName)
+
+			else if (!newTabIsInArea && !newTabHasNewMessage)
+				GUI_Trades.SetTabStyleDefault(tabName)
+		}
 
 		if (visibleInfos.Other && isNewlyPushed) {
 			Gui_Trades.UpdateSlotContent(tabName, "Other", visibleInfos.Other)
@@ -1979,7 +1984,8 @@
 			buyerName := playerOrTab
 
 		if (applyToThisTabOnly=True) && IsNum(playerOrTab) {
-			buyerTabs := playerOrTab
+			tabContent := Gui_Trades.GetTabContent(playerOrTab)
+			buyerTabs := playerOrTab, tab%playerOrTab%IsInArea := tabContent.IsInArea, tab%playerOrTab%HasNewMessage := tabContent.HasNewMessage
 		}
 		else {
 			Loop % GuiTrades.Tabs_Count {
@@ -2010,9 +2016,10 @@
 			}
 
 			state := whatDo="Set"? True : False
-			if (tabStyle = "JoinedArea")
+			tabContent := GUI_Trades.GetTabContent(A_LoopField)
+			if (tabStyle = "JoinedArea" && !tabContent.IsInArea)
 				Gui_Trades.UpdateSlotContent(A_LoopField, "IsInArea", state)
-			else if (tabStyle = "WhisperReceived")
+			else if (tabStyle = "WhisperReceived" && !tabContent.HasNewMessage)
 				Gui_Trades.UpdateSlotContent(A_LoopField, "HasNewMessage", state)
 
 			if (styleCurrent != newStyle) {
