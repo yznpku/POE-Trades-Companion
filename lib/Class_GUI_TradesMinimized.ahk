@@ -82,7 +82,7 @@
 			Gui.Add("TradesMinimized", "Progress", "x" bordersPositions[A_Index]["X"] " y" bordersPositions[A_Index]["Y"] " w" bordersPositions[A_Index]["W"] " h" bordersPositions[A_Index]["H"] " hwndhPROGRESS_Border" bordersPositions[A_index]["Position"] " Background" SKIN.Settings.COLORS.Border)
 
 		; = = TITLE BAR = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
-		Gui.Add("TradesMinimized", "Picture", "x" Header_X " y" Header_Y " w" Header_W " h" Header_H " hwndhIMG_Header BackgroundTrans", SKIN.Assets.Misc.Header) ; Title bar
+		Gui.Add("TradesMinimized", "Picture", "x" Header_X " y" Header_Y " w" Header_W " h" Header_H " hwndhIMG_Header BackgroundTrans", SKIN.Assets.Misc.HeaderMin) ; Title bar
 		Gui.Add("TradesMinimized", "Picture", "x" Icon_X " y" Icon_Y " w" Icon_W " h" Icon_H " BackgroundTrans", SKIN.Assets.Misc.Icon) ; Icon
 		imageBtnLog .= Gui.Add("TradesMinimized", "ImageButton", "x" MinMax_X " y" MinMax_Y " w" MinMax_W " h" MinMax_H " BackgroundTrans hwndhBTN_Maximize", "", styles.Maximize, PROGRAM.FONTS[settings_fontName], settings_fontSize) ; Max
 		Gui.Add("TradesMinimized", "Text", "x" Title_X " y" Title_Y " w" Title_W " h" Title_H " hwndhTEXT_Title Center BackgroundTrans +0x200 c" SKIN.Settings.COLORS.Title_No_Trades, "(0)")

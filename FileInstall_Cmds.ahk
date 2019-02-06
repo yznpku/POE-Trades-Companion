@@ -1595,6 +1595,31 @@ if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Dark Blue"), "D")
 	FileCreateDir,% PROGRAM.SKINS_FOLDER "\Dark Blue"
 
 if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\skins\Dark Blue\HeaderMin.png")
+	FileGetSize, destFileSize, % PROGRAM.SKINS_FOLDER "\Dark Blue\HeaderMin.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\skins\Dark Blue\HeaderMin.png
+	FileGetSize, destFileSize, % PROGRAM.SKINS_FOLDER "\Dark Blue\HeaderMin.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\skins\Dark Blue\HeaderMin.png, % PROGRAM.SKINS_FOLDER "\Dark Blue\HeaderMin.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\HeaderMin.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\HeaderMin.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\HeaderMin.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\HeaderMin.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Dark Blue"), "D")
+	FileCreateDir,% PROGRAM.SKINS_FOLDER "\Dark Blue"
+
+if (A_IsCompiled) {
 	sourceFileSize := Get_ResourceSize("resources\skins\Dark Blue\Icon.ico")
 	FileGetSize, destFileSize, % PROGRAM.SKINS_FOLDER "\Dark Blue\Icon.ico"
 }
@@ -2777,6 +2802,31 @@ if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile"), "D")
 	FileCreateDir,% PROGRAM.SKINS_FOLDER "\Path of Exile"
 
 if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\skins\Path of Exile\HeaderMin.png")
+	FileGetSize, destFileSize, % PROGRAM.SKINS_FOLDER "\Path of Exile\HeaderMin.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\skins\Path of Exile\HeaderMin.png
+	FileGetSize, destFileSize, % PROGRAM.SKINS_FOLDER "\Path of Exile\HeaderMin.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\skins\Path of Exile\HeaderMin.png, % PROGRAM.SKINS_FOLDER "\Path of Exile\HeaderMin.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\HeaderMin.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\HeaderMin.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\HeaderMin.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\HeaderMin.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile"), "D")
+	FileCreateDir,% PROGRAM.SKINS_FOLDER "\Path of Exile"
+
+if (A_IsCompiled) {
 	sourceFileSize := Get_ResourceSize("resources\skins\Path of Exile\Icon.ico")
 	FileGetSize, destFileSize, % PROGRAM.SKINS_FOLDER "\Path of Exile\Icon.ico"
 }
@@ -3951,6 +4001,31 @@ if (ErrorLevel) {
 	errorLog .= "`n`n""Failed to extract file!"
 	.	"`nSource: resources\skins\White\Header.png"
 	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\Header.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\White"), "D")
+	FileCreateDir,% PROGRAM.SKINS_FOLDER "\White"
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\skins\White\HeaderMin.png")
+	FileGetSize, destFileSize, % PROGRAM.SKINS_FOLDER "\White\HeaderMin.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\skins\White\HeaderMin.png
+	FileGetSize, destFileSize, % PROGRAM.SKINS_FOLDER "\White\HeaderMin.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\skins\White\HeaderMin.png, % PROGRAM.SKINS_FOLDER "\White\HeaderMin.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\White\HeaderMin.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\HeaderMin.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\White\HeaderMin.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\HeaderMin.png"
 	.	"`nFlag: " 2
 }
 

@@ -234,7 +234,7 @@ Get_SkinAssetsAndSettings() {
 		keysAndValues := INI.Get(skinAssetsFile, A_LoopField,, 1)
 
 		for key, value in keysAndValues	{
-			if IsIn(key, "Normal,Hover,Press,Active,Inactive,Background,Icon,Header,Tabs_Background,Tabs_Underline")
+			if IsIn(key, "Normal,Hover,Press,Active,Inactive,Background,Icon,Header,HeaderMin,Tabs_Background,Tabs_Underline")
 			|| (A_LoopField = "Trade_Verify" && IsIn(key, "Grey,Orange,Green,Red"))
 				skinAssets[A_LoopField][key] := skinFolder "\" value
 			else {
