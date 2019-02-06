@@ -31,7 +31,7 @@ Up to nine customizable buttons, and an infinite amount of hotkeys.
 Using the `%buyer%`, `%item%`, `%price%` variables in your messages, communication is even faster.  
 - **Find the desired items in seconds.**  
 With the precise Item Grid overlay, you will be able to find your item as fast as possible.  
-Works with regular stash tabs, quad stash tabs, and the map stash tab.  
+Works with premium stash tabs, premium quad stash tabs, and the map stash tab.  
 Requires no set-up from the user. All automated.  
 - **Price check against scammers.**  
 Compare your item's price on poe.trade with the price sent in the whisper to avoid scammers that change the price in the whisper.  
