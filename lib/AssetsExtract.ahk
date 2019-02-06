@@ -153,7 +153,11 @@
 	FileAppend,% appendToFile "`n",% installFile
 	Sleep 10
 
-	RunWait,% installFile " /r"
+	; https://autohotkey.com/board/topic/6717-how-to-find-autohotkey-directory/
+	cl := DllCall( "GetCommandLine", "str" )
+	StringMid, path_AHk, cl, 2, InStr( cl, """", true, 2 )-2
+
+	installFile_run_cmd := % """" path_AHk """" " /r " """" installFile """"
 	.		" /MAIN_FOLDER=" 	"""" PROGRAM.MAIN_FOLDER """"
 	.		" /SFX_FOLDER=" 	"""" PROGRAM.SFX_FOLDER """"
 	.		" /LOGS_FOLDER=" 	"""" PROGRAM.LOGS_FOLDER """"
@@ -162,5 +166,7 @@
 	.		" /DATA_FOLDER=" 	"""" PROGRAM.DATA_FOLDER """"
 	.		" /IMAGES_FOLDER=" 	"""" PROGRAM.IMAGES_FOLDER """"
 	.		" /ICONS_FOLDER=" 	"""" PROGRAM.ICONS_FOLDER """"
-	.		" /LOGS_FILE="		"""" PROGRAM.LOGS_FILE """",% A_ScriptDir
+	.		" /LOGS_FILE="		"""" PROGRAM.LOGS_FILE """"
+
+	RunWait,% installFile_run_cmd,% A_ScriptDir
 }
