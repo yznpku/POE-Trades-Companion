@@ -88,6 +88,8 @@
 
 Send_GameMessage(actionType, msgString, gamePID="") {
 	global PROGRAM, GAME
+	global MyDocuments
+
 	Thread, NoTimers
 
 	sendMsgMode := PROGRAM.SETTINGS.SETTINGS_MAIN.SendMsgMode
@@ -103,16 +105,35 @@ Send_GameMessage(actionType, msgString, gamePID="") {
 	if (gamePID) {
 		WinActivate,[a-zA-Z0-9_] ahk_group POEGameGroup ahk_pid %gamePID%
 		WinWaitActive,[a-zA-Z0-9_] ahk_group POEGameGroup ahk_pid %gamePID%, ,2
+		isToolSameElevation := Is_Tool_Elevation_SameLevel_As_GameInstance(gamePID)
 	}
 	else {
 		WinActivate,[a-zA-Z0-9_] ahk_group POEGameGroup
 		WinWaitActive,[a-zA-Z0-9_] ahk_group POEGameGroup, ,2
+		WinGet, gamePID, PID, A
+		isToolSameElevation := Is_Tool_Elevation_SameLevel_As_GameInstance(gamePID)
 	}
 	if (ErrorLevel) {
 		AppendToLogs(A_ThisFunc "(actionType=" actionType ", msgString=" msgString ", gamePID=" gamePID "): WinWaitActive timed out.")
-		TrayNotifications.Show("Window timeout", "Game window wasn't focused after 5 seconds, canceling sending message.")
+		TrayNotifications.Show("Window timeout", "Game window wasn't focused after 2 seconds, canceling sending message.")
 		return "WINWAITACTIVE_TIMEOUT"
 	}
+
+	if (!isToolSameElevation) {
+		MsgBox(4096+48+4, "POE Trades Companion - Reload as admin?", ""
+		. "Would you like to automatically reload the tool with admin elevation? All tabs will still be there after reloading."
+		. "`n"
+		. "`n" PROGRAM.NAME " cannot interact with the game instance (PID " gamePID ") because the game is running as admin and the tool is not."
+		. " To avoid this warning in the future, make sure to start the tool as admin.")
+
+		IfMsgBox, Yes
+		{
+			GUI_Trades.SaveBackup()
+			ReloadWithParams(" /MyDocuments=""" MyDocuments """", getCurrentParams:=True, asAdmin:=True)
+		}
+		else return
+	}
+
 	GoSub, Send_GameMessage_OpenChat
 	GoSub, Send_GameMessage_ClearChat
 
@@ -822,4 +843,24 @@ IsTradingWhisper(str) {
 	}
 
 	Return isTradingWhisper
+}
+
+Is_Tool_Elevation_SameLevel_As_GameInstance(gamePID) {
+	isElevated := Is_Game_Elevated(gamePID)
+	
+	isSameLevel := (isElevated = True) && (A_IsAdmin) ? True
+		: (isElevated = False) ? True
+		: (isElevated = True) ? False
+		: False
+
+	return isSameLevel
+}
+
+Is_Game_Elevated(gamePID) {
+	
+	WinGet, pName, ProcessName, ahk_pid %gamePID%
+	processInfos := Get_ProcessInfos(pName, gamePID)
+	isProcessElevated := (processInfos[1]["TokenIsElevated"])?(True):(processInfos=2)?(True):(False)
+
+	return isProcessElevated
 }

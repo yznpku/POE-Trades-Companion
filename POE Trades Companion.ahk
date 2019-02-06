@@ -356,6 +356,7 @@ Return
 #Include Extract2Folder.ahk
 #Include FGP.ahk
 #Include GDIP.ahk
+#Include Get_ProcessInfos.ahk
 #Include JSON.ahk
 #Include LV_SetSelColors.ahk
 #Include PushBullet.ahk
