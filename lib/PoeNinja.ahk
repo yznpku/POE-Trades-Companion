@@ -12,13 +12,31 @@
     return mapsJSON
 }
 
+
+PoeNinja_GetUniqueMapOverview(league) {
+    /*  Retrieve map infos from poe.ninja
+    */
+    url := "https://poe.ninja/api/Data/GetUniqueMapOverview?league=" league
+	postData		:= ""
+	reqHeaders		:= []
+	reqHeaders.Push("Content-Type: text/html; charset=UTF-8")
+	options			:= ""
+	html 			:= cURL_Download(url, ioData := postData, reqHeaders, options, false, false, false, errorMsg)
+
+    uniqueMapsJSON := JSON.Load(html)
+    return uniqueMapsJSON
+}
+
 PoeNinja_CreateMapDataFile(league) {
     /*  Create our map data file from map infos of poe.ninja
     */
     mapsJSON := PoeNinja_GetMapOverview(league)
+    uniqueMapsJSON := PoeNinja_GetUniqueMapOverview(league)
     excludeList := "Elder,Shaped"
+    excludeListUnique := "The Beachhead"
     maps := {}
 
+    ; get only needed infos
     for index, nothing in mapsJSON.lines {
         mapName := mapsJSON.lines[index].name
         mapTier := mapsJSON.lines[index].mapTier
@@ -30,6 +48,20 @@ PoeNinja_CreateMapDataFile(league) {
         }
     }
 
+    ; same but for unique maps
+    for index, nothing in uniqueMapsJSON.lines {
+        mapName := uniqueMapsJSON.lines[index].name
+        baseType := uniqueMapsJSON.lines[index].baseType
+        mapTier := "unique"
+
+        if !IsContaining(mapName, excludeListUnique) {
+            if !IsObject(maps[mapTier])
+                maps[mapTier] := {}
+            maps[mapTier].Push(mapName " " baseType)
+        }
+    }
+
+    ; sort by name and re-arrange array
     mapsSorted := {}
     for index, nothing in maps {        
         tierMapsList := ""
@@ -40,13 +72,17 @@ PoeNinja_CreateMapDataFile(league) {
         mapsSorted["tier_" index] := {}
         Loop, Parse, tierMapsList, `n, `r
         {
-            mapName := A_LoopField
+            mapName := A_LoopField               
             mapsSorted["tier_" index][mapName] := {}
             mapsSorted["tier_" index][mapName].pos := A_Index
         }
     }
 
     finalData := JSON.Beautify(mapsSorted)
+    finalData := StrReplace(finalData, "\u251c\u00c2", "ö")
+
     FileDelete,% A_ScriptDir "/data//mapsData.json"
-    FileAppend,% finalData,% A_ScriptDir "/data//mapsData.json"
+    File := FileOpen(A_ScriptDir "/data//mapsData.json", "w", "UTF-8")
+	File.Write(finalData)
+	File.Close()
 }
