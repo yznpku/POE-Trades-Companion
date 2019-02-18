@@ -2205,6 +2205,7 @@
 		if !IsNum(tabXPos) || !IsNum(tabYPos)
 			return
 
+		GUI_Trades.DestroyItemGrid()
 		if (tabXPos && tabYPos) && WinExist("ahk_pid " activeTabInfos.PID " ahk_group POEGameGroup") {
 			WinGetPos, winX, winY, winW, winH,% "ahk_pid " activeTabInfos.PID " ahk_group POEGameGroup"
 			clientInfos := GetWindowClientInfos("ahk_pid" activeTabInfos.PID " ahk_group POEGameGroup")
