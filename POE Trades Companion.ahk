@@ -204,6 +204,9 @@ Start_Script() {
 	FileRead, mapsData,% PROGRAM.DATA_FOLDER "\mapsData.json"
 	PROGRAM.DATA.MAPS_DATA := JSON.Load(mapsData)
 
+	FileRead, uniqueMapsList,% PROGRAM.DATA_FOLDER "\UniqueMaps.txt"
+	PROGRAM.DATA.UNIQUE_MAPS_LIST := uniqueMapsList
+
 	; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 	GDIP_Startup()

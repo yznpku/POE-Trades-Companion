@@ -2193,7 +2193,7 @@
 	}
 
 	ShowActiveTabItemGrid() {
-		global GuiTrades
+		global PROGRAM, GuiTrades
 		static prev_tabXPos, prev_tabYPos, prev_tabStashTab
 		static prev_winX, prev_winY, prev_clientInfos
 
@@ -2210,8 +2210,11 @@
 			WinGetPos, winX, winY, winW, winH,% "ahk_pid " activeTabInfos.PID " ahk_group POEGameGroup"
 			clientInfos := GetWindowClientInfos("ahk_pid" activeTabInfos.PID " ahk_group POEGameGroup")
 
-			if RegExMatch(activeTabInfos.Item, "O)(.*) \(T(\d+)\)$", itemPat)
+			if RegExMatch(activeTabInfos.Item, "O)(.*) \(T(\d+)\)$", itemPat) {
 				itemType := "Map", tabStashItem := itemPat.1, mapTier := itemPat.2
+				if IsIn_Parse(tabStashItem, PROGRAM.DATA.UNIQUE_MAPS_LIST, "`n", "`r")
+					mapTier := "unique"
+			}
 
 			if (clientInfos.Y = 0) && IsIn(clientInfos.H, "606,774,870,726,806,966,1030,1056,1086,1206") ; Fix issue where +6 is added to res H
 				clientInfos.H -= 6	

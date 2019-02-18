@@ -85,19 +85,21 @@ class GUI_ItemGrid {
     static map_casesCountX := 12
     static map_casesCountY := 6
     ; map tab tier button positions and size
-    static mapTier_xpos := [44,110,176,242,308,375,441,507,573 , 82,148,215,281,347,413,479 , 545]
-    static mapTier_ypos := [197,197,197,197,197,197,197,197,197 , 264,264,264,264,264,264,264 , 264]
+    static mapTier_xpos := {1:44, 2:110, 3:176, 4:242, 5:308, 6:375, 7:441, 8:507, 9:573 , 10:82, 11:148, 12:215,13: 281, 14:347, 15:413, 16:479 , unique:545}
+    static mapTier_ypos := {1:197, 2:197, 3:197, 4:197, 5:197, 6:197, 7:197, 8:197, 9:197 , 10:264, 11:264, 12:264,13: 264, 14:264, 15:264, 16:264 , unique:264}
     static mapTier_squareWRoot := 45/1080
     static mapTier_squareHRoot := 45/1080
     ; map map button positions and size
-    static mapMap_xpos := [84,157,230,303,376,448,521 , 84,157,230,303,376,448,521]
-    static mapMap_ypos := [329,329,329,329,329,329,329 , 400,400,400,400,400,400,400]
+    static mapMap_xpos := [83,156,229,302,375,447,520 , 83,156,229,302,375,447,520]
+    static mapMap_ypos := [328,328,328,328,328,328,328 , 398,398,398,398,398,398,398]
+    static mapMap_ypos_2 := [329,329,329,329,329,329,329 , 400,400,400,400,400,400,400] ; after clicking down arrow, it's offset for some reasons
     static mapMap_squareWRoot := 58/1080
     static mapMap_squareHRoot := 59/1080
     ; map arrow up down positions and size
     static mapArrowUp_xRoot := 600/1080, mapArrowUp_yRoot := 346/1080
     static mapArrowDown_xRoot := 600/1080, mapArrowDown_yRoot := 416/1080
     static mapArrow_wRoot := 16/1080, mapArrow_hRoot := 23/1080
+    static mapArrow_mapsPerLine := 7, mapArrow_mapsRows := 2
 
     ; thicness of gui borders
     static gridThicc := 2
@@ -108,7 +110,12 @@ class GUI_ItemGrid {
         global PROGRAM
         global GuiItemGrid, GuiItemGrid_Controls, GuiItemGrid_Submit
         global GuiItemGridQuad, GuiItemGridQuad_Controls, GuiItemGridQuad_Submit
+        global GuiItemGridItemName, GuiItemGridItemName_Controls, GuiItemGridItemName_Submit
         global GuiItemGridTabName, GuiItemGridTabName_Controls, GuiItemGridTabName_Submit
+        global GuiItemGridMap, GuiItemGridMap_Controls, GuiItemGridMap_Submit
+        global GuiItemGridMapTier, GuiItemGridMapTier_Controls, GuiItemGridMapTier_Submit
+        global GuiItemGridMapMap, GuiItemGridMapMap_Controls, GuiItemGridMapMap_Submit
+        global GuiItemGridMapArrow, GuiItemGridMapArrow_Controls, GuiItemGridMapArrow_Submit
 
         resDPI := Get_DpiFactor()
         winH := winH / resDPI ; os dpi fix
@@ -248,10 +255,20 @@ class GUI_ItemGrid {
 
             ; Map map case
             mapNum := PROGRAM.DATA.MAPS_DATA["tier_" mapTier][gridItemName]["pos"]
+            if (mapNum > this.mapArrow_mapsPerLine*this.mapArrow_mapsRows) {
+                Loop 10 {
+                    arrowClicks := A_Index
+                    mapNum -= this.mapArrow_mapsPerLine
+                    if IsBetween(mapNum, 1, this.mapArrow_mapsPerLine*this.mapArrow_mapsRows)
+                        Break
+                }
+            }
 
             if (mapNum) {
+                mapMap_ypos := arrowClicks?this.mapMap_ypos_2:this.mapMap_ypos
+
                 mapMap_caseW := this.mapMap_squareWRoot * winH, mapMap_caseH := this.mapMap_squareHRoot * winH ; Calc case w/h
-                mapMap_stashX := this.mapMap_xpos[mapNum]/1080 * winH, mapMap_stashY := this.mapMap_ypos[mapNum]/1080 * winH ; /1080 to get root
+                mapMap_stashX := this.mapMap_xpos[mapNum]/1080 * winH, mapMap_stashY := mapMap_ypos[mapNum]/1080 * winH ; /1080 to get root
                 mapMap_stashXRelative := mapMap_stashX + winX, mapMap_stashYRelative := mapMap_stashY + winY ; Relative to win pos
                 mapMap_stashXRelative += winBorderSide, mapMap_stashYRelative += winBorderTop ; Add win border
                 mapMap_pointW := mapMap_caseW, mapMap_pointH := mapMap_caseH ; Make a square same size as stash square
@@ -266,6 +283,26 @@ class GUI_ItemGrid {
                 Gui.Add("ItemGridMapMap", "Progress", "x0 y0 w" this.gridThicc " h" mapMap_pointH " Background" squareColor) ; <
 
                 showMapMapGrid = True
+            }
+
+            if (arrowClicks) {
+                mapArrow_caseW := this.mapArrow_wRoot * winH, mapArrow_caseH := this.mapArrow_hRoot * winH ; Calc case w/h
+                mapArrow_stashX := this.mapArrowDown_xRoot * winH, mapArrow_stashY := this.mapArrowDown_yRoot * winH ; /1080 to get root
+                mapArrow_stashXRelative := mapArrow_stashX + winX, mapArrow_stashYRelative := mapArrow_stashY + winY ; Relative to win pos
+                mapArrow_stashXRelative -= this.gridThicc, mapArrow_stashYRelative -= this.gridThicc ; Relative to win pos
+                mapArrow_stashXRelative += winBorderSide, mapArrow_stashYRelative += winBorderTop ; Add win border
+                mapArrow_pointW := mapArrow_caseW + this.gridThicc*3, mapArrow_pointH := mapArrow_caseH + this.gridThicc*3 ; Make a square same size as stash square + around the element
+                squareColor := "007ec2"
+
+                Gui.New("ItemGridMapArrow", "-Border +LastFound +AlwaysOnTop -Caption +AlwaysOnTop +ToolWindow -SysMenu +HwndhGuiItemGridMapArrow", "ItemGridMapArrow")
+                Gui.Color("ItemGridMapArrow", "EEAA99")
+                WinSet, TransColor, EEAA99 254
+                Gui.Add("ItemGridMapArrow", "Progress", "x0 y0 w" mapArrow_pointW " h" this.gridThicc " Background" squareColor) ; ^
+                Gui.Add("ItemGridMapArrow", "Progress", "x" mapArrow_pointW - this.gridThicc " y0 w" this.gridThicc " h" mapArrow_pointH " Background" squareColor) ; > 
+                Gui.Add("ItemGridMapArrow", "Progress", "x0 y" mapArrow_pointH - this.gridThicc " w" mapArrow_pointW " h" this.gridThicc " Background" squareColor) ; v 
+                Gui.Add("ItemGridMapArrow", "Progress", "x0 y0 w" this.gridThicc " h" mapArrow_pointH " Background" squareColor) ; <
+
+                showMapArrowGrid := True
             }
             
             showMapTabGrid := True
@@ -305,6 +342,11 @@ class GUI_ItemGrid {
                 Gui, ItemGridMapMap:+LastFound
                 WinSet, ExStyle, +0x20
             }
+            if (showMapArrowGrid) {
+                Gui.Show("ItemGridMapArrow", "x" mapArrow_stashXRelative*resDPI " y" mapArrow_stashYRelative*resDPI " NoActivate")
+                Gui, ItemGridMapArrow:+LastFound
+                WinSet, ExStyle, +0x20
+            }
         }
     }
 
@@ -316,10 +358,11 @@ class GUI_ItemGrid {
         Gui, ItemGridMap:Destroy
         Gui, ItemGridMapTier:Destroy
         Gui, ItemGridMapMap:Destroy
+        Gui, ItemGridMapArrow:Destroy
     }
 
     Detect(_hw="Off") {
-        global GuiItemGrid, GuiItemGridQuad, GuiItemGridItemName, GuiItemGridTabName, GuiItemGridMap, GuiItemGridMapTier
+        global GuiItemGrid, GuiItemGridQuad, GuiItemGridItemName, GuiItemGridTabName, GuiItemGridMap, GuiItemGridMapTier, GuiItemGridMapMap, GuiItemGridMapArrow
 
         hw := A_DetectHiddenWindows
         DetectHiddenWindows, %_hw%
@@ -331,6 +374,7 @@ class GUI_ItemGrid {
         || WinExist("ahk_id " GuiItemGridMap.Handle) 
         || WinExist("ahk_id " GuiItemGridMapTier.Handle) 
         || WinExist("ahk_id " GuiItemGridMapMap.Handle) 
+        || WinExist("ahk_id " GuiItemGridMapArrow.Handle) 
             exists := True
         else
             exists := False
@@ -360,6 +404,7 @@ class GUI_ItemGrid {
         Gui, ItemGridMap:Hide 
         Gui, ItemGridMapTier:Hide 
         Gui, ItemGridMapMap:Hide 
+        Gui, ItemGridMapArrow:Hide 
     }
 
     Show() {
@@ -373,5 +418,6 @@ class GUI_ItemGrid {
         Gui, ItemGridMap:Show, NoActivate 
         Gui, ItemGridMapTier:Show, NoActivate 
         Gui, ItemGridMapMap:Show, NoActivate 
+        Gui, ItemGridMapArrow:Show, NoActivate 
     }
 }

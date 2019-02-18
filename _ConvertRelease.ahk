@@ -2,8 +2,9 @@
 #NoEnv
 
 PROGRAM := {"CURL_EXECUTABLE": A_ScriptDir "\lib\third-party\curl.exe"}
-generateCurrencyData := False
-generateLeagueTxt := False
+generateCurrencyData := True
+generateLeagueTxt := True
+generateMapsJSON := True
 
 ; Basic tray menu
 if ( !A_IsCompiled && FileExist(A_ScriptDir "\resources\icon.ico") )
@@ -21,7 +22,25 @@ ver := RegExReplace(ver, "[a-zA-Z]") ; Remove any possible alpha char
 ver := StrReplace(ver, "_", "99.") ; If _ detected (beta), use 99 as ver
 StringReplace ver,ver,`.,`.,UseErrorLevel
 
+; Alternative files
+if (generateCurrencyData) {
+	ToolTip, Creating poeTradeCurrencyData.json
+	PoeTrade_GenerateCurrencyData()
 
+	ToolTip, Creating poeDotComCurrencyData.json
+	PoeDotCom_GenerateCurrencyData()
+}
+if (generateLeagueTxt) {
+	/*	TO_DO coming later
+	*/
+	; ToolTip, Creating TradingLeagues.txt
+}
+if (generateMapsJSON) {
+	ToolTip, Creating mapsData.json
+	PoeNinja_CreateMapDataFile("Betrayal")
+}
+
+; Main executable
 ToolTip, Compiling POE Trades Companion.exe
 CompileFile(A_ScriptDir "\POE Trades Companion.ahk", A_ScriptDir "\POE Trades Companion.exe")
 ; CompileFile(A_ScriptDir "\POE Trades Companion.ahk", A_ScriptDir "\POE Trades Companion.exe", "POE Trades Companion", ver, "© lemasato.github.io " A_YYYY)
@@ -35,19 +54,6 @@ CompileFile(A_ScriptDir "\POE Trades Companion.ahk", A_ScriptDir "\POE Trades Co
 ; ToolTip, Updater_v2.exe
 ; CompileFile(A_ScriptDir "\Updater_v2.ahk", A_ScriptDir "\Updater_v2.exe")
 ; CompileFile(A_ScriptDir "\Updater_v2.ahk", A_ScriptDir "\Updater_v2.exe", "POE Trades Companion: Updater", "2.1", "© lemasato.github.io " A_YYYY)
-
-if (generateCurrencyData) {
-	ToolTip, Creating poeTradeCurrencyData.json
-	PoeTrade_GenerateCurrencyData()
-
-	ToolTip, Creating poeDotComCurrencyData.json
-	PoeDotCom_GenerateCurrencyData()
-}
-if (generateLeagueTxt) {
-	/*	TO_DO coming later
-	*/
-	; ToolTip, Creating TradingLeagues.txt
-}
 
 
 ; End

@@ -1,4 +1,4 @@
-{
+﻿{
 	"tier_1":{
 		"Atoll Map":{
 			"pos":1
@@ -446,6 +446,65 @@
 		},
 		"Waterways Map":{
 			"pos":11
+		}
+	},
+	"tier_unique":{
+		"Acton's Nightmare Overgrown Shrine Map":{
+			"pos":1
+		},
+		"Caer Blaidd, Wolfpack's Den Underground River Map":{
+			"pos":2
+		},
+		"Death and Taxes Necropolis Map":{
+			"pos":3
+		},
+		"Doryani's Machinarium Maze Map":{
+			"pos":4
+		},
+		"Hall of Grandmasters Promenade Map":{
+			"pos":5
+		},
+		"Hallowed Ground Graveyard Map":{
+			"pos":6
+		},
+		"Maelström of Chaos Atoll Map":{
+			"pos":7
+		},
+		"Mao Kun Shore Map":{
+			"pos":8
+		},
+		"Oba's Cursed Trove Underground Sea Map":{
+			"pos":9
+		},
+		"Olmec's Sanctum Bone Crypt Map":{
+			"pos":10
+		},
+		"Pillars of Arun Dunes Map":{
+			"pos":11
+		},
+		"Poorjoy's Asylum Temple Map":{
+			"pos":12
+		},
+		"The Coward's Trial Cursed Crypt Map":{
+			"pos":13
+		},
+		"The Perandus Manor Chateau Map":{
+			"pos":14
+		},
+		"The Putrid Cloister Museum Map":{
+			"pos":15
+		},
+		"The Twilight Temple Moon Temple Map":{
+			"pos":16
+		},
+		"The Vinktar Square Courtyard Map":{
+			"pos":17
+		},
+		"Vaults of Atziri Vaal Pyramid Map":{
+			"pos":18
+		},
+		"Whakawairua Tuahu Strand Map":{
+			"pos":19
 		}
 	}
 }
