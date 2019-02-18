@@ -143,7 +143,7 @@ Start_Script() {
 
 	; Auto admin reload - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	if (!A_IsAdmin && !RUNTIME_PARAMETERS.SkipAdmin) {
-		ReloadWithParams(" /MyDocuments=""" MyDocuments """", getCurrentParams:=True, asAdmin:=True)
+		; ReloadWithParams(" /MyDocuments=""" MyDocuments """", getCurrentParams:=True, asAdmin:=True)
 	}
 
 	; Game executables groups - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -199,6 +199,10 @@ Start_Script() {
 
 	FileRead, gggCurrency,% PROGRAM.DATA_FOLDER "\poeDotComCurrencyData.json"
 	PROGRAM["DATA"]["POEDOTCOM_CURRENCY_DATA"] := JSON.Load(gggCurrency)
+
+	; Maps data for ITemGrid - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	FileRead, mapsData,% PROGRAM.DATA_FOLDER "\mapsData.json"
+	PROGRAM.DATA.MAPS_DATA := JSON.Load(mapsData)
 
 	; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -349,6 +353,7 @@ Return
 #Include ChooseColor.ahk
 #Include Class_ImageButton.ahk
 #Include Clip.ahk
+; #Include CSV.ahk
 #Include Download.ahk
 #Include Extract2Folder.ahk
 #Include FGP.ahk

@@ -129,6 +129,31 @@ if !InStr(FileExist(PROGRAM.DATA_FOLDER ""), "D")
 	FileCreateDir,% PROGRAM.DATA_FOLDER ""
 
 if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("data\mapsData.json")
+	FileGetSize, destFileSize, % PROGRAM.DATA_FOLDER "\mapsData.json"
+}
+else {
+	FileGetSize, sourceFileSize, data\mapsData.json
+	FileGetSize, destFileSize, % PROGRAM.DATA_FOLDER "\mapsData.json"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, data\mapsData.json, % PROGRAM.DATA_FOLDER "\mapsData.json", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: data\mapsData.json"
+	.	"`nDest: " PROGRAM.DATA_FOLDER "\mapsData.json"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: data\mapsData.json"
+	.	"`nDest: " PROGRAM.DATA_FOLDER "\mapsData.json"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.DATA_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.DATA_FOLDER ""
+
+if (A_IsCompiled) {
 	sourceFileSize := Get_ResourceSize("data\poeDotComCurrencyData.json")
 	FileGetSize, destFileSize, % PROGRAM.DATA_FOLDER "\poeDotComCurrencyData.json"
 }

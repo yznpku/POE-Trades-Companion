@@ -58,7 +58,7 @@
 	appendToFile .= FileInstall("""" filePath """", "PROGRAM.MAIN_FOLDER """ "\" "GitHub.url" """", 2)
 
 ;	- - - - DATA
-	allowedFiles := "CurrencyNames.txt,poetradeCurrencyNames.json,poeTradeCurrencyData.json,poeDotComCurrencyData.json"
+	allowedFiles := "CurrencyNames.txt,poetradeCurrencyNames.json,poeTradeCurrencyData.json,poeDotComCurrencyData.json,mapsData.json"
 	Loop, Files,% A_ScriptDir "\data\*"
 	{
 		RegExMatch(A_LoopFileFullPath, "O)\\data\\(.*)", path)

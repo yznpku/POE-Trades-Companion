@@ -2200,7 +2200,7 @@
 		activeTabID := Gui_Trades.GetActiveTab()
 		activeTabInfos := GUI_Trades.GetTabContent(activeTabID)
 		tabStashPos := StrSplit(activeTabInfos.StashPosition, ";")
-		tabXPos := tabStashPos.1, tabYPos := tabStashPos.2, tabStashTab := activeTabInfos.StashTab
+		tabXPos := tabStashPos.1, tabYPos := tabStashPos.2, tabStashTab := activeTabInfos.StashTab, tabStashItem := activeTabInfos.Item
 
 		if !IsNum(tabXPos) || !IsNum(tabYPos)
 			return
@@ -2209,11 +2209,11 @@
 			WinGetPos, winX, winY, winW, winH,% "ahk_pid " activeTabInfos.PID " ahk_group POEGameGroup"
 			clientInfos := GetWindowClientInfos("ahk_pid" activeTabInfos.PID " ahk_group POEGameGroup")
 
-			if RegExMatch(activeTabInfos.Item, ".* \(T(\d+)\)$")
-				itemType := "Map"
+			if RegExMatch(activeTabInfos.Item, "O)(.*) \(T(\d+)\)$", itemPat)
+				itemType := "Map", tabStashItem := itemPat.1, mapTier := itemPat.2
 
 			if (clientInfos.Y = 0) && IsIn(clientInfos.H, "606,774,870,726,806,966,1030,1056,1086,1206") ; Fix issue where +6 is added to res H
-				clientInfos.H -= 6
+				clientInfos.H -= 6	
 
 			isItemGridVisible := GUI_ItemGrid.IsVisible()
 			if !(isItemGridVisible) ; if not visible, or visible and one variable changed
@@ -2221,7 +2221,7 @@
 			 || (prev_winX != winX) || (prev_winY != winY)
 			 || (prev_clientInfos.X != clientInfos.X) || (prev_clientInfos.Y != clientInfos.Y) || (prev_clientInfos.H != clientInfos.H) ) {
 				Gui_Trades.UpdateSlotContent(activeTabID, "IsBuyerInvited", True)
-				GUI_ItemGrid.Create(tabXPos, tabYPos, tabStashTab, winX, winY, clientInfos.H, clientInfos.X, clientInfos.Y, itemType)
+				GUI_ItemGrid.Create(tabXPos, tabYPos, tabStashItem, tabStashTab, winX, winY, clientInfos.H, clientInfos.X, clientInfos.Y, itemType, mapTier)
 				GuiTrades.ItemGrid_PID := activeTabInfos.PID
 			}
 		}
