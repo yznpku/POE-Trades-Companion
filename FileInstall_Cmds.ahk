@@ -200,6 +200,31 @@ if (ErrorLevel) {
 }
 
 ; ----------------------------
+if !InStr(FileExist(PROGRAM.DATA_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.DATA_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("data\UniqueMaps.txt")
+	FileGetSize, destFileSize, % PROGRAM.DATA_FOLDER "\UniqueMaps.txt"
+}
+else {
+	FileGetSize, sourceFileSize, data\UniqueMaps.txt
+	FileGetSize, destFileSize, % PROGRAM.DATA_FOLDER "\UniqueMaps.txt"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, data\UniqueMaps.txt, % PROGRAM.DATA_FOLDER "\UniqueMaps.txt", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: data\UniqueMaps.txt"
+	.	"`nDest: " PROGRAM.DATA_FOLDER "\UniqueMaps.txt"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: data\UniqueMaps.txt"
+	.	"`nDest: " PROGRAM.DATA_FOLDER "\UniqueMaps.txt"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
 if !InStr(FileExist(PROGRAM.MAIN_FOLDER ""), "D")
 	FileCreateDir,% PROGRAM.MAIN_FOLDER ""
 
