@@ -359,6 +359,12 @@ Get_Windows_List(_filter, _filterType, _delimiter, _what) {
 	Return returnList
 }
 
+IsIn_Parse(_string, _list, _delimiter="`n", _ignore="`r") {
+	Loop, Parse, _list,%_delimiter%,%_ignore%
+		if (A_LoopField = _string)
+			return True
+}
+
 IsIn(_string, _list) {
 	if _string in %_list%
 		return True
