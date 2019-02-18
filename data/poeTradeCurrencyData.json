@@ -1,9 +1,15 @@
 {
+	"A Dab of Ink":{
+		"ID":718
+	},
 	"A Mother's Parting Gift":{
 		"ID":132
 	},
 	"Abandoned Wealth":{
 		"ID":133
+	},
+	"Aberrant Fossil":{
+		"ID":687
 	},
 	"Abyss":{
 		"ID":315
@@ -11,8 +17,14 @@
 	"Academy":{
 		"ID":316
 	},
+	"Acid Caverns":{
+		"ID":722
+	},
 	"Acid Lakes":{
 		"ID":317
+	},
+	"Aetheric Fossil":{
+		"ID":692
 	},
 	"alchemy":"Orb of Alchemy",
 	"Alleyways":{
@@ -103,6 +115,9 @@
 	"Beacon":{
 		"ID":330
 	},
+	"Beauty Through Death":{
+		"ID":712
+	},
 	"Belfry":{
 		"ID":525
 	},
@@ -148,11 +163,20 @@
 	"Bloodlines":{
 		"ID":498
 	},
+	"Bloodstained Fossil":{
+		"ID":701
+	},
 	"Bog":{
 		"ID":331
 	},
 	"Bone Crypt":{
 		"ID":526
+	},
+	"Boon of the First Ones":{
+		"ID":714
+	},
+	"Bound Fossil":{
+		"ID":696
 	},
 	"Boundless Realms":{
 		"ID":140
@@ -247,6 +271,9 @@
 	"Core":{
 		"ID":343
 	},
+	"Corroded Fossil":{
+		"ID":690
+	},
 	"Courthouse":{
 		"ID":533
 	},
@@ -258,6 +285,9 @@
 	},
 	"Coveted Possession":{
 		"ID":145
+	},
+	"Crater":{
+		"ID":723
 	},
 	"Crematorium":{
 		"ID":346
@@ -344,6 +374,9 @@
 	"Defiled Cathedral":{
 		"ID":536
 	},
+	"Dense Fossil":{
+		"ID":689
+	},
 	"Desert":{
 		"ID":350
 	},
@@ -397,6 +430,12 @@
 	"Emperor's Luck":{
 		"ID":153
 	},
+	"Enchanted Fossil":{
+		"ID":698
+	},
+	"Encrusted Fossil":{
+		"ID":699
+	},
 	"Engineer's Orb":{
 		"ID":517
 	},
@@ -437,6 +476,9 @@
 	"Excavation":{
 		"ID":354
 	},
+	"Faceted Fossil":{
+		"ID":700
+	},
 	"Factory":{
 		"ID":355
 	},
@@ -451,6 +493,9 @@
 	},
 	"Forge of the Phoenix":{
 		"ID":356
+	},
+	"Fractured Fossil":{
+		"ID":703
 	},
 	"Fragment of the Chimera":{
 		"Abridged":"chimera",
@@ -467,6 +512,12 @@
 	"Fragment of the Phoenix":{
 		"Abridged":"phoenix",
 		"ID":42
+	},
+	"Frigid Fossil":{
+		"ID":684
+	},
+	"Fungal Hollow":{
+		"ID":724
 	},
 	"fusing":"Orb of Fusing",
 	"Gardens":{
@@ -489,12 +540,57 @@
 	"Gift of the Gemling Queen":{
 		"ID":155
 	},
+	"Gilded Ambush Scarab":{
+		"ID":728
+	},
+	"Gilded Bestiary Scarab":{
+		"ID":729
+	},
+	"Gilded Breach Scarab":{
+		"ID":730
+	},
+	"Gilded Cartography Scarab":{
+		"ID":731
+	},
+	"Gilded Divination Scarab":{
+		"ID":732
+	},
+	"Gilded Elder Scarab":{
+		"ID":733
+	},
+	"Gilded Fossil":{
+		"ID":707
+	},
+	"Gilded Harbinger Scarab":{
+		"ID":734
+	},
+	"Gilded Perandus Scarab":{
+		"ID":735
+	},
+	"Gilded Reliquary Scarab":{
+		"ID":736
+	},
+	"Gilded Shaper Scarab":{
+		"ID":737
+	},
+	"Gilded Sulphite Scarab":{
+		"ID":738
+	},
+	"Gilded Torment Scarab":{
+		"ID":739
+	},
+	"Glacier":{
+		"ID":725
+	},
 	"Glassblower's Bauble":{
 		"Abridged":"bauble",
 		"ID":21
 	},
 	"Glimmer of Hope":{
 		"ID":156
+	},
+	"Glyphic Fossil":{
+		"ID":704
 	},
 	"Gorge":{
 		"ID":358
@@ -532,6 +628,9 @@
 	},
 	"High Gardens":{
 		"ID":361
+	},
+	"Hollow Fossil":{
+		"ID":702
 	},
 	"hope":{
 		"ID":160
@@ -576,6 +675,9 @@
 	"Jack in the Box":{
 		"ID":166
 	},
+	"Jagged Fossil":{
+		"ID":686
+	},
 	"jeweller's":"Jeweller's Orb",
 	"Jeweller's Orb":{
 		"Abridged":"jeweller's",
@@ -607,6 +709,9 @@
 	"Lava Chamber":{
 		"ID":548
 	},
+	"Lava Chambers":{
+		"ID":726
+	},
 	"Lava Lake":{
 		"ID":549
 	},
@@ -633,6 +738,9 @@
 	},
 	"Loyalty":{
 		"ID":172
+	},
+	"Lucent Fossil":{
+		"ID":694
 	},
 	"Lucky Connections":{
 		"ID":173
@@ -671,6 +779,9 @@
 	},
 	"Mesa":{
 		"ID":370
+	},
+	"Metallic Fossil":{
+		"ID":685
 	},
 	"midnight":"Sacrifice at Midnight",
 	"Might is Right":{
@@ -815,6 +926,9 @@
 		"Abridged":"coin",
 		"ID":26
 	},
+	"Perfect Fossil":{
+		"ID":697
+	},
 	"Perfection":{
 		"ID":655
 	},
@@ -837,6 +951,42 @@
 	"Plaza":{
 		"ID":386
 	},
+	"Polished Ambush Scarab":{
+		"ID":740
+	},
+	"Polished Bestiary Scarab":{
+		"ID":741
+	},
+	"Polished Breach Scarab":{
+		"ID":742
+	},
+	"Polished Cartography Scarab":{
+		"ID":743
+	},
+	"Polished Divination Scarab":{
+		"ID":744
+	},
+	"Polished Elder Scarab":{
+		"ID":745
+	},
+	"Polished Harbinger Scarab":{
+		"ID":746
+	},
+	"Polished Perandus Scarab":{
+		"ID":747
+	},
+	"Polished Reliquary Scarab":{
+		"ID":748
+	},
+	"Polished Shaper Scarab":{
+		"ID":749
+	},
+	"Polished Sulphite Scarab":{
+		"ID":750
+	},
+	"Polished Torment Scarab":{
+		"ID":751
+	},
 	"Port":{
 		"ID":391
 	},
@@ -845,14 +995,47 @@
 		"Abridged":"portal",
 		"ID":18
 	},
+	"Potent Alchemical Resonator":{
+		"ID":676
+	},
+	"Potent Chaotic Resonator":{
+		"ID":680
+	},
+	"Powerful Alchemical Resonator":{
+		"ID":677
+	},
+	"Powerful Chaotic Resonator":{
+		"ID":681
+	},
 	"Precinct":{
 		"ID":387
 	},
 	"Pride Before the Fall":{
 		"ID":180
 	},
+	"Prime Alchemical Resonator":{
+		"ID":678
+	},
+	"Prime Chaotic Resonator":{
+		"ID":682
+	},
+	"Primitive Alchemical Resonator":{
+		"ID":675
+	},
+	"Primitive Chaotic Resonator":{
+		"ID":679
+	},
+	"Primordial Blocks":{
+		"ID":727
+	},
 	"Primordial Pool":{
 		"ID":388
+	},
+	"Prismatic Fossil":{
+		"ID":691
+	},
+	"Pristine Fossil":{
+		"ID":688
 	},
 	"Promenade":{
 		"ID":389
@@ -912,6 +1095,42 @@
 	"Residence":{
 		"ID":395
 	},
+	"Rusted Ambush Scarab":{
+		"ID":752
+	},
+	"Rusted Bestiary Scarab":{
+		"ID":753
+	},
+	"Rusted Breach Scarab":{
+		"ID":754
+	},
+	"Rusted Cartography Scarab":{
+		"ID":755
+	},
+	"Rusted Divination Scarab":{
+		"ID":756
+	},
+	"Rusted Elder Scarab":{
+		"ID":757
+	},
+	"Rusted Harbinger Scarab":{
+		"ID":758
+	},
+	"Rusted Perandus Scarab":{
+		"ID":759
+	},
+	"Rusted Reliquary Scarab":{
+		"ID":760
+	},
+	"Rusted Shaper Scarab":{
+		"ID":761
+	},
+	"Rusted Sulphite Scarab":{
+		"ID":762
+	},
+	"Rusted Torment Scarab":{
+		"ID":763
+	},
 	"Sacrifice at Dawn":{
 		"Abridged":"dawn",
 		"ID":29
@@ -931,8 +1150,14 @@
 	"Sacrifice set":{
 		"ID":48
 	},
+	"Sanctified Fossil":{
+		"ID":706
+	},
 	"Scholar of the Seas":{
 		"ID":185
+	},
+	"Scorched Fossil":{
+		"ID":683
 	},
 	"scouring":"Orb of Scouring",
 	"Screaming Essence of Anger":{
@@ -1004,6 +1229,9 @@
 	},
 	"Sepulchre":{
 		"ID":558
+	},
+	"Serrated Fossil":{
+		"ID":693
 	},
 	"Sewer":{
 		"ID":397
@@ -1205,6 +1433,9 @@
 	},
 	"Shaped Mausoleum":{
 		"ID":575
+	},
+	"Shaped Maze":{
+		"ID":764
 	},
 	"Shaped Mesa":{
 		"ID":435
@@ -1437,6 +1668,9 @@
 	"Shrine":{
 		"ID":470
 	},
+	"Shuddering Fossil":{
+		"ID":695
+	},
 	"Siege":{
 		"ID":559
 	},
@@ -1508,6 +1742,9 @@
 	"Talisman":{
 		"ID":508
 	},
+	"Tangled Fossil":{
+		"ID":705
+	},
 	"Tempest":{
 		"ID":509
 	},
@@ -1558,6 +1795,9 @@
 	},
 	"The Brittle Emperor":{
 		"ID":195
+	},
+	"The Cacophony":{
+		"ID":716
 	},
 	"The Calling":{
 		"ID":196
@@ -1634,6 +1874,9 @@
 	"The Encroaching Darkness":{
 		"ID":215
 	},
+	"The Endless Darkness":{
+		"ID":711
+	},
 	"The Endurance":{
 		"ID":216
 	},
@@ -1709,6 +1952,9 @@
 	"The Incantation":{
 		"ID":237
 	},
+	"The Innocent":{
+		"ID":709
+	},
 	"The Inoculated":{
 		"ID":238
 	},
@@ -1739,6 +1985,9 @@
 	"The Lich":{
 		"ID":244
 	},
+	"The Life Thief":{
+		"ID":721
+	},
 	"The Lion":{
 		"ID":245
 	},
@@ -1754,6 +2003,9 @@
 	"The Master":{
 		"ID":665
 	},
+	"The Master Artisan":{
+		"ID":720
+	},
 	"The Mayor":{
 		"ID":666
 	},
@@ -1762,6 +2014,9 @@
 	},
 	"The Metalsmith's Gift":{
 		"ID":250
+	},
+	"The Nurse":{
+		"ID":719
 	},
 	"The Oath":{
 		"ID":251
@@ -1796,6 +2051,9 @@
 	"The Porcupine":{
 		"ID":260
 	},
+	"The Price of Protection":{
+		"ID":713
+	},
 	"The Professor":{
 		"ID":667
 	},
@@ -1822,6 +2080,9 @@
 	},
 	"The Ruthless Ceinture":{
 		"ID":565
+	},
+	"The Sacrifice":{
+		"ID":717
 	},
 	"The Saint's Treasure":{
 		"ID":265
@@ -1895,6 +2156,9 @@
 	"The Trial":{
 		"ID":286
 	},
+	"The Twilight Moon":{
+		"ID":715
+	},
 	"The Twins":{
 		"ID":287
 	},
@@ -1937,6 +2201,9 @@
 	"The Web":{
 		"ID":298
 	},
+	"The Wilted Rose":{
+		"ID":710
+	},
 	"The Wind":{
 		"ID":299
 	},
@@ -1978,6 +2245,9 @@
 	},
 	"Time-Lost Relic":{
 		"ID":308
+	},
+	"Timeworn Reliquary Key":{
+		"ID":708
 	},
 	"Torment":{
 		"ID":510
