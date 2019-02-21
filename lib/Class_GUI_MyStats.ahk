@@ -75,7 +75,7 @@
         Gui.Add("MyStats", "ListView", "x" leftMost+10 " y+30 w" guiWidth-20 " R17 hwndhLV_Stats", "#|Date|Time|Guild|Buyer|Item|Price|League|Tab|Other")
 
 		; * * Stats parse
-		GUI_MyStats.UpdateData()
+		GUI_MyStats.UpdateData(resetFilters:=True)
 
 		; Gui, Stats: Show, AutoSize NoActivate
 
@@ -101,7 +101,77 @@
         Gui_MyStats_Size:
             GUI_MyStats.Resize()
         Return
+
+		Gui_MyStats_ContextMenu:
+			ctrlHwnd := Get_UnderMouse_CtrlHwnd()
+			GuiControlGet, ctrlName, MyStats:,% ctrlHwnd
+
+			Gui_MyStats.ContextMenu(ctrlHwnd, ctrlName)
+		Return
     }
+	
+	SetDefaultListView(lvName) {
+        global GuiMyStats_Controls
+        Gui, MyStats:Default
+        Gui, MyStats:ListView,% GuiMyStats_Controls[lvName]
+    }
+
+	ContextMenu(CtrlHwnd, CtrlName) {
+		global GuiMyStats, GuiMyStats_Controls
+
+		if (CtrlHwnd = GuiMyStats_Controls.hLV_Stats) {
+			GUI_MyStats.SetDefaultListView("hLV_AccountsList")
+
+            rowID := LV_GetNext(0, "F")
+            if (rowID = 0) {
+                rowID := LV_GetCount()
+            }
+            LV_GetText(tradeNum, rowID, 1)
+            LV_Modify(rowID, "+Select")
+
+			GuiMyStats.SelectedRow := rowID
+            
+            try Menu,RClickMenu,DeleteAll
+            Menu, RClickMenu, Add, Remove this entry, Gui_MyStats_RClickMenu_RemoveSelectedEntry
+            Menu, RClickMenu, Show
+		}
+		return
+		
+		Gui_MyStats_RClickMenu_RemoveSelectedEntry:
+			GUI_MyStats.RemoveSelectedEntry()
+		return
+	}
+
+	RemoveSelectedEntry() {
+		global PROGRAM
+		global GuiMyStats, GuiMyStats_Controls
+		iniFile := PROGRAM.TRADES_HISTORY_FILE
+		rowID := GuiMyStats.SelectedRow
+
+		GUI_MyStats.SetDefaultListView("hLV_AccountsList")
+		Loop {
+			LV_GetText(c%A_Index%_title, 0, A_Index)
+			LV_GetText(c%A_Index%_content, rowID, A_Index)
+			if (c%A_Index%_title && c%A_Index%_title != "" && c%A_Index%_title != "Other") {
+				title := c%A_Index%_title, content := c%A_Index%_content
+				msg := msg ? msg "`n" title ": `t`t" content : title ": `t`t" content
+			}
+			else if (A_Index > 20)
+				Break
+			else Break
+		}
+		
+		MsgBox(4096+4, , "This cannot be undone."
+		.	"`nAre you sure you wish to delete this entry from the stats?"
+		.	"`n`n" msg)
+		IfMsgBox, Yes
+		{
+			GUI_MyStats.DisableSubroutines()
+			INI.Set(iniFile, c1_content, "Ignore", "True")
+			GUI_MyStats.UpdateData(resetFilters:=False)
+			GUI_MyStats.EnableSubroutines()
+		}
+	}
 
 	DisableSubroutines() {
 		GUI_MyStats.ToggleSubroutines("Disable")	
@@ -187,8 +257,8 @@
 
 		LV_Delete()
 		addIndex := 1
-		Loop % data.MaxIndex() {
-			loopIndex := A_Index
+		for num, nothing in data {
+			loopIndex := num
 			loopedData := data[loopIndex]
 
 			cInfos_price := Get_CurrencyInfos(loopedData.Price)
@@ -226,11 +296,11 @@
 			loopedOther := (otherIndex)?(otherIndex " message ->    " loopedOther):("")
 		}
 
-		LV_Add("", num, loopedData.Date_YYYYMMDD, loopedData.Time, loopedData.Guild, loopedData.Buyer, loopedData.Item
+		LV_Add("", loopedData.Index, loopedData.Date_YYYYMMDD, loopedData.Time, loopedData.Guild, loopedData.Buyer, loopedData.Item
 			, loopedData.Price, loopedData.Location_League, loopedData.Location_Tab, loopedOther)
 	}
 
-	UpdateData() {
+	UpdateData(resetFilters=False) {
 		global GuiMyStats, GuiMyStats_Controls
 
 		; Set GUI as default, needed for LV cmds. Set LV as default for gui.
@@ -243,8 +313,8 @@
 		; Get data and parse it
 		data := GUI_MyStats.GetData(), GuiMyStats.Stats_Data := data
 		allBuyers := allGuilds := allItems := allCurrency := allLeagues := allTabs := ""
-		Loop % data.MaxIndex() {
-			loopIndex := A_Index
+		for num, nothing in data {
+			loopIndex := num
 			loopedData := data[loopIndex]
 
 			GUI_MyStats.StatsData_AddRow(loopIndex, loopedData)
@@ -320,18 +390,35 @@
 		GuiMyStats.All_Currencies := allCurrencies, GuiMyStats.All_ListedCurrencies := listedCurrencies, GuiMyStats.All_UnlistedCurrencies := unlistedCurrencies
 		GuiMyStats.All_Leagues := allLeagues, GuiMyStats.All_Tabs := allTabs
 		; Set GUI controls
+		if (resetFilters = False)
+			filters := GUI_MyStats.GetFilters("All")
+
 		GuiControl, MyStats:,% GuiMyStats_Controls.hDDL_BuyerFilter,% "|All|" allBuyers
 		GuiControl, MyStats:,% GuiMyStats_Controls.hDDL_GuildFilter,% "|All|No guild|" allGuilds
 		GuiControl, MyStats:,% GuiMyStats_Controls.hDDL_ItemFilter,% "|All|" allItems_parsed
 		GuiControl, MyStats:,% GuiMyStats_Controls.hDDL_CurrencyFilter,% "|All|" allCurrencyTypes
 		GuiControl, MyStats:,% GuiMyStats_Controls.hDDL_LeagueFilter,% "|All|" allLeagues
 		GuiControl, MyStats:,% GuiMyStats_Controls.hDDL_TabFilter,% "|All|" allTabs
-		GuiControl, MyStats:Choose,% GuiMyStats_Controls.hDDL_BuyerFilter, 1
-		GuiControl, MyStats:Choose,% GuiMyStats_Controls.hDDL_GuildFilter, 1
-		GuiControl, MyStats:Choose,% GuiMyStats_Controls.hDDL_ItemFilter, 1
-		GuiControl, MyStats:Choose,% GuiMyStats_Controls.hDDL_CurrencyFilter, 1
-		GuiControl, MyStats:Choose,% GuiMyStats_Controls.hDDL_LeagueFilter, 1
-		GuiControl, MyStats:Choose,% GuiMyStats_Controls.hDDL_TabFilter, 1
+		if (resetFilters = True) {
+			GuiControl, MyStats:Choose,% GuiMyStats_Controls.hDDL_BuyerFilter, 1
+			GuiControl, MyStats:Choose,% GuiMyStats_Controls.hDDL_GuildFilter, 1
+			GuiControl, MyStats:Choose,% GuiMyStats_Controls.hDDL_ItemFilter, 1
+			GuiControl, MyStats:Choose,% GuiMyStats_Controls.hDDL_CurrencyFilter, 1
+			GuiControl, MyStats:Choose,% GuiMyStats_Controls.hDDL_LeagueFilter, 1
+			GuiControl, MyStats:Choose,% GuiMyStats_Controls.hDDL_TabFilter, 1
+
+			GUI_MyStats.FilterList("","")
+		}
+		else {
+			GuiControl, MyStats:ChooseString,% GuiMyStats_Controls.hDDL_BuyerFilter,% filters.Buyer
+			GuiControl, MyStats:ChooseString,% GuiMyStats_Controls.hDDL_GuildFilter,% filters.Guild
+			GuiControl, MyStats:ChooseString,% GuiMyStats_Controls.hDDL_ItemFilter,% filters.Item
+			GuiControl, MyStats:ChooseString,% GuiMyStats_Controls.hDDL_CurrencyFilter,% filters.Currency
+			GuiControl, MyStats:ChooseString,% GuiMyStats_Controls.hDDL_LeagueFilter,% filters.League
+			GuiControl, MyStats:ChooseString,% GuiMyStats_Controls.hDDL_TabFilter,% filters.Tab
+
+			GUI_MyStats.FilterList("","")
+		}
 
 		; Autoadjust col
 		Loop 9
@@ -351,10 +438,13 @@
 		Loop % index {
 			loopIndex := A_Index
 
-			data[loopIndex] := {}
 			keysAndValues := INI.Get(statsINI, loopIndex,,True)
-			for key, value in keysAndValues
-				data[loopIndex][key] := value
+			if (keysAndValues.Ignore != "True") {
+				data[loopIndex] := {}
+				for key, value in keysAndValues
+					data[loopIndex][key] := value
+				data[loopIndex].Index := loopIndex
+			}
 		}
 		return data
 	}
@@ -391,7 +481,7 @@
 		foundHwnd := WinExist("ahk_id " GuiMyStats.Handle)
 		DetectHiddenWindows, %hiddenWin%
 
-		GUI_MyStats.UpdateData()
+		GUI_MyStats.UpdateData(resetFilters:=True)
 
 		if (foundHwnd) {
 			Gui, MyStats:Show, xCenter yCenter
