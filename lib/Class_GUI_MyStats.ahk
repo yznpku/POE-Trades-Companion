@@ -75,7 +75,8 @@
         Gui.Add("MyStats", "ListView", "x" leftMost+10 " y+30 w" guiWidth-20 " R17 hwndhLV_Stats", "#|Date|Time|Guild|Buyer|Item|Price|League|Tab|Other")
 
 		; * * Stats parse
-		GUI_MyStats.UpdateData(resetFilters:=True)
+		GUI_MyStats.UpdateData()
+        GUI_MyStats.SetFilter("All", "All")
 
 		; Gui, Stats: Show, AutoSize NoActivate
 
@@ -109,6 +110,68 @@
 			Gui_MyStats.ContextMenu(ctrlHwnd, ctrlName)
 		Return
     }
+
+    DisableSubroutines() {
+		GUI_MyStats.ToggleSubroutines("Disable")	
+	}
+	EnableSubroutines() {
+		GUI_MyStats.ToggleSubroutines("Enable")	
+	}
+
+	ToggleSubroutines(enableOrDisable) {
+		global GuiMyStats, GuiMyStats_Controls
+
+		for ctrlName, ctrlHandle in GuiMyStats_Controls {
+			loopedCtrl := ctrlName
+			RegExMatch(loopedCtrl, "\D+", loopedCtrl_NoNum)
+			RegExMatch(loopedCtrl, "\d+", loopedCtrl_NumOnly)
+
+			if (enableOrDisable = "Disable")
+				GuiControl, MyStats:-g,% GuiMyStats_Controls[loopedCtrl]
+			else if (enableOrDisable = "Enable") {
+				if (loopedCtrl = "hTEXT_HeaderGhost")
+					__f := GUI_MyStats.DragGui.bind(GUI_MyStats, GuiMyStats.Handle)
+				else if (loopedCtrl = "hBTN_CloseGUI")
+					__f := GUI_MyStats.Close.bind(GUI_MyStats)
+				else if IsIn(loopedCtrl, "hDDL_BuyerFilter,hDDL_ItemFilter,hDDL_LeagueFilter,hDDL_GuildFilter,hDDL_CurrencyFilter,hDDL_TabFilter") {
+					StringTrimLeft, trimmedCtrl, loopedCtrl, 5
+					__f := GUI_MyStats.SetFilter.bind(GUI_MyStats, trimmedCtrl, filterContent:="")
+				}
+				else if (loopedCtrl = "hLV_Stats") {
+					__f := GUI_MyStats.OnLVClick.bind(GUI_MyStats)
+				}
+				else
+					__f := 
+
+				if (__f)
+					GuiControl, MyStats:+g,% GuiMyStats_Controls[loopedCtrl],% __f 
+			}
+		}
+	}
+
+	OnLVClick(hwnd, guiEvent="", eventInfo="") {
+		Gui, MyStats:Default
+		Gui, MyStats:ListView,% GuiMyStats_Controls.hLV_Stats
+
+		if (guiEvent="ColClick") {
+			LV_GetText(Out1, 1, eventInfo)
+			LV_GetText(Out2, LV_GetCount(), eventInfo)
+			isSortedDown := Out2 < Out1
+			if (isSortedDown)
+				LV_ModifyCol(eventInfo, "Sort") 	
+			else
+				LV_ModifyCol(eventInfo, "SortDesc") 
+		}
+	}
+
+	Submit(CtrlName="") {
+		global GuiMyStats_Submit, GuiMyStats_Controls
+		Gui.Submit("MyStats")
+
+		if (CtrlName) {
+			Return GuiMyStats_Submit[ctrlName]
+		}
+	}
 	
 	SetDefaultListView(lvName) {
         global GuiMyStats_Controls
@@ -116,7 +179,7 @@
         Gui, MyStats:ListView,% GuiMyStats_Controls[lvName]
     }
 
-	ContextMenu(CtrlHwnd, CtrlName) {
+    ContextMenu(CtrlHwnd, CtrlName) {
 		global GuiMyStats, GuiMyStats_Controls
 
 		if (CtrlHwnd = GuiMyStats_Controls.hLV_Stats) {
@@ -173,69 +236,7 @@
 		}
 	}
 
-	DisableSubroutines() {
-		GUI_MyStats.ToggleSubroutines("Disable")	
-	}
-	EnableSubroutines() {
-		GUI_MyStats.ToggleSubroutines("Enable")	
-	}
-
-	ToggleSubroutines(enableOrDisable) {
-		global GuiMyStats, GuiMyStats_Controls
-
-		for ctrlName, ctrlHandle in GuiMyStats_Controls {
-			loopedCtrl := ctrlName
-			RegExMatch(loopedCtrl, "\D+", loopedCtrl_NoNum)
-			RegExMatch(loopedCtrl, "\d+", loopedCtrl_NumOnly)
-
-			if (enableOrDisable = "Disable")
-				GuiControl, MyStats:-g,% GuiMyStats_Controls[loopedCtrl]
-			else if (enableOrDisable = "Enable") {
-				if (loopedCtrl = "hTEXT_HeaderGhost")
-					__f := GUI_MyStats.DragGui.bind(GUI_MyStats, GuiMyStats.Handle)
-				else if (loopedCtrl = "hBTN_CloseGUI")
-					__f := GUI_MyStats.Close.bind(GUI_MyStats)
-				else if IsIn(loopedCtrl, "hDDL_BuyerFilter,hDDL_ItemFilter,hDDL_LeagueFilter,hDDL_GuildFilter,hDDL_CurrencyFilter,hDDL_TabFilter") {
-					StringTrimLeft, trimmedCtrl, loopedCtrl, 5
-					__f := GUI_MyStats.FilterList.bind(GUI_MyStats, trimmedCtrl, filterContent:="")
-				}
-				else if (loopedCtrl = "hLV_Stats") {
-					__f := GUI_MyStats.OnLVClick.bind(GUI_MyStats)
-				}
-				else
-					__f := 
-
-				if (__f)
-					GuiControl, MyStats:+g,% GuiMyStats_Controls[loopedCtrl],% __f 
-			}
-		}
-	}
-
-	OnLVClick(hwnd, guiEvent="", eventInfo="") {
-		Gui, MyStats:Default
-		Gui, MyStats:ListView,% GuiMyStats_Controls.hLV_Stats
-
-		if (guiEvent="ColClick") {
-			LV_GetText(Out1, 1, eventInfo)
-			LV_GetText(Out2, LV_GetCount(), eventInfo)
-			isSortedDown := Out2 < Out1
-			if (isSortedDown)
-				LV_ModifyCol(eventInfo, "Sort") 	
-			else
-				LV_ModifyCol(eventInfo, "SortDesc") 
-		}
-	}
-
-	Submit(CtrlName="") {
-		global GuiMyStats_Submit, GuiMyStats_Controls
-		Gui.Submit("MyStats")
-
-		if (CtrlName) {
-			Return GuiMyStats_Submit[ctrlName]
-		}
-	}
-
-	GetFilters(fType="All") {
+    GetFilter(fType="All") {
 		global GuiMyStats_Submit
 
 		Gui_MyStats.Submit()
@@ -249,10 +250,27 @@
 			return sub["hDDL_" fType]
 	}
 
-	FilterList(filterType, filterContent="") {
+    SetFilter(filterType, setContent) {
+        global GuiMyStats, GuiMyStats_Controls
+
+		if (filterType = "All") {
+			GuiControl, MyStats:Choose,% GuiMyStats_Controls.hDDL_BuyerFilter,% setContent
+			GuiControl, MyStats:Choose,% GuiMyStats_Controls.hDDL_ItemFilter,% setContent
+			GuiControl, MyStats:Choose,% GuiMyStats_Controls.hDDL_LeagueFilter,% setContent
+			GuiControl, MyStats:Choose,% GuiMyStats_Controls.hDDL_GuildFilter,% setContent
+			GuiControl, MyStats:Choose,% GuiMyStats_Controls.hDDL_CurrencyFilter,% setContent
+			GuiControl, MyStats:Choose,% GuiMyStats_Controls.hDDL_TabFilter,% setContent
+		}
+		else
+        	GuiControl, MyStats:Choose,% GuiMyStats_Controls["hDDL_" filterType],% setContent
+
+		GUI_MyStats.FilterList()
+    }
+
+    FilterList() {
 		global GuiMyStats, GuiMyStats_Controls
 
-		filters := GUI_MyStats.GetFilters("All")
+		filters := GUI_MyStats.GetFilter("All")
 		data := GuiMyStats.Stats_Data
 
 		LV_Delete()
@@ -276,7 +294,7 @@
 		}
 	}
 
-	StatsData_AddRow(num, what) {
+    StatsData_AddRow(num, what) {
 		loopedData := what
 		Loop {
 			; Get all the Other_xx and set it in a single string
@@ -300,7 +318,7 @@
 			, loopedData.Price, loopedData.Location_League, loopedData.Location_Tab, loopedOther)
 	}
 
-	UpdateData(resetFilters=False) {
+    UpdateData() {
 		global GuiMyStats, GuiMyStats_Controls
 
 		; Set GUI as default, needed for LV cmds. Set LV as default for gui.
@@ -390,8 +408,7 @@
 		GuiMyStats.All_Currencies := allCurrencies, GuiMyStats.All_ListedCurrencies := listedCurrencies, GuiMyStats.All_UnlistedCurrencies := unlistedCurrencies
 		GuiMyStats.All_Leagues := allLeagues, GuiMyStats.All_Tabs := allTabs
 		; Set GUI controls
-		if (resetFilters = False)
-			filters := GUI_MyStats.GetFilters("All")
+		filters := GUI_MyStats.GetFilter("All")
 
 		GuiControl, MyStats:,% GuiMyStats_Controls.hDDL_BuyerFilter,% "|All|" allBuyers
 		GuiControl, MyStats:,% GuiMyStats_Controls.hDDL_GuildFilter,% "|All|No guild|" allGuilds
@@ -399,27 +416,15 @@
 		GuiControl, MyStats:,% GuiMyStats_Controls.hDDL_CurrencyFilter,% "|All|" allCurrencyTypes
 		GuiControl, MyStats:,% GuiMyStats_Controls.hDDL_LeagueFilter,% "|All|" allLeagues
 		GuiControl, MyStats:,% GuiMyStats_Controls.hDDL_TabFilter,% "|All|" allTabs
-		if (resetFilters = True) {
-			GuiControl, MyStats:Choose,% GuiMyStats_Controls.hDDL_BuyerFilter, 1
-			GuiControl, MyStats:Choose,% GuiMyStats_Controls.hDDL_GuildFilter, 1
-			GuiControl, MyStats:Choose,% GuiMyStats_Controls.hDDL_ItemFilter, 1
-			GuiControl, MyStats:Choose,% GuiMyStats_Controls.hDDL_CurrencyFilter, 1
-			GuiControl, MyStats:Choose,% GuiMyStats_Controls.hDDL_LeagueFilter, 1
-			GuiControl, MyStats:Choose,% GuiMyStats_Controls.hDDL_TabFilter, 1
 
-			GUI_MyStats.FilterList("","")
-		}
-		else {
-			GuiControl, MyStats:ChooseString,% GuiMyStats_Controls.hDDL_BuyerFilter,% filters.Buyer
-			GuiControl, MyStats:ChooseString,% GuiMyStats_Controls.hDDL_GuildFilter,% filters.Guild
-			GuiControl, MyStats:ChooseString,% GuiMyStats_Controls.hDDL_ItemFilter,% filters.Item
-			GuiControl, MyStats:ChooseString,% GuiMyStats_Controls.hDDL_CurrencyFilter,% filters.Currency
-			GuiControl, MyStats:ChooseString,% GuiMyStats_Controls.hDDL_LeagueFilter,% filters.League
-			GuiControl, MyStats:ChooseString,% GuiMyStats_Controls.hDDL_TabFilter,% filters.Tab
+		GuiControl, MyStats:ChooseString,% GuiMyStats_Controls.hDDL_BuyerFilter,% filters.Buyer
+		GuiControl, MyStats:ChooseString,% GuiMyStats_Controls.hDDL_GuildFilter,% filters.Guild
+		GuiControl, MyStats:ChooseString,% GuiMyStats_Controls.hDDL_ItemFilter,% filters.Item
+		GuiControl, MyStats:ChooseString,% GuiMyStats_Controls.hDDL_CurrencyFilter,% filters.Currency
+		GuiControl, MyStats:ChooseString,% GuiMyStats_Controls.hDDL_LeagueFilter,% filters.League
+		GuiControl, MyStats:ChooseString,% GuiMyStats_Controls.hDDL_TabFilter,% filters.Tab
 
-			GUI_MyStats.FilterList("","")
-		}
-
+		GUI_MyStats.FilterList()
 		; Autoadjust col
 		Loop 9
 			LV_ModifyCol(A_Index, "AutoHdr NoSort")
@@ -481,7 +486,7 @@
 		foundHwnd := WinExist("ahk_id " GuiMyStats.Handle)
 		DetectHiddenWindows, %hiddenWin%
 
-		GUI_MyStats.UpdateData(resetFilters:=True)
+		GUI_MyStats.UpdateData()
 
 		if (foundHwnd) {
 			Gui, MyStats:Show, xCenter yCenter
@@ -496,22 +501,10 @@
 
     Close() {
 		Gui, MyStats:Hide
-
-		; TrayNotifications.Show("Recreating the Trades window with the new skin settings.")
-
-		; UpdateHotkeys()
-
-		; Declare_SkinAssetsAndSettings()
-
-		; Gui_Trades.RecreateGUI()
 	}
 
 	Redraw() {
 		Gui, MyStats:+LastFound
 		WinSet, Redraw
 	}
-
-
-
-
 }
