@@ -18,7 +18,10 @@ IsUpdateAvailable() {
 	recentRels := GitHubAPI_GetRecentReleases(PROGRAM.GITHUB_USER, PROGRAM.GITHUB_REPO)
 	if !(recentRels) {
 		AppendToLogs(A_ThisFunc "(): Recent releases is empty!")
-		return
+		SplashTextOn(PROGRAM.NAME " - Updating Error", "Unable to retrieve recent releases from API."
+		.											"`nIf this keeps on happening, please try updating manually."
+		.											"`nYou can find the GitHub repository link in the Settings menu.", 1, 1)
+		return "ERROR"
 	}
 	latestRel := recentRels.1
 	for index, value in recentRels {
