@@ -310,7 +310,7 @@ Monitor_GameLogs() {
 	global RUNTIME_PARAMETERS
 	static logsFile
 
-	if !(logsFile) {
+	if !(logsFile) { ; no game instance found yet
 		SetTimer,% A_ThisFunc, Delete
 
 		if (RUNTIME_PARAMETERS.GameFolder)
@@ -326,10 +326,11 @@ Monitor_GameLogs() {
 			SetTimer,% A_ThisFunc, -10000
 		}
 	}
-
-	newFileContent := Read_GameLogs(logsFile)
-	if (newFileContent)
-		Parse_GameLogs(newFileContent)
+	else {
+		newFileContent := Read_GameLogs(logsFile)
+		if (newFileContent)
+			Parse_GameLogs(newFileContent)
+	}
 }
 
 Parse_GameLogs(strToParse) {
