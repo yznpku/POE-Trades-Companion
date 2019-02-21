@@ -117,6 +117,10 @@ class GUI_ItemGrid {
         global GuiItemGridMapMap, GuiItemGridMapMap_Controls, GuiItemGridMapMap_Submit
         global GuiItemGridMapArrow, GuiItemGridMapArrow_Controls, GuiItemGridMapArrow_Submit
 
+        hideNormalTab := PROGRAM.SETTINGS.SETTINGS_MAIN.ItemGridHideNormalTab
+        hideQuadTab := PROGRAM.SETTINGS.SETTINGS_MAIN.ItemGridHideQuadTab
+        hideNormalAndQuadTabsForMaps := PROGRAM.SETTINGS.SETTINGS_MAIN.ItemGridHideNormalTabAndQuadTabForMaps
+
         resDPI := Get_DpiFactor()
         winH := winH / resDPI ; os dpi fix
         winX := winX / resDPI ; os dpi fix
@@ -143,8 +147,14 @@ class GUI_ItemGrid {
         GUI_ItemGrid.Destroy()
 
         ; = = = = = = = = = = = = Regular tab = = = = = = = = = = = = 
-        ; Only show normal tab grid if both X and Y are lower than the max case count
-        if (gridItemX+1 <= this.tab_casesCountX) && (gridItemY+1 <= this.tab_casesCountY) {
+        if IsBetween(gridItemX+1, 1, this.tab_casesCountX) && IsBetween(gridItemY+1, 1, this.tab_casesCountY) ; if both X and Y are lower than the max case count
+            fitsInNormalTab := True 
+        if (fitsInNormalTab && itemType="Map")
+            drawNormalGrid := hideNormalAndQuadTabsForMaps="False" && hideNormalTab="False"?True:False
+        else 
+            drawNormalGrid := hideNormalTab="False"?True:False
+
+        if (drawNormalGrid = True) {
             tab_caseW := this.tab_squareWRoot * winH, tab_caseH := this.tab_squareHRoot * winH ; Calc case w/h
             tab_stashX := xStart + (gridItemX * tab_caseW), tab_stashY := yStart + (gridItemY * tab_caseH) ; Calc point pos
             tab_stashXRelative := tab_stashX + winX, tab_stashYRelative := tab_stashY + winY ; Relative to win pos
@@ -162,20 +172,28 @@ class GUI_ItemGrid {
             showNormalTabGrid := True 
         }
         ;= = = = = = = = = = = = Quad tab = = = = = = = = = = = = 
-        quad_caseW := this.quad_squareWRoot * winH, quad_caseH := this.quad_squareHRoot * winH ; Calc case w/h
-        quad_stashX := xStart + (gridItemX * quad_caseW), quad_stashY := yStart + (gridItemY * quad_caseH) ; Calc point pos
-        quad_stashXRelative := quad_stashX + winX, quad_stashYRelative := quad_stashY + winY ; Relative to win pos
-        quad_stashXRelative += winBorderSide, quad_stashYRelative += winBorderTop ; Add win border
-        quad_pointW := quad_caseW, quad_pointH := quad_caseH ; Make a square same size as stash square
-        squareColor := "10c200"
+        if (itemType="Map")
+            drawQuadGrid := hideNormalAndQuadTabsForMaps="False" && hideQuadTab="False"?True:False
+        else 
+            drawQuadGrid := hideQuadTab="False"?True:False
+        
+        if (drawQuadGrid = True) {
+            quad_caseW := this.quad_squareWRoot * winH, quad_caseH := this.quad_squareHRoot * winH ; Calc case w/h
+            quad_stashX := xStart + (gridItemX * quad_caseW), quad_stashY := yStart + (gridItemY * quad_caseH) ; Calc point pos
+            quad_stashXRelative := quad_stashX + winX, quad_stashYRelative := quad_stashY + winY ; Relative to win pos
+            quad_stashXRelative += winBorderSide, quad_stashYRelative += winBorderTop ; Add win border
+            quad_pointW := quad_caseW, quad_pointH := quad_caseH ; Make a square same size as stash square
+            squareColor := "10c200"
 
-        Gui.New("ItemGridQuad", "-Border +LastFound +AlwaysOnTop -Caption +AlwaysOnTop +ToolWindow -SysMenu +HwndhGuiItemGridQuad", "ItemGridQuad")
-        Gui.Color("ItemGridQuad", "EEAA99")
-        WinSet, TransColor, EEAA99 254
-        Gui.Add("ItemGridQuad", "Progress", "x0 y0 w" quad_pointW " h" this.gridThicc " Background" squareColor) ; ^
-        Gui.Add("ItemGridQuad", "Progress", "x" quad_pointW - this.gridThicc " y0 w" this.gridThicc " h" quad_pointH " Background" squareColor) ; > 
-        Gui.Add("ItemGridQuad", "Progress", "x0 y" quad_pointH - this.gridThicc " w" quad_pointW " h" this.gridThicc " Background" squareColor) ; v 
-        Gui.Add("ItemGridQuad", "Progress", "x0 y0 w" this.gridThicc " h" quad_pointH " Background" squareColor) ; <
+            Gui.New("ItemGridQuad", "-Border +LastFound +AlwaysOnTop -Caption +AlwaysOnTop +ToolWindow -SysMenu +HwndhGuiItemGridQuad", "ItemGridQuad")
+            Gui.Color("ItemGridQuad", "EEAA99")
+            WinSet, TransColor, EEAA99 254
+            Gui.Add("ItemGridQuad", "Progress", "x0 y0 w" quad_pointW " h" this.gridThicc " Background" squareColor) ; ^
+            Gui.Add("ItemGridQuad", "Progress", "x" quad_pointW - this.gridThicc " y0 w" this.gridThicc " h" quad_pointH " Background" squareColor) ; > 
+            Gui.Add("ItemGridQuad", "Progress", "x0 y" quad_pointH - this.gridThicc " w" quad_pointW " h" this.gridThicc " Background" squareColor) ; v 
+            Gui.Add("ItemGridQuad", "Progress", "x0 y0 w" this.gridThicc " h" quad_pointH " Background" squareColor) ; <
+            showQuadTabGrid := True
+        }
 
         ; = = = = = = = = = = = = Item name = = = = = = = = = = = = 
         guiFont := "Fontin Regular", guiFontSize := 12
@@ -254,7 +272,21 @@ class GUI_ItemGrid {
             Gui.Add("ItemGridMapTier", "Progress", "x0 y0 w" this.gridThicc " h" mapTier_pointH " Background" squareColor) ; <
 
             ; Map map case
-            mapNum := PROGRAM.DATA.MAPS_DATA["tier_" mapTier][gridItemName]["pos"]
+            for mapName, nothing in PROGRAM.DATA.MAPS_DATA["tier_" mapTier] {
+                if (mapTier="unique") {
+                    uniqueMapMatch := IsContaining_Parse(gridItemName, PROGRAM.DATA.UNIQUE_MAPS_LIST, "`n", "`r", getMatch:=True).2
+                    if IsContaining(mapName, uniqueMapMatch) {
+                        mapNum := PROGRAM.DATA.MAPS_DATA["tier_" mapTier][mapName]["pos"]
+                        Break
+                    }
+                }
+                else {
+                    if IsContaining(gridItemName, mapName) {
+                        mapNum := PROGRAM.DATA.MAPS_DATA["tier_" mapTier][mapName]["pos"]
+                        Break
+                    }
+                }
+            }
             if (mapNum > this.mapArrow_mapsPerLine*this.mapArrow_mapsRows) {
                 Loop 10 {
                     arrowClicks := A_Index
@@ -314,9 +346,11 @@ class GUI_ItemGrid {
             Gui, ItemGrid:+LastFound
             WinSet, ExStyle, +0x20
         }
-        Gui.Show("ItemGridQuad", "x" quad_stashXRelative*resDPI " y" quad_stashYRelative*resDPI " AutoSize NoActivate")
-        Gui, ItemGridQuad:+LastFound
-        WinSet, ExStyle, +0x20
+        if (showQuadTabGrid) {
+            Gui.Show("ItemGridQuad", "x" quad_stashXRelative*resDPI " y" quad_stashYRelative*resDPI " AutoSize NoActivate")
+            Gui, ItemGridQuad:+LastFound
+            WinSet, ExStyle, +0x20
+        }
 
         Gui.Show("ItemGridItemName", "x" itemNameXRelative*resDPI " y" itemNameYRelative*resDPI " w" itemName_guiW " h" itemName_guiH " NoActivate")
         Gui, ItemGridItemName:+LastFound

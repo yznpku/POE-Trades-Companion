@@ -59,6 +59,9 @@ Get_LocalSettings_DefaultValues() {
 	settings.SETTINGS_MAIN.PushBulletOnlyWhenAfk										:= "True"
 	settings.SETTINGS_MAIN.PoeAccounts													:= ""
 	settings.SETTINGS_MAIN.MinimizeInterfaceToBottomLeft								:= "False"
+	settings.SETTINGS_MAIN.ItemGridHideNormalTab										:= "False"
+	settings.SETTINGS_MAIN.ItemGridHideQuadTab											:= "False"
+	settings.SETTINGS_MAIN.ItemGridHideNormalTabAndQuadTabForMaps						:= "True"
 
 
 	settings.SETTINGS_CUSTOMIZATION_SKINS 												:= {}
@@ -306,6 +309,8 @@ LocalSettings_IsValueValid(iniSect, iniKey, iniValue) {
 		else if (iniKey = "PoeAccounts")
 			isValueValid := True
 		else if (iniKey = "MinimizeInterfaceToBottomLeft")
+			isValueValid := IsIn(iniValue, "True,False") ? True : False	
+		else if IsIn(iniKey, "ItemGridHideNormalTab,ItemGridHideQuadTab,ItemGridHideNormalTabAndQuadTabForMaps")
 			isValueValid := IsIn(iniValue, "True,False") ? True : False	
 	}
 

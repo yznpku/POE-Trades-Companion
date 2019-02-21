@@ -441,17 +441,23 @@ Class GUI_Settings {
 		; Gui.Add("Settings", "Text", "x+20 yp hwndhTXT_SendMessagesModeTip", "Choose a mode to have informations about how it works.")
 
 		; * * Transparency
-		Gui.Add("Settings", "Checkbox", "x" secondRowX " y" cbNotInGamePos.Y " hwndhCB_AllowClicksToPassThroughWhileInactive", "Allow clicks to pass through`nthe interface while no tabs remain?")
+		Gui.Add("Settings", "Checkbox", "x" secondRowX " y" cbNotInGamePos.Y-5 " hwndhCB_AllowClicksToPassThroughWhileInactive", "Allow clicks to pass through`nthe interface while no tabs remain?")
 		Gui.Add("Settings", "Text", "x" secondRowX " y+10 Center", "Interface transparency`nNo tab remaining")
 		Gui.Add("Settings", "Slider", "x+1 yp w120 AltSubmit ToolTip Range0-100 hwndhSLIDER_NoTabsTransparency")
 		Gui.Add("Settings", "Text", "x" secondRowX " y+5 Center", "Interface transparency`nTabs still open")
 		Gui.Add("Settings", "Slider", "x+1 yp w120 AltSubmit ToolTip Range30-100 hwndhSLIDER_TabsOpenTransparency")
+
+		; * * Map Tab settings
+		Gui.Add("Settings", "Checkbox", "x" secondRowX " y+10 hwndhCB_ItemGridHideNormalTab", "Hide normal tab location")
+		Gui.Add("Settings", "Checkbox", "xp y+5 hwndhCB_ItemGridHideQuadTab", "Hide quad tab location")
+		Gui.Add("Settings", "Checkbox", "xp y+5 hwndhCB_ItemGridHideNormalTabAndQuadTabForMaps", "Hide normal and quad locations for maps")
 		
 		; * * Subroutines + User settings
 		GuiSettings.TabSettingsMain_Controls := "hCB_HideInterfaceWhenOutOfGame,hCB_MinimizeInterfaceToBottomLeft,hCB_CopyItemInfosOnTabChange,hCB_AutoFocusNewTabs,hCB_AutoMinimizeOnAllTabsClosed,hCB_AutoMaximizeOnFirstNewTab,hCB_SendTradingWhisperUponCopyWhenHoldingCTRL"
 		. ",hCB_TradingWhisperSFXToggle,hEDIT_TradingWhisperSFXPath,hBTN_BrowseTradingWhisperSFX,hCB_RegularWhisperSFXToggle,hEDIT_RegularWhisperSFXPath,hBTN_BrowseRegularWhisperSFX"
 		. ",hCB_BuyerJoinedAreaSFXToggle,hEDIT_BuyerJoinedAreaSFXPath,hBTN_BrowseBuyerJoinedAreaSFX"
 		. ",hSLIDER_NoTabsTransparency,hSLIDER_TabsOpenTransparency,hCB_AllowClicksToPassThroughWhileInactive,hCB_ShowTabbedTrayNotificationOnWhisper"
+		. ",hCB_ItemGridHideNormalTab,hCB_ItemGridHideQuadTab,hCB_ItemGridHideNormalTabAndQuadTabForMaps"
 		; . ",hDDL_SendMsgMode,hTXT_SendMessagesModeTip"
 		. ",hEDIT_PushBulletToken,hCB_PushBulletOnTradingWhisper,hCB_PushBulletOnPartyMessage,hCB_PushBulletOnWhisperMessage,hCB_PushBulletOnlyWhenAfk"
 		. ",hEDIT_PoeAccounts"
@@ -1001,7 +1007,8 @@ Class GUI_Settings {
 		if IsIn(CtrlName, "hCB_HideInterfaceWhenOutOfGame,hCB_MinimizeInterfaceToBottomLeft,hCB_CopyItemInfosOnTabChange,hCB_AutoFocusNewTabs"
 		. ",hCB_AutoMinimizeOnAllTabsClosed,hCB_AutoMaximizeOnFirstNewTab,hCB_TradingWhisperSFXToggle,hCB_BuyerJoinedAreaSFXToggle"
 		. ",hCB_RegularWhisperSFXToggle,hCB_AllowClicksToPassThroughWhileInactive,hCB_ShowTabbedTrayNotificationOnWhisper,hCB_SendTradingWhisperUponCopyWhenHoldingCTRL"
-		. ",hCB_PushBulletOnTradingWhisper,hCB_PushBulletOnPartyMessage,hCB_PushBulletOnWhisperMessage,hCB_PushBulletOnlyWhenAfk")
+		. ",hCB_PushBulletOnTradingWhisper,hCB_PushBulletOnPartyMessage,hCB_PushBulletOnWhisperMessage,hCB_PushBulletOnlyWhenAfk"
+		. ",hCB_ItemGridHideNormalTab,hCB_ItemGridHideQuadTab,hCB_ItemGridHideNormalTabAndQuadTabForMaps")
 			iniKey := SubStr(CtrlName, 5)
 
 		if !(iniKey) {
@@ -1132,6 +1139,10 @@ Class GUI_Settings {
 		GuiControl, Settings:,% GuiSettings_Controls.hSLIDER_TabsOpenTransparency,% thisTabSettings.TabsOpenTransparency
 		; Accounts
 		GuiControl, Settings:,% GuiSettings_Controls.hEDIT_PoeAccounts,% thisTabSettings.PoeAccounts
+		; Item grid
+		GuiControl, Settings:,% GuiSettings_Controls.hCB_ItemGridHideNormalTab,% thisTabSettings.ItemGridHideNormalTab
+		GuiControl, Settings:,% GuiSettings_Controls.hCB_ItemGridHideQuadTab,% thisTabSettings.ItemGridHideQuadTab
+		GuiControl, Settings:,% GuiSettings_Controls.hCB_ItemGridHideNormalTabAndQuadTabForMaps,% thisTabSettings.ItemGridHideNormalTabAndQuadTabForMaps
 	}
 
 	TabSettingsMain_OnSendMsgModeChange() {
@@ -4096,6 +4107,10 @@ Class GUI_Settings {
 		,	"hEDIT_PoeAccounts":"Your PoE accounts names."
 			.					"`nUsed for the price verify feature."
 			. 					"`n!! CASE SENSITIVE !!"
+
+		,	"hCB_ItemGridHideNormalTab":"Hide the box that shows the item location in a normal tab."
+		,	"hCB_ItemGridHideQuadTab":"Hide the box that shows the item location in a quad tab."
+		,	"hCB_ItemGridHideNormalTabAndQuadTabForMaps":"When the item is a map, hide the boxes that shows the item location in normal and quad tab."
 
 
 		,	"hDDL_SkinPreset":					"Choose among the skins presets here."

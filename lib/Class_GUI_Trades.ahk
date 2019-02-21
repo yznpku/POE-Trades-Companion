@@ -2212,7 +2212,7 @@
 
 			if RegExMatch(activeTabInfos.Item, "O)(.*) \(T(\d+)\)$", itemPat) {
 				itemType := "Map", tabStashItem := itemPat.1, mapTier := itemPat.2
-				if IsIn_Parse(tabStashItem, PROGRAM.DATA.UNIQUE_MAPS_LIST, "`n", "`r")
+				if IsContaining_Parse(tabStashItem, PROGRAM.DATA.UNIQUE_MAPS_LIST, "`n", "`r")
 					mapTier := "unique"
 			}
 
