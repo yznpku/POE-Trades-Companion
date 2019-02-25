@@ -2218,7 +2218,7 @@
 			clientInfos := GetWindowClientInfos("ahk_pid" activeTabInfos.PID " ahk_group POEGameGroup")
 
 			if RegExMatch(activeTabInfos.Item, "O)(.*) \(T(\d+)\)$", itemPat) {
-				itemType := "Map", tabStashItem := itemPat.1, mapTier := itemPat.2
+				itemType := "Map", mapTier := itemPat.2
 				if IsContaining_Parse(tabStashItem, PROGRAM.DATA.UNIQUE_MAPS_LIST, "`n", "`r")
 					mapTier := "unique"
 			}

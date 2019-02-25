@@ -272,16 +272,18 @@ class GUI_ItemGrid {
             Gui.Add("ItemGridMapTier", "Progress", "x0 y0 w" this.gridThicc " h" mapTier_pointH " Background" squareColor) ; <
 
             ; Map map case
+            RegExMatch(gridItemName, "O)(.*) \(T(\d+)\)$", itemPat)
+                mapNameOnly := itemPat.1
             for mapName, nothing in PROGRAM.DATA.MAPS_DATA["tier_" mapTier] {
                 if (mapTier="unique") {
-                    uniqueMapMatch := IsContaining_Parse(gridItemName, PROGRAM.DATA.UNIQUE_MAPS_LIST, "`n", "`r", getMatch:=True).2
+                    uniqueMapMatch := IsContaining_Parse(mapNameOnly, PROGRAM.DATA.UNIQUE_MAPS_LIST, "`n", "`r", getMatch:=True).2
                     if IsContaining(mapName, uniqueMapMatch) {
                         mapNum := PROGRAM.DATA.MAPS_DATA["tier_" mapTier][mapName]["pos"]
                         Break
                     }
                 }
                 else {
-                    if IsContaining(gridItemName, mapName) {
+                    if IsContaining(mapNameOnly, mapName) {
                         mapNum := PROGRAM.DATA.MAPS_DATA["tier_" mapTier][mapName]["pos"]
                         Break
                     }
