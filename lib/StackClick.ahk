@@ -2,6 +2,12 @@
 	global PROGRAM
 	static lastAvailable, lastTime
 
+	activeTab := GUI_Trades.GetActiveTab()
+	if !IsNum(activeTab) {
+		GoSub %A_ThisFunc%_CtrlShiftClick
+		return
+	}
+
 	LongCopy := A_TickCount, Clipboard := "", LongCopy -= A_TickCount
 	SendInput {Shift Up}^{sc02E} ; Ctrl+C
 
@@ -18,7 +24,6 @@
 	; timeSince := A_Now A_MSec
 	; timeSince -= lastTime
 
-	activeTab := GUI_Trades.GetActiveTab()
 	tabContent := GUI_Trades.GetTabContent(activeTab)
 	item := Get_CurrencyInfos(tabContent.Item).Name
 
@@ -67,7 +72,7 @@
 			lastAvailable := available
 		}
 	} else {
-		Gosub %A_ThisFunc%_CtrlClick
+		Gosub %A_ThisFunc%_CtrlShiftClick
 	}
 	; lastTime := A_Now A_MSec
 	return
@@ -77,30 +82,35 @@
 		Gosub %A_ThisFunc%_GetKeyStates
 		SendInput {Ctrl Down}{Shift Up}{Lbutton Up}{Ctrl Up}
 		Gosub %A_ThisFunc%_ReturnKeyStates
-		return
+	return
+	StackClick_CtrlShiftClick:
+	Gosub %A_ThisFunc%_GetKeyStates
+		SendInput {Ctrl Down}{Shift Down}{Lbutton Up}{Shift Up}{Ctrl Up}
+		Gosub %A_ThisFunc%_ReturnKeyStates
+	return
 	StackClick_ShiftClickPlus:
 		Gosub %A_ThisFunc%_GetKeyStates
 		SendInput {Shift Down}{Ctrl Up}{LButton Up}{Shift Up}
 		SendInput, %amount%{Enter}
 		Gosub %A_ThisFunc%_ReturnKeyStates
-		return
+	return
 	StackClick_GetKeyStates:
 		shiftState := (GetKeyState("Shift"))?("Down"):("Up")
 		ctrlState := (GetKeyState("Ctrl"))?("Down"):("Up")
 		Hotkey, *Shift, DoNothing, On
 		Hotkey, *Ctrl, DoNothing, On
 		sleep 10
-		return
+	return
 	StackClick_ReturnKeyStates:
 		sleep 10
 		Hotkey, *Shift, DoNothing, Off
 		Hotkey, *Ctrl, DoNothing, Off
 		Send {Shift %shiftState%}{Ctrl %ctrlState%} ; Restore ctrl/shift state
-		return
+	return
 	StackClick_Finished: 
 		lastAvailable := 0
 		tipInfo := "Finished.`nYou should have " required " " item "."
-		return
+	return
 	StackClick_ShowToolTip:
 		_tip := "Needed: " required
 		. "`nTaken: " withdrawn
@@ -116,5 +126,5 @@
 		; 	_tip .= tipInfo
 		; }
 		ShowToolTip(_tip)
-		return
+	return
 }
