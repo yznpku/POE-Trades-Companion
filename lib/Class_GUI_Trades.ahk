@@ -1881,8 +1881,7 @@
 		Menu, Tray, Check, Mode: Window
 		Menu, Tray, Disable, Cycle Dock
 
-		INI.Set(PROGRAM.INI_FILE, "SETTINGS_MAIN", "TradesGUI_Locked", "False")
-		PROGRAM.SETTINGS.SETTINGS_MAIN.TradesGUI_Locked := "False"
+		Menu, Tray, Enable, Lock position?
 	}
 
 	Use_DockMode(checkOnly=False) {
@@ -1900,6 +1899,7 @@
 		Menu, Tray, Enable, Cycle Dock
 
 		Tray_ToggleLockPosition("Check")
+		Menu, Tray, Disable, Lock position?
 
 		GUI_Trades.DockMode_Cycle()
 	}

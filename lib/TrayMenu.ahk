@@ -79,6 +79,7 @@ Tray_ModeWindow() {
 	global PROGRAM
 
 	GUI_Trades.Use_WindowMode()
+	Tray_ToggleLockPosition("Uncheck")
 	Declare_LocalSettings()
 	TrayNotifications.Show(PROGRAM.NAME, "Window mode enabled."
 		. "`nYou can now move the Trades window around freely.")
@@ -87,6 +88,7 @@ Tray_ModeDock() {
 	global PROGRAM
 
 	GUI_Trades.Use_DockMode()
+	Tray_ToggleLockPosition("Check")
 	Declare_LocalSettings()
 	TrayNotifications.Show(PROGRAM.NAME, "Dock mode enabled."
 		. "`nThe Trades window will stay on the top right corner of your game window."
@@ -118,9 +120,6 @@ Tray_ToggleLockPosition(toggle="") {
 		PROGRAM.SETTINGS.SETTINGS_MAIN.TradesGUI_Locked := "True"
 		Menu, Tray, Check, Lock position?
 	}
-
-	if (PROGRAM.SETTINGS.SETTINGS_MAIN.TradesGUI_Mode = "Dock") && (toggle != "Check")
-		Tray_ModeWindow()
 }
 Tray_ResetPosition() {
 	Tray_ModeWindow()
