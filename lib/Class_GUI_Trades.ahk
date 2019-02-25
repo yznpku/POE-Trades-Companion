@@ -1938,6 +1938,9 @@
 	DockMode_SetPosition() {
 		global GuiTrades, GuiTradesMinimized
 
+		hiddenWin := A_DetectHiddenWindows
+		DetectHiddenWindows, On
+
 		WinGet, isMinMax, MinMax,% "ahk_id " GuiTrades.Docked_Window_Handle
 		isWinMinimized := isMinMax=-1?True:False
 
@@ -1949,8 +1952,10 @@
 			moveToX := (dockedX+dockedW)-GuiTradesMinimized.Width, moveToY := dockedY 
 		else moveToX := (dockedX+dockedW)-GuiTrades.Width, moveToY := dockedY 
 
-		if IsNum(dockedX) && ( (GuiTrades.Is_Minimized && tradesX = moveToX && tradesY = moveToY) || (GuiTrades.Is_Minimized && tradesMinX = moveToX && tradesMinY = moveToY) )
+		if IsNum(dockedX) && ( (GuiTrades.Is_Minimized && tradesX = moveToX && tradesY = moveToY) || (GuiTrades.Is_Minimized && tradesMinX = moveToX && tradesMinY = moveToY) ) {
+			DetectHiddenWindows, %hiddenWin%
 			Return
+		}
 		else if !IsNum(dockedX) || (isWinMinimized) {
 			AppendToLogs(A_ThisFunc "(): Couldn't dock Trades GUI to game window. Resetting pos and cycling to next game window.")
 			GUI_Trades.ResetPosition(dontWrite:=True)
@@ -1961,6 +1966,8 @@
 				WinMove,% "ahk_id " GuiTradesMinimized.Handle, ,% moveToX,% moveToY
 			else WinMove,% "ahk_id " GuiTrades.Handle, ,% moveToX,% moveToY
 		}
+
+		DetectHiddenWindows, %hiddenWin%
 	}
 
 	SaveBackup() {

@@ -196,17 +196,21 @@
 	SavePosition() {
 		global PROGRAM, GuiTrades, GuiTradesMinimized
 
+		hiddenWin := A_DetectHiddenWindows
+		DetectHiddenWindows, On
 		WinGetPos, gtX, gtY, gtW, gtH,% "ahk_id " GuiTrades.Handle
 		WinGetPos, gtmX, gtmY, gtmW, gtmH,% "ahk_id " GuiTradesMinimized.Handle
+		DetectHiddenWindows, %hiddenWin%
 
 		if (PROGRAM.SETTINGS.SETTINGS_MAIN.MinimizeInterfaceToBottomLeft = "True")
 			saveX := gtmX, saveY := gtmY+gtmH-gtH
 		else
-			saveX := gtX+gtmW-gtW, saveY := gtmY
+			saveX := gtmX+gtmW-gtW, saveY := gtmY
 		
-		if !IsNum(saveX) || !IsNum(saveY)
+		if !IsNum(saveX) || !IsNum(saveY) {
 			Return
-
+		}
+		
 		INI.Set(PROGRAM.INI_FILE, "SETTINGS_MAIN", "Pos_X", saveX)
 		INI.Set(PROGRAM.INI_FILE, "SETTINGS_MAIN", "Pos_Y", saveY)
 	}
