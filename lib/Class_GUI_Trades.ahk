@@ -1273,10 +1273,19 @@
 
 			_infos := ""
 			if (foundMatch) {
+				RegExMatch(poeTradeObj.buyout, "O)(\d+) (.*)", whisperBuyoutPat), whisper_currencyCount := whisperBuyoutPat.1, whisper_currencyType := whisperBuyoutPat.2
+				RegExMatch(matchingObj.buyout, "O)(\d+) (.*)", poeTradeBuyoutPat), poeTrade_currencyCount := poeTradeBuyoutPat.1, poeTrade_currencyType := poeTradeBuyoutPat.2
+
 				if (poeTradeObj.buyout = matchingObj.buyout) {
 					_infos := "Price confirmed legit."
-					. "\npoe.trade: " matchingObj.buyout
-					. "\nwhisper: " poeTradeObj.buyout
+					. "\npoe.trade: `t" matchingObj.buyout
+					. "\nwhisper: `t`t" poeTradeObj.buyout
+					vColor := "Green"
+				}
+				else if (poeTrade_currencyType=whisper_currencyType && whisper_currencyCount >= poeTrade_currencyCount) {
+					_infos := "Price is higher."
+					. "\npoe.trade: `t" matchingObj.buyout
+					. "\nwhisper: `t`t" poeTradeObj.buyout
 					vColor := "Green"
 				}
 				else {
@@ -1292,8 +1301,8 @@
 					}
 					else if (currencyInfos.Is_Listed && poeTradeObj.buyout != matchingObj.buyout) {
 						_infos := "Price is different."
-						. "\npoe.trade: " matchingObj.buyout
-						. "\nwhisper " poeTradeObj.buyout
+						. "\npoe.trade: `t" matchingObj.buyout
+						. "\nwhisper: `t`t" poeTradeObj.buyout
 						vColor := "Red"
 					}
 
