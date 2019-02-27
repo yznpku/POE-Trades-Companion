@@ -26,8 +26,13 @@ You could also download the executable but some protections are flagging it as m
 ## Key Features  
 - **Keep track of your incoming trading whispers in a convenient interface.**  
 With the tabbing system, you will know exactly what to look at and where.  
+- **Up to 9 customizable buttons + 5 smaller predefined buttons**
+Custom buttons can have multiple actions, be renamed, moved, resized or disabled. 
+The smaller buttons are set to perform predefined actions (Copy item name / Whisper buyer / Party invite / Trade request / Party kick). These can also be moved and disabld.
+- **Hotkeys**
+An infinite amount of hotkeys can be created.  
+By default, pressing F2 will teleport you to your hideout.  
 - **Quickly communicate with your buyer.**  
-Up to nine customizable buttons, and an infinite amount of hotkeys.  
 Using the `%buyer%`, `%item%`, `%price%` variables in your messages, communication is even faster.  
 - **Find the desired items in seconds.**  
 With the precise Item Grid overlay, you will be able to find your item as fast as possible.  
@@ -83,6 +88,7 @@ If interested, you may as well **[make your own skin](https://github.com/lemasat
 
 Price checking compares your item's price on poe.trade and the price in the whisper.  
 This features allows to avoid scammers that edit the price before sending the whisper.  
+
 It can be done by clicking the grey dot as shown in the screenshot above.  
 
 After verifying an item's price, the dot will change color based on the results.  
@@ -90,15 +96,21 @@ Green means the price matches or is in your favour.
 Orange means an error occured.  
 Red means the price is different.  
 
-## Item Grid
+## Item location grid
 
-**Coming later**
-<!--
-Finding the desired item is simple with the Item Grid.
-Note that this feature is entirely automated and does not require user set-up.
+See the exact position of your item in your stash.
+Entirely automated, does not require user setup.
 
-screenshot with item grid, reg tab and map tab
--->  
+Requires to press a button with the "Show item location grid" action.
+On default settings, this occurs when pressing the "Invite to Party" button.
+
+By default, both normal and quad tab locations are shown. If you wish, you can choose to hide one or another from the Settings.
+If the item is detected to be a map, only the map stash tab will be shown. If you do not own this special tab, you can re-enable normal and quad locations for map items.
+
+Note that this feature also shows your item name and stash tab name to make finding even easier.
+
+<img src=https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/screenshots/ItemGrid%20Maps.png width=300> <img src=https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/screenshots/ItemGrid%20Normal.png width=300>
+
 
 ## Stats
 
