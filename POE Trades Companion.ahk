@@ -341,6 +341,7 @@ Return
 #Include Misc.ahk
 #Include OnClipboardChange.ahk
 #Include PoeTrade.ahk
+#Include PushBullet.ahk
 #Include Reload.ahk
 #Include ShowToolTip.ahk
 #Include SplashText.ahk
@@ -356,6 +357,7 @@ Return
 #Include ChooseColor.ahk
 #Include Class_ImageButton.ahk
 #Include Clip.ahk
+#Include cURL.ahk
 ; #Include CSV.ahk
 #Include Download.ahk
 #Include Extract2Folder.ahk
@@ -364,12 +366,12 @@ Return
 #Include Get_ProcessInfos.ahk
 #Include JSON.ahk
 #Include LV_SetSelColors.ahk
-#Include PushBullet.ahk
 #Include SetEditCueBanner.ahk
 #Include StdOutStream.ahk
 #Include StringtoHex.ahk
 #Include TilePicture.ahk
-#Include cURL.ahk
+#Include WinHttpRequest.ahk
+
 
 if (A_IsCompiled) {
 	#Include %A_ScriptDir%/FileInstall_Cmds.ahk
