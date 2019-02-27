@@ -85,6 +85,7 @@ Start_Script() {
 
 	; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	Handle_CmdLineParameters() 		; RUNTIME_PARAMETERS
+	Load_DebugJSON()
 
 	MyDocuments 					:= (RUNTIME_PARAMETERS.MyDocuments)?(RUNTIME_PARAMETERS.MyDocuments):(A_MyDocuments)
 
@@ -133,7 +134,7 @@ Start_Script() {
 	GAME.INI_FILE 					:= GAME.MAIN_FOLDER "\production_Config.ini"
 	GAME.INI_FILE_COPY 		 		:= PROGRAM.MAIN_FOLDER "\production_Config.ini"
 	GAME.EXECUTABLES 				:= "PathOfExile.exe,PathOfExile_x64.exe,PathOfExileSteam.exe,PathOfExile_x64Steam.exe"
-	GAME.CHALLENGE_LEAGUE 			:= "Delve"
+	GAME.CHALLENGE_LEAGUE 			:= "Delve,Synthesis"
 
 	PROGRAM.SETTINGS.SUPPORT_MESSAGE 	:= "@%buyerName% " PROGRAM.NAME ": view-thread/1755148"
 
@@ -142,8 +143,8 @@ Start_Script() {
 	SetWorkingDir,% PROGRAM.MAIN_FOLDER
 
 	; Auto admin reload - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-	if (!A_IsAdmin && !RUNTIME_PARAMETERS.SkipAdmin) {
-		; ReloadWithParams(" /MyDocuments=""" MyDocuments """", getCurrentParams:=True, asAdmin:=True)
+	if (!A_IsAdmin && !RUNTIME_PARAMETERS.SkipAdmin && !DEBUG.SETTINGS.skip_admin) {
+		ReloadWithParams(" /MyDocuments=""" MyDocuments """", getCurrentParams:=True, asAdmin:=True)
 	}
 
 	; Game executables groups - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -175,7 +176,7 @@ Start_Script() {
 	Create_LogsFile()
 	Delete_OldLogsFile()
 
-	Load_DebugJSON()
+	
 
 	if (!RUNTIME_PARAMETERS.NewInstance)
 		Close_PreviousInstance()

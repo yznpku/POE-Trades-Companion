@@ -1,5 +1,7 @@
 {
 	"settings" : {
+		"skip_admin" : false,
+		
 		"use_chat_logs" : false,
 		"simulate_new_trade_while_tab_close" : false,
 		
