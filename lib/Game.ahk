@@ -700,10 +700,11 @@ Parse_GameLogs(strToParse) {
 					if (doPBNote = True) && StrLen(PROGRAM.SETTINGS.SETTINGS_MAIN.PushBulletToken) > 5 {
 						pbTxt := "Item: " tradeItemFull "\nPrice: " tradePrice "\nStash: " tradeStashFull
 						pbTxt .= tradeOther ? "\nOther: " tradeOther : ""
-						pbErr := PB_PushNote(PROGRAM.SETTINGS.SETTINGS_MAIN.PushBulletToken, "Buying request from " whispName ":", pbTxt)
-						if (pbErr && pbErr != 200)
+						pbReturn := PB_PushNote(PROGRAM.SETTINGS.SETTINGS_MAIN.PushBulletToken, "Buying request from " whispName ":", pbTxt)
+						if (pbReturn.Status && pbReturn.Status != 200)
 							AppendToLogs(A_ThisFunc "(): Error sending PushBullet notification."
-							. "Code: """ pbErr """ - Token length: """ StrLen(PROGRAM.SETTINGS.SETTINGS_MAIN.PushBulletToken) """")
+							. "`nData: """ pbReturn.Data
+							. "`nHeaders: """ pbReturn.Headers)
 					}
 				}
 			}
@@ -734,11 +735,11 @@ Parse_GameLogs(strToParse) {
 				}
 
 				if (doPBNote = True) && StrLen(PROGRAM.SETTINGS.SETTINGS_MAIN.PushBulletToken) > 5 {
-					pbErr := PB_PushNote(PROGRAM.SETTINGS.SETTINGS_MAIN.PushBulletToken, "Whisper from " whispName ":"
-					, whispMsg)
-					if (pbErr && pbErr != 200)
-						AppendToLogs(A_ThisFunc "(): Error sending PushBullet notification."
-						. "Code: """ pbErr """ - Token length: """ StrLen(PROGRAM.SETTINGS.SETTINGS_MAIN.PushBulletToken) """")
+					pbReturn := PB_PushNote(PROGRAM.SETTINGS.SETTINGS_MAIN.PushBulletToken, "Whisper from " whispName ":", whispMsg)
+					if (pbReturn.Status && pbReturn.Status != 200)
+							AppendToLogs(A_ThisFunc "(): Error sending PushBullet notification."
+							. "`nData: """ pbReturn.Data
+							. "`nHeaders: """ pbReturn.Headers)
 				}
 			}
 		}
