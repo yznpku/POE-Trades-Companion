@@ -321,6 +321,7 @@ Monitor_GameLogs() {
 		if (logsFile) {
 			SetTimer,% A_ThisFunc, 500
 			AppendToLogs("Monitoring logs file: """ logsFile """.")
+			TrayNotifications.Show("Ready for trading!", "Monitoring chat logs in " logsFile)
 		}
 		else {
 			SetTimer,% A_ThisFunc, -10000
