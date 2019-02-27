@@ -535,10 +535,10 @@ CSV_LVSave(FileName, CSV_Identifier, Delimiter=",",OverWrite=1, Gui=1)
       Return 0
   FileDelete, %FileName%
 
-  Loop, %Rows%
+  Loop, % Rows+1
   {
     FullRow =
-    Row := A_Index
+    Row := A_Index-1
     Loop, %Cols%
     {
       LV_GetText(CellData, Row, A_Index)
