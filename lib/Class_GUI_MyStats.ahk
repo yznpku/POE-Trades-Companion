@@ -56,7 +56,7 @@
 		imageBtnLog .= Gui.Add("MyStats", "ImageButton", "x+0 yp w30 hp hwndhBTN_CloseGUI", "X", Style_RedBtn, PROGRAM.FONTS["Segoe UI"], 8)
 
         ; * * Filtering options
-        Gui.Add("MyStats", "GroupBox", "x" leftMost+10 " y+10 w" guiWidth-20 " R6 c000000 hwndhGB_FilteringOptions", "Filtering Options")
+        Gui.Add("MyStats", "GroupBox", "x" leftMost+10 " y+10 w" guiWidth-20 " R9 c000000 hwndhGB_FilteringOptions", "Filtering Options")
         Gui.Add("MyStats", "Text", "x" leftMost+25 " yp+25 w40", "Buyer:")
         Gui.Add("MyStats", "DropDownList", "x+0 yp-2 vvDDL_BuyerFilter hwndhDDL_BuyerFilter w160", "All")
         Gui.Add("MyStats", "Text", "x+20 yp+2 w50", "Item:")
@@ -70,6 +70,9 @@
         Gui.Add("MyStats", "DropDownList", "x+5 yp-2 hwndhDDL_CurrencyFilter w160", "All")
         Gui.Add("MyStats", "Text", "x+20 yp+2 w40", "Tab:")
         Gui.Add("MyStats", "DropDownList", "x+5 yp-2 hwndhDDL_TabFilter w160", "All")
+
+		ctrlPos := Get_ControlCoords("MyStats", GuiMyStats_Controls.hDDL_TabFilter)
+		Gui.Add("MyStats", "Button", "x" ctrlPos.X+ctrlPos.W-100 " y+10 w100 hwndhBTN_ExportAsCSV", "Export as .CSV")
 
         ; * * Stats list
         Gui.Add("MyStats", "ListView", "x" leftMost+10 " y+30 w" guiWidth-20 " R17 hwndhLV_Stats", "#|Date|Time|Guild|Buyer|Item|Price|League|Tab|Other")
@@ -137,9 +140,10 @@
 					StringTrimLeft, trimmedCtrl, loopedCtrl, 5
 					__f := GUI_MyStats.SetFilter.bind(GUI_MyStats, trimmedCtrl, filterContent:="")
 				}
-				else if (loopedCtrl = "hLV_Stats") {
+				else if (loopedCtrl = "hLV_Stats")
 					__f := GUI_MyStats.OnLVClick.bind(GUI_MyStats)
-				}
+				else if (loopedCtrl = "hBTN_ExportAsCSV")
+					__f := GUI_MYStats.ExportCurrentListAsCSV.bind(GUI_MYStats)
 				else
 					__f := 
 
@@ -147,6 +151,23 @@
 					GuiControl, MyStats:+g,% GuiMyStats_Controls[loopedCtrl],% __f 
 			}
 		}
+	}
+
+	ExportCurrentListAsCSV() {
+		global PROGRAM, GuiMyStats_Controls
+		GUI_MyStats.SetDefaultListView("hLV_Stats") ; neccessary to use LV cmds
+
+		; Setting file path
+		filePath := PROGRAM.MAIN_FOLDER "\Exported_Stats_" A_Now
+		if FileExist(filePath ".csv")
+			filePath := filePath "_" RandomStr(5)
+		; Saving file as CSV
+		filePath := filePath ".csv"
+		CSV_LVSave(filePath, GuiMyStats_Controls.hLV_Stats, "`t", OverWrite:=True, "MyStats")
+		; Showing tray notification and opening locaion folder
+		SplitPath, filePath, fileName, fileFolder
+		TrayNotifications.Show("Stats exported", "Successfully exported stats as " fileName)
+		Run, %fileFolder%
 	}
 
 	OnLVClick(hwnd, guiEvent="", eventInfo="") {
@@ -183,7 +204,7 @@
 		global GuiMyStats, GuiMyStats_Controls
 
 		if (CtrlHwnd = GuiMyStats_Controls.hLV_Stats) {
-			GUI_MyStats.SetDefaultListView("hLV_AccountsList")
+			GUI_MyStats.SetDefaultListView("hLV_Stats")
 
             rowID := LV_GetNext(0, "F")
             if (rowID = 0) {
@@ -211,7 +232,7 @@
 		iniFile := PROGRAM.TRADES_HISTORY_FILE
 		rowID := GuiMyStats.SelectedRow
 
-		GUI_MyStats.SetDefaultListView("hLV_AccountsList")
+		GUI_MyStats.SetDefaultListView("hLV_Stats")
 		Loop {
 			LV_GetText(c%A_Index%_title, 0, A_Index)
 			LV_GetText(c%A_Index%_content, rowID, A_Index)
@@ -426,7 +447,7 @@
 
 		GUI_MyStats.FilterList()
 		; Autoadjust col
-		Loop 9
+		Loop % LV_GetCount("Col")
 			LV_ModifyCol(A_Index, "AutoHdr NoSort")
 		LV_ModifyCol(10, "NoSort")
 		LV_ModifyCol(10, 100)
@@ -455,7 +476,7 @@
 	}
 
     Resize() {
-        global GuiMyStats_Controls
+        global GuiMyStats, GuiMyStats_Controls
 
         ; Borders
 		GuiControl, MyStats:Move,% GuiMyStats_Controls.hTEXT_Borders,% "x0 y0 w" A_GuiWidth " h" A_GuiHeight

@@ -359,7 +359,7 @@ Return
 #Include Class_ImageButton.ahk
 #Include Clip.ahk
 #Include cURL.ahk
-; #Include CSV.ahk
+#Include CSV.ahk
 #Include Download.ahk
 #Include Extract2Folder.ahk
 #Include FGP.ahk
