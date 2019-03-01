@@ -91,7 +91,7 @@ Start_Script() {
 
 	; Set global - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	PROGRAM.NAME					:= "POE Trades Companion"
-	PROGRAM.VERSION 				:= "1.13.6"
+	PROGRAM.VERSION 				:= "1.13.7"
 	PROGRAM.IS_BETA					:= IsContaining(PROGRAM.VERSION, "beta")?"True":"False"
 
 	PROGRAM.GITHUB_USER 			:= "lemasato"
@@ -175,8 +175,6 @@ Start_Script() {
 	; Logs files
 	Create_LogsFile()
 	Delete_OldLogsFile()
-
-	
 
 	if (!RUNTIME_PARAMETERS.NewInstance)
 		Close_PreviousInstance()

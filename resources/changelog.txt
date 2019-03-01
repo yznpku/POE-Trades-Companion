@@ -1,3 +1,45 @@
+1.13.7 (01 March 2019)
+	Features:
+	- Compact minimized interface.
+	The interface will now take much less space when minimized.
+	By default, the minimized interface position will be based on it's top-right corner.
+	This setting can be changed so that the position is based on the bottom-left corner instead.
+	
+	- Item Grid now shows the map tier and map case position (for map stash tab), in addition to the map item position which was already being shown.
+	
+	- Added a new action: "Close other tabs for same item".
+	It was previously only available when right clicking a tab's close button.
+	This action allows to close any other tab containing an item with the same name, price and stash location.
+	
+	- Right clicking the tab close button now also allows to close all tabs at once.
+	- Right clicking anywhere on the interface now shows the tray menu.
+	- Exporting stats as a .csv file is now possible, from the My Stats interface.
+	- Item Grid: Now also shows the item name (in addition to the stash tab name which was already being shown).
+	- Item Grid: Allow to hide normal stash tabs item location. Disabled by default.
+	- Item Grid: Allow to hide quad stash tabs item location. Disabled by default.
+	- Item Grid: Allow to, When the item is a map, hide both normal and quad stash tabs locations, so that only map stash tab location is shown. Enabled by default.
+	- Remove entries from Stats, by right clicking on them and selecting the corresponding choice.
+	- Reset position, available from the tray menu.
+	
+	Changes / Improvements:
+	- Re-enabled auto-running as admin.
+	- Reduced the default "No tab remaining" default transparency to 0% (from 30%).
+	- In case the tool is unable to interact with the game window because it (the game) is running as admin and the tool is running non-elevated, you will get a prompt to automatically reload as admin. This change can mostly be ignored as auto-admin start has been re-enabled, and thus will only prove to be useful if using the /SkipAdmin run-time parameter.
+	- Notification when the tool detects and starts monitoring your game chat logs file.
+	
+	Fixes:
+	- Pressing Ctrl+Shift+Click while having the tool running would send a simple Ctrl+Click combination.
+	While this fix sounds specific, it's actually related to an hotkey built in the tool.
+	On currency trades, pressing Ctrl+Shift+Click on the currency item will allow you to get the amount just right so you don't have to count.
+	This feature was never really advertised altough it can prove to be very useful. More about it can now be read on the tool's GitHub page.
+	- Changelogs would only be shown after updating with the executable version.
+	- Several scaling-related issues have been fixed.
+	- Several tab-style (green and purple) related issues have been fixed.	
+	- Sending normal chat messages (non party/guild/global etc) wouldn't clear the chat prior to sending the message.
+	- While using "Mode: Window", "Lock position?" would always be disabled on next application load.
+	
+= = = = = = = = = = = = =	
+
 1.13.6 (13 Nov 2018)
 	Changes / Improvements:
 	- Improved the actions list for Custom Buttons and Advanced Hotkeys.
