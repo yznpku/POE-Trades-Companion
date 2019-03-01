@@ -7,9 +7,13 @@
 POE Trades Companion is and will always be free to use.  
 Your name will appear on a special "Hall of Fame" tab within the application and also on [this page](https://github.com/lemasato/POE-Trades-Companion/wiki/Support)!  
 
-If needed, you can contact me on **[Reddit](https://www.reddit.com/user/lemasato)** - **[GGG Forums Thread](https://www.pathofexile.com/forum/view-thread/1755148)**  - **[GGG Forums PM](https://www.pathofexile.com/account/view-profile/z0rhawk)** - **[Discord](https://discord.gg/UMxqtfC)**
+Join the official discord channel!  
+<a href="https://discord.gg/UMxqtfC"><img src="https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/resources/imgs/Discord_big.png" height=50></a>
 
-<a href="https://discord.gg/UMxqtfC"><img src="https://discordapp.com/assets/e4923594e694a21542a489471ecffa50.svg" height=50></a>
+If needed, you can contact me on:  
+<a href="https://www.pathofexile.com/forum/view-thread/1755148/"><img src="https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/resources/imgs/POE_big.png" height=30></a>&nbsp;&nbsp;&nbsp;
+<a href="https://discord.gg/UMxqtfC"><img src="https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/resources/imgs/Discord_big.png" height=30></a>&nbsp;&nbsp;&nbsp;
+<a href="https://www.reddit.com/user/lemasato/submitted/"><img src="https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/resources/imgs/Reddit_big.png" height=30></a>  
 
 ***
 
@@ -82,7 +86,7 @@ If interested, you may as well **[make your own skin](https://github.com/lemasat
 
 ## Interface
 
-<img src="https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/others/Help/Trades%20Interface.png">
+<img src="https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/screenshots/Main%20interface.png">
 
 ## Price checking
 
@@ -128,28 +132,28 @@ Note that this feature also shows your item name and stash tab name to make find
 <details>
     <summary>Settings Main tab
     <br>Set the behaviour of the interface.</summary>
-        <img src="https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/others/Help/Settings 1-Main.png">
+        <img src="https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/screenshots/Settings 1-Main.png">
 </details>
 &nbsp;  
     
 <details>
     <summary>Customization Skins tab
     <br>Change the skin, or adjust it to your likings.</summary>
-        <img src="https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/others/Help/Settings 2-Skins.png">
+        <img src="https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/screenshots/Settings 2-Skins.png">
 </details>
 &nbsp;  
     
 <details>
     <summary>Customization Buttons tab
     <br>Move, disable, rename, customize your buttons.</summary>
-        <img src="https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/others/Help/Settings 3-Buttons.png">
+        <img src="https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/screenshots/Settings 3-Buttons.png">
 </details>
 &nbsp;  
     
 <details>
     <summary>Hotkeys Basic tab
     <br>Set-up simple hotkeys limited to one action.</summary>
-        <img src="https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/others/Help/Settings 4-Basic.png">
+        <img src="https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/screenshots/Settings 4-Basic.png">
 </details>
 &nbsp;  
 
@@ -160,7 +164,7 @@ Note that this feature also shows your item name and stash tab name to make find
     <br>In such cases, switch to a manual hotkey by using the "HK Type Switch" button.
     <br>https://autohotkey.com/docs/Hotkeys.htm
     <br>https://autohotkey.com/docs/KeyList.htm</summary>
-        <img src="https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/others/Help/Settings 5-Advanced.png">
+        <img src="https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/screenshots/Settings 5-Advanced.png">
 </details>
 &nbsp;  
     
