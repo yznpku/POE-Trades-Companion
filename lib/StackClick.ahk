@@ -4,17 +4,19 @@
 
 	activeTab := GUI_Trades.GetActiveTab()
 	if !IsNum(activeTab) {
-		GoSub %A_ThisFunc%_CtrlShiftClick
+		GoSub %A_ThisFunc%_SendHotkeyKeys
 		return
 	}
-
+static LongCopy
 	LongCopy := A_TickCount, Clipboard := "", LongCopy -= A_TickCount
-	SendInput {Shift Up}^{sc02E} ; Ctrl+C
+	SendInput ^{sc02E} ; Ctrl+C
 
 	; wait for the clipboard and do nothing if it fails 
+	
 	ClipWait,% LongCopy ? 0.6 : 0.2, 1
 	if (ErrorLevel) {
-		ShowToolTip(PROGRAM.NAME "'s StackClick function timed out due`nto the clipboard not updating in time.")
+		GoSub %A_ThisFunc%_SendHotkeyKeys
+		; ShowToolTip(PROGRAM.NAME "'s StackClick function timed out due`nto the clipboard not updating in time.")
 		return
 	}
 	clip := Clipboard
@@ -72,7 +74,7 @@
 			lastAvailable := available
 		}
 	} else {
-		Gosub %A_ThisFunc%_CtrlShiftClick
+		Gosub %A_ThisFunc%_SendHotkeyKeys
 	}
 	; lastTime := A_Now A_MSec
 	return
@@ -83,10 +85,8 @@
 		SendInput {Ctrl Down}{Shift Up}{Lbutton Up}{Ctrl Up}
 		Gosub %A_ThisFunc%_ReturnKeyStates
 	return
-	StackClick_CtrlShiftClick:
-	Gosub %A_ThisFunc%_GetKeyStates
-		SendInput {Ctrl Down}{Shift Down}{Lbutton Up}{Shift Up}{Ctrl Up}
-		Gosub %A_ThisFunc%_ReturnKeyStates
+	StackClick_SendHotkeyKeys:
+		SendInput % Transform_AHKHotkeyString_Into_InputSring(A_ThisHotkey)
 	return
 	StackClick_ShiftClickPlus:
 		Gosub %A_ThisFunc%_GetKeyStates
