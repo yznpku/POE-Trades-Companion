@@ -1152,179 +1152,128 @@
 	}
 
 	VerifyItemPrice(tabInfos) {
-		global PROGRAM, SKIN
+		global PROGRAM
+
+
 		accounts := PROGRAM.SETTINGS.SETTINGS_MAIN.PoeAccounts
 
-		if RegExMatch(tabInfos.Item, "iO)(\d+\.\d+|\d+) (\D+)", itemPat) { ; its a currency trade
-			RegExMatch(tabInfos.Price, "iO)(\d+\.\d+|\d+) (\D+)", pricePat)
-			wantCount := itemPat.1, wantWhat := itemPat.2
-			wantCurInfos := Get_CurrencyInfos(wantWhat)
-			wantFullName := wantCurInfos.Name, wantID := PROGRAM["DATA"]["POETRADE_CURRENCY_DATA"][wantFullName].ID, isWantListed := wantCurInfos.Is_Listed
-			giveCount := pricePat.1, giveWhat := pricePat.2
-			giveCurInfos := Get_CurrencyInfos(giveWhat)
-			giveFullName := giveCurInfos.Name, giveID := PROGRAM["DATA"]["POETRADE_CURRENCY_DATA"][giveFullName].ID, isGiveListed := giveCurInfos.Is_Listed
-			sellBuyRatio := RemoveTrailingZeroes(wantCount/giveCount)
-
-			Loop, Parse, accounts,% ","
-			{
-				poeTradeObj := {"league": tabInfos.StashLeague, "online": "x", "want": wantID, "have": giveID}
-				itemURL := PoeTrade_GetCurrencySearchUrl(poeTradeObj)
-
-				poeTradeObj.username := A_LoopField
-				poeTradeObj.sellcurrency := wantID, poeTradeObj.sellvalue := wantCount
-				poeTradeObj.buycurrency := giveID, poeTradeObj.buyvalue := giveCount
-				poeTradeObj.sellBuyRatio := sellBuyRatio
-
-				if (itemURL)
-					matchingObj := PoETrade_GetMatchingCurrencyTradeData(poeTradeObj, itemURL)
-
-				if matchingObj.MaxIndex() {
-					foundMatch := True
-					Break
-				}
-			}
-
-			tabID := GUI_Trades.GetTabNumberFromUniqueID(tabInfos.UniqueID)
-
-			_infos .= ""
-			if (foundMatch) {
-				Loop % matchingObj.MaxIndex() { ; Loop through matchs
-					legitRatio := matchingObj[A_Index].IsSameRatio
-					ratioTxt := "poe.trade: 1 " giveFullName " = " matchingObj[A_Index].sellBuyRatio " " wantFullName
-						. "\nwhisper: 1 " giveFullName " = " sellBuyRatio " " wantFullName
-					
-					if (legitRatio=True) { ; If ratio is the same
-						_infos := "Ratio is the same."
-						. "\n" ratioTxt
-						vColor := "Green"
-						Break
-					}
-					else if (matchingObj[A_Index].sellBuyRatio > sellBuyRatio) { ; Or if ratio is higher
-						_infos := "Ratio is higher."
-						. "\n" ratioTxt
-						vColor := "Green"
-						Break
-					}
-					else { ; Otherwise, currency either not listed or ratio modified
-						if (!isWantListed || !isGiveListed) {
-							wantListedInfos := isWantListed=True?"" : "\nUnknown currency type: """ wantFullName """"
-							giveListedInfos := isGiveListed=True?"" : "\nUnknown currency type: """ giveFullName """"
-							_infos := wantListedInfos . giveListedInfos "\nPlease report it."
-							vColor := "Orange"
-						}
-						else {
-							_infos := "Ratio is lower."
-							. "\n" ratioTxt
-							vColor := "Red"
-						}
-					}
-				}
-			}
-			else {
-				if (tabInfos.WhisperLang != "ENG") {
-					_infos := "Cannot verify price for"
-					. "\npathofexile.com/trade translated whispers."
-					vColor := "Orange"
-				}
-				else {
-					_infos := "Could not find any item matching the same currency trade."
-					. "\nMake sure to set your account name in the settings."
-					. "\nAccounts: " accounts
-					vColor := "Orange"
-				}
-			}
-
-			GUI_Trades.SetTabVerifyColor(tabID, vColor)
-			GUI_Trades.UpdateSlotContent(tabID, "TradeVerifyInfos", _infos)
-		}
-		else { ; its a regular trade
-			itemQualNoPercent := StrReplace(tabInfos.ItemQuality, "%", "")
-			RegExMatch(tabInfos.StashPosition, "O)(.*);(.*)", stashPosPat)
-			stashPosX := stashPosPat.1, stashPosY := stashPosPat.2
-			RegExMatch(tabInfos.Price, "O)(\d+\.\d+|\d+) (\D+)", pricePat)
-			priceNum := pricePat.1, priceCurrency := pricePat.2
-			AutoTrimStr(priceNum, pricePat)
+		if (accounts) { ; its a regular trade
+		    itemQualNoPercent := StrReplace(tabInfos.ItemQuality, "%", "")
+		    RegExMatch(tabInfos.StashPosition, "O)(.*);(.*)", stashPosPat)
+		    stashPosX := stashPosPat.1, stashPosY := stashPosPat.2
+		    RegExMatch(tabInfos.Price, "O)(\d+\.\d+|\d+) (\D+)", pricePat)
+		    priceNum := pricePat.1, priceCurrency := pricePat.2
+		    AutoTrimStr(priceNum, pricePat)
 			
-			currencyInfos := Get_CurrencyInfos(priceCurrency)
-			poeTradeCurrencyName := PoeTrade_Get_CurrencyAbridgedName_From_FullName(currencyInfos.Name)
-			poeTradePrice := priceNum " " poeTradeCurrencyName
+		    currencyInfos := Get_CurrencyInfos(priceCurrency)
+		    poeTradeCurrencyName := PoeTrade_Get_CurrencyAbridgedName_From_FullName(currencyInfos.Name)
+		    poeTradePrice := priceNum " " poeTradeCurrencyName
 
-			Loop, Parse, accounts,% ","
-			{
-				poeTradeObj := {"name": tabInfos.ItemName, "buyout": poeTradePrice
-				, "level_min": tabInfos.ItemLevel, "level_max": tabInfos.ItemLevel
-				, "q_min": itemQualNoPercent, "q_max": itemQualNoPercent
-				, "league": tabInfos.StashLeague, "seller": A_LoopField}
-				itemURL := PoeTrade_GetItemSearchUrl(poeTradeObj)
-				
-				poeTradeObj.seller := A_LoopField, poeTradeObj.level := poeTradeObj.level_max
-				poeTradeObj.quality := poeTradeObj.q_max, poeTradeObj.tab := tabInfos.StashTab
-				poeTradeObj.x := stashPosX,	poeTradeObj.y := stashPosY, poeTradeObj.online := ""
+		    Loop, Parse, accounts,% ","
+		    {
+		        poeTradeObj := {"name": tabInfos.ItemName, "buyout": poeTradePrice
+		        , "level_min": tabInfos.ItemLevel, "level_max": tabInfos.ItemLevel
+		        , "q_min": itemQualNoPercent, "q_max": itemQualNoPercent
+		        , "league": tabInfos.StashLeague, "seller": A_LoopField}
+		        itemURL := PoeTrade_GetItemSearchUrl(poeTradeObj)
 
-				matchingObj := PoeTrade_GetMatchingItemData(poeTradeObj, itemURL)
+		        poeTradeObj.seller := A_LoopField, poeTradeObj.level := poeTradeObj.level_max
+		        poeTradeObj.quality := poeTradeObj.q_max, poeTradeObj.tab := tabInfos.StashTab
+		        poeTradeObj.x := stashPosX,	poeTradeObj.y := stashPosY, poeTradeObj.online := ""
 
-				if IsObject(matchingObj) {
-					foundMatch := True
-					Break
-				}
-			}
+				for key, value in poeTradeObj
+					cmdLineParams .= " /" key "=" """" value """"
+				cmdLineParams .= " /cURL=" """" PROGRAM.CURL_EXECUTABLE """"
+				.	" /itemURL=" """" itemURL """"
+				.	" /UniqueID=" """" tabInfos.UniqueID """"
 
-			tabID := GUI_Trades.GetTabNumberFromUniqueID(tabInfos.UniqueID)
+				GoSub GUI_Trades_VerifyItemPrice_SA
+				return
 
-			_infos := ""
-			if (foundMatch) {
-				RegExMatch(poeTradeObj.buyout, "O)(\d+) (.*)", whisperBuyoutPat), whisper_currencyCount := whisperBuyoutPat.1, whisper_currencyType := whisperBuyoutPat.2
-				RegExMatch(matchingObj.buyout, "O)(\d+) (.*)", poeTradeBuyoutPat), poeTrade_currencyCount := poeTradeBuyoutPat.1, poeTrade_currencyType := poeTradeBuyoutPat.2
+		        if IsObject(matchingObj) {
+		            foundMatch := True
+		            Break
+		        }
+		    }
 
-				if (poeTradeObj.buyout = matchingObj.buyout) {
-					_infos := "Price confirmed legit."
-					. "\npoe.trade: `t" matchingObj.buyout
-					. "\nwhisper: `t`t" poeTradeObj.buyout
-					vColor := "Green"
-				}
-				else if (poeTrade_currencyType=whisper_currencyType && whisper_currencyCount >= poeTrade_currencyCount) {
-					_infos := "Price is higher."
-					. "\npoe.trade: `t" matchingObj.buyout
-					. "\nwhisper: `t`t" poeTradeObj.buyout
-					vColor := "Green"
-				}
-				else {
-					if (currencyInfos.Name = "") {
-						_infos := "/!\ Cannot verify unpriced items yet. /!\"
-						vColor := "Orange"
+		    tabID := GUI_Trades.GetTabNumberFromUniqueID(tabInfos.UniqueID)
+
+		    _infos := ""
+		    if (foundMatch) {
+		        RegExMatch(poeTradeObj.buyout, "O)(\d+) (.*)", whisperBuyoutPat), whisper_currencyCount := whisperBuyoutPat.1, whisper_currencyType := whisperBuyoutPat.2
+		        RegExMatch(matchingObj.buyout, "O)(\d+) (.*)", poeTradeBuyoutPat), poeTrade_currencyCount := poeTradeBuyoutPat.1, poeTrade_currencyType := poeTradeBuyoutPat.2
+
+		        if (poeTradeObj.buyout = matchingObj.buyout) {
+		            _infos := "Price confirmed legit."
+		            . "\npoe.trade: `t" matchingObj.buyout
+		            . "\nwhisper: `t`t" poeTradeObj.buyout
+		            vColor := "Green"
+		        }
+		        else if (poeTrade_currencyType=whisper_currencyType && whisper_currencyCount >= poeTrade_currencyCount) {
+		            _infos := "Price is higher."
+		            . "\npoe.trade: `t" matchingObj.buyout
+		            . "\nwhisper: `t`t" poeTradeObj.buyout
+		            vColor := "Green"
+		        }
+		        else {
+		            if (currencyInfos.Name = "") {
+		                _infos := "/!\ Cannot verify unpriced items yet. /!\"
+		                vColor := "Orange"
 						
-					}
-					else if (!currencyInfos.Is_Listed) {
-						_infos := "Unknown currency name: """ currencyInfos.Name """"
-						. "\nPlease report it."
-						vColor := "Orange"
-					}
-					else if (currencyInfos.Is_Listed && poeTradeObj.buyout != matchingObj.buyout) {
-						_infos := "Price is different."
-						. "\npoe.trade: `t" matchingObj.buyout
-						. "\nwhisper: `t`t" poeTradeObj.buyout
-						vColor := "Red"
-					}
+		            }
+		            else if (!currencyInfos.Is_Listed) {
+		                _infos := "Unknown currency name: """ currencyInfos.Name """"
+		                . "\nPlease report it."
+		                vColor := "Orange"
+		            }
+		            else if (currencyInfos.Is_Listed && poeTradeObj.buyout != matchingObj.buyout) {
+		                _infos := "Price is different."
+		                . "\npoe.trade: `t" matchingObj.buyout
+		                . "\nwhisper: `t`t" poeTradeObj.buyout
+		                vColor := "Red"
+		            }
 
-				}
-			}
-			else {
-				if (tabInfos.WhisperLang != "ENG") {
-					_infos := "Cannot verify price for"
-					. "\npathofexile.com/trade translated whispers."
-					vColor := "Orange"
-				}
-				else {
-					_infos := "Could not find any item matching the same stash location"
-					. "\nMake sure to set your account name in the settings."
-					. "\nAccounts: " accounts
-					vColor := "Orange"
-				}
-			}
+		        }
+		    }
+		    else {
+		        if (tabInfos.WhisperLang != "ENG") {
+		            _infos := "Cannot verify price for"
+		            . "\npathofexile.com/trade translated whispers."
+		            vColor := "Orange"
+		        }
+		        else {
+		            _infos := "Could not find any item matching the same stash location"
+		            . "\nMake sure to set your account name in the settings."
+		            . "\nAccounts: " accounts
+		            vColor := "Orange"
+		        }
+		    }
 
-			GUI_Trades.SetTabVerifyColor(tabID, vColor)
-			GUI_Trades.UpdateSlotContent(tabID, "TradeVerifyInfos", _infos)
+		    GUI_Trades.SetTabVerifyColor(tabID, vColor)
+		    GUI_Trades.UpdateSlotContent(tabID, "TradeVerifyInfos", _infos)
 		}
+		return
+
+
+
+		GUI_Trades_VerifyItemPrice_SA:
+			global GuiIntercom, GuiIntercom_Controls
+
+			intercomSlotNum := GUI_Intercom.GetNextAvailableSlot()
+			intercomSlotHandle := GUI_Intercom.GetSlotHandle(intercomSlotNum)
+			GUI_Intercom.ReserveSlot(intercomSlot)
+
+			cl := DllCall( "GetCommandLine", "str" )
+			StringMid, path_AHk, cl, 2, InStr( cl, """", true, 2 )-2
+
+			saFile := A_ScriptDir "\lib\SA_PriceVerify.ahk"
+			saFile_run_cmd := % """" path_AHk """" " /r " """" saFile """"
+			.		" " cmdLineParams
+			.		" /IntercomHandle=" GuiIntercom.Handle
+			.		" /IntercomSlotHandle=" intercomSlotHandle
+			
+			Run,% saFile_run_cmd,% A_ScriptDir
+		return
 	}
 
 	SetTabVerifyColor(tabID, colour) {
@@ -2280,6 +2229,16 @@
 			}
 		}
 	}
+}
+
+GUI_Trades_GetTabNumberFromUniqueID(params*) {
+	GUI_Trades.GetTabNumberFromUniqueID(params*)
+}
+GUI_Trades_SetTabVerifyColor(params*) {
+	GUI_Trades.SetTabVerifyColor(params*)
+}
+GUI_Trades_UpdateSlotContent(params*) {
+	GUI_Trades.UpdateSlotContent(params*)
 }
 
 GUI_Trades_SelectTab:
