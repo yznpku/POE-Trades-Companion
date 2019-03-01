@@ -23,6 +23,7 @@
 	
 	Changes / Improvements:
 	- Re-enabled auto-running as admin.
+	- Currency easy trade hotkey changed to Alt+Click (previously Ctrl+Shift+Click).
 	- Reduced the default "No tab remaining" default transparency to 0% (from 30%).
 	- In case the tool is unable to interact with the game window because it (the game) is running as admin and the tool is running non-elevated, you will get a prompt to automatically reload as admin. This change can mostly be ignored as auto-admin start has been re-enabled, and thus will only prove to be useful if using the /SkipAdmin run-time parameter.
 	- Notification when the tool detects and starts monitoring your game chat logs file.
