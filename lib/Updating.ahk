@@ -185,19 +185,19 @@ DownloadAndRunUpdater(dl="") {
 
 		if !(folder) {
 			MsgBox(4096+16, "", "Couldn't locate the folder containing updated files.`nPlease try updating manually.")
-			FileRemoveDir, updateFolder, 1
+			FileRemoveDir,% updateFolder, 1
 			return
 		}
 
 		FileCopyDir,% folder,% A_ScriptDir, 1
 		if (ErrorLevel) {
 			MsgBox(4096+16, "", "Failed to copy the new files into the folder.`nPlease try updating manually.")
-			FileRemoveDir, updateFolder, 1
+			FileRemoveDir,% updateFolder, 1
 			return
 		}
 
 		INI.Set(PROGRAM.INI_FILE, "GENERAL", "ShowChangelog", "True")
-		FileRemoveDir, updateFolder, 1
+		FileRemoveDir,% updateFolder, 1
 		Reload()
 	}
 	else {
