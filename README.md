@@ -115,6 +115,24 @@ Note that this feature also shows your item name and stash tab name to make find
 
 <img src=https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/screenshots/ItemGrid%20Maps.png width=300> <img src=https://raw.githubusercontent.com/lemasato/POE-Trades-Companion/master/screenshots/ItemGrid%20Normal.png width=300>
 
+## Easily trade currency with an hotkey  
+
+For currency trades, you can take advantage of a special built-in hotkey.  
+It allows you to get just the right amount of currency asked.  
+
+Press Ctrl+Shift+Click while hovering the currency type.  
+Based on the currency max stack and the amount requested, it will move a stack of currency in your inventory (like Ctrl+Click) or put the currency on your cursor (like Shift+Click).  
+
+For example, your buyer requests 56 chaos orbs.  
+Chaos orbs are stacked by 10.  
+This means you will have to Ctrl+Shift+Click at least 6 times to get the currency requested.  
+The first 5 clicks will act as Ctrl+Click and the last 6th one will serve as "Shift+Click, send 6, send Enter" to put the last remaining 6 chaos on your cursor.
+
+**It is safe to spam this hotkey.**  
+You will not accidently take too much of the currency.  
+There are countermeasure to avoid latency lags. Also, once you got what is being requested, the hotkey is disabled.  
+
+(.gif will come later to showcase this feature more easily)
 
 ## Stats
 
