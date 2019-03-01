@@ -1,6 +1,10 @@
 ﻿#SingleInstance, Force
 #NoEnv
 
+if (!A_IsAdmin) {
+	ReloadWithParams("", getCurrentParams:=True, asAdmin:=True)
+}
+
 PROGRAM := {"CURL_EXECUTABLE": A_ScriptDir "\lib\third-party\curl.exe"}
 generateCurrencyData := True
 generateLeagueTxt := True
@@ -107,8 +111,25 @@ CompileFile(source, dest, fileDesc="NONE", fileVer="NONE", fileCopyright="NONE")
 	}
 }
 
+ReloadWithParams(params, getCurrentParams=False, asAdmin=False) {
+	if (getCurrentParams) {
+		params .= " " Get_CmdLineParameters()
+	}
+
+	if (asAdmin)
+		runMode := "RunAs"
+	else runMode := ""
+
+	Sleep 10
+	DllCall("shell32\ShellExecute" (A_IsUnicode ? "":"A"),uint,0,str,runMode,str,(A_IsCompiled ? A_ScriptFullPath
+	: A_AhkPath),str,(A_IsCompiled ? "": """" . A_ScriptFullPath . """" . A_Space) params,str,A_WorkingDir,int,1)
+	ExitApp
+	Sleep 10000
+}
+
 #Include %A_ScriptDir%\lib\
 #Include CompileAhk2Exe.ahk
+#Include CmdLineParameters.ahk
 #Include EasyFuncs.ahk
 #Include Logs.ahk
 #Include SetFileInfos.ahk
