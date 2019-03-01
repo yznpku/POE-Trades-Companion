@@ -33,6 +33,7 @@
 	On currency trades, pressing Ctrl+Shift+Click on the currency item will allow you to get the amount just right so you don't have to count.
 	This feature was never really advertised altough it can prove to be very useful. More about it can now be read on the tool's GitHub page.
 	- Changelogs would only be shown after updating with the executable version.
+	- Not deleting the update folder after updating (only when using AHK version).
 	- Several scaling-related issues have been fixed.
 	- Several tab-style (green and purple) related issues have been fixed.	
 	- Sending normal chat messages (non party/guild/global etc) wouldn't clear the chat prior to sending the message.
