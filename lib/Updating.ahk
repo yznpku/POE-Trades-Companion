@@ -196,6 +196,7 @@ DownloadAndRunUpdater(dl="") {
 			return
 		}
 
+		INI.Set(PROGRAM.INI_FILE, "GENERAL", "ShowChangelog", "True")
 		FileRemoveDir, updateFolder, 1
 		Reload()
 	}
