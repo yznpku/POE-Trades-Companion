@@ -1,4 +1,5 @@
 1.13.7 (01 March 2019)
+	1.13.9 (01 March 2019): Fixed min/max issues with the "Hide the interface when not in game?" setting enabled.
 	1.13.8 (01 March 2019): Temporarily disabled new Alt+Click hotkey due to conflicts with POE default item pickup settings.
 
 	Features:
