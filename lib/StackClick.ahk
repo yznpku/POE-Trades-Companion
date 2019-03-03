@@ -1,10 +1,10 @@
 ﻿StackClick() {
-	global PROGRAM
+	global PROGRAM, GuiTrades
 	static lastAvailable, lastTime
 
 	activeTab := GUI_Trades.GetActiveTab()
 	tabContent := GUI_Trades.GetTabContent(activeTab)
-	if !IsNum(activeTab) || !RegExMatch(tabContent.Item, "\d+") { ; No tabs or not currency trade
+	if !IsNum(activeTab) || !RegExMatch(tabContent.Item, "\d+") || (GuiTrades.Is_Minimized = True) { ; No tabs || not currency trade || gui minimized
 		GoSub %A_ThisFunc%_SendHotkeyKeys
 		return
 	}
