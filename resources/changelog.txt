@@ -1,6 +1,18 @@
+= = = = = = = = = = = = =	
+1.13.10 (03 March 2019)
+	- Re-enabled the new currency trading hotkey. It has been changed to Ctrl+RightClick
+	Additionally, it will only be triggered if the interface is not minimized.
+	- Auto-updating (without prompt) has been enabled for the .ahk script.
+	It was previously only enabled for the executable version.
+	Can be toggled from the Updating sub-tab of the Settings interface.
+
+1.13.9 (01 March 2019) Hotfix
+	- Fixed min/max issues with the "Hide the interface when not in game?" setting enabled.
+	
+1.13.8 (01 March 2019) Hotfix
+	- Temporarily disabled new Alt+Click hotkey due to conflicts with POE default item pickup settings.
+	
 1.13.7 (01 March 2019)
-	1.13.9 (01 March 2019): Fixed min/max issues with the "Hide the interface when not in game?" setting enabled.
-	1.13.8 (01 March 2019): Temporarily disabled new Alt+Click hotkey due to conflicts with POE default item pickup settings.
 
 	Features:
 	- Compact minimized interface.
@@ -44,7 +56,6 @@
 	- While using "Mode: Window", "Lock position?" would always be disabled on next application load.
 	
 = = = = = = = = = = = = =	
-
 1.13.6 (13 Nov 2018)
 	Changes / Improvements:
 	- Improved the actions list for Custom Buttons and Advanced Hotkeys.
