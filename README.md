@@ -120,17 +120,15 @@ Note that this feature also shows your item name and stash tab name to make find
 For currency trades, you can take advantage of a special built-in hotkey.  
 It allows you to get just the right amount of currency asked.  
 
-**Press Alt+Click while hovering the currency type.**  
+**Press Ctrl+RightClick while hovering the currency type.**  
 Based on the currency max stack and the amount requested, it will move a stack of currency in your inventory (like Ctrl+Click) or put the currency on your cursor (like Shift+Click).  
 
 For example, your buyer requests 56 chaos orbs.  
 Chaos orbs are stacked by 10.  
-This means you will have to Alt+Click at least 6 times to get the currency requested.  
+This means you will have to Ctrl+RightClick at least 6 times to get the currency requested.  
 The first 5 clicks will act as Ctrl+Click (moving 5 stacks on your inventory) and the last 6th one will serve as "Shift+Click, send 6, send Enter" to put the last remaining 6 chaos on your cursor.
 
-**It is safe to spam this hotkey.**  
-You will not accidently take too much of the currency.  
-There are countermeasure to avoid latency lags. Also, once you got what is being requested, the hotkey is disabled.  
+While it should be safe to "spam" this hotkey (because there are some countermeasure to prevent you from taking too much of said currency in case of lag, and once you've got enough of said currency the hotkey will notify you) some issues can happen with in-game latency.  
 
 (.gif will come later to showcase this feature more easily)
 
