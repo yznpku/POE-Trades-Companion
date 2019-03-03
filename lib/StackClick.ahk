@@ -3,30 +3,23 @@
 	static lastAvailable, lastTime
 
 	activeTab := GUI_Trades.GetActiveTab()
-	if !IsNum(activeTab) {
+	tabContent := GUI_Trades.GetTabContent(activeTab)
+	if !IsNum(activeTab) || !RegExMatch(tabContent.Item, "\d+") { ; No tabs or not currency trade
 		GoSub %A_ThisFunc%_SendHotkeyKeys
 		return
 	}
-static LongCopy
 	LongCopy := A_TickCount, Clipboard := "", LongCopy -= A_TickCount
 	SendInput ^{sc02E} ; Ctrl+C
 
 	; wait for the clipboard and do nothing if it fails 
-	
 	ClipWait,% LongCopy ? 0.6 : 0.2, 1
 	if (ErrorLevel) {
 		GoSub %A_ThisFunc%_SendHotkeyKeys
-		; ShowToolTip(PROGRAM.NAME "'s StackClick function timed out due`nto the clipboard not updating in time.")
+		ShowToolTip(PROGRAM.NAME "'s StackClick function timed out due`nto the clipboard not updating in time.")
 		return
 	}
 	clip := Clipboard
 
-	; if !(lastTime)
-		; lastTime := 19940426000000000
-	; timeSince := A_Now A_MSec
-	; timeSince -= lastTime
-
-	tabContent := GUI_Trades.GetTabContent(activeTab)
 	item := Get_CurrencyInfos(tabContent.Item).Name
 
 	if (item && RegExMatch(clip, "i)(?:" item ")[\s\S]*: (\d+(?:[,.]\d+)*)\/(\d+(?:[,.]\d+)*)", match)) {
@@ -39,9 +32,11 @@ static LongCopy
 
 		; if available amount hasn't changed, it's likely the previous click hasn't gone through yet
 		if (available = lastAvailable) {
-			tipInfo := "Stack size hasn't changed since your last click. `n"
-			tipInfo .= "This is normaly caused by latency issues but `n"
-			tipInfo .= "could mean the macro has run into problems"
+			tipInfo := "Stack size hasn't changed since your last click."
+			. "`n" "This is normaly caused by latency issues but"
+			. "`n" "could mean the macro has run into problems."
+			. "`n" "Press Ctrl+Click if you think everything is fine and"
+			. "`n" "need at least one more stack of currency1"
 			Gosub %A_ThisFunc%_ShowToolTip
 			return
 		}
@@ -81,31 +76,43 @@ static LongCopy
 
 	; Using these because ^{LButton} was finicky, sometimes including shifts or not executing properly
 	StackClick_CtrlClick:
-		Gosub %A_ThisFunc%_GetKeyStates
-		SendInput {Ctrl Down}{Shift Up}{Lbutton Up}{Ctrl Up}
-		Gosub %A_ThisFunc%_ReturnKeyStates
+		Gosub %A_ThisFunc%_GetModifiersStates
+		SendInput {Ctrl Down}{LButton}{Ctrl Up}
+		Gosub %A_ThisFunc%_ReturnModifiersStates
 	return
 	StackClick_SendHotkeyKeys:
 		SendInput % Transform_AHKHotkeyString_Into_InputSring(A_ThisHotkey)
 	return
 	StackClick_ShiftClickPlus:
-		Gosub %A_ThisFunc%_GetKeyStates
-		SendInput {Shift Down}{Ctrl Up}{LButton Up}{Shift Up}
+		Gosub %A_ThisFunc%_GetModifiersStates
+		SendInput {Shift Down}{LButton}{Shift Up}
 		SendInput, %amount%{Enter}
-		Gosub %A_ThisFunc%_ReturnKeyStates
+		Gosub %A_ThisFunc%_ReturnModifiersStates
 	return
-	StackClick_GetKeyStates:
-		shiftState := (GetKeyState("Shift"))?("Down"):("Up")
-		ctrlState := (GetKeyState("Ctrl"))?("Down"):("Up")
-		Hotkey, *Shift, DoNothing, On
-		Hotkey, *Ctrl, DoNothing, On
+	StackClick_GetModifiersStates:
+		laltState := (GetKeyState("LAlt"))?("Down"):("Up")
+		raltState := (GetKeyState("RAlt"))?("Down"):("Up")
+		lshiftState := (GetKeyState("LShift"))?("Down"):("Up")
+		rshiftState := (GetKeyState("RShift"))?("Down"):("Up")
+		lctrlState := (GetKeyState("LCtrl"))?("Down"):("Up")
+		rctrlState := (GetKeyState("RCtrl"))?("Down"):("Up")
+		Hotkey, *LAlt, DoNothing, On
+		Hotkey, *RAlt, DoNothing, On
+		Hotkey, *LShift, DoNothing, On
+		Hotkey, *RShift, DoNothing, On
+		Hotkey, *LCtrl, DoNothing, On
+		Hotkey, *RCtrl, DoNothing, On
 		sleep 10
 	return
-	StackClick_ReturnKeyStates:
+	StackClick_ReturnModifiersStates:
 		sleep 10
-		Hotkey, *Shift, DoNothing, Off
-		Hotkey, *Ctrl, DoNothing, Off
-		Send {Shift %shiftState%}{Ctrl %ctrlState%} ; Restore ctrl/shift state
+		Hotkey, *LAlt, DoNothing, Off
+		Hotkey, *RAlt, DoNothing, Off
+		Hotkey, *LShift, DoNothing, Off
+		Hotkey, *RShift, DoNothing, Off
+		Hotkey, *LCtrl, DoNothing, Off
+		Hotkey, *RCtrl, DoNothing, Off
+		SendInput {LAlt %laltState%}{RAlt %raltState%}{LShift %lshiftState%}{RShift %rshiftState%}{RCtrl %rctrlState%}{LCtrl %lctrlState%} ; Restore modifiers
 	return
 	StackClick_Finished: 
 		lastAvailable := 0
@@ -125,6 +132,7 @@ static LongCopy
 		; 	_tip .= "===============================`n"
 		; 	_tip .= tipInfo
 		; }
+		RemoveToolTip()
 		ShowToolTip(_tip)
 	return
 }

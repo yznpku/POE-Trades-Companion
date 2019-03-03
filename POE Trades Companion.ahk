@@ -39,8 +39,8 @@ Menu,Tray,Add,Reload,Tray_Reload
 Menu,Tray,Add,Close,Tray_Exit
 Menu,Tray,Icon
 
-; Hotkey, IfWinActive, ahk_group POEGameGroup
-; Hotkey, !LButton, StackClick
+Hotkey, IfWinActive, ahk_group POEGameGroup
+Hotkey, ^RButton, StackClick
 
 Hotkey, IfWinActive,% "ahk_pid " DllCall("GetCurrentProcessId")
 Hotkey, ~*Space, SpaceRoutine
