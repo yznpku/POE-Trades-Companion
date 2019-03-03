@@ -118,7 +118,7 @@ UpdateCheck(checkType="normal", notifOrBox="notif") {
 	global UPDATE_TAGNAME, UPDATE_DOWNLOAD, UPDATE_NOTES
 	UPDATE_TAGNAME := updTag, UPDATE_DOWNLOAD := updDL, UPDATE_NOTES := updNotes
 
-	if (checkType="on_start") && (autoupdate = "True") && (A_IsCompiled) {
+	if (checkType="on_start") && (autoupdate = "True") {
 		DownloadAndRunUpdater()
 		return
 	}

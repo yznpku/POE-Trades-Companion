@@ -295,6 +295,8 @@ Start_Script() {
 		INI.Set(PROGRAM.INI_FILE, "GENERAL", "ShowChangelog", "False")
 		PROGRAM.SETTINGS.PROGRAM.Show_Changelogs := ""
 		PROGRAM.SETTINGS.GENERAL.ShowChangelog := "False"
+		TrayNotifications.Show(PROGRAM.Name, "Successfully updated to v" PROGRAM.VERSION
+		. "`nTake a look at the new changes!")
 		GUI_Settings.Show("Misc Updating")
 	}
 	
