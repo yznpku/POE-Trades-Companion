@@ -5,7 +5,7 @@
 		static guiCreated, maxTabsToRender
 
 		scaleMult := PROGRAM.SETTINGS.SETTINGS_CUSTOMIZATION_SKINS.ScalingPercentage / 100
-		resDPI := PROGRAM.OS.RESOLUTION_DPI 
+		resDPI := Get_DpiFactor() 
 
 		; Free ImageButton memory
 		for key, value in GuiTradesMinimized_Controls
@@ -126,8 +126,7 @@
 
 	Show() {
 		global PROGRAM, GuiTradesMinimized, GuiTrades
-
-		resDPI := PROGRAM.OS.RESOLUTION_DPI
+		resDPI := Get_DpiFactor()
 
 		; Get Trades GUI pos
 		hiddenWin := A_DetectHiddenWindows

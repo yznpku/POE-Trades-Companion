@@ -1845,8 +1845,8 @@
 
 	ResetPosition(dontWrite=False) {
 		global PROGRAM, GuiTrades, GuiTradesMinimized
-
-		resDPI := PROGRAM.OS.RESOLUTION_DPI
+		resDPI := Get_DpiFactor()
+		
 		iniFile := PROGRAM.INI_FILE
 
 		resDPI := Get_DpiFactor()
