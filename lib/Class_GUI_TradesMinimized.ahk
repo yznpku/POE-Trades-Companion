@@ -143,9 +143,9 @@
 		if (PROGRAM.SETTINGS.SETTINGS_MAIN.MinimizeInterfaceToBottomLeft = "True")
 			xpos := gtX, ypos := gtY+gtH-gtmH ; bottom left
 		else
-			xpos := gtX+gtW-GuiTradesMinimized.Width, ypos := gtY ; top right
+			xpos := gtX+gtW-gtmW, ypos := gtY ; top right
 		
-		xpos := IsNum(xpos) ? xpos : IsNum( A_ScreenWidth-(GuiTrades.Width*resDPI) ) ? A_ScreenWidth-(GuiTrades.Width*resDPI) : 0
+		xpos := IsNum(xpos) ? xpos : IsNum( A_ScreenWidth-gtW ) ? A_ScreenWidth-gtW : 0
 		ypos := IsNum(ypos) ? ypos : 0
 		if (isTradesWinActive)
 			Gui, TradesMinimized:Show, x%xpos% y%ypos%
