@@ -1,4 +1,7 @@
 = = = = = = = = = = = = =	
+1.13.11 (04 March 2019)
+	- Fixed the interface moving a bit to the side when min/maxing it, due to having a Windows DPI higher than default.
+	
 1.13.10 (03 March 2019)
 	- Re-enabled the new currency trading hotkey. It has been changed to Ctrl+RightClick
 	Additionally, it will only be triggered if the interface is not minimized.
