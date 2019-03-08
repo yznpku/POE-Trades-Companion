@@ -1187,10 +1187,6 @@
 
 			cmdLineParamsObj.WhisperLang := tabInfos.WhisperLang, cmdLineParamsObj.TabUniqueID := tabInfos.UniqueID
 			cmdLineParamsObj.TradeType := "Currency"
-			cmdLineParamsObj.cURL := PROGRAM.CURL_EXECUTABLE
-
-			for key, value in cmdLineParamsObj
-				cmdLineParams .= " /" key "=" """" value """"
 
 			GoSub GUI_Trades_VerifyItemPrice_SA
 			return
@@ -1214,10 +1210,6 @@
 
 			cmdLineParamsObj.WhisperLang := tabInfos.WhisperLang, cmdLineParamsObj.TabUniqueID := tabInfos.UniqueID
 			cmdLineParamsObj.TradeType := "Regular", cmdLineParamsObj.CurrencyName := currencyInfos.Name, cmdLineParamsObj.CurrencyIsListed := currencyInfos.Is_Listed
-			cmdLineParamsObj.cURL := PROGRAM.CURL_EXECUTABLE, cmdLineParamsObj.ProgramLogsFile := PROGRAM.LOGS_FILE
-
-			for key, value in cmdLineParamsObj
-				cmdLineParams .= " /" key "=" """" value """"
 
 			GoSub GUI_Trades_VerifyItemPrice_SA
 			return
@@ -1225,11 +1217,15 @@
 		return
 
 		GUI_Trades_VerifyItemPrice_SA:
-			global GuiIntercom, GuiIntercom_Controls
+			global PROGRAM, GuiIntercom, GuiIntercom_Controls
 
 			intercomSlotNum := GUI_Intercom.GetNextAvailableSlot()
 			intercomSlotHandle := GUI_Intercom.GetSlotHandle(intercomSlotNum)
 			GUI_Intercom.ReserveSlot(intercomSlot)
+
+			cmdLineParams := ""
+			for key, value in cmdLineParamsObj
+				cmdLineParams .= " /" key "=" """" value """"
 
 			cl := DllCall( "GetCommandLine", "str" )
 			StringMid, path_AHk, cl, 2, InStr( cl, """", true, 2 )-2
@@ -1239,6 +1235,8 @@
 			.		" " cmdLineParams
 			.		" /IntercomHandle=" """" GuiIntercom.Handle """"
 			.		" /IntercomSlotHandle=" """" intercomSlotHandle """"
+			.		" /cURL=" """" PROGRAM.CURL_EXECUTABLE """"
+			.		" /ProgramLogsFile=" """" PROGRAM.LOGS_FILE """"
 			
 			Run,% saFile_run_cmd,% A_ScriptDir
 		return
