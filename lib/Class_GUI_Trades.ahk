@@ -1235,10 +1235,10 @@
 			StringMid, path_AHk, cl, 2, InStr( cl, """", true, 2 )-2
 
 			saFile := A_ScriptDir "\lib\SA_PriceVerify.ahk"
-			saFile_run_cmd := % """" path_AHk """" " /r " """" saFile """"
+			saFile_run_cmd := % """" path_AHk """" A_Space """" saFile """"
 			.		" " cmdLineParams
-			.		" /IntercomHandle=" GuiIntercom.Handle
-			.		" /IntercomSlotHandle=" intercomSlotHandle
+			.		" /IntercomHandle=" """" GuiIntercom.Handle """"
+			.		" /IntercomSlotHandle=" """" intercomSlotHandle """"
 			
 			Run,% saFile_run_cmd,% A_ScriptDir
 		return

@@ -1,15 +1,33 @@
 ﻿#SingleInstance, Off
 #KeyHistory 0
 #Persistent
+#NoTrayIcon
 #NoEnv
 ListLines, Off
+
+SetTimer, ExitScript, -20000
 
 cmdLineParams := Get_CmdLineParameters()
 VerifyItemPrice(cmdLineParams)
 ExitApp
+Return
+
+ExitScript() {
+    global cmdLineParamsObj
+
+    vColor := "Orange"
+    vInfos := "The request took more than 20 seconds and was canceled."
+
+    data := "tabNum := GUI_Trades.GetTabNumberFromUniqueID(" cmdLineParamsObj.TabUniqueID ")"
+    . "`n"  "GUI_Trades.SetTabVerifyColor(%tabNum%," vColor ")"
+    . "`n"  "GUI_Trades.UpdateSlotContent(%tabNum%,TradeVerifyInfos," vInfos ")"
+    ControlSetText, ,% data,% "ahk_id " cmdLineParamsObj.IntercomSlotHandle
+
+    ExitApp
+}
 
 VerifyItemPrice(cmdLineParams) {
-    global PROGRAM
+    global PROGRAM, cmdLineParamsObj
     ; Converting cmd line params into obj
     startPos := 1, cmdLineParamsObj := {}
     Loop {
