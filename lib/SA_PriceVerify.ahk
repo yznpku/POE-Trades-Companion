@@ -3,8 +3,6 @@
 #Persistent
 #NoEnv
 
-; ControlSetText, Edit1, New Text Here, Intercom
-
 cmdLineParams := Get_CmdLineParameters()
 VerifyItemPrice(cmdLineParams)
 ExitApp
@@ -12,30 +10,99 @@ ExitApp
 VerifyItemPrice(cmdLineParams) {
     global PROGRAM
     ; Converting cmd line params into obj
-    startPos := 1, tradeInfos := {}
+    startPos := 1, cmdLineParamsObj := {}
     Loop {
         foundPos := RegExMatch(cmdLineParams, "iO)/(.*?)=""(.*?)""", outMatch, startPos)
         if (!foundPos || A_Index > 100)
             Break
 
-        startPos := foundPos+StrLen(outMatch.0), tradeInfos[outMatch.1] := outMatch.2
+        startPos := foundPos+StrLen(outMatch.0), cmdLineParamsObj[outMatch.1] := outMatch.2
     }
-    PROGRAM := {"CURL_EXECUTABLE": tradeInfos.cURL}
+    ; setting cURL location bcs of how my modified library work
+    PROGRAM := {"CURL_EXECUTABLE": cmdLineParamsObj.cURL}
 
-    poeTradeObj := {"name": tradeInfos.name, "buyout": poeTradePrice
-        , "level_min": tradeInfos.level_min, "level_max": tradeInfos.level_max
-        , "q_min": tradeInfos.q_min, "q_max": tradeInfos.q_max
-		, "league": tradeInfos.league, "seller": tradeInfos.seller
+    if (cmdLineParamsObj.TradeType = "Regular") { ; poe.trade
+        Loop, Parse,% cmdLineParamsObj.Accounts,% ","
+        {
+            thisAccount := A_LoopField
+            
+            ; infos required to create search url
+			searchURLObj := {"name": cmdLineParamsObj.ItemName, "buyout": cmdLineParamsObj.ItemPrice
+			, "level_min": cmdLineParamsObj.ItemLevel, "level_max": cmdLineParamsObj.ItemLevel
+			, "q_min": cmdLineParamsObj.ItemQuality, "q_max": cmdLineParamsObj.ItemQuality
+			, "league": cmdLineParamsObj.League, "seller": thisAccount}
+			itemURL := PoeTrade_GetItemSearchUrl(searchURLObj)
 
-		, "level": tradeInfos.level
-		, "quality": tradeInfos.quality, "tab": tradeInfos.tab
-		, "x": tradeInfos.x, "y": tradeInfos.y, "online": tradeInfos.online}
+            ; looking for a matching item based on data we have
+            searchObj := {"seller": thisAccount, "online": ""
+                , "buyout": cmdLineParamsObj.ItemPrice, "name": cmdLineParamsObj.ItemName
+                , "level_min": cmdLineParamsObj.ItemLevel, "level_max": cmdLineParamsObj.ItemLevel
+                , "q_min": cmdLineParamsObj.ItemQuality, "q_max": cmdLineParamsObj.ItemQuality
+                , "league": cmdLineParamsObj.League, "tab": cmdLineParamsObj.StashTab
+                , "x": cmdLineParamsObj.StashX, "y" : cmdLineParamsObj.StashY}
+            poeTradeObj := PoeTrade_GetMatchingItemData(searchObj, itemURL)
 
-    if IsObject( PoeTrade_GetMatchingItemData(poeTradeObj, tradeInfos.itemURL) ) {
-        data := "GUI_Trades.SetTabVerifyColor(GUI_Trades.GetTabNumberFromUniqueID(" tradeInfos.UniqueID "),Green)"
-        . "`n"  "GUI_Trades.UpdateSlotContent(GUI_Trades.GetTabNumberFromUniqueID(" tradeInfos.UniqueID "),TradeVerifyInfos,wow)"
-        ControlSetText, ,% data,% "ahk_id " tradeInfos.IntercomSlotHandle
+            if IsObject(poeTradeObj) { ; Obj means match was found
+                ; split currency count and name
+                RegExMatch(cmdLineParamsObj.ItemPrice, "O)(\d+) (.*)", whisperBuyoutPat), whisper_currencyCount := whisperBuyoutPat.1, whisper_currencyType := whisperBuyoutPat.2
+                RegExMatch(poeTradeObj.buyout, "O)(\d+) (.*)", poeTradeBuyoutPat), poeTrade_currencyCount := poeTradeBuyoutPat.1, poeTrade_currencyType := poeTradeBuyoutPat.2
+
+                if (cmdLineParamsObj.ItemPrice = poeTradeObj.buyout) { ; Exactly same price (OK)
+                    vInfos := "Price confirmed legit."
+                    . "\npoe.trade: `t" poeTradeObj.buyout
+                    . "\nwhisper: `t`t" cmdLineParamsObj.ItemPrice
+                    vColor := "Green"
+                }
+                else if (poeTrade_currencyType=whisper_currencyType && whisper_currencyCount >= poeTrade_currencyCount) { ; Whisper is higher than poeTrade (OK)
+                    vInfos := "Price is higher."
+                    . "\npoe.trade: `t" poeTradeObj.buyout
+                    . "\nwhisper: `t`t" cmdLineParamsObj.ItemPrice
+                    vColor := "Green"
+                }
+                else {
+                    if (cmdLineParamsObj.CurrencyName = "") { ; Unpriced item 
+                        vInfos := "/!\ Cannot verify unpriced items yet. /!\"
+                        vColor := "Orange"
+                    }
+                    else if (!cmdLineParamsObj.CurrencyIsListed) { ; Unknown currency 
+                        vInfos := "Unknown currency name: """ currencyInfos.Name """"
+                        . "\nPlease report it."
+                        vColor := "Orange"
+                    }
+                    else if (cmdLineParamsObj.CurrencyIsListed && cmdLineParamsObj.ItemPrice != poeTradeObj.buyout) { ; Whisper is different from poe.trade (NOTOK)
+                        vInfos := "Price is different."
+                        . "\npoe.trade: `t" poeTradeObj.buyout
+                        . "\nwhisper: `t`t" cmdLineParamsObj.ItemPrice
+                        vColor := "Red"
+                    }
+
+                }
+            }
+            else { ; No match was found
+                if (cmdLineParamsObj.WhisperLang != "ENG") { ; Whisper is not eng
+                    vInfos := "Cannot verify price for"
+                    . "\npathofexile.com/trade translated whispers."
+                    vColor := "Orange"
+                }
+                else { ; Couldn't find any item matching tab name and x;y pos
+                    vInfos := "Could not find any item matching the same stash location"
+                    . "\nMake sure to set your account name in the settings."
+                    . "\nAccounts: " cmdLineParamsObj.Accounts
+                    vColor := "Orange"
+                }
+            }
+        }
     }
+
+    else if (cmdLineParamsObj.TradeType = "Currency") { ; currency.poe.trade
+
+    }
+
+    ; Construct data string that'll be transmited to intercom
+    data := "tabNum := GUI_Trades.GetTabNumberFromUniqueID(" cmdLineParamsObj.TabUniqueID ")"
+    . "`n"  "GUI_Trades.SetTabVerifyColor(%tabNum%," vColor ")"
+    . "`n"  "GUI_Trades.UpdateSlotContent(%tabNum%,TradeVerifyInfos," vInfos ")"
+    ControlSetText, ,% data,% "ahk_id " cmdLineParamsObj.IntercomSlotHandle
 }
 
 #Include %A_ScriptDir%
