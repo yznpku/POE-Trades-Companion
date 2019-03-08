@@ -131,7 +131,7 @@ PoETrade_GetMatchingCurrencyTradeData(dataObj, itemURL) {
                 foundMatchIndex++
                 isMatching := isSameRatio=True?True:False
                 matchingDatas[foundMatchIndex] := foundObj
-                matchingDatas[foundMatchIndex].SellBuyRatio := sellBuyRatio
+                matchingDatas[foundMatchIndex].SellBuyRatio := RemoveTrailingZeroes(sellBuyRatio)
                 matchingDatas[foundMatchIndex].IsSameRatio := isSameRatio
             }
         }
