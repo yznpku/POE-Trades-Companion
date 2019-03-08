@@ -1214,7 +1214,7 @@
 
 			cmdLineParamsObj.WhisperLang := tabInfos.WhisperLang, cmdLineParamsObj.TabUniqueID := tabInfos.UniqueID
 			cmdLineParamsObj.TradeType := "Regular", cmdLineParamsObj.CurrencyName := currencyInfos.Name, cmdLineParamsObj.CurrencyIsListed := currencyInfos.Is_Listed
-			cmdLineParamsObj.cURL := PROGRAM.CURL_EXECUTABLE
+			cmdLineParamsObj.cURL := PROGRAM.CURL_EXECUTABLE, cmdLineParamsObj.ProgramLogsFile := PROGRAM.LOGS_FILE
 
 			for key, value in cmdLineParamsObj
 				cmdLineParams .= " /" key "=" """" value """"

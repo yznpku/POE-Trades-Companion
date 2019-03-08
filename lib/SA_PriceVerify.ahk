@@ -38,7 +38,7 @@ VerifyItemPrice(cmdLineParams) {
         startPos := foundPos+StrLen(outMatch.0), cmdLineParamsObj[outMatch.1] := outMatch.2
     }
     ; setting cURL location bcs of how my modified library work
-    PROGRAM := {"CURL_EXECUTABLE": cmdLineParamsObj.cURL}
+    PROGRAM := {"CURL_EXECUTABLE": cmdLineParamsObj.cURL, "LOGS_FILE": cmdLineParams.ProgramLogsFile}
 
     if (cmdLineParamsObj.TradeType = "Regular") { ; poe.trade
         Loop, Parse,% cmdLineParamsObj.Accounts,% ","
