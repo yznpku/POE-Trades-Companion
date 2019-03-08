@@ -1144,7 +1144,7 @@
 		}
 		if !(found) {
 			AppendToLogs(A_ThisFunc "(uniqueId=" uniqueId "): Couldn't find any tab ID matching this unique ID")
-			MsgBox("", "", "Unable to find matching tab ID with unique id """ uniqueID """")
+			; MsgBox("", "", "Unable to find matching tab ID with unique id """ uniqueID """")
 			return
 		}
 
@@ -1249,7 +1249,7 @@
 
 		if !IsIn(colour, "Grey,Orange,Green,Red") || !IsNum(tabID) {
 			AppendToLogs(A_ThisFunc "(tabID=" tabID ", colour=" colour "): Invalid colour or tabID is not a number.")
-			MsgBox("", "", "Invalid use of " A_ThisFunc "`n`ntabID: """ tabID """`ncolour: """ colour """")
+			; MsgBox("", "", "Invalid use of " A_ThisFunc "`n`ntabID: """ tabID """`ncolour: """ colour """")
 			return
 		}
 
@@ -1267,6 +1267,11 @@
 
 	UpdateSlotContent(tabName, slotName, newContent) {
 		global GuiTrades_Controls
+
+		if !IsNum(tabName) {
+			AppendToLogs(A_ThisFunc "(tabName=" tabID ")): tabID is not a number.")
+			return
+		}
 
 		tabContent := GUI_Trades.GetTabContent(tabName)
 		if (slotName = "Other") {
