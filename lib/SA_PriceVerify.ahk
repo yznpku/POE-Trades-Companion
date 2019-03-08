@@ -2,6 +2,7 @@
 #KeyHistory 0
 #Persistent
 #NoEnv
+ListLines, Off
 
 cmdLineParams := Get_CmdLineParameters()
 VerifyItemPrice(cmdLineParams)
@@ -48,46 +49,46 @@ VerifyItemPrice(cmdLineParams) {
                 RegExMatch(poeTradeObj.buyout, "O)(\d+) (.*)", poeTradeBuyoutPat), poeTrade_currencyCount := poeTradeBuyoutPat.1, poeTrade_currencyType := poeTradeBuyoutPat.2
 
                 if (cmdLineParamsObj.ItemPrice = poeTradeObj.buyout) { ; Exactly same price (OK)
-                    vInfos := "Price confirmed legit."
+                    vInfos := "Price confirmed legit"
                     . "\npoe.trade: `t" poeTradeObj.buyout
                     . "\nwhisper: `t`t" cmdLineParamsObj.ItemPrice
                     vColor := "Green"
                 }
                 else if (poeTrade_currencyType=whisper_currencyType && whisper_currencyCount >= poeTrade_currencyCount) { ; Whisper is higher than poeTrade (OK)
-                    vInfos := "Price is higher."
+                    vInfos := "Price is higher"
                     . "\npoe.trade: `t" poeTradeObj.buyout
                     . "\nwhisper: `t`t" cmdLineParamsObj.ItemPrice
                     vColor := "Green"
                 }
+                else if (cmdLineParamsObj.CurrencyName = "") { ; Unpriced item 
+                    vInfos := "/!\ Cannot verify unpriced items yet"
+                    vColor := "Orange"
+                }
+                else if (!cmdLineParamsObj.CurrencyIsListed) { ; Unknown currency 
+                    vInfos := "/!\ Unknown currency name: """ currencyInfos.Name """"
+                    . "\nPlease report it"
+                    vColor := "Orange"
+                }
+                else if (cmdLineParamsObj.CurrencyIsListed && cmdLineParamsObj.ItemPrice != poeTradeObj.buyout) { ; Whisper is different from poe.trade (NOTOK)
+                    vInfos := "/!\ Price is different"
+                    . "\npoe.trade: `t" poeTradeObj.buyout
+                    . "\nwhisper: `t`t" cmdLineParamsObj.ItemPrice
+                    vColor := "Red"
+                }
                 else {
-                    if (cmdLineParamsObj.CurrencyName = "") { ; Unpriced item 
-                        vInfos := "/!\ Cannot verify unpriced items yet. /!\"
-                        vColor := "Orange"
-                    }
-                    else if (!cmdLineParamsObj.CurrencyIsListed) { ; Unknown currency 
-                        vInfos := "Unknown currency name: """ currencyInfos.Name """"
-                        . "\nPlease report it."
-                        vColor := "Orange"
-                    }
-                    else if (cmdLineParamsObj.CurrencyIsListed && cmdLineParamsObj.ItemPrice != poeTradeObj.buyout) { ; Whisper is different from poe.trade (NOTOK)
-                        vInfos := "Price is different."
-                        . "\npoe.trade: `t" poeTradeObj.buyout
-                        . "\nwhisper: `t`t" cmdLineParamsObj.ItemPrice
-                        vColor := "Red"
-                    }
-
+                    vInfos := "/!\ Something unknown happened"
+                    vColor := "Orange"
                 }
             }
             else { ; No match was found
                 if (cmdLineParamsObj.WhisperLang != "ENG") { ; Whisper is not eng
-                    vInfos := "Cannot verify price for"
+                    vInfos := "/!\ Cannot verify price for"
                     . "\npathofexile.com/trade translated whispers."
                     vColor := "Orange"
                 }
                 else { ; Couldn't find any item matching tab name and x;y pos
-                    vInfos := "Could not find any item matching the same stash location"
-                    . "\nMake sure to set your account name in the settings."
-                    . "\nAccounts: " cmdLineParamsObj.Accounts
+                    vInfos := "/!\ Could not find any item matching the same stash location"
+                    . "\nIt could be that poe.trade hasn't updated yet for this item"
                     vColor := "Orange"
                 }
             }
@@ -95,7 +96,68 @@ VerifyItemPrice(cmdLineParams) {
     }
 
     else if (cmdLineParamsObj.TradeType = "Currency") { ; currency.poe.trade
+        Loop, Parse,% cmdLineParamsObj.Accounts,% ","
+        {
+            thisAccount := A_LoopField
 
+            ; infos required to create search url
+            searchURLObj := {"league": cmdLineParamsObj.League, "online": "x"
+                ,"want": cmdLineParamsObj.SellCurrencyID, "have": cmdLineParamsObj.BuyCurrencyID}
+			itemURL := PoeTrade_GetCurrencySearchUrl(searchURLObj)
+            ; search for currency trade with same account 
+            searchObj := {"username": thisAccount, "sellBuyRatio": cmdLineParamsObj.SellBuyRatio
+			    ,"sellcurrency": cmdLineParamsObj.SellCurrencyID, "sellvalue": cmdLineParamsObj.SellCurrencyCount
+			    ,"buycurrency": cmdLineParamsObj.BuyCurrencyID, "buyvalue": cmdLineParamsObj.BuyCurrencyCount}
+			matchingObj := PoETrade_GetMatchingCurrencyTradeData(searchObj, itemURL)
+
+            if IsObject(matchingObj) { ; object means we have matches
+                Loop % matchingObj.MaxIndex() { ; Loop through matchs
+
+                    ratioTxt := "poe.trade: `t1 " cmdLineParamsObj.BuyCurrencyFullName " = " matchingObj[A_Index].sellBuyRatio " " cmdLineParamsObj.SellCurrencyFullName
+                        . "\nwhisper: `t`t1 " cmdLineParamsObj.BuyCurrencyFullName " = " cmdLineParamsObj.SellBuyRatio " " cmdLineParamsObj.SellCurrencyFullName
+                    
+                    if (matchingObj[A_Index].IsSameRatio=True) { ; ratio is the same (OK)
+                        vInfos := "/!\ Ratio is the same"
+                        . "\n" ratioTxt
+                        vColor := "Green"
+                        Break
+                    }
+                    else if (matchingObj[A_Index].sellBuyRatio > cmdLineParamsObj.SellBuyRatio) { ; ratio is higher (OK)
+                        vInfos := "/!\ Ratio is better"
+                        . "\n" ratioTxt
+                        vColor := "Green"
+                        Break
+                    }
+                    else if (matchingObj[A_Index].sellBuyRatio < cmdLineParamsObj.SellBuyRatio) { ; ratio is lower (NOTOK)
+                        vInfos := "/!\ Ratio is lower"
+                        . "\n" ratioTxt
+                        vColor := "Red"
+                    }
+                    else if (!cmdLineParamsObj.SellCurrencyIsListed || !cmdLineParamsObj.BuyCurrencyIsListed) { ; currency unknown
+                        wantListedInfos := cmdLineParamsObj.SellCurrencyIsListed=True?"" : "\nUnknown currency type: """ cmdLineParamsObj.SellCurrencyFullName """"
+                        giveListedInfos := cmdLineParamsObj.BuyCurrencyIsListed=True?"" : "\nUnknown currency type: """ cmdLineParamsObj.BuyCurrencyFullName """"
+                        vInfos := wantListedInfos . giveListedInfos "\nPlease report it"
+                        vColor := "Orange"
+                    }
+                    else {
+                        vInfos := "/!\ Something unknown happened"
+                        vColor := "Orange"    
+                    }
+                }
+            }
+            else {
+                if (tabInfos.WhisperLang != "ENG") {
+                    vInfos := "Cannot verify price for"
+                    . "\npathofexile.com/trade translated whispers."
+                    vColor := "Orange"
+                }
+                else {
+                    vInfos := "/!\ Could not find any item matching the same currency trade"
+                    . "\nIt could be that poe.trade hasn't updated yet for this item"
+                    vColor := "Orange"
+                }
+            }
+        }
     }
 
     ; Construct data string that'll be transmited to intercom

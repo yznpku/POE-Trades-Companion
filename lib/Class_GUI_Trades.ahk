@@ -1168,88 +1168,32 @@
 		}
 
 		if RegExMatch(tabInfos.Item, "iO)(\d+\.\d+|\d+) (\D+)", itemPat) { ; its a currency trade
-		/*
 			RegExMatch(tabInfos.Price, "iO)(\d+\.\d+|\d+) (\D+)", pricePat)
-			wantCount := itemPat.1, wantWhat := itemPat.2
-			wantCurInfos := Get_CurrencyInfos(wantWhat)
+			; want currency infos
+			wantCount := itemPat.1, wantWhat := itemPat.2, wantCurInfos := Get_CurrencyInfos(wantWhat)
 			wantFullName := wantCurInfos.Name, wantID := PROGRAM["DATA"]["POETRADE_CURRENCY_DATA"][wantFullName].ID, isWantListed := wantCurInfos.Is_Listed
-			giveCount := pricePat.1, giveWhat := pricePat.2
-			giveCurInfos := Get_CurrencyInfos(giveWhat)
+			; give currency infos
+			giveCount := pricePat.1, giveWhat := pricePat.2, giveCurInfos := Get_CurrencyInfos(giveWhat)
 			giveFullName := giveCurInfos.Name, giveID := PROGRAM["DATA"]["POETRADE_CURRENCY_DATA"][giveFullName].ID, isGiveListed := giveCurInfos.Is_Listed
+			; ratio
 			sellBuyRatio := RemoveTrailingZeroes(wantCount/giveCount)
 
-			Loop, Parse, accounts,% ","
-			{
-				poeTradeObj := {"league": tabInfos.StashLeague, "online": "x", "want": wantID, "have": giveID}
-				itemURL := PoeTrade_GetCurrencySearchUrl(poeTradeObj)
+			cmdLineParamsObj := {}
+			cmdLineParamsObj.Accounts := accounts
+			cmdLineParamsObj.League := tabInfos.StashLeague
+			cmdLineParamsObj.SellCurrencyFullName := wantFullName, cmdLineParamsObj.SellCurrencyIsListed := isWantListed, cmdLineParamsObj.SellCurrencyID := wantID, cmdLineParamsObj.SellCurrencyCount := wantCount
+			cmdLineParamsObj.BuyCurrencyFullName := giveFullName, cmdLineParamsObj.BuyCurrencyIsListed := isGiveListed, cmdLineParamsObj.BuyCurrencyID := giveID, cmdLineParamsObj.BuyCurrencyCount := giveCount
+			cmdLineParamsObj.SellBuyRatio := sellBuyRatio
 
-				poeTradeObj.username := A_LoopField
-				poeTradeObj.sellcurrency := wantID, poeTradeObj.sellvalue := wantCount
-				poeTradeObj.buycurrency := giveID, poeTradeObj.buyvalue := giveCount
-				poeTradeObj.sellBuyRatio := sellBuyRatio
+			cmdLineParamsObj.WhisperLang := tabInfos.WhisperLang, cmdLineParamsObj.TabUniqueID := tabInfos.UniqueID
+			cmdLineParamsObj.TradeType := "Currency"
+			cmdLineParamsObj.cURL := PROGRAM.CURL_EXECUTABLE
 
-				if (itemURL)
-					matchingObj := PoETrade_GetMatchingCurrencyTradeData(poeTradeObj, itemURL)
+			for key, value in cmdLineParamsObj
+				cmdLineParams .= " /" key "=" """" value """"
 
-				if matchingObj.MaxIndex() {
-					foundMatch := True
-					Break
-				}
-			}
-
-			tabID := GUI_Trades.GetTabNumberFromUniqueID(tabInfos.UniqueID)
-
-			_infos .= ""
-			if (foundMatch) {
-				Loop % matchingObj.MaxIndex() { ; Loop through matchs
-					legitRatio := matchingObj[A_Index].IsSameRatio
-					ratioTxt := "poe.trade: 1 " giveFullName " = " matchingObj[A_Index].sellBuyRatio " " wantFullName
-						. "\nwhisper: 1 " giveFullName " = " sellBuyRatio " " wantFullName
-					
-					if (legitRatio=True) { ; If ratio is the same
-						_infos := "Ratio is the same."
-						. "\n" ratioTxt
-						vColor := "Green"
-						Break
-					}
-					else if (matchingObj[A_Index].sellBuyRatio > sellBuyRatio) { ; Or if ratio is higher
-						_infos := "Ratio is higher."
-						. "\n" ratioTxt
-						vColor := "Green"
-						Break
-					}
-					else { ; Otherwise, currency either not listed or ratio modified
-						if (!isWantListed || !isGiveListed) {
-							wantListedInfos := isWantListed=True?"" : "\nUnknown currency type: """ wantFullName """"
-							giveListedInfos := isGiveListed=True?"" : "\nUnknown currency type: """ giveFullName """"
-							_infos := wantListedInfos . giveListedInfos "\nPlease report it."
-							vColor := "Orange"
-						}
-						else {
-							_infos := "Ratio is lower."
-							. "\n" ratioTxt
-							vColor := "Red"
-						}
-					}
-				}
-			}
-			else {
-				if (tabInfos.WhisperLang != "ENG") {
-					_infos := "Cannot verify price for"
-					. "\npathofexile.com/trade translated whispers."
-					vColor := "Orange"
-				}
-				else {
-					_infos := "Could not find any item matching the same currency trade."
-					. "\nMake sure to set your account name in the settings."
-					. "\nAccounts: " accounts
-					vColor := "Orange"
-				}
-			}
-
-			GUI_Trades.SetTabVerifyColor(tabID, vColor)
-			GUI_Trades.UpdateSlotContent(tabID, "TradeVerifyInfos", _infos)
-			*/
+			GoSub GUI_Trades_VerifyItemPrice_SA
+			return
 		}
 		else { ; its a regular trade
 		    itemQualNoPercent := StrReplace(tabInfos.ItemQuality, "%", "")
