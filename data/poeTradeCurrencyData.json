@@ -30,6 +30,9 @@
 	"Alleyways":{
 		"ID":522
 	},
+	"Alone in the Darkness":{
+		"ID":776
+	},
 	"alteration":"Orb of Alteration",
 	"Ambush":{
 		"ID":495
@@ -79,6 +82,9 @@
 	},
 	"Armoury":{
 		"ID":323
+	},
+	"Arrogance of the Vaal":{
+		"ID":770
 	},
 	"Arsenal":{
 		"ID":324
@@ -171,6 +177,9 @@
 	},
 	"Bone Crypt":{
 		"ID":526
+	},
+	"Boon of Justice":{
+		"ID":768
 	},
 	"Boon of the First Ones":{
 		"ID":714
@@ -306,6 +315,9 @@
 	},
 	"Dark Forest":{
 		"ID":349
+	},
+	"Dark Temptation":{
+		"ID":775
 	},
 	"dawn":"Sacrifice at Dawn",
 	"Deafening Essence of Anger":{
@@ -802,6 +814,9 @@
 	"Mitts":{
 		"ID":179
 	},
+	"Monochrome":{
+		"ID":774
+	},
 	"Moon Temple":{
 		"ID":554
 	},
@@ -1150,6 +1165,9 @@
 	"Sacrifice set":{
 		"ID":48
 	},
+	"Sambodhi's Vow":{
+		"ID":777
+	},
 	"Sanctified Fossil":{
 		"ID":706
 	},
@@ -1232,6 +1250,9 @@
 	},
 	"Serrated Fossil":{
 		"ID":693
+	},
+	"Seven Years Bad Luck":{
+		"ID":772
 	},
 	"Sewer":{
 		"ID":397
@@ -1931,6 +1952,9 @@
 	"The Gladiator":{
 		"ID":231
 	},
+	"The Golden Era":{
+		"ID":773
+	},
 	"The Hale Heart":{
 		"ID":663
 	},
@@ -1973,11 +1997,17 @@
 	"The Jeweller's Boon":{
 		"ID":664
 	},
+	"The Journey":{
+		"ID":769
+	},
 	"The King's Blade":{
 		"ID":241
 	},
 	"The King's Heart":{
 		"ID":242
+	},
+	"The Landing":{
+		"ID":771
 	},
 	"The Last One Standing":{
 		"ID":243
@@ -1994,11 +2024,17 @@
 	"The Lord in Black":{
 		"ID":246
 	},
+	"The Lord of Celebration":{
+		"ID":778
+	},
 	"The Lover":{
 		"ID":247
 	},
 	"The Lunaris Priestess":{
 		"ID":248
+	},
+	"The Mad King":{
+		"ID":767
 	},
 	"The Master":{
 		"ID":665
@@ -2011,6 +2047,9 @@
 	},
 	"The Mercenary":{
 		"ID":249
+	},
+	"The Messenger":{
+		"ID":766
 	},
 	"The Metalsmith's Gift":{
 		"ID":250
@@ -2098,6 +2137,9 @@
 	},
 	"The Scholar":{
 		"ID":268
+	},
+	"The Seeker":{
+		"ID":765
 	},
 	"The Sephirot":{
 		"ID":269

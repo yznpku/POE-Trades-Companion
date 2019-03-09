@@ -1,450 +1,455 @@
 ﻿{
 	"tier_1":{
-		"Atoll Map":{
+		"Alleyways":{
 			"pos":1
 		},
-		"Channel Map":{
+		"Cursed Crypt":{
 			"pos":2
 		},
-		"Flooded Mine Map":{
+		"Fungal Hollow":{
 			"pos":3
 		},
-		"Ramparts Map":{
+		"Iceberg":{
 			"pos":4
 		}
 	},
 	"tier_10":{
-		"Belfry Map":{
+		"Arachnid Nest":{
 			"pos":1
 		},
-		"Coral Ruins Map":{
+		"Chateau":{
 			"pos":2
 		},
-		"Coves Map":{
+		"Factory":{
 			"pos":3
 		},
-		"Estuary Map":{
+		"Mesa":{
 			"pos":4
 		},
-		"Leyline Map":{
+		"Moon Temple":{
 			"pos":5
 		},
-		"Pier Map":{
+		"Overgrown Ruin":{
 			"pos":6
 		},
-		"Pit Map":{
+		"Plateau":{
 			"pos":7
 		},
-		"Plateau Map":{
+		"Relic Chambers":{
 			"pos":8
 		},
-		"Plaza Map":{
+		"Scriptorium":{
 			"pos":9
 		},
-		"Spider Forest Map":{
+		"Wharf":{
 			"pos":10
 		}
 	},
 	"tier_11":{
-		"Arachnid Tomb Map":{
+		"Arena":{
 			"pos":1
 		},
-		"Bog Map":{
+		"Arsenal":{
 			"pos":2
 		},
-		"Burial Chambers Map":{
+		"Basilica":{
 			"pos":3
 		},
-		"Chateau Map":{
+		"Bog":{
 			"pos":4
 		},
-		"Crystal Ore Map":{
+		"Coves":{
 			"pos":5
 		},
-		"Factory Map":{
+		"Desert Spring":{
 			"pos":6
 		},
-		"Lair Map":{
+		"Dig":{
 			"pos":7
 		},
-		"Mesa Map":{
+		"Infested Valley":{
 			"pos":8
 		},
-		"Park Map":{
+		"Palace":{
 			"pos":9
 		},
-		"Siege Map":{
+		"Wasteland":{
 			"pos":10
 		}
 	},
 	"tier_12":{
-		"Arsenal Map":{
+		"Acid Caverns":{
 			"pos":1
 		},
-		"Castle Ruins Map":{
+		"Carcass":{
 			"pos":2
 		},
-		"Colonnade Map":{
+		"Courthouse":{
 			"pos":3
 		},
-		"Defiled Cathedral Map":{
+		"Crystal Ore":{
 			"pos":4
 		},
-		"Ivory Temple Map":{
+		"Malformation":{
 			"pos":5
 		},
-		"Malformation Map":{
+		"Precinct":{
 			"pos":6
 		},
-		"Necropolis Map":{
+		"Reef":{
 			"pos":7
 		},
-		"Overgrown Shrine Map":{
+		"Sunken City":{
 			"pos":8
 		},
-		"Villa Map":{
+		"Terrace":{
 			"pos":9
 		}
 	},
 	"tier_13":{
-		"Acid Caverns Map":{
+		"Colonnade":{
 			"pos":1
 		},
-		"Caldera Map":{
+		"Colosseum":{
 			"pos":2
 		},
-		"Colosseum Map":{
+		"Crimson Temple":{
 			"pos":3
 		},
-		"Core Map":{
+		"Gardens":{
 			"pos":4
 		},
-		"Crimson Temple Map":{
+		"Park":{
 			"pos":5
 		},
-		"Dig Map":{
+		"Shipyard":{
 			"pos":6
 		},
-		"Racecourse Map":{
+		"Siege":{
 			"pos":7
 		},
-		"Reef Map":{
+		"Summit":{
 			"pos":8
 		},
-		"Shrine Map":{
+		"Tower":{
 			"pos":9
 		}
 	},
 	"tier_14":{
-		"Basilica Map":{
+		"Belfry":{
 			"pos":1
 		},
-		"Carcass Map":{
+		"Caldera":{
 			"pos":2
 		},
-		"Courthouse Map":{
+		"Ivory Temple":{
 			"pos":3
 		},
-		"Dark Forest Map":{
+		"Plaza":{
 			"pos":4
 		},
-		"Palace Map":{
+		"Primordial Blocks":{
 			"pos":5
 		},
-		"Sunken City Map":{
+		"Racecourse":{
 			"pos":6
 		},
-		"Terrace Map":{
+		"Shrine":{
 			"pos":7
 		}
 	},
 	"tier_15":{
-		"Desert Spring Map":{
+		"Core":{
 			"pos":1
 		},
-		"Lava Lake Map":{
+		"Dark Forest":{
 			"pos":2
 		},
-		"Primordial Blocks Map":{
+		"Defiled Cathedral":{
 			"pos":3
 		},
-		"Summit Map":{
+		"Lava Lake":{
 			"pos":4
 		},
-		"Tower Map":{
+		"Waste Pool":{
 			"pos":5
 		}
 	},
 	"tier_16":{
-		"Forge of the Phoenix Map":{
+		"Forge of the Phoenix":{
 			"pos":1
 		},
-		"Lair of the Hydra Map":{
+		"Lair of the Hydra":{
 			"pos":2
 		},
-		"Maze of the Minotaur Map":{
+		"Maze of the Minotaur":{
 			"pos":3
 		},
-		"Pit of the Chimera Map":{
+		"Pit of the Chimera":{
 			"pos":4
 		},
-		"Vaal Temple Map":{
+		"Vaal Temple":{
 			"pos":5
 		}
 	},
+	"tier_17":{
+		"The Shaper's Realm":{
+			"pos":1
+		}
+	},
 	"tier_2":{
-		"Arid Lake Map":{
+		"Dungeon":{
 			"pos":1
 		},
-		"Armoury Map":{
+		"Excavation":{
 			"pos":2
 		},
-		"Dungeon Map":{
+		"Haunted Mansion":{
 			"pos":3
 		},
-		"Iceberg Map":{
+		"Peninsula":{
 			"pos":4
 		},
-		"Pen Map":{
+		"Ramparts":{
 			"pos":5
 		},
-		"Thicket Map":{
+		"Strand":{
 			"pos":6
 		}
 	},
 	"tier_3":{
-		"Bone Crypt Map":{
+		"Arid Lake":{
 			"pos":1
 		},
-		"Cage Map":{
+		"Ashen Wood":{
 			"pos":2
 		},
-		"Cursed Crypt Map":{
+		"Atoll":{
 			"pos":3
 		},
-		"Desert Map":{
+		"Barrows":{
 			"pos":4
 		},
-		"Excavation Map":{
+		"Channel":{
 			"pos":5
 		},
-		"Fungal Hollow Map":{
+		"Desert":{
 			"pos":6
 		},
-		"Graveyard Map":{
+		"Jungle Valley":{
 			"pos":7
 		},
-		"Grotto Map":{
+		"Leyline":{
 			"pos":8
 		},
-		"Peninsula Map":{
+		"Maze":{
 			"pos":9
 		},
-		"Shipyard Map":{
+		"Spider Lair":{
 			"pos":10
 		}
 	},
 	"tier_4":{
-		"Barrows Map":{
+		"Arcade":{
 			"pos":1
 		},
-		"Beach Map":{
+		"Armoury":{
 			"pos":2
 		},
-		"Courtyard Map":{
+		"Beach":{
 			"pos":3
 		},
-		"Crater Map":{
+		"City Square":{
 			"pos":4
 		},
-		"Glacier Map":{
+		"Flooded Mine":{
 			"pos":5
 		},
-		"Lighthouse Map":{
+		"Glacier":{
 			"pos":6
 		},
-		"Lookout Map":{
+		"Lookout":{
 			"pos":7
 		},
-		"Marshes Map":{
+		"Mausoleum":{
 			"pos":8
 		},
-		"Spider Lair Map":{
+		"Port":{
 			"pos":9
 		},
-		"Strand Map":{
+		"Underground Sea":{
 			"pos":10
 		}
 	},
 	"tier_5":{
-		"Alleyways Map":{
+		"Ancient City":{
 			"pos":1
 		},
-		"City Square Map":{
+		"Cage":{
 			"pos":2
 		},
-		"Gardens Map":{
+		"Courtyard":{
 			"pos":3
 		},
-		"Jungle Valley Map":{
+		"Crater":{
 			"pos":4
 		},
-		"Mausoleum Map":{
+		"Graveyard":{
 			"pos":5
 		},
-		"Maze Map":{
+		"Grotto":{
 			"pos":6
 		},
-		"Port Map":{
+		"Marshes":{
 			"pos":7
 		},
-		"Residence Map":{
+		"Pen":{
 			"pos":8
 		},
-		"Underground Sea Map":{
+		"Sulphur Vents":{
 			"pos":9
 		},
-		"Vaal Pyramid Map":{
+		"Thicket":{
 			"pos":10
 		}
 	},
 	"tier_6":{
-		"Academy Map":{
+		"Burial Chambers":{
 			"pos":1
 		},
-		"Ashen Wood Map":{
+		"Geode":{
 			"pos":2
 		},
-		"Canyon Map":{
+		"Lair":{
 			"pos":3
 		},
-		"Fields Map":{
+		"Necropolis":{
 			"pos":4
 		},
-		"Haunted Mansion Map":{
+		"Overgrown Shrine":{
 			"pos":5
 		},
-		"Phantasmagoria Map":{
+		"Pit":{
 			"pos":6
 		},
-		"Precinct Map":{
+		"Primordial Pool":{
 			"pos":7
 		},
-		"Sulphur Vents Map":{
+		"Promenade":{
 			"pos":8
 		},
-		"Temple Map":{
+		"Residence":{
 			"pos":9
 		},
-		"Volcano Map":{
+		"Sepulchre":{
 			"pos":10
 		},
-		"Wharf Map":{
+		"Vault":{
 			"pos":11
 		}
 	},
 	"tier_7":{
-		"Arcade Map":{
+		"Academy":{
 			"pos":1
 		},
-		"Bazaar Map":{
+		"Bazaar":{
 			"pos":2
 		},
-		"Cells Map":{
+		"Bone Crypt":{
 			"pos":3
 		},
-		"Conservatory Map":{
+		"Estuary":{
 			"pos":4
 		},
-		"Dunes Map":{
+		"Fields":{
 			"pos":5
 		},
-		"Geode Map":{
+		"Ghetto":{
 			"pos":6
 		},
-		"Ghetto Map":{
+		"Mineral Pools":{
 			"pos":7
 		},
-		"Lava Chamber Map":{
+		"Mud Geyser":{
 			"pos":8
 		},
-		"Primordial Pool Map":{
+		"Pier":{
 			"pos":9
 		},
-		"Toxic Sewer Map":{
+		"Shore":{
 			"pos":10
 		},
-		"Underground River Map":{
+		"Spider Forest":{
 			"pos":11
 		}
 	},
 	"tier_8":{
-		"Arachnid Nest Map":{
+		"Arachnid Tomb":{
 			"pos":1
 		},
-		"Infested Valley Map":{
+		"Cemetery":{
 			"pos":2
 		},
-		"Laboratory Map":{
+		"Conservatory":{
 			"pos":3
 		},
-		"Mineral Pools Map":{
+		"Dunes":{
 			"pos":4
 		},
-		"Mud Geyser Map":{
+		"Lava Chamber":{
 			"pos":5
 		},
-		"Orchard Map":{
+		"Lighthouse":{
 			"pos":6
 		},
-		"Overgrown Ruin Map":{
+		"Orchard":{
 			"pos":7
 		},
-		"Promenade Map":{
+		"Phantasmagoria":{
 			"pos":8
 		},
-		"Sepulchre Map":{
+		"Toxic Sewer":{
 			"pos":9
 		},
-		"Shore Map":{
+		"Volcano":{
 			"pos":10
 		},
-		"Wasteland Map":{
+		"Waterways":{
 			"pos":11
 		}
 	},
 	"tier_9":{
-		"Ancient City Map":{
+		"Canyon":{
 			"pos":1
 		},
-		"Arena Map":{
+		"Castle Ruins":{
 			"pos":2
 		},
-		"Cemetery Map":{
+		"Cells":{
 			"pos":3
 		},
-		"Moon Temple Map":{
+		"Coral Ruins":{
 			"pos":4
 		},
-		"Museum Map":{
+		"Laboratory":{
 			"pos":5
 		},
-		"Relic Chambers Map":{
+		"Museum":{
 			"pos":6
 		},
-		"Scriptorium Map":{
+		"Temple":{
 			"pos":7
 		},
-		"Tropical Island Map":{
+		"Tropical Island":{
 			"pos":8
 		},
-		"Vault Map":{
+		"Underground River":{
 			"pos":9
 		},
-		"Waste Pool Map":{
+		"Vaal Pyramid":{
 			"pos":10
 		},
-		"Waterways Map":{
+		"Villa":{
 			"pos":11
 		}
 	},
