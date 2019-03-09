@@ -41,7 +41,7 @@ if (generateLeagueTxt) {
 }
 if (generateMapsJSON) {
 	ToolTip, Creating mapsData.json
-	PoeNinja_CreateMapDataFile("Betrayal")
+	PoeNinja_CreateMapDataFile("Synthesis")
 }
 
 ; Main executable
