@@ -8,7 +8,6 @@ if (!A_IsAdmin) {
 PROGRAM := {"CURL_EXECUTABLE": A_ScriptDir "\lib\third-party\curl.exe"}
 generateCurrencyData := True
 generateLeagueTxt := True
-generateMapsJSON := True
 
 ; Basic tray menu
 if ( !A_IsCompiled && FileExist(A_ScriptDir "\resources\icon.ico") )
@@ -38,10 +37,6 @@ if (generateLeagueTxt) {
 	/*	TO_DO coming later
 	*/
 	; ToolTip, Creating TradingLeagues.txt
-}
-if (generateMapsJSON) {
-	ToolTip, Creating mapsData.json
-	PoeNinja_CreateMapDataFile("Synthesis")
 }
 
 ; Main executable
