@@ -1963,14 +1963,17 @@
 		isWinMinimized := isMinMax=-1?True:False
 
 		WinGetPos, dockedX, dockedY, dockedW, dockedH,% "ahk_id " GuiTrades.Docked_Window_Handle
-		WinGetPos, tradesX, tradesY, tradesW, tradesH,% "ahk_id " GuiTrades.Handle
-		WinGetPos, tradesMinX, tradesMinY, tradesMinW, tradesMinH,% "ahk_id " GuiTradesMinimized.Handle
+		clientInfos := GetWindowClientInfos("ahk_id " GuiTrades.Docked_Window_Handle)
+		dockedX -= clientInfos.X, dockedY += clientInfos.Y
+		
+		gtPos := GUI_Trades.GetPosition()
+		gtmPos := GUI_TradesMinimized.GetPosition()
 		
 		if (GuiTrades.Is_Minimized)
-			moveToX := (dockedX+dockedW)-GuiTradesMinimized.Width, moveToY := dockedY 
-		else moveToX := (dockedX+dockedW)-GuiTrades.Width, moveToY := dockedY 
+			moveToX := (dockedX+dockedW)-gtmPos.W, moveToY := dockedY 
+		else moveToX := (dockedX+dockedW)-gtPos.W, moveToY := dockedY 
 
-		if IsNum(dockedX) && ( (GuiTrades.Is_Minimized && tradesX = moveToX && tradesY = moveToY) || (GuiTrades.Is_Minimized && tradesMinX = moveToX && tradesMinY = moveToY) ) {
+		if IsNum(dockedX) && ( (GuiTrades.Is_Minimized && gtPos.X = moveToX && gtPos.Y = moveToY) || (GuiTrades.Is_Minimized && gtmPos.X = moveToX && gtmPos.Y = moveToY) ) {
 			DetectHiddenWindows, %hiddenWin%
 			Return
 		}
