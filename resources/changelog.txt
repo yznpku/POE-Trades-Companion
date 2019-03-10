@@ -1,4 +1,13 @@
 = = = = = = = = = = = = =	
+1.13.12 (08 March 2019)
+	Changes / Improvements:
+	- Item location grid: Added location data for 3.6 maps.
+	- Added new 3.6 currency data.
+	
+	Fixes:
+	- When using the Dock mode, the interface position would be slightly off to the side.
+	- When minimized, the interface would not take in account the scaling percentage from Settings.
+	
 1.13.11 (04 March 2019)
 	- Fixed the interface moving a bit to the side when min/maxing it, due to having a Windows DPI higher than default.
 	
