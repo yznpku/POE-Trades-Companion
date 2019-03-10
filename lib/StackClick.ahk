@@ -36,7 +36,7 @@
 			. "`n" "This is normaly caused by latency issues but"
 			. "`n" "could mean the macro has run into problems."
 			. "`n" "Press Ctrl+Click if you think everything is fine and"
-			. "`n" "need at least one more stack of currency1"
+			. "`n" "need at least one more stack of currency"
 			Gosub %A_ThisFunc%_ShowToolTip
 			return
 		}
