@@ -33,8 +33,7 @@
 		; Gui size and positions
 		borderSize := Floor(1*scaleMult)
 
-		guiFullHeight := 30 ; only header bar
-		guiFullHeight := guiFullHeight+(borderSize*2), guiFullWidth := scaleMult*(95+(2*borderSize))
+		guiFullHeight := scaleMult*(30+(borderSize*2)), guiFullWidth := scaleMult*(95+(2*borderSize))
 
 		guiHeight := guiFullHeight-(2*borderSize), guiWidth := guiFullWidth-(2*borderSize)
 		guiMinimizedHeight := (30*scaleMult)+(2*borderSize) ; 30 = Header_H
