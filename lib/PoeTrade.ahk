@@ -13,6 +13,11 @@
         }           
     }
 
+    if (!nice || !dataTxt || StrLen(nice) < 100 || StrLen(dataTxt) < 100) {
+        MsgBox, 4096,% "",% "Error while retrieving currency data from poe.trade"
+        return
+    }
+
     fileLocation := A_ScriptDir "/data/poeTradeCurrencyData.json"
     FileDelete,% fileLocation
     FileAppend,% nice,% fileLocation

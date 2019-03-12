@@ -10,6 +10,11 @@ PoeDotCom_GenerateCurrencyData() {
     dump := JSON.Dump(jsonData)
     nice := JSON.Beautify(dump)
 
+    if (!nice || StrLen(nice) < 100) {
+        MsgBox, 4096,% "",% "Error while retrieving currency data from pathofexile.com"
+        return
+    }
+
     FileDelete,% fileLocation
     FileAppend,% nice,% fileLocation
 }

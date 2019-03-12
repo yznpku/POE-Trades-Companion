@@ -40,7 +40,7 @@ Menu,Tray,Add,Close,Tray_Exit
 Menu,Tray,Icon
 
 Hotkey, IfWinActive, ahk_group POEGameGroup
-Hotkey, ^+LButton, StackClick
+Hotkey, ^RButton, StackClick
 
 Hotkey, IfWinActive,% "ahk_pid " DllCall("GetCurrentProcessId")
 Hotkey, ~*Space, SpaceRoutine
@@ -91,7 +91,7 @@ Start_Script() {
 
 	; Set global - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	PROGRAM.NAME					:= "POE Trades Companion"
-	PROGRAM.VERSION 				:= "1.13.6"
+	PROGRAM.VERSION 				:= "1.13.12"
 	PROGRAM.IS_BETA					:= IsContaining(PROGRAM.VERSION, "beta")?"True":"False"
 
 	PROGRAM.GITHUB_USER 			:= "lemasato"
@@ -134,7 +134,7 @@ Start_Script() {
 	GAME.INI_FILE 					:= GAME.MAIN_FOLDER "\production_Config.ini"
 	GAME.INI_FILE_COPY 		 		:= PROGRAM.MAIN_FOLDER "\production_Config.ini"
 	GAME.EXECUTABLES 				:= "PathOfExile.exe,PathOfExile_x64.exe,PathOfExileSteam.exe,PathOfExile_x64Steam.exe"
-	GAME.CHALLENGE_LEAGUE 			:= "Delve,Synthesis"
+	GAME.CHALLENGE_LEAGUE 			:= "Synthesis"
 
 	PROGRAM.SETTINGS.SUPPORT_MESSAGE 	:= "@%buyerName% " PROGRAM.NAME ": view-thread/1755148"
 
@@ -175,8 +175,6 @@ Start_Script() {
 	; Logs files
 	Create_LogsFile()
 	Delete_OldLogsFile()
-
-	
 
 	if (!RUNTIME_PARAMETERS.NewInstance)
 		Close_PreviousInstance()
@@ -298,6 +296,8 @@ Start_Script() {
 		INI.Set(PROGRAM.INI_FILE, "GENERAL", "ShowChangelog", "False")
 		PROGRAM.SETTINGS.PROGRAM.Show_Changelogs := ""
 		PROGRAM.SETTINGS.GENERAL.ShowChangelog := "False"
+		TrayNotifications.Show(PROGRAM.Name, "Successfully updated to v" PROGRAM.VERSION
+		. "`nTake a look at the new changes!")
 		GUI_Settings.Show("Misc Updating")
 	}
 	

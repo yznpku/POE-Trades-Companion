@@ -8,6 +8,7 @@ Acid Caverns
 Acid Lakes
 Aetheric Fossil
 Alleyways
+Alone in the Darkness
 Ambush
 Anarchy
 Anarchy's Price
@@ -23,6 +24,7 @@ Arena
 Arid Lake
 Armourer's Scrap
 Armoury
+Arrogance of the Vaal
 Arsenal
 Ashen Wood
 Assassin's Favour
@@ -52,6 +54,7 @@ Bloodlines
 Bloodstained Fossil
 Bog
 Bone Crypt
+Boon of Justice
 Boon of the First Ones
 Bound Fossil
 Boundless Realms
@@ -94,6 +97,7 @@ Crypt
 Crystal Ore
 Cursed Crypt
 Dark Forest
+Dark Temptation
 Deafening Essence of Anger
 Deafening Essence of Anguish
 Deafening Essence of Contempt
@@ -248,6 +252,7 @@ Mineral Pools
 Mirror of Kalandra
 Mirror Shard
 Mitts
+Monochrome
 Moon Temple
 Mortal Grief
 Mortal Hope
@@ -355,6 +360,7 @@ Sacrifice at Dusk
 Sacrifice at Midnight
 Sacrifice at Noon
 Sacrifice set
+Sambodhi's Vow
 Sanctified Fossil
 Scholar of the Seas
 Scorched Fossil
@@ -382,6 +388,7 @@ Scriptorium
 Scroll of Wisdom
 Sepulchre
 Serrated Fossil
+Seven Years Bad Luck
 Sewer
 Shaped Academy
 Shaped Acid Lakes
@@ -614,6 +621,7 @@ The Garish Power
 The Gemcutter
 The Gentleman
 The Gladiator
+The Golden Era
 The Hale Heart
 The Harvester
 The Hermit
@@ -628,19 +636,24 @@ The Inventor
 The Iron Bard
 The Jester
 The Jeweller's Boon
+The Journey
 The King's Blade
 The King's Heart
+The Landing
 The Last One Standing
 The Lich
 The Life Thief
 The Lion
 The Lord in Black
+The Lord of Celebration
 The Lover
 The Lunaris Priestess
+The Mad King
 The Master
 The Master Artisan
 The Mayor
 The Mercenary
+The Messenger
 The Metalsmith's Gift
 The Nurse
 The Oath
@@ -670,6 +683,7 @@ The Samurai's Eye
 The Scarred Meadow
 The Scavenger
 The Scholar
+The Seeker
 The Sephirot
 The Sigil
 The Siren

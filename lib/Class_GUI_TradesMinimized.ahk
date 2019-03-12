@@ -5,7 +5,6 @@
 		static guiCreated, maxTabsToRender
 
 		scaleMult := PROGRAM.SETTINGS.SETTINGS_CUSTOMIZATION_SKINS.ScalingPercentage / 100
-		resDPI := PROGRAM.OS.RESOLUTION_DPI 
 
 		; Free ImageButton memory
 		for key, value in GuiTradesMinimized_Controls
@@ -33,8 +32,7 @@
 		; Gui size and positions
 		borderSize := Floor(1*scaleMult)
 
-		guiFullHeight := 30 ; only header bar
-		guiFullHeight := guiFullHeight+(borderSize*2), guiFullWidth := scaleMult*(95+(2*borderSize))
+		guiFullHeight := scaleMult*(30+(borderSize*2)), guiFullWidth := scaleMult*(95+(2*borderSize))
 
 		guiHeight := guiFullHeight-(2*borderSize), guiWidth := guiFullWidth-(2*borderSize)
 		guiMinimizedHeight := (30*scaleMult)+(2*borderSize) ; 30 = Header_H
@@ -127,26 +125,21 @@
 	Show() {
 		global PROGRAM, GuiTradesMinimized, GuiTrades
 
-		resDPI := PROGRAM.OS.RESOLUTION_DPI
-
 		; Get Trades GUI pos
-		hiddenWin := A_DetectHiddenWindows
-		DetectHiddenWindows, On
-		WinGetPos, gtX, gtY, gtW, gtH,% "ahk_id " GuiTrades.Handle
-		WinGetPos, gtmX, gtmY, gtmW, gtmH,% "ahk_id " GuiTradesMinimized.Handle
+		gtPos := GUI_Trades.GetPosition()
+		gtmPos := GUI_TradesMinimized.GetPosition()
 		foundHwnd := WinExist("ahk_id " GuiTradesMinimized.Handle) ; Check if this gui exists
 		isTradesWinActive := WinActive("ahk_id " GuiTrades.Handle)
-		DetectHiddenWindows, %hiddenWin%
 
 		if !(foundHwnd) ; Not found, create it
 			GUI_TradesMinimized.Create()
 
 		if (PROGRAM.SETTINGS.SETTINGS_MAIN.MinimizeInterfaceToBottomLeft = "True")
-			xpos := gtX, ypos := gtY+gtH-gtmH ; bottom left
+			xpos := gtPos.X, ypos := gtPos.Y+gtPos.H-gtmPos.H ; bottom left
 		else
-			xpos := gtX+gtW-GuiTradesMinimized.Width, ypos := gtY ; top right
+			xpos := gtPos.X+gtPos.W-gtmPos.W, ypos := gtPos.Y ; top right
 		
-		xpos := IsNum(xpos) ? xpos : IsNum( A_ScreenWidth-(GuiTrades.Width*resDPI) ) ? A_ScreenWidth-(GuiTrades.Width*resDPI) : 0
+		xpos := IsNum(xpos) ? xpos : IsNum( A_ScreenWidth-gtPos.W ) ? A_ScreenWidth-gtPos.W : 0
 		ypos := IsNum(ypos) ? ypos : 0
 		if (isTradesWinActive)
 			Gui, TradesMinimized:Show, x%xpos% y%ypos%
@@ -161,19 +154,17 @@
 		GuiTrades.Is_Minimized := False
 
 		; Get Trades Min GUI pos
-		hiddenWin := A_DetectHiddenWindows
-		DetectHiddenWindows, On
-		WinGetPos, gtmX, gtmY, gtmW, gtmH,% "ahk_id " GuiTradesMinimized.Handle
-		WinGetPos, gtX, gtY, gtW, gtH,% "ahk_id " GuiTrades.Handle
+		gtPos := GUI_Trades.GetPosition()
+		gtmPos := GUI_TradesMinimized.GetPosition()
 		isTradesWinActive := WinActive("ahk_id " GuiTradesMinimized.Handle)
-		DetectHiddenWindows, %hiddenWin%
 
 		if (PROGRAM.SETTINGS.SETTINGS_MAIN.MinimizeInterfaceToBottomLeft = "True")
-			xpos := gtmX, ypos := gtmY+gtmH-gtH ; bottom left
+			xpos := gtmPos.X, ypos := gtmPos.Y+gtmPos.H-gtPos.H ; bottom left
 		else
-			xpos := gtmX+gtmW-gtw, ypos := gtmY ; top right
+			xpos := gtmPos.X+gtmPos.W-gtPos.W, ypos := gtmPos.Y ; top right
 
-		xpos := IsNum(xpos) ? xpos : IsNum( A_ScreenWidth-(GuiTrades.Width*resDPI) ) ? A_ScreenWidth-(GuiTrades.Width*resDPI) : 0
+
+		xpos := IsNum(xpos) ? xpos : IsNum( A_ScreenWidth-gtPos.W ) ? A_ScreenWidth-gtPos.W : 0
 		ypos := IsNum(ypos) ? ypos : 0
 		if (isTradesWinActive)
 			Gui, Trades:Show, x%xpos% y%ypos%
@@ -193,19 +184,26 @@
 		; Gui_Trades.RemoveButtonFocus()
 	}
 
+	GetPosition() {
+		global GuiTradesMinimized
+		hiddenWin := A_DetectHiddenWindows
+		DetectHiddenWindows, On
+		WinGetPos, x, y, w, h,% "ahk_id " GuiTradesMinimized.Handle
+		Sleep 10
+		DetectHiddenWindows, %hiddenWin%
+		return {x:x,y:y,w:w,h:h}
+	}
+
 	SavePosition() {
 		global PROGRAM, GuiTrades, GuiTradesMinimized
 
-		hiddenWin := A_DetectHiddenWindows
-		DetectHiddenWindows, On
-		WinGetPos, gtX, gtY, gtW, gtH,% "ahk_id " GuiTrades.Handle
-		WinGetPos, gtmX, gtmY, gtmW, gtmH,% "ahk_id " GuiTradesMinimized.Handle
-		DetectHiddenWindows, %hiddenWin%
+		gtPos := GUI_Trades.GetPosition()
+		gtmPos := GUI_TradesMinimized.GetPosition()
 
 		if (PROGRAM.SETTINGS.SETTINGS_MAIN.MinimizeInterfaceToBottomLeft = "True")
-			saveX := gtmX, saveY := gtmY+gtmH-gtH
+			saveX := gtmPos.X, saveY := gtmPos.Y+gtmPos.H-gtPos.H
 		else
-			saveX := gtmX+gtmW-gtW, saveY := gtmY
+			saveX := gtmPos.X+gtmPos.W-gtPos.W, saveY := gtmPos.Y
 		
 		if !IsNum(saveX) || !IsNum(saveY) {
 			Return
@@ -213,7 +211,5 @@
 		
 		INI.Set(PROGRAM.INI_FILE, "SETTINGS_MAIN", "Pos_X", saveX)
 		INI.Set(PROGRAM.INI_FILE, "SETTINGS_MAIN", "Pos_Y", saveY)
-	}
-
-	
+	}	
 }

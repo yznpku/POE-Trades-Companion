@@ -629,6 +629,56 @@ if !InStr(FileExist(PROGRAM.IMAGES_FOLDER ""), "D")
 	FileCreateDir,% PROGRAM.IMAGES_FOLDER ""
 
 if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\imgs\Discord_big.png")
+	FileGetSize, destFileSize, % PROGRAM.IMAGES_FOLDER "\Discord_big.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\imgs\Discord_big.png
+	FileGetSize, destFileSize, % PROGRAM.IMAGES_FOLDER "\Discord_big.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\imgs\Discord_big.png, % PROGRAM.IMAGES_FOLDER "\Discord_big.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\imgs\Discord_big.png"
+	.	"`nDest: " PROGRAM.IMAGES_FOLDER "\Discord_big.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\imgs\Discord_big.png"
+	.	"`nDest: " PROGRAM.IMAGES_FOLDER "\Discord_big.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.IMAGES_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.IMAGES_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\imgs\Discord_big_forums.png")
+	FileGetSize, destFileSize, % PROGRAM.IMAGES_FOLDER "\Discord_big_forums.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\imgs\Discord_big_forums.png
+	FileGetSize, destFileSize, % PROGRAM.IMAGES_FOLDER "\Discord_big_forums.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\imgs\Discord_big_forums.png, % PROGRAM.IMAGES_FOLDER "\Discord_big_forums.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\imgs\Discord_big_forums.png"
+	.	"`nDest: " PROGRAM.IMAGES_FOLDER "\Discord_big_forums.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\imgs\Discord_big_forums.png"
+	.	"`nDest: " PROGRAM.IMAGES_FOLDER "\Discord_big_forums.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.IMAGES_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.IMAGES_FOLDER ""
+
+if (A_IsCompiled) {
 	sourceFileSize := Get_ResourceSize("resources\imgs\DonatePaypal.png")
 	FileGetSize, destFileSize, % PROGRAM.IMAGES_FOLDER "\DonatePaypal.png"
 }
@@ -679,6 +729,56 @@ if !InStr(FileExist(PROGRAM.IMAGES_FOLDER ""), "D")
 	FileCreateDir,% PROGRAM.IMAGES_FOLDER ""
 
 if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\imgs\GitHub_big.png")
+	FileGetSize, destFileSize, % PROGRAM.IMAGES_FOLDER "\GitHub_big.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\imgs\GitHub_big.png
+	FileGetSize, destFileSize, % PROGRAM.IMAGES_FOLDER "\GitHub_big.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\imgs\GitHub_big.png, % PROGRAM.IMAGES_FOLDER "\GitHub_big.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\imgs\GitHub_big.png"
+	.	"`nDest: " PROGRAM.IMAGES_FOLDER "\GitHub_big.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\imgs\GitHub_big.png"
+	.	"`nDest: " PROGRAM.IMAGES_FOLDER "\GitHub_big.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.IMAGES_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.IMAGES_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\imgs\GitHub_big_forums.png")
+	FileGetSize, destFileSize, % PROGRAM.IMAGES_FOLDER "\GitHub_big_forums.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\imgs\GitHub_big_forums.png
+	FileGetSize, destFileSize, % PROGRAM.IMAGES_FOLDER "\GitHub_big_forums.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\imgs\GitHub_big_forums.png, % PROGRAM.IMAGES_FOLDER "\GitHub_big_forums.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\imgs\GitHub_big_forums.png"
+	.	"`nDest: " PROGRAM.IMAGES_FOLDER "\GitHub_big_forums.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\imgs\GitHub_big_forums.png"
+	.	"`nDest: " PROGRAM.IMAGES_FOLDER "\GitHub_big_forums.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.IMAGES_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.IMAGES_FOLDER ""
+
+if (A_IsCompiled) {
 	sourceFileSize := Get_ResourceSize("resources\imgs\POE.png")
 	FileGetSize, destFileSize, % PROGRAM.IMAGES_FOLDER "\POE.png"
 }
@@ -704,6 +804,31 @@ if !InStr(FileExist(PROGRAM.IMAGES_FOLDER ""), "D")
 	FileCreateDir,% PROGRAM.IMAGES_FOLDER ""
 
 if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\imgs\POE_big.png")
+	FileGetSize, destFileSize, % PROGRAM.IMAGES_FOLDER "\POE_big.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\imgs\POE_big.png
+	FileGetSize, destFileSize, % PROGRAM.IMAGES_FOLDER "\POE_big.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\imgs\POE_big.png, % PROGRAM.IMAGES_FOLDER "\POE_big.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\imgs\POE_big.png"
+	.	"`nDest: " PROGRAM.IMAGES_FOLDER "\POE_big.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\imgs\POE_big.png"
+	.	"`nDest: " PROGRAM.IMAGES_FOLDER "\POE_big.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.IMAGES_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.IMAGES_FOLDER ""
+
+if (A_IsCompiled) {
 	sourceFileSize := Get_ResourceSize("resources\imgs\Reddit.png")
 	FileGetSize, destFileSize, % PROGRAM.IMAGES_FOLDER "\Reddit.png"
 }
@@ -721,6 +846,31 @@ if (ErrorLevel) {
 	errorLog .= "`n`n""Failed to extract file!"
 	.	"`nSource: resources\imgs\Reddit.png"
 	.	"`nDest: " PROGRAM.IMAGES_FOLDER "\Reddit.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.IMAGES_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.IMAGES_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\imgs\Reddit_big.png")
+	FileGetSize, destFileSize, % PROGRAM.IMAGES_FOLDER "\Reddit_big.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\imgs\Reddit_big.png
+	FileGetSize, destFileSize, % PROGRAM.IMAGES_FOLDER "\Reddit_big.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\imgs\Reddit_big.png, % PROGRAM.IMAGES_FOLDER "\Reddit_big.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\imgs\Reddit_big.png"
+	.	"`nDest: " PROGRAM.IMAGES_FOLDER "\Reddit_big.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\imgs\Reddit_big.png"
+	.	"`nDest: " PROGRAM.IMAGES_FOLDER "\Reddit_big.png"
 	.	"`nFlag: " 2
 }
 

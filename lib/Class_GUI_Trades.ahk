@@ -411,6 +411,16 @@
 		Return
 	}
 
+	GetPosition() {
+		global GuiTrades
+		hiddenWin := A_DetectHiddenWindows
+		DetectHiddenWindows, On
+		WinGetPos, x, y, w, h,% "ahk_id " GuiTrades.Handle
+		Sleep 10
+		DetectHiddenWindows, %hiddenWin%
+		return {x:x,y:y,w:w,h:h}
+	}
+
 	CloseAllTabs() {
 		global GuiTrades
 
@@ -1765,21 +1775,20 @@
 
 	ResetPosition(dontWrite=False) {
 		global PROGRAM, GuiTrades, GuiTradesMinimized
-
-		resDPI := PROGRAM.OS.RESOLUTION_DPI
 		iniFile := PROGRAM.INI_FILE
 
-		resDPI := Get_DpiFactor()
+		gtPos := GUI_Trades.GetPosition()	
+		gtmPos := GUI_TradesMinimized.GetPosition()
 
 		try {
 			if (GuiTrades.Is_Minimized)
-				Gui, TradesMinimized:Show,% "NoActivate x" Ceil(A_ScreenWidth - (GuiTradesMinimized.Width * resDPI) ) " y0"
-			else Gui, Trades:Show,% "NoActivate x" Ceil(A_ScreenWidth - (GuiTrades.Width * resDPI) ) " y0"
+				Gui, TradesMinimized:Show,% "NoActivate x" Ceil(A_ScreenWidth-gtmPos.W) " y0"
+			else Gui, Trades:Show,% "NoActivate x" Ceil(A_ScreenWidth-gtPos.W) " y0"
 			
 			if !(dontWrite) {
 				if (GuiTrades.Is_Minimized)
-					INI.Set(iniFile, "SETTINGS_MAIN", "Pos_X", Ceil(A_ScreenWidth - (GuiTradesMinimized.Width * resDPI) ) )
-				else INI.Set(iniFile, "SETTINGS_MAIN", "Pos_X", Ceil(A_ScreenWidth - (GuiTrades.Width * resDPI) ) )
+					INI.Set(iniFile, "SETTINGS_MAIN", "Pos_X", Ceil(A_ScreenWidth-gtmPos.W) )
+				else INI.Set(iniFile, "SETTINGS_MAIN", "Pos_X", Ceil(A_ScreenWidth-gtPos.W) )
 				INI.Set(iniFile, "SETTINGS_MAIN", "Pos_Y", 0)
 			}
 		}
@@ -1841,12 +1850,12 @@
 	SavePosition() {
 		global PROGRAM, GuiTrades
 
-		WinGetPos, xpos, ypos, , ,% "ahk_id " GuiTrades.Handle
-		if !IsNum(xpos) || !IsNum(ypos)
+		gtPos := GUI_Trades.GetPosition()
+		if !IsNum(gtPos.X) || !IsNum(gtPos.Y)
 			Return
 
-		INI.Set(PROGRAM.INI_FILE, "SETTINGS_MAIN", "Pos_X", xpos)
-		INI.Set(PROGRAM.INI_FILE, "SETTINGS_MAIN", "Pos_Y", ypos)
+		INI.Set(PROGRAM.INI_FILE, "SETTINGS_MAIN", "Pos_X", gtPos.X)
+		INI.Set(PROGRAM.INI_FILE, "SETTINGS_MAIN", "Pos_Y", gtPos.Y)
 	}
 
 	DockMode_Cycle(dontSetPos=False) {
@@ -1874,14 +1883,17 @@
 		isWinMinimized := isMinMax=-1?True:False
 
 		WinGetPos, dockedX, dockedY, dockedW, dockedH,% "ahk_id " GuiTrades.Docked_Window_Handle
-		WinGetPos, tradesX, tradesY, tradesW, tradesH,% "ahk_id " GuiTrades.Handle
-		WinGetPos, tradesMinX, tradesMinY, tradesMinW, tradesMinH,% "ahk_id " GuiTradesMinimized.Handle
+		clientInfos := GetWindowClientInfos("ahk_id " GuiTrades.Docked_Window_Handle)
+		dockedX -= clientInfos.X, dockedY += clientInfos.Y
+		
+		gtPos := GUI_Trades.GetPosition()
+		gtmPos := GUI_TradesMinimized.GetPosition()
 		
 		if (GuiTrades.Is_Minimized)
-			moveToX := (dockedX+dockedW)-GuiTradesMinimized.Width, moveToY := dockedY 
-		else moveToX := (dockedX+dockedW)-GuiTrades.Width, moveToY := dockedY 
+			moveToX := (dockedX+dockedW)-gtmPos.W, moveToY := dockedY 
+		else moveToX := (dockedX+dockedW)-gtPos.W, moveToY := dockedY 
 
-		if IsNum(dockedX) && ( (GuiTrades.Is_Minimized && tradesX = moveToX && tradesY = moveToY) || (GuiTrades.Is_Minimized && tradesMinX = moveToX && tradesMinY = moveToY) ) {
+		if IsNum(dockedX) && ( (GuiTrades.Is_Minimized && gtPos.X = moveToX && gtPos.Y = moveToY) || (GuiTrades.Is_Minimized && gtmPos.X = moveToX && gtmPos.Y = moveToY) ) {
 			DetectHiddenWindows, %hiddenWin%
 			Return
 		}

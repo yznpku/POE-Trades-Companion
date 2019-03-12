@@ -71,6 +71,8 @@ EnableHotkeys() {
 		acType := thisHotkeySettings.Type
 		hk := thisHotkeySettings.Hotkey
 		hkSC := TransformKeyStr_ToScanCodeStr(hk)
+		if !(hkSC)
+			hkSC := TransformKeyStr_ToVirtualKeyStr(hk)
 
 		if (toggle = "True") && (hk != "") && (acType != "") {
 			PROGRAM.HOTKEYS[hkSC] := {}
@@ -78,7 +80,7 @@ EnableHotkeys() {
 			PROGRAM.HOTKEYS[hkSC].Type := acType
 			Hotkey, IfWinActive, ahk_group POEGameGroup
 			try Hotkey,% hkSC, OnHotkeyPress, On
-			logsStr := "Enabled hotkey with key """ hk """ (scan code: """ hkSC """)"
+			logsStr := "Enabled hotkey with key """ hk """ (sc/vk: """ hkSC """)"
 			logsAppend .= logsAppend ? "`n" logsStr : logsStr
 		}
 	}
@@ -89,6 +91,8 @@ EnableHotkeys() {
 		acType := thisHotkeySettings.Action_1_Type
 		hk := thisHotkeySettings.Hotkey
 		hkSC := TransformKeyStr_ToScanCodeStr(hk)
+		if !(hkSC)
+			hkSC := TransformKeyStr_ToVirtualKeyStr(hk)
 
 		if (A_Index > 1000) {
 			AppendToLogs(A_ThisFunc "(): Broke out of loop after 1000.")
@@ -113,11 +117,11 @@ EnableHotkeys() {
 				Hotkey, IfWinActive, ahk_group POEGameGroup
 				try {
 					Hotkey,% hkSC, OnHotkeyPress, On
-					logsStr := "Enabled hotkey with key """ hk """ (scan code: """ hkSC """)"
+					logsStr := "Enabled hotkey with key """ hk """ (sc/vk: """ hkSC """)"
 					logsAppend .= logsAppend ? "`n" logsStr : logsStr
 				}
 				catch {
-					logsStr := "Failed to enable hotkey doe to key or scan code being empty: key """ hk """ (scan code: """ hkSC """)"
+					logsStr := "Failed to enable hotkey doe to key or sc/vk being empty: key """ hk """ (sc/vk: """ hkSC """)"
 					logsAppend .= logsAppend ? "`n" logsStr : logsStr
 				}
 			}
@@ -132,6 +136,23 @@ EnableHotkeys() {
 	Set_TitleMatchMode()
 }
 
+TransformKeyStr_ToVirtualKeyStr(hk) {
+	hkStr := hk, hkLen := StrLen(hk)
+	Loop 3 {
+		char := SubStr(hkStr, A_Index, A_Index)
+		if IsIn(char, "^,+,!,#") && (hkLen > A_Index)
+			hkStr_final .= char
+	}
+	StringTrimLeft, hkStr_noMods, hkStr,% StrLen(hkStr_final)
+	hkVK := GetKeyVK(hkStr_noMods), hkVK := Format("VK{:X}", hkVK)
+	hkStr_final .= hkVK
+
+    if (hkVK = "VK0")
+        return
+
+	return hkStr_final
+}
+
 TransformKeyStr_ToScanCodeStr(hk) {
 	hkStr := hk, hkLen := StrLen(hk)
 	Loop 3 {
@@ -142,6 +163,9 @@ TransformKeyStr_ToScanCodeStr(hk) {
 	StringTrimLeft, hkStr_noMods, hkStr,% StrLen(hkStr_final)
 	hkSC := GetKeySC(hkStr_noMods), hkSC := Format("SC{:X}", hkSC)
 	hkStr_final .= hkSC
+
+    if (hkSC = "SC0")
+        return
 
 	return hkStr_final
 }

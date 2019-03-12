@@ -81,6 +81,11 @@ PoeNinja_CreateMapDataFile(league) {
     finalData := JSON.Beautify(mapsSorted)
     finalData := StrReplace(finalData, "\u251c\u00c2", "ö")
 
+    if (!mapsSorted.Count() || !mapsSorted["tier_unique"].Count() || StrLen(finalData) < 100) {
+        MsgBox, 4096,% "",% "Error while retrieving maps data from poe.ninja"
+        return
+    }
+
     FileDelete,% A_ScriptDir "/data//mapsData.json"
     File := FileOpen(A_ScriptDir "/data//mapsData.json", "w", "UTF-8")
 	File.Write(finalData)
