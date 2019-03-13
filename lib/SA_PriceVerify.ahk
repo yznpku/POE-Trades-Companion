@@ -46,7 +46,7 @@ VerifyItemPrice(cmdLineParams) {
             thisAccount := A_LoopField
             
             ; infos required to create search url
-			searchURLObj := {"name": cmdLineParamsObj.ItemName, "buyout": cmdLineParamsObj.ItemPrice
+			searchURLObj := {"name": cmdLineParamsObj.ItemName
 			, "level_min": cmdLineParamsObj.ItemLevel, "level_max": cmdLineParamsObj.ItemLevel
 			, "q_min": cmdLineParamsObj.ItemQuality, "q_max": cmdLineParamsObj.ItemQuality
 			, "league": cmdLineParamsObj.League, "seller": thisAccount}
@@ -55,8 +55,7 @@ VerifyItemPrice(cmdLineParams) {
             ; looking for a matching item based on data we have
             searchObj := {"seller": thisAccount, "online": ""
                 , "buyout": cmdLineParamsObj.ItemPrice, "name": cmdLineParamsObj.ItemName
-                , "level_min": cmdLineParamsObj.ItemLevel, "level_max": cmdLineParamsObj.ItemLevel
-                , "q_min": cmdLineParamsObj.ItemQuality, "q_max": cmdLineParamsObj.ItemQuality
+                , "level": cmdLineParamsObj.ItemLevel, "quality": cmdLineParamsObj.ItemQuality
                 , "league": cmdLineParamsObj.League, "tab": cmdLineParamsObj.StashTab
                 , "x": cmdLineParamsObj.StashX, "y" : cmdLineParamsObj.StashY}
             poeTradeObj := PoeTrade_GetMatchingItemData(searchObj, itemURL)
