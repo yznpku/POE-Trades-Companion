@@ -101,22 +101,23 @@ Start_Script() {
 	PROGRAM.GUTHUB_BRANCH			:= "master"
 
 	PROGRAM.MAIN_FOLDER 			:= MyDocuments "\lemasato\" PROGRAM.NAME
-	PROGRAM.SFX_FOLDER 				:= PROGRAM.MAIN_FOLDER "\SFX"
 	PROGRAM.LOGS_FOLDER 			:= PROGRAM.MAIN_FOLDER "\Logs"
-	PROGRAM.SKINS_FOLDER 			:= PROGRAM.MAIN_FOLDER "\Skins"
-	PROGRAM.FONTS_FOLDER 			:= PROGRAM.MAIN_FOLDER "\Fonts"
-	PROGRAM.DATA_FOLDER				:= PROGRAM.MAIN_FOLDER "\Data"
-	PROGRAM.IMAGES_FOLDER			:= PROGRAM.MAIN_FOLDER "\Images"
-	PROGRAM.ICONS_FOLDER			:= PROGRAM.MAIN_FOLDER "\Icons"
+	PROGRAM.DATA_FOLDER				:= (A_IsCompiled?PROGRAM.MAIN_FOLDER:A_ScriptDir) . (A_IsCompiled?"\Data":"\data")
+	PROGRAM.SFX_FOLDER 				:= (A_IsCompiled?PROGRAM.MAIN_FOLDER:A_ScriptDir) . (A_IsCompiled?"\SFX":"\resources\sfx")
+	PROGRAM.SKINS_FOLDER 			:= (A_IsCompiled?PROGRAM.MAIN_FOLDER:A_ScriptDir) . (A_IsCompiled?"\Skins":"\resources\skins")
+	PROGRAM.FONTS_FOLDER 			:= (A_IsCompiled?PROGRAM.MAIN_FOLDER:A_ScriptDir) . (A_IsCompiled?"\Fonts":"\resources\fonts")
+	PROGRAM.IMAGES_FOLDER			:= (A_IsCompiled?PROGRAM.MAIN_FOLDER:A_ScriptDir) . (A_IsCompiled?"\Images":"\resources\imgs")
+	PROGRAM.ICONS_FOLDER			:= (A_IsCompiled?PROGRAM.MAIN_FOLDER:A_ScriptDir) . (A_IsCompiled?"\Icons":"\resources\icons")
 
 	prefsFileName 					:= (RUNTIME_PARAMETERS.InstanceName)?(RUNTIME_PARAMETERS.InstanceName "_Preferences.ini"):("Preferences.ini")
 	backupFileName 					:= (RUNTIME_PARAMETERS.InstanceName)?(RUNTIME_PARAMETERS.InstanceName "_Trades_Backup.ini"):("Trades_Backup.ini")
+	tradesHistoryFileName 			:= (RUNTIME_PARAMETERS.InstanceName)?(RUNTIME_PARAMETERS.InstanceName "_Trades_History.ini"):("Trades_History.ini")
 	PROGRAM.FONTS_SETTINGS_FILE		:= PROGRAM.FONTS_FOLDER "\Settings.ini"
 	PROGRAM.INI_FILE 				:= PROGRAM.MAIN_FOLDER "\" prefsFileName
 	PROGRAM.LOGS_FILE 				:= PROGRAM.LOGS_FOLDER "\" A_YYYY "-" A_MM "-" A_DD " " A_Hour "h" A_Min "m" A_Sec "s.txt"
 	PROGRAM.CHANGELOG_FILE 			:= PROGRAM.MAIN_FOLDER "\changelog.txt"
 	PROGRAM.CHANGELOG_FILE_BETA 	:= PROGRAM.MAIN_FOLDER "\changelog_beta.txt"
-	PROGRAM.TRADES_HISTORY_FILE 	:= PROGRAM.MAIN_FOLDER "\Trades_History.ini" 
+	PROGRAM.TRADES_HISTORY_FILE 	:= PROGRAM.MAIN_FOLDER "\" tradesHistoryFileName
 	PROGRAM.TRADES_BACKUP_FILE		:= PROGRAM.MAIN_FOLDER "\" backupFileName
 
 	PROGRAM.NEW_FILENAME			:= PROGRAM.MAIN_FOLDER "\POE-TC-NewVersion.exe"
@@ -160,8 +161,11 @@ Start_Script() {
 	StringTrimRight, POEGameList, POEGameList, 1
 
 	; Create local directories - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-	directories := PROGRAM.MAIN_FOLDER "`n" PROGRAM.SFX_FOLDER "`n" PROGRAM.LOGS_FOLDER "`n" PROGRAM.SKINS_FOLDER
-	. "`n" PROGRAM.FONTS_FOLDER "`n" PROGRAM.IMAGES_FOLDER "`n" PROGRAM.DATA_FOLDER "`n" PROGRAM.ICONS_FOLDER
+	if (A_IsCompiled)
+		directories := PROGRAM.MAIN_FOLDER "`n" PROGRAM.SFX_FOLDER "`n" PROGRAM.LOGS_FOLDER "`n" PROGRAM.SKINS_FOLDER
+		. "`n" PROGRAM.FONTS_FOLDER "`n" PROGRAM.IMAGES_FOLDER "`n" PROGRAM.DATA_FOLDER "`n" PROGRAM.ICONS_FOLDER
+	else
+		directories := PROGRAM.MAIN_FOLDER "`n" PROGRAM.LOGS_FOLDER
 
 	Loop, Parse, directories, `n, `r
 	{
@@ -182,7 +186,7 @@ Start_Script() {
 		Close_PreviousInstance()
 	TrayRefresh()
 
-	if !(DEBUG.settings.skip_assets_extracting)
+	if (A_IsCompiled) && !(DEBUG.settings.skip_assets_extracting)
 		AssetsExtract()
 
 	; Currency names for stats gui - - - - - - - - - - - - - - - - - - - - - - - - - - - -
