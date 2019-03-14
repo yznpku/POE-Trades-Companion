@@ -38,6 +38,8 @@ Menu,Tray,Add
 Menu,Tray,Add,Reload,Tray_Reload
 Menu,Tray,Add,Close,Tray_Exit
 Menu,Tray,Icon
+; Left click
+OnMessage(0x404, "AHK_NOTIFYICON") 
 
 Hotkey, IfWinActive, ahk_group POEGameGroup
 Hotkey, ^RButton, StackClick
