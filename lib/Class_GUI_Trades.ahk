@@ -350,7 +350,7 @@
 			WinWaitClose, ahk_id %hGuiErrorLog%
 		}
 
-		Gui.Show("Trades", "x" winXPos " y" winYPos " h" guiFullHeight " w" guiFullWidth " NoActivate")
+		Gui.Show("Trades", "x" winXPos " y" winYPos " h" guiFullHeight " w" guiFullWidth " Hide")
 
 		GUI_Trades.SetButtonsPositions()
 		GuiTrades.Is_Created := True
