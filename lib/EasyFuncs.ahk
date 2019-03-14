@@ -1,4 +1,44 @@
-﻿GetKeyStateFunc(which) {
+﻿IsWindowInScreenBoundaries(_win, _screen="All", _adv=False) {
+/*	Returns whether at least 1/3 of the window is within the screen or not
+*/
+	WinGetPos, x, y, w, h,% _win
+	win := {x:x,y:y,h:h,w:w}
+
+	mons := {}
+	if (_screen="All") { ; get all mons wa into their own sub array
+		SysGet, monCount, MonitorCount
+		Loop %monCount% {
+			SysGet, monwa, MonitorWorkArea, %A_Index%
+			mons[A_Index] := {T:monwaTop,B:monwaBottom,L:monwaLeft,R:monwaRight}
+		}	
+	}
+	else { ; only selected monitor into its own sub array
+		SysGet, monwa, MonitorWorkArea, %_screen%
+		mons.1 := {T:monwaTop,B:monwaBottom,L:monwaLeft,R:monwaRight}
+	}
+
+	for monIndex, nothing in mons { ; for every subarray
+		mon := mons[monIndex]
+
+		; check if 1/3 of window is in horizontal boundaries
+		if (win.x < mon.l) ; left 
+			hor := IsBetween(win.x+win.w/1.5, mon.l, mon.r)
+		else ; right
+			hor := IsBetween(win.x+win.w/3, mon.l, mon.r)
+		; check if 1/3 of window is in vertical boundaries
+		if (win.y < mon.t) ; top
+			ver := IsBetween(win.y+win.h/1.5, mon.t, mon.b)
+		else ; bottom
+			ver := IsBetween(win.y+win.h/3, mon.t, mon.b)
+
+		if (_adv)
+			return {H:hor,V:ver}
+		else if (hor && ver)
+			return True
+	}	
+}
+
+GetKeyStateFunc(which) {
 
 	if (which = "All") {
 		shiftState := (GetKeyState("Shift"))?("Down"):("Up")
