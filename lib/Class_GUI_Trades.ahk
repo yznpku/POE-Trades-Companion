@@ -1956,6 +1956,11 @@
 	DockMode_SetPosition() {
 		global GuiTrades, GuiTradesMinimized
 
+		if !WinExist("ahk_id " GuiTrades.Docked_Window_Handle " ahk_group POEGameGroup") {
+			GUI_Trades.DockMode_Cycle(dontSetPos:=True)
+			return
+		}
+
 		hiddenWin := A_DetectHiddenWindows
 		DetectHiddenWindows, On
 
@@ -1988,6 +1993,11 @@
 			else WinMove,% "ahk_id " GuiTrades.Handle, ,% moveToX,% moveToY
 		}
 
+		if (GuiTrades.Is_Minimized)
+			GUI_TradesMinimized.SavePosition()
+		else 
+			GUI_Trades.SavePosition()
+		
 		DetectHiddenWindows, %hiddenWin%
 	}
 
