@@ -17,7 +17,8 @@
 
 	; HTTP Request
 	postData		:= ""
-	options 	:= "TimeOut: 10"
+	options 	:= ""
+	options 	.= "`n"	"TimeOut: 25"
 	reqHeaders	:= []
 	reqHeaders.push("Host: api.pathofexile.com")
 	reqHeaders.push("Connection: keep-alive")
@@ -54,9 +55,11 @@
 	; In case leagues api is down, get from my own list on github
 	if !(apiTradingLeagues) {
 		postData := ""
+		options 	:= ""
+		options 	.= "`n"	"TimeOut: 25"
 		reqHeaders := []
 		url := "http://raw.githubusercontent.com/" PROGRAM.GITHUB_USER "/" PROGRAM.GITHUB_REPO "/master/data/TradingLeagues.txt"
-		rawFile := cURL_Download(url, postData, reqHeaders, "", false, true, false, "", reqHeadersCurl)
+		rawFile := cURL_Download(url, postData, reqHeaders, options, false, true, false, "", reqHeadersCurl)
 
 		if IsContaining(rawFile, "Error,404") {
 			AppendToLogs(A_ThisFunc "(forceScriptLeagues=" forceScriptLeagues "): Failed to get leagues from GitHub file."

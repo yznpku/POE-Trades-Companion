@@ -6,6 +6,7 @@
 	reqHeaders		:= []
 	reqHeaders.Push("Content-Type: text/html; charset=UTF-8")
 	options			:= ""
+    options         .= "`n" "TimeOut: 25"
 	html 			:= cURL_Download(url, ioData := postData, reqHeaders, options, false, false, false, errorMsg)
 
     mapsJSON := JSON.Load(html)
@@ -21,6 +22,7 @@ PoeNinja_GetUniqueMapOverview(league) {
 	reqHeaders		:= []
 	reqHeaders.Push("Content-Type: text/html; charset=UTF-8")
 	options			:= ""
+    options         .= "`n" "TimeOut: 25"
 	html 			:= cURL_Download(url, ioData := postData, reqHeaders, options, false, false, false, errorMsg)
 
     uniqueMapsJSON := JSON.Load(html)

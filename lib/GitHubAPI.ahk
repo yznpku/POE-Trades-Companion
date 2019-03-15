@@ -34,6 +34,7 @@ GitHubAPI_GetReleases(user, repo, which="releases_only", latestOnly=False, pageI
 	reqHeaders		:= []
 	reqHeaders.Push("Content-Type: text/html; charset=UTF-8")
 	options			:= ""
+    options         .= "`n" "TimeOut: 25"
 	html 			:= cURL_Download(url, ioData := postData, reqHeaders, options, true, false, false, errorMsg)
     ; FileRead, html,% A_ScriptDir "\releasejson.txt"
     

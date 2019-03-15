@@ -3860,10 +3860,12 @@ Class GUI_Settings {
 		global PROGRAM
 
 		postData := ""
+		options		:= ""
+		options		.= "`n" "TimeOut: 7"
 		reqHeaders := []
 		reqHeaders.Push("Content-Type: text/html; charset=UTF-8")
 		url := "https://github.com/lemasato/POE-Trades-Companion/wiki/Support"
-		html := cURL_Download(url, postData, reqHeaders, "", false, false, false, "", reqHeadersCurl)
+		html := cURL_Download(url, postData, reqHeaders, options, false, false, false, "", reqHeadersCurl)
 
 		hallOfFame := ""
 		if RegExMatch(html,"\<table\>(.*)\<\/table\>", match) {
@@ -3875,9 +3877,11 @@ Class GUI_Settings {
 					hallOfFame .= name "`n"
 				}
 			}
+			Sort, hallOfFame, D`n
 		}
-		Sort, hallOfFame, D`n
-
+		else 
+			hallOfFame := "[Failed to retrieve Hall of Fame]"
+		
 		return hallOfFame		
 	}
 

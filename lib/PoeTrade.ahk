@@ -32,7 +32,8 @@ PoeTrade_GetCurrencyData() {
 
     Url := "http://currency.poe.trade/"
 	postData 	:= ""
-	options	:= ""
+	options	    := ""
+    options     .= "`n" "TimeOut: 25"
 
 	reqHeaders	:= []
 	reqHeaders.push("User-Agent:Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Safari/537.36")
@@ -321,6 +322,7 @@ PoeTrade_GetSource(url) {
 	payLength	:= StrLen(postData)
 	url 		:= "http://poe.trade/search"
 	options	    := ""
+    options     .= "`n" "TimeOut: 25"
 
 	reqHeaders	:= []
 	reqHeaders.push("Connection: keep-alive")
@@ -344,6 +346,7 @@ CurrencyPoeTrade_GetSource(url, skipPayload=False) {
     postData 	:= payload
 	payLength	:= StrLen(postData)
 	options	    := ""
+    options     .= "`n" "TimeOut: 25"
 
 	reqHeaders	:= []
 	reqHeaders.push("User-Agent:Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Safari/537.36")
