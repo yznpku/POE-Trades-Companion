@@ -170,6 +170,8 @@
 			Gui, Trades:Show, x%xpos% y%ypos%
 		else Gui, Trades:Show, x%xpos% y%ypos% NoActivate
 		Gui, TradesMinimized:Hide
+
+		Gui_Trades.ResetPositionIfOutOfBounds()
 	}
 
 	OnGuiMove(GuiHwnd) {
@@ -182,6 +184,7 @@
 		KeyWait, LButton, Up
 		Gui_TradesMinimized.SavePosition()
 		; Gui_Trades.RemoveButtonFocus()
+		Gui_Trades.ResetPositionIfOutOfBounds()
 	}
 
 	GetPosition() {

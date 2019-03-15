@@ -365,6 +365,8 @@
 		if (PROGRAM.SETTINGS.SETTINGS_MAIN.AllowClicksToPassThroughWhileInactive = "True")
 			GUI_Trades.Enable_ClickThrough()
 
+		Gui_Trades.ResetPositionIfOutOfBounds()
+
 		GUI_Trades.EnableHotkeys()
 		Return
 
@@ -409,6 +411,16 @@
 		Gui_Trades_ContextMenu_CloseOtherTabsWithSameItem:
 			GUI_Trades.CloseOtherTabsForSameItem()
 		Return
+	}
+
+	ResetPositionIfOutOfBounds() {
+		global GuiTrades, GuiTradesMinimized
+
+		winHandle := GuiTrades.Is_Minimized ? GuiTradesMinimized.Handle : GuiTrades.Handle
+		if !IsWindowInScreenBoundaries(_win:="ahk_id " winHandle, _screen:="All", _adv:=False) {
+			Gui_Trades.ResetPosition()
+			TrayNotifications.Show("Position has been reset", "The interface has been detected to be out of bounds and has its position has been reset.")
+		}
 	}
 
 	GetPosition() {
@@ -1760,6 +1772,8 @@
 		if ( GUI_ItemGrid.Exists() )
 			GUI_ItemGrid.Hide()
 
+		Gui_Trades.ResetPositionIfOutOfBounds()
+
 		/* ; Old code, changing gui size
 		global GuiTrades, GuiTrades_Controls
 		global PROGRAM
@@ -1797,6 +1811,7 @@
 		KeyWait, LButton, Up
 		Gui_Trades.SavePosition()
 		; Gui_Trades.RemoveButtonFocus()
+		Gui_Trades.ResetPositionIfOutOfBounds()
 	}
 
 	SetTransparencyPercent(transPercent) {
