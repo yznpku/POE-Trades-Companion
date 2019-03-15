@@ -1242,6 +1242,10 @@
 		GUI_Trades_VerifyItemPrice_SA:
 			global PROGRAM, GuiIntercom, GuiIntercom_Controls
 
+			tabID := GUI_Trades.GetTabNumberFromUniqueID(tabInfos.UniqueID)
+			GUI_Trades.SetTabVerifyColor(tabID, "Grey")
+		    GUI_Trades.UpdateSlotContent(tabID, "TradeVerifyInfos", "Comparing price on poe.trade...")
+
 			intercomSlotNum := GUI_Intercom.GetNextAvailableSlot()
 			intercomSlotHandle := GUI_Intercom.GetSlotHandle(intercomSlotNum)
 			GUI_Intercom.ReserveSlot(intercomSlot)
