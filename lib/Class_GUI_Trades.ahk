@@ -1426,11 +1426,6 @@
 		currentTabContent := GUI_Trades.GetTabContent(tabName)
 		cTabCont := GUI_Trades.GetTabContent(tabName)
 
-		; newTabBuyer := (tabInfos.Buyer != "")?(tabInfos.Buyer):(currentTabContent.Buyer)
-		; newTabItem := (tabInfos.Item != "")?(tabInfos.Item):(currentTabContent.Item)
-		; newTabPrice := (tabInfos.Price != "")?(tabInfos.Price):(currentTabContent.Price)
-		; newTabStash := (tabInfos.Stash != "")?(tabInfos.Stash):(currentTabContent.Stash)
-		; newTabOther := (isNewlyPushed)?(""):(tabInfos.Other != "")?(tabInfos.Other):(currentTabContent.Other)
 		newTabBuyer := updateOnly && !tabInfos.Buyer ? cTabCont.Buyer : tabInfos.Buyer
 		newTabItem := updateOnly && !tabInfos.Item ? cTabCont.Item : tabInfos.Item
 		newTabPrice := updateOnly && !tabInfos.Price ? cTabCont.Price : tabInfos.Price
@@ -1444,12 +1439,6 @@
 		. "`n"	"Stash:"	 A_Tab newTabStash
 		. "`n"	"Other:"	 A_Tab newTabOther
 
-		; newTabBuyerGuild := (tabInfos.BuyerGuild != "")?(tabInfos.BuyerGuild):(currentTabContent.BuyerGuild)
-		; newTabTimeStamp := (tabInfos.TimeStamp != "")?(tabInfos.TimeStamp) : (currentTabContent.TimeStamp)?(currentTabContent.TimeStamp) : (A_YYYY "/" A_MM "/" A_DD " " A_Hour ":" A_Min ":" A_Sec)
-		; newTabPID := (tabInfos.PID != "")?(tabInfos.PID):(currentTabContent.PID)
-		; newTabIsInArea := (tabInfos.IsInArea != "")?(tabInfos.IsInArea):(currentTabContent.IsInArea)
-		; newTabHasNewMessage := (tabInfos.HasNewMessage != "")?(tabInfos.HasNewMessage):(currentTabContent.HasNewMessage)
-		; newTabWithdrawTally := (tabInfos.WithdrawTally != "")?(tabInfos.WithdrawTally):(currentTabContent.WithdrawTally)
 		newTabBuyerGuild := updateOnly && !tabInfos.BuyerGuild ? cTabCont.BuyerGuild : tabInfos.BuyerGuild
 		newTabTimeStamp := updateOnly && !tabInfos.TimeStamp ? cTabCont.TimeStamp : tabInfos.TimeStamp
 		newTabPID := updateOnly && !tabInfos.PID ? cTabCont.PID : tabInfos.PID
@@ -1465,24 +1454,15 @@
 		if RegExMatch(newTabItem, "O)(.*)\(Lvl:(.*) / Qual:(.*)\)", itemPat) {
 			itemName := itemPat.1, itemLevel := itemPat.2, itemQuality := itemPat.3
 		}
-		else
-			itemName := newTabItem
+		else if RegExMatch(newTabItem, "O)(.*)\(T(\d+)\)", itemPat) {
+			itemName := itemPat.1, itemLevel := itemPat.2
+		}
 
 		if RegExMatch(newTabTimeStamp, "O)(.*)/(.*)/(.*) (.*):(.*):(.*)", timeStampPat) {
 			timeYear := timeStampPat.1, timeMonth := timeStampPat.2, timeDay := timeStampPat.3
 			timeHour := timeStampPat.4, timeMin := timeStampPat.5, timeSec := timeStampPat.6
 		}
 
-		; newTabItemName := (tabInfos.ItemName != "")?(tabInfos.ItemName) : (itemName)?(itemName) : (currentTabContent.ItemName)
-		; newTabItemLevel := (tabInfos.ItemLevel != "")?(tabInfos.ItemLevel) : (itemLevel)?(itemLevel) : (currentTabContent.ItemLevel)
-		; newTabItemQuality := (tabInfos.ItemQuality != "")?(tabInfos.ItemQuality) : (itemQuality)?(itemQuality) : (currentTabContent.ItemQuality)
-		; newTabStashLeague := (tabInfos.StashLeague != "")?(tabInfos.StashLeague) : (stashLeague)?(stashLeague) : (currentTabContent.StashLeague)
-		; newTaStashTab := (tabInfos.StashTab != "")?(tabInfos.StashTab) : (stashTab)?(stashTab) : (currentTabContent.StashTab)
-		; newTabStashPosition := (tabInfos.StashPosition != "")?(tabInfos.StashPosition) : (stashPosition)?(stashPosition) : (currentTabContent.StashPosition)
-		; newTabUniqueID := (tabInfos.UniqueID != "")?(tabInfos.UniqueID):(currentTabContent.UniqueID)?(currentTabContent.UniqueID) : ( GUI_Trades.GenerateUniqueID() )
-		; newTradeVerify := (tabInfos.TradeVerify != "")?(tabInfos.TradeVerify):(currentTabContent.TradeVerify)?(currentTabContent.TradeVerify):("Grey")
-		; newWhisperSite := (tabInfos.WhisperSite != "")?(tabInfos.WhisperSite):(currentTabContent.WhisperSite)
-		; newTradeVerifyInfos := (tabInfos.TradeVerifyInfos != "")?(tabInfos.TradeVerifyInfos):(currentTabContent.TradeVerifyInfos)
 		newTabItemName := updateOnly && !tabInfos.ItemName ? cTabCont.ItemName : itemName
 		newTabItemLevel := updateOnly && !tabInfos.ItemLevel ? cTabCont.ItemLevel : itemLevel
 		newTabItemQuality := updateOnly && !tabInfos.ItemQuality ? cTabCont.ItemQuality : itemQuality
