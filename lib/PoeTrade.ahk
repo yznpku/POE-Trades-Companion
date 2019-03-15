@@ -129,7 +129,7 @@ PoETrade_GetMatchingCurrencyTradeData(dataObj, itemURL) {
                 foundObj[A_LoopField] := foundPat.1
             }
 
-            sellBuyRatio := RemoveTrailingZeroes(foundObj.sellvalue / foundObj.buyvalue)
+            sellBuyRatio := RemoveTrailingZeroes(foundObj.buyvalue / foundObj.sellvalue)
             isSameAccount := foundObj.username = dataObj.username ? True : False
             isSameRatio := sellBuyRatio = dataObj.sellBuyRatio ? True : False
 
@@ -137,14 +137,17 @@ PoETrade_GetMatchingCurrencyTradeData(dataObj, itemURL) {
                 foundMatchIndex++
                 isMatching := isSameRatio=True?True:False
                 matchingDatas[foundMatchIndex] := foundObj
-                matchingDatas[foundMatchIndex].SellBuyRatio := sellBuyRatio
+                matchingDatas[foundMatchIndex].SellBuyRatio := RemoveTrailingZeroes(sellBuyRatio)
                 matchingDatas[foundMatchIndex].IsSameRatio := isSameRatio
             }
         }
         else    
             Break
     }
-    return matchingDatas
+    if matchingDatas.Count()
+        return matchingDatas
+    else
+        return
 }
 
 PoeTrade_GetMatchingItemData(dataObj, itemURL) {
@@ -162,7 +165,7 @@ PoeTrade_GetMatchingItemData(dataObj, itemURL) {
         if (foundPos) {
             tBody := htmlPat.0, regexPos := foundPos+1
 
-            saleInfoTags := "seller,buyout,ign,league,name,tab,level,quality,x,y", foundObj := {}
+            saleInfoTags := "seller,buyout,ign,league,name,tab,level,quality,x,y,map-tier", foundObj := {}
             Loop, Parse, saleInfoTags,% ","
             {
                 RegExMatch(tBody, "iO)data-" A_LoopField "=""(.*?)""", foundPat)
@@ -171,7 +174,7 @@ PoeTrade_GetMatchingItemData(dataObj, itemURL) {
 
             ; poe.trade data-x and data-y start at 1 instead of 0 like in the whisper, so we add +1
             if (foundObj.seller = dataObj.seller) && (foundObj.league = dataObj.league)
-            && (foundObj.tab = dataObj.tab) && (foundObj.level = dataObj.level_min) && (foundObj.quality = dataObj.q_min)
+            && (foundObj.tab = dataObj.tab) && ((foundObj.level = dataObj.level) || (foundObj["map-tier"] = dataObj.level)) && (foundObj.quality = dataObj.quality)
             && (foundObj.x+1 = dataObj.x) && (foundObj.y+1 = dataObj.y) { ; Item is the same
                 return foundObj
             }

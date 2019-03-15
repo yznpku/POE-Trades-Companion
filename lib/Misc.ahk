@@ -15,31 +15,31 @@
 	if (lastChar = "s") ; poeapp adds an "s" for >1 currencies
 		StringTrimRight, currencyWithoutS, currency, 1
 
-	if !IsIn(currency, PROGRAM.DATA.CURRENCY_LIST) {
-		currencyFullName := PROGRAM.DATA.POETRADE_CURRENCY_DATA[currency] ? PROGRAM.DATA.POETRADE_CURRENCY_DATA[currency]
-			:	PROGRAM.DATA.POEDOTCOM_CURRENCY_DATA[currency] ? PROGRAM.DATA.POEDOTCOM_CURRENCY_DATA[currency]
-			:	""
-		if (currencyFullName)
-			isCurrencyListed := True
-	}
-	else { ; Currency is in list
-		currencyFullName := currency
-		isCurrencyListed := True
-	}
-	if (!currencyFullName && currencyWithoutS) { ; Couldn't retrieve full name, and currency is possibly plural
-		if IsIn(currencyWithoutS, PROGRAM.DATA.CURRENCY_LIST) ; Currency is in list, was most likely plural
-		{
-			currencyFullName := currencyWithoutS
-			isCurrencyListed := True
-		}
-	}
-	else if !(currencyFullName) { ; Unknown currency name
-		AppendToLogs(A_ThisFunc "(currency=" currency "): Unknown currency name.")
-	}
+	if RegExMatch(currency, "O) Map$", pat) ; If ends with map
+        StringTrimRight, currencyWithoutMap, currency,% StrLen(pat.0) ; Remove it from name
 
-	currencyFullName := (currencyFullName)?(currencyFullName):(currency)
+	currencyToCheckList := []
+	currencyToCheckList.Push(currency), currencyToCheckList.Push(currencyWithoutS), currencyToCheckList.Push(currencyWithoutMap)
+
+	isCurrencyListed := False, currencyFullName := ""
+	for index, thisCurrency in currencyToCheckList {
+		if !IsIn(thisCurrency, PROGRAM.DATA.CURRENCY_LIST) {
+			currencyFullName := PROGRAM.DATA.POETRADE_CURRENCY_DATA[thisCurrency] ? PROGRAM.DATA.POETRADE_CURRENCY_DATA[thisCurrency]
+				:	PROGRAM.DATA.POEDOTCOM_CURRENCY_DATA[thisCurrency] ? PROGRAM.DATA.POEDOTCOM_CURRENCY_DATA[thisCurrency]
+				:	""
+			isCurrencyListed := currencyFullName?True:False
+		}
+		else { ; Currency is in list
+			isCurrencyListed := True, currencyFullName := thisCurrency
+		}
+
+		if (isCurrencyListed=True)
+			Break
+	}
+	if !(currencyFullName) ; Unknown currency name
+		AppendToLogs(A_ThisFunc "(currency=" currency "): Unknown currency name.")
+
 	Return {Name:currencyFullName, Is_Listed:isCurrencyListed}
-	; return currencyFullName
 }
 
 Do_Action(actionType, actionContent="", isHotkey=False, uniqueNum="") {

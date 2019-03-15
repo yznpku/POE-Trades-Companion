@@ -703,13 +703,15 @@ Parse_GameLogs(strToParse) {
 					}
 
 					if (doPBNote = True) && StrLen(PROGRAM.SETTINGS.SETTINGS_MAIN.PushBulletToken) > 5 {
+						cmdLineParamsObj := {}
+						cmdLineParamsObj.PB_Token := PROGRAM.SETTINGS.SETTINGS_MAIN.PushBulletToken
+						cmdLineParamsObj.PB_Title := "Buying request from " whispName ":"
+
 						pbTxt := "Item: " tradeItemFull "\nPrice: " tradePrice "\nStash: " tradeStashFull
 						pbTxt .= tradeOther ? "\nOther: " tradeOther : ""
-						pbReturn := PB_PushNote(PROGRAM.SETTINGS.SETTINGS_MAIN.PushBulletToken, "Buying request from " whispName ":", pbTxt)
-						if (pbReturn.Status && pbReturn.Status != 200)
-							AppendToLogs(A_ThisFunc "(): Error sending PushBullet notification."
-							. "`nData: """ pbReturn.Data
-							. "`nHeaders: """ pbReturn.Headers)
+						cmdLineParamsObj.PB_Message := pbTxt
+						
+						GoSub, Parse_GameLogs_PushBulletNotifications_SA
 					}
 				}
 			}
@@ -740,15 +742,42 @@ Parse_GameLogs(strToParse) {
 				}
 
 				if (doPBNote = True) && StrLen(PROGRAM.SETTINGS.SETTINGS_MAIN.PushBulletToken) > 5 {
-					pbReturn := PB_PushNote(PROGRAM.SETTINGS.SETTINGS_MAIN.PushBulletToken, "Whisper from " whispName ":", whispMsg)
-					if (pbReturn.Status && pbReturn.Status != 200)
-							AppendToLogs(A_ThisFunc "(): Error sending PushBullet notification."
-							. "`nData: """ pbReturn.Data
-							. "`nHeaders: """ pbReturn.Headers)
+					cmdLineParamsObj := {}
+					cmdLineParamsObj.PB_Token := PROGRAM.SETTINGS.SETTINGS_MAIN.PushBulletToken
+					cmdLineParamsObj.PB_Title := "Whisper from " whispName ":"
+					cmdLineParamsObj.PB_Message := whispMsg
+					
+					GoSub, Parse_GameLogs_PushBulletNotifications_SA
 				}
 			}
 		}
 	}
+	return
+
+	Parse_GameLogs_PushBulletNotifications_SA:
+		global PROGRAM, GuiIntercom, GuiIntercom_Controls
+
+		intercomSlotNum := GUI_Intercom.GetNextAvailableSlot()
+		intercomSlotHandle := GUI_Intercom.GetSlotHandle(intercomSlotNum)
+		GUI_Intercom.ReserveSlot(intercomSlot)
+
+		cmdLineParams := ""
+		for key, value in cmdLineParamsObj
+			cmdLineParams .= " /" key "=" """" value """"
+
+		cl := DllCall( "GetCommandLine", "str" )
+		StringMid, path_AHk, cl, 2, InStr( cl, """", true, 2 )-2
+
+		saFile := A_ScriptDir "\lib\SA_PushBulletNotifications.ahk"
+		saFile_run_cmd := % """" path_AHk """" A_Space """" saFile """"
+		.		" " cmdLineParams
+		.		" /IntercomHandle=" """" GuiIntercom.Handle """"
+		.		" /IntercomSlotHandle=" """" intercomSlotHandle """"
+		.		" /cURL=" """" PROGRAM.CURL_EXECUTABLE """"
+		.		" /ProgramLogsFile=" """" PROGRAM.LOGS_FILE """"
+		
+		Run,% saFile_run_cmd,% A_ScriptDir
+	return
 }
 
 Read_GameLogs(logsFile) {
