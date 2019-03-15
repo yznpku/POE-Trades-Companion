@@ -1862,14 +1862,17 @@
 
 		try {
 			if (GuiTrades.Is_Minimized)
-				Gui, TradesMinimized:Show,% "NoActivate x" Ceil(A_ScreenWidth-gtmPos.W) " y0"
+				if (PROGRAM.SETTINGS.SETTINGS_MAIN.MinimizeInterfaceToBottomLeft)
+					Gui, TradesMinimized:Show,% "NoActivate x" Ceil(A_ScreenWidth-gtPos.W) " y"  Ceil(0+gtPos.H-gtmPos.H)
+				else
+					Gui, TradesMinimized:Show,% "NoActivate x" Ceil(A_ScreenWidth-gtmPos.W) " y0"
 			else Gui, Trades:Show,% "NoActivate x" Ceil(A_ScreenWidth-gtPos.W) " y0"
 			
 			if !(dontWrite) {
 				if (GuiTrades.Is_Minimized)
-					INI.Set(iniFile, "SETTINGS_MAIN", "Pos_X", Ceil(A_ScreenWidth-gtmPos.W) )
-				else INI.Set(iniFile, "SETTINGS_MAIN", "Pos_X", Ceil(A_ScreenWidth-gtPos.W) )
-				INI.Set(iniFile, "SETTINGS_MAIN", "Pos_Y", 0)
+					Gui_TradesMinimized.SavePosition()
+				else 
+					Gui_Trades.SavePosition()
 			}
 		}
 		catch e {

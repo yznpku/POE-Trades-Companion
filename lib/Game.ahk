@@ -310,7 +310,7 @@ Get_GameLogsFile() {
 }
 
 Monitor_GameLogs() {
-	global RUNTIME_PARAMETERS
+	global PROGRAM, RUNTIME_PARAMETERS
 	static logsFile
 
 	if !(logsFile) { ; no game instance found yet
@@ -324,7 +324,8 @@ Monitor_GameLogs() {
 		if (logsFile) {
 			SetTimer,% A_ThisFunc, 500
 			AppendToLogs("Monitoring logs file: """ logsFile """.")
-			GUI_Trades.DockMode_Cycle()
+			if (PROGRAM.SETTINGS.SETTINGS_MAIN.TradesGUI_Mode = "Dock")
+				GUI_Trades.DockMode_Cycle()
 			TrayNotifications.Show("Ready for trading!", "Monitoring chat logs in " logsFile)
 		}
 		else {
