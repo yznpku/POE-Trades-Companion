@@ -130,17 +130,17 @@ VerifyItemPrice(cmdLineParams) {
             if IsObject(matchingObj) { ; object means we have matches
                 Loop % matchingObj.MaxIndex() { ; Loop through matchs
 
-                    ratioTxt := "poe.trade: `t1 " cmdLineParamsObj.BuyCurrencyFullName " = " matchingObj[A_Index].sellBuyRatio " " cmdLineParamsObj.SellCurrencyFullName
-                        . "\nwhisper: `t`t1 " cmdLineParamsObj.BuyCurrencyFullName " = " cmdLineParamsObj.SellBuyRatio " " cmdLineParamsObj.SellCurrencyFullName
+                    ratioTxt := "poe.trade: `t1 " cmdLineParamsObj.SellCurrencyFullName " = " matchingObj[A_Index].sellBuyRatio " " cmdLineParamsObj.BuyCurrencyFullName
+                        . "\nwhisper: `t`t1 " cmdLineParamsObj.SellCurrencyFullName " = " cmdLineParamsObj.SellBuyRatio " " cmdLineParamsObj.BuyCurrencyFullName
                     
                     if (matchingObj[A_Index].IsSameRatio=True) { ; ratio is the same (OK)
-                        vInfos := "/!\ Ratio is the same"
+                        vInfos := "Ratio is the same"
                         . "\n" ratioTxt
                         vColor := "Green"
                         Break
                     }
                     else if (matchingObj[A_Index].sellBuyRatio > cmdLineParamsObj.SellBuyRatio) { ; ratio is higher (OK)
-                        vInfos := "/!\ Ratio is better"
+                        vInfos := "Ratio is better"
                         . "\n" ratioTxt
                         vColor := "Green"
                         Break
@@ -151,8 +151,8 @@ VerifyItemPrice(cmdLineParams) {
                         vColor := "Red"
                     }
                     else if (!cmdLineParamsObj.SellCurrencyIsListed || !cmdLineParamsObj.BuyCurrencyIsListed) { ; currency unknown
-                        wantListedInfos := cmdLineParamsObj.SellCurrencyIsListed=True?"" : "\nUnknown currency type: """ cmdLineParamsObj.SellCurrencyFullName """"
-                        giveListedInfos := cmdLineParamsObj.BuyCurrencyIsListed=True?"" : "\nUnknown currency type: """ cmdLineParamsObj.BuyCurrencyFullName """"
+                        wantListedInfos := cmdLineParamsObj.SellCurrencyIsListed=True?"" : "/!\\nUnknown currency type: """ cmdLineParamsObj.SellCurrencyFullName """"
+                        giveListedInfos := cmdLineParamsObj.BuyCurrencyIsListed=True?"" : "/!\\nUnknown currency type: """ cmdLineParamsObj.BuyCurrencyFullName """"
                         vInfos := wantListedInfos . giveListedInfos "\nPlease report it"
                         vColor := "Orange"
                     }
@@ -163,8 +163,8 @@ VerifyItemPrice(cmdLineParams) {
                 }
             }
             else {
-                if (tabInfos.WhisperLang != "ENG") {
-                    vInfos := "Cannot verify price for"
+                if (cmdLineParamsObj.WhisperLang != "ENG") {
+                    vInfos := "/!\ Cannot verify price for"
                     . "\npathofexile.com/trade translated whispers."
                     vColor := "Orange"
                 }

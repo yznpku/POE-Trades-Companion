@@ -128,7 +128,7 @@ PoETrade_GetMatchingCurrencyTradeData(dataObj, itemURL) {
                 foundObj[A_LoopField] := foundPat.1
             }
 
-            sellBuyRatio := RemoveTrailingZeroes(foundObj.sellvalue / foundObj.buyvalue)
+            sellBuyRatio := RemoveTrailingZeroes(foundObj.buyvalue / foundObj.sellvalue)
             isSameAccount := foundObj.username = dataObj.username ? True : False
             isSameRatio := sellBuyRatio = dataObj.sellBuyRatio ? True : False
 
@@ -143,7 +143,10 @@ PoETrade_GetMatchingCurrencyTradeData(dataObj, itemURL) {
         else    
             Break
     }
-    return matchingDatas
+    if matchingDatas.Count()
+        return matchingDatas
+    else
+        return
 }
 
 PoeTrade_GetMatchingItemData(dataObj, itemURL) {

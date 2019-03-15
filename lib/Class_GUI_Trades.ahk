@@ -1187,7 +1187,7 @@
 			giveCount := pricePat.1, giveWhat := pricePat.2, giveCurInfos := Get_CurrencyInfos(giveWhat)
 			giveFullName := giveCurInfos.Name, giveID := PROGRAM["DATA"]["POETRADE_CURRENCY_DATA"][giveFullName].ID, isGiveListed := giveCurInfos.Is_Listed
 			; ratio
-			sellBuyRatio := RemoveTrailingZeroes(wantCount/giveCount)
+			sellBuyRatio := RemoveTrailingZeroes(giveCount/wantCount)
 
 			cmdLineParamsObj := {}
 			cmdLineParamsObj.Accounts := accounts
