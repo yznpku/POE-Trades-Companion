@@ -1177,7 +1177,8 @@
 			return
 		}
 
-		if RegExMatch(tabInfos.Item, "iO)(\d+\.\d+|\d+) (\D+)", itemPat) && (!tabInfos.ItemQuality && !tabInfos.ItemLevel) { ; its a currency trade
+		if RegExMatch(tabInfos.Item, "iO)(\d+\.\d+|\d+) (\D+)", itemPat) && (!tabInfos.ItemQuality && !tabInfos.ItemLevel)  ; currency.poe.trade
+		|| RegExMatch(tabInfos.Item, "iO)(\d+\.\d+|\d+) (\D+) \(T\d+\)", itemPat) && (tabInfos.ItemLevel) { ; currency.poe.trade map trade
 			RegExMatch(tabInfos.Price, "iO)(\d+\.\d+|\d+) (\D+)", pricePat)
 			; want currency infos
 			wantCount := itemPat.1, wantWhat := itemPat.2, wantCurInfos := Get_CurrencyInfos(wantWhat)
