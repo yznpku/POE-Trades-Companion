@@ -1,4 +1,32 @@
 = = = = = = = = = = = = =	
+1.14 (15 March 2019)
+	Features:
+	- Price Verify is now automated.
+	It was not done previously because the request would put the script on "hold".
+	The request is now being handled by a separate script, to not slow down the main script.
+	
+	- PushBullet notifications are now also handled by a separate script.
+	While it's not as much of a big improvement as Price Verify, it allows the script to run a bit faster when such requests are sent.
+	
+	- Automatically reset the interface position when it's detected as out of screen.
+	At least 1/3 of the interface needs to be on screen for it to be considered as "in bounds".
+	Those checks happen on script start, on minimize/maximize, and upon moving the interface.
+	
+	Changes / Improvements:
+	- No longer extracting assets when using the AHK version. Assets are loaded from the script folder instead.
+	- Reversed the ratio text when checking price for currency.poe.trade whispers, to match the currency being sold instead.
+	eg: wtb your 13 chaos for my 33 alchemy now shows "1 Chaos Orb = 2.538 Orb of Alchemy" instead of "1 Orb of Alchemy = 0.393 Chaos Orb)
+	- When using the "Dock" mode, the interface will now dock itself to the game window once monitoring the game logs file.
+	- Left clicking on the tray icon now also shows the tray menu.
+	
+	Fixes:
+	- Price Verify: Unable to verify gems and maps prices.
+	- Hotkeys: Mouse buttons would not work due to their ScanCode being empty. Their VirtualKey will be used instead.
+	- When minimized, resetting the main interface's position from the tray menu would save an incorrect value.
+	- When minimized with the "Minimize interface to the bottom left instead?" setting enabled, resetting the main interface's position from the tray menu would set an incorrect position.
+	- On main interface creation, the main interface would appear for a split second without any transparency before applying the user transparency settings.
+
+= = = = = = = = = = = = =	
 1.13.12 (08 March 2019)
 	Changes / Improvements:
 	- Item location grid: Added location data for 3.6 maps.
