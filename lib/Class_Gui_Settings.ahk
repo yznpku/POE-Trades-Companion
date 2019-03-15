@@ -349,32 +349,32 @@ Class GUI_Settings {
 
 		GuiSettings.Tabs_Controls := {}
 		imageBtnLog .= Gui.Add("Settings", "ImageButton", "x" leftMost " y" tabFirstItemY " w" tabSectionW " h" tabSectionH " hwndhBTN_SectionSettings", "Settings", Style_Section, PROGRAM.FONTS["Segoe UI"], 8)
-		Loop % allTabs.Settings.MaxIndex() {
-			imageBtnLog .= Gui.Add("Settings", "ImageButton", "xp y+0 w" tabButtonW " h" tabButtonH " hwndhBTN_TabSettings" A_Index, allTabs.Settings[A_Index], Style_Tab, PROGRAM.FONTS["Segoe UI"], 8)
-			__f := GUI_Settings.OnTabBtnClick.bind(GUI_Settings, "Settings " allTabs.Settings[A_Index])
-			GuiControl, Settings:+g,% GuiSettings_Controls["hBTN_TabSettings" A_Index],% __f
-			GuiSettings.Tabs_Controls["Settings_" allTabs.Settings[A_Index]] := GuiSettings_Controls["hBTN_TabSettings" A_Index]
+		for index, subTab in allTabs.Settings {
+			imageBtnLog .= Gui.Add("Settings", "ImageButton", "xp y+0 w" tabButtonW " h" tabButtonH " hwndhBTN_TabSettings" subTab, allTabs.Settings[index], Style_Tab, PROGRAM.FONTS["Segoe UI"], 8)
+			__f := GUI_Settings.OnTabBtnClick.bind(GUI_Settings, "Settings " allTabs.Settings[index])
+			GuiControl, Settings:+g,% GuiSettings_Controls["hBTN_TabSettings" subTab],% __f
+			GuiSettings.Tabs_Controls["Settings_" allTabs.Settings[index]] := GuiSettings_Controls["hBTN_TabSettings" subTab]
 		}
 		imageBtnLog .= Gui.Add("Settings", "ImageButton", "x" leftMost " y+10 w" tabSectionW " h" tabSectionH " hwndhBTN_SectionCustomization", "Customization", Style_Section, PROGRAM.FONTS["Segoe UI"], 8)
-		Loop % allTabs.Customization.MaxIndex() {
-			imageBtnLog .= Gui.Add("Settings", "ImageButton", "xp y+0 w" tabButtonW " h" tabButtonH " hwndhBTN_TabCustomization" A_Index, allTabs.Customization[A_Index], Style_Tab, PROGRAM.FONTS["Segoe UI"], 8)
-			__f := GUI_Settings.OnTabBtnClick.bind(GUI_Settings, "Customization " allTabs.Customization[A_Index])
-			GuiControl, Settings:+g,% GuiSettings_Controls["hBTN_TabCustomization" A_Index],% __f
-			GuiSettings.Tabs_Controls["Customization_" allTabs.Customization[A_Index]] := GuiSettings_Controls["hBTN_TabCustomization" A_Index]
+		for index, subTab in allTabs.Customization {
+			imageBtnLog .= Gui.Add("Settings", "ImageButton", "xp y+0 w" tabButtonW " h" tabButtonH " hwndhBTN_TabCustomization" subTab, allTabs.Customization[index], Style_Tab, PROGRAM.FONTS["Segoe UI"], 8)
+			__f := GUI_Settings.OnTabBtnClick.bind(GUI_Settings, "Customization " allTabs.Customization[index])
+			GuiControl, Settings:+g,% GuiSettings_Controls["hBTN_TabCustomization" subTab],% __f
+			GuiSettings.Tabs_Controls["Customization_" allTabs.Customization[index]] := GuiSettings_Controls["hBTN_TabCustomization" subTab]
 		}
 		imageBtnLog .= Gui.Add("Settings", "ImageButton", "x" leftMost " y+10 w" tabSectionW " h" tabSectionH " hwndhBTN_SectionHotkeys", "Hotkeys", Style_Section, PROGRAM.FONTS["Segoe UI"], 8)
-		Loop % allTabs.Hotkeys.MaxIndex() {
-			imageBtnLog .= Gui.Add("Settings", "ImageButton", "xp y+0 w" tabButtonW " h" tabButtonH " hwndhBTN_TabHotkeys" A_Index, allTabs.Hotkeys[A_Index], Style_Tab, PROGRAM.FONTS["Segoe UI"], 8)
-			__f := GUI_Settings.OnTabBtnClick.bind(GUI_Settings, "Hotkeys " allTabs.Hotkeys[A_Index])
-			GuiControl, Settings:+g,% GuiSettings_Controls["hBTN_TabHotkeys" A_Index],% __f
-			GuiSettings.Tabs_Controls["Hotkeys_" allTabs.Hotkeys[A_Index]] := GuiSettings_Controls["hBTN_TabHotkeys" A_Index]
+		for index, subTab in allTabs.Hotkeys {
+			imageBtnLog .= Gui.Add("Settings", "ImageButton", "xp y+0 w" tabButtonW " h" tabButtonH " hwndhBTN_TabHotkeys" subTab, allTabs.Hotkeys[index], Style_Tab, PROGRAM.FONTS["Segoe UI"], 8)
+			__f := GUI_Settings.OnTabBtnClick.bind(GUI_Settings, "Hotkeys " allTabs.Hotkeys[index])
+			GuiControl, Settings:+g,% GuiSettings_Controls["hBTN_TabHotkeys" subTab],% __f
+			GuiSettings.Tabs_Controls["Hotkeys_" allTabs.Hotkeys[index]] := GuiSettings_Controls["hBTN_TabHotkeys" subTab]
 		}
 		imageBtnLog .= Gui.Add("Settings", "ImageButton", "x" leftMost " y+10 w" tabSectionW " h" tabSectionH " hwndhBTN_SectionMisc", "Misc", Style_Section, PROGRAM.FONTS["Segoe UI"], 8)
-		Loop % allTabs.Misc.MaxIndex() {
-			imageBtnLog .= Gui.Add("Settings", "ImageButton", "xp y+0 w" tabButtonW " h" tabButtonH " hwndhBTN_TabMisc" A_Index, allTabs.Misc[A_Index], Style_Tab, PROGRAM.FONTS["Segoe UI"], 8)
-			__f := GUI_Settings.OnTabBtnClick.bind(GUI_Settings, "Misc " allTabs.Misc[A_Index])
-			GuiControl, Settings:+g,% GuiSettings_Controls["hBTN_TabMisc" A_Index],% __f
-			GuiSettings.Tabs_Controls["Misc_" allTabs.Misc[A_Index]] := GuiSettings_Controls["hBTN_TabMisc" A_Index]
+		for index, subTab in allTabs.Misc {
+			imageBtnLog .= Gui.Add("Settings", "ImageButton", "xp y+0 w" tabButtonW " h" tabButtonH " hwndhBTN_TabMisc" subTab, allTabs.Misc[index], Style_Tab, PROGRAM.FONTS["Segoe UI"], 8)
+			__f := GUI_Settings.OnTabBtnClick.bind(GUI_Settings, "Misc " allTabs.Misc[index])
+			GuiControl, Settings:+g,% GuiSettings_Controls["hBTN_TabMisc" subTab],% __f
+			GuiSettings.Tabs_Controls["Misc_" allTabs.Misc[index]] := GuiSettings_Controls["hBTN_TabMisc" subTab]
 		}
 
 
