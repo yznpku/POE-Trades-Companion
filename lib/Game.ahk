@@ -359,6 +359,8 @@ Parse_GameLogs(strToParse) {
 										, Other:1, Item:2, Price:3, League:4}
 	static poeAppUnpricedRegex 		:= {String:"(.*)wtb (.*) in (.*)"
 										, Other:1, Item:2, League:3}
+	static poeAppCurrencyRegex		:= {String:"(.*)I'd like to buy your (.*) for my (.*) in (.*)"
+										, Other:1, Item:2, Price:3, League:4}
 	static poeAppStashRegex 		:= {String:"\(stash ""(.*)""; left (\d+), top (\d+)\)(.*)"
 										, Tab:1, Left:2, Top:3, Other:4}
 	static poeAppQualityRegEx 		:= {String:"(.*) \((\d+)/(\d+)%\)"
@@ -441,7 +443,8 @@ Parse_GameLogs(strToParse) {
 		,"poeTrade_Unpriced":poeTradeUnpricedRegex
 		,"currencyPoeTrade":poeTradeCurrencyRegex
 		,"poeApp":poeAppRegEx
-		,"poeApp_Unpriced":poeAppUnpricedRegex}
+		,"poeApp_Unpriced":poeAppUnpricedRegex
+		,"poeApp_currency":poeAppCurrencyRegex}
 
 	langs := "RUS,POR,THA,GER,FRE,SPA"
 	Loop, Parse, langs,% "," ; Adding ggg trans regex to allTradingRegEx
@@ -830,6 +833,7 @@ IsTradingWhisper(str) {
 	; poeapp.com regex
 	poeAppRegex := "@.* wtb .* listed for .* in .*"
 	poeAppUnpricedRegex := "@.* wtb .* in .*"
+	poeAppCurrencyRegex := "@.* I'd like to buy your .* for my .* in .*"
 	; ggg regex
 	RUS_gggRegEx			:= "@.* Здравствуйте, хочу купить у вас .* за (.*) в лиге.*"
 	RUS_gggUnpricedRegEx	:= "@.* Здравствуйте, хочу купить у вас .* в лиге.*"
@@ -857,7 +861,7 @@ IsTradingWhisper(str) {
 
 	allRegexes := []
 	allRegexes.Push(poeTradeRegex, poeTradeUnpricedRegex, currencyPoeTradeRegex
-		, poeAppRegex, poeAppUnpricedRegex
+		, poeAppRegex, poeAppUnpricedRegex, poeAppCurrencyRegex
 		, RUS_gggRegEx, RUS_gggUnpricedRegEx, RUS_gggCurrencyRegEx
 		, POR_gggRegEx, POR_gggUnpricedRegEx, POR_gggCurrencyRegEx
 		, THA_gggRegEx, THA_gggUnpricedRegEx, THA_gggCurrencyRegEx
