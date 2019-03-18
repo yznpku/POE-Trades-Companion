@@ -1243,6 +1243,13 @@
 			global PROGRAM, GuiIntercom, GuiIntercom_Controls
 
 			tabID := GUI_Trades.GetTabNumberFromUniqueID(tabInfos.UniqueID)
+			if (A_IsCompiled) {
+				GUI_Trades.SetTabVerifyColor(tabID, "Orange")
+				GUI_Trades.UpdateSlotContent(tabID, "TradeVerifyInfos", "Automated price verifying has been temporarily"
+				. "\n disabled for the executable version due to issues"
+				. "\n\nPlease use the AHK version if you wish to use this feature")
+				return
+			}
 			GUI_Trades.SetTabVerifyColor(tabID, "Grey")
 		    GUI_Trades.UpdateSlotContent(tabID, "TradeVerifyInfos", "Comparing price on poe.trade...")
 
