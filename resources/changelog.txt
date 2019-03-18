@@ -1,4 +1,12 @@
 = = = = = = = = = = = = =	
+1.14.1 (18 March 2019)
+	Fix: When using the executable version, the app would reload upon verifying an item's price.
+	For this reason, the feature has been temporarily disabled for the executable version.
+	
+	If you are still using the exe, please switch to the AHK version instead.
+	Simply download POE-Trades-Companion-AHK.zip from the latest release.
+	The exe is bound to disappear completely in the future due to some stupid recurrent flagging issues.
+	
 1.14 (18 March 2019)
 	Features:
 	- Price Verify is now automated.
