@@ -1,0 +1,88 @@
+{
+    "TrayMenu_Simple": {
+        "Loading": "Tool is loading...",
+        "GitHub": "GitHub",
+        "Reload": "Reload",
+        "Close": "Close"
+    },
+    "TrayMenu": {
+        "Settings": "Settings",
+        "Stats": "My Stats",
+
+        "Clickthrough": "Clickthrough?",
+        "LockPosition": "Lock position?",
+
+        "ModeWindow": "Mode: Window",
+        "ModeDock": "Mode: Dock",
+        "CycleDock": "Cycle Dock",
+        "ResetPosition": "Reset position",
+
+        "Reload": "Reload",
+        "Close": "Close"
+    },
+
+    "GUI_Settings": {
+        "hBTN_SectionSettings": "Settings",
+        "hBTN_TabSettingsMain": "Main",
+        "hBTN_SectionCustomization": "Customization",
+        "hBTN_TabCustomizationSkins": "Skins",
+        "hBTN_TabCustomizationButtons": "Buttons",
+        "hBTN_SectionHotkeys": "Hotkeys",
+        "hBTN_TabHotkeysBasic": "Basic",
+        "hBTN_TabHotkeysAdvanced": "Advanced",
+        "hBTN_SectionMisc": "Misc",
+        "hBTN_TabMiscUpdating": "Updating",
+        "hBTN_TabMiscAbout": "About",
+        "hBTN_ResetToDefaultSettings": "RESET SETTINGS\nTO DEFAULT",
+
+        "hCB_HideInterfaceWhenOutOfGame": "Hide interface when tabbed out of game?",
+        "hCB_MinimizeInterfaceToBottomLeft": "Minimize interface on bottom left corner?",
+        "hCB_CopyItemInfosOnTabChange": "Copy item infos on tab change?",
+        "hCB_AutoFocusNewTabs": "Auto focus new tabs?",
+        "hCB_AutoMinimizeOnAllTabsClosed": "Auto minimize once all tabs are closed?",
+        "hCB_AutoMaximizeOnFirstNewTab": "Auto maximize on first new tab?",
+        "hCB_SendTradingWhisperUponCopyWhenHoldingCTRL": "Hold CTRL when copying trading\nwhisper to instantly send in game?",
+
+        "hTEXT_PlaySoundNotificationWhen": "Play a sound notification for...",
+        "hCB_TradingWhisperSFXToggle": "Trading whispers received?",
+        "hBTN_BrowseTradingWhisperSFX": "Browse file",
+        "hCB_RegularWhisperSFXToggle": "Regular whispers received?",
+        "hBTN_BrowseRegularWhisperSFX": "Browse file",
+        "hCB_BuyerJoinedAreaSFXToggle": "Buyer joined your area?",
+        "hBTN_BrowseBuyerJoinedAreaSFX": "Browse file",
+        "hCB_ShowTabbedTrayNotificationOnWhisper": "Show a notification when receiving\na whisper while tabbed out of game?",
+        "hTEXT_PushBulletNotifications": "PushBullet Notifications:",
+        "hTEXT_PushBulletToken": "Token:",
+        "hTEXT_GetPBNotificationsFor": "Get PB Notifications for...",
+        "hCB_PushBulletOnTradingWhisper": "Trading whispers?",
+        "hCB_PushBulletOnWhisperMessage": "Regular whispers?",
+        "hCB_PushBulletOnlyWhenAfk": "Get PB Notifications only when /afk?",
+
+        "hTEXT_POEAccountsList": "POE Accounts list (Case sensitive, separate with comma):",
+
+        "hCB_AllowClicksToPassThroughWhileInactive": "Make the interface click-through\nwhen all tabs are closed?",
+        "hTEXT_NoTabsTransparency": "Interface transparency\nNo tabs remaining",
+        "hTEXT_TabsOpenTransparency": "Interface transparency\nTabs still open",
+
+        "hCB_ItemGridHideNormalTab": "Hide normal tab location?",
+        "hCB_ItemGridHideQuadTab": "Hide quad tab location?",
+        "hCB_ItemGridHideNormalTabAndQuadTabForMaps": "Hide normal and quad locations, for maps?"
+        
+
+
+        
+    },
+
+    "ACTIONS": {
+        "TEXT_NAME": {
+        },
+
+        "DEFAULT_CONTENT": {
+
+        },
+
+        "FORCED_CONTENT": {
+
+        }
+    }
+}

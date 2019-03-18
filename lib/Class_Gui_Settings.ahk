@@ -101,10 +101,7 @@ Class GUI_Settings {
 		static guiCreated
 
 		; Free ImageButton memory
-		for key, value in GuiSettings_Controls
-			if IsIn(key, "hBTN_CloseGUI")
-			|| IsContaining(key, "hBTN_TabSettings,hBTN_TabCustomization,hBTN_TabHotkeys,hBTN_TabMisc")
-				ImageButton.DestroyBtnImgList(value)
+		GUI_Settings.DestroyBtnImgList()
 		
 		; Initialize gui arrays
 		Gui, Settings:Destroy
@@ -118,22 +115,22 @@ Class GUI_Settings {
 		leftMost := borderSize, rightMost := guiWidth-borderSize
 		upMost := borderSize, downMost := guiHeight-borderSize
 
-		Style_Tab := [ [0, "0xEEEEEE", "", "Black", 0, , ""] ; normal
+		GuiSettings.Style_Tab := Style_Tab := [ [0, "0xEEEEEE", "", "Black", 0, , ""] ; normal
 			, [0, "0xdbdbdb", "", "Black", 0] ; hover
 			, [3, "0x44c6f6", "0x098ebe", "Black", 0]  ; press
 			, [3, "0x44c6f6", "0x098ebe", "White", 0 ] ] ; default
 
-		Style_RedBtn := [ [0, "0xff5c5c", "", "White", 0, , ""] ; normal
+		GuiSettings.Style_RedBtn := Style_RedBtn := [ [0, "0xff5c5c", "", "White", 0, , ""] ; normal
 			, [0, "0xff5c5c", "", "White", 0] ; hover
 			, [3, "0xe60000", "0xff5c5c", "Black", 0]  ; press
 			, [3, "0xff5c5c", "0xe60000", "White", 0 ] ] ; default
 
-		Style_Section := [ [0, "0xc9c9c9", "", "Black", 0, , ""] ; normal
+		GuiSettings.Style_Section := Style_Section := [ [0, "0xc9c9c9", "", "Black", 0, , ""] ; normal
 			, [0, "0xc9c9c9", "", "White", 0] ; hover
 			, [0, "0xc9c9c9", "", "White", 0]  ; press
 			, [0, "0x89c5fd", "", "White", 0 ] ] ; default
 		
-		Style_ResetBtn := [ [0, "0xf9a231", "", "Black", 0, , ""] ; normal
+		GuiSettings.Style_ResetBtn := Style_ResetBtn := [ [0, "0xf9a231", "", "Black", 0, , ""] ; normal
 			, [0, "0xf9a231", "", "Red", 0] ; hover
 			, [3, "0xf9a231", "0xe7740e", "Red", 0]  ; press
 			, [0, "0xe7740e", "", "Red", 0 ] ] ; default
@@ -400,7 +397,7 @@ Class GUI_Settings {
 		secondRowX := cbNotInGamePos.X+cbNotInGamePos.W+45
 
 		; * * Notifications
-		Gui.Add("Settings", "Text", "xp y+17", "Play a sound notification when...")
+		Gui.Add("Settings", "Text", "xp y+17 hwndhTEXT_PlaySoundNotificationWhen", "Play a sound notification when...")
 		Gui.Add("Settings", "CheckBox", "x" leftMost2+25 " y+10 hwndhCB_TradingWhisperSFXToggle w160", "Trading whisper received?")
 		Gui.Add("Settings", "Edit", "x+0 yp-4 w160 R1 ReadOnly hwndhEDIT_TradingWhisperSFXPath")
 		Gui.Add("Settings", "Button", "x+0 yp-1 w75 hp+2 ReadOnly hwndhBTN_BrowseTradingWhisperSFX", "Browse file")
@@ -420,19 +417,19 @@ Class GUI_Settings {
 		; Gui.Add("Settings", "CheckBox", "x+5 yp", "@")
 		Gui.Add("Settings", "CheckBox", "x" leftMost2+10 " y+10 hwndhCB_ShowTabbedTrayNotificationOnWhisper Center", "Show a tray notification when receiving a`nwhisper while tabbed out of the game?")
 
-		Gui.Add("Settings", "Text", "x" leftMost2+10 " y+17", "PushBullet notifications:")
-		Gui.Add("Settings", "Text", "x" leftMost2+25 " y+7", "Token: ")
+		Gui.Add("Settings", "Text", "x" leftMost2+10 " y+17 hwndhTEXT_PushBulletNotifications", "PushBullet notifications:")
+		Gui.Add("Settings", "Text", "x" leftMost2+25 " y+7 hwndhTEXT_PushBulletToken", "Token: ")
 		Gui.Add("Settings", "Edit", "x+5 yp-3 w250 hwndhEDIT_PushBulletToken")
-		Gui.Add("Settings", "Text", "x" leftMost2+25 " y+10", "Get PB notifications for:")
-		Gui.Add("Settings", "CheckBox", "x+5 yp hwndhCB_PushBulletOnTradingWhisper", "Trading whispers")
+		Gui.Add("Settings", "Text", "x" leftMost2+25 " y+10 hwndhTEXT_GetPBNotificationsFor", "Get PB notifications for:")
+		Gui.Add("Settings", "CheckBox", "x+5 yp hwndhCB_PushBulletOnTradingWhisper", "Trading whispers?")
 		; Gui.Add("Settings", "CheckBox", "x+0 yp hwndhCB_PushBulletOnGlobalMessage", "#")
-		Gui.Add("Settings", "CheckBox", "x+0 yp hwndhCB_PushBulletOnWhisperMessage", "Regular whispers")
+		Gui.Add("Settings", "CheckBox", "x+0 yp hwndhCB_PushBulletOnWhisperMessage", "Regular whispers?")
 		; Gui.Add("Settings", "CheckBox", "x+0 yp hwndhCB_PushBulletOnPartyMessage", "Party messages")
 		; Gui.Add("Settings", "CheckBox", "x+0 yp hwndhCB_PushBulletOnTradeMessage", "$")
 		Gui.Add("Settings", "CheckBox", "x" leftMost2+25 " y+7 hwndhCB_PushBulletOnlyWhenAfk", "Get PB notifications only when /afk?")
 		
 		; * * Accounts
-		Gui.Add("Settings", "Text", "x" leftMost2+10 " y+20 Center", "POE accounts list. Case sensitive. Separate using a comma:")
+		Gui.Add("Settings", "Text", "x" leftMost2+10 " y+20 Center hwndhTEXT_POEAccountsList", "POE accounts list. Case sensitive. Separate using a comma:")
 		Gui.Add("Settings", "Edit", "xp y+5 w215 hwndhEDIT_PoeAccounts")
 
 		; * * Msg mode
@@ -441,10 +438,10 @@ Class GUI_Settings {
 		; Gui.Add("Settings", "Text", "x+20 yp hwndhTXT_SendMessagesModeTip", "Choose a mode to have informations about how it works.")
 
 		; * * Transparency
-		Gui.Add("Settings", "Checkbox", "x" secondRowX " y" cbNotInGamePos.Y-5 " hwndhCB_AllowClicksToPassThroughWhileInactive", "Allow clicks to pass through`nthe interface while no tabs remain?")
-		Gui.Add("Settings", "Text", "x" secondRowX " y+10 Center", "Interface transparency`nNo tab remaining")
+		Gui.Add("Settings", "Checkbox", "x" secondRowX " y" cbNotInGamePos.Y-5 " Center hwndhCB_AllowClicksToPassThroughWhileInactive", "Allow clicks to pass through`nthe interface while no tabs remain?")
+		Gui.Add("Settings", "Text", "x" secondRowX " y+10 Center hwndhTEXT_NoTabsTransparency", "Interface transparency`nNo tab remaining")
 		Gui.Add("Settings", "Slider", "x+1 yp w120 AltSubmit ToolTip Range0-100 hwndhSLIDER_NoTabsTransparency")
-		Gui.Add("Settings", "Text", "x" secondRowX " y+5 Center", "Interface transparency`nTabs still open")
+		Gui.Add("Settings", "Text", "x" secondRowX " y+5 Center hwndhTEXT_TabsOpenTransparency", "Interface transparency`nTabs still open")
 		Gui.Add("Settings", "Slider", "x+1 yp w120 AltSubmit ToolTip Range30-100 hwndhSLIDER_TabsOpenTransparency")
 
 		; * * Map Tab settings
@@ -4202,4 +4199,64 @@ Class GUI_Settings {
 		return _tip
 	}
 
+	DestroyBtnImgList() {
+		global GuiSettings_Controls
+
+		for key, value in GuiSettings_Controls
+			if IsIn(key, "hBTN_CloseGUI,hBTN_ResetToDefaultSettings")
+			|| IsContaining(key, "hBTN_Tab,hBTN_Section")
+				ImageButton.DestroyBtnImgList(value)
+	}
+
+	Redraw() {
+		Gui, Settings: +LastFound
+		WinSet, Redraw
+	}
+
+	GetTranslation(_lang="english", _ctrlName="") {
+		FileRead, content,% A_ScriptDir "/resources/translations/english.json"
+		transJSON := JSON.Load(content)
+
+		if (_ctrlName)
+			return transJSON["GUI_Settings"][_ctrlName]
+		else
+			return transJSON["GUI_Settings"]
+	}
+
+	SetTranslation(_lang="english", _ctrlName="") {
+		global PROGRAM, GuiSettings, GuiSettings_Controls
+
+		GUI_Settings.DestroyBtnImgList()
+
+		trans := GUI_Settings.GetTranslation(_lang, _ctrlName)
+		
+		if (_ctrlName) {
+			GuiControl, Settings:,% GuiSettings_Controls[_ctrlName],% trans
+		}
+		else {
+			for ctrlName, ctrlTranslation in trans {
+				ctrlHandle := GuiSettings_Controls[ctrlName]
+
+				if !IsIn(ctrlName, "hBTN_CloseGUI,hBTN_ResetToDefaultSettings")
+				&& !IsContaining(ctrlName, "hBTN_Tab,hBTN_Section") { ; Readjust size to fit translation
+					ctrlType := IsContaining(ctrlName, "hCB_") ? "CheckBox" : IsContaining(ctrlName, "hTEXT_") ? "Text" : IsContaining(ctrlName, "hBTN_") ? "Button" : "Text"
+					txtSize := Get_TextCtrlSize(txt:=ctrlTranslation, fontName:=GuiSettings.Font, fontSize:=GuiSettings.Font_Size, maxWidth:="", params:="", ctrlType)
+					GuiControl, Settings:Move,% ctrlHandle,% "w" txtSize.W
+				}
+
+				GuiControl, Settings:,% ctrlHandle,% ctrlTranslation ; Set translation
+
+				if IsContaining(ctrlName, "hBTN_Section") ; Imgbtn section
+					ImageButton.Create(ctrlHandle, GuiSettings.Style_Section, PROGRAM.FONTS["Segoe UI"], 8)
+				else if IsContaining(ctrlName, "hBTN_Tab") ; Imgbtn tab
+					ImageButton.Create(ctrlHandle, GuiSettings.Style_Tab, PROGRAM.FONTS["Segoe UI"], 8)
+				else if (ctrlName = "hBTN_ResetToDefaultSettings") ; Imgbtn reset settings
+					ImageButton.Create(ctrlHandle, GuiSettings.Style_ResetBtn, PROGRAM.FONTS["Segoe UI"], 8)	
+			}
+			GuiControl, Settings:,% GuiSettings_Controls["hBTN_CloseGUI"],% "X"
+			ImageButton.Create(GuiSettings_Controls["hBTN_CloseGUI"], GuiSettings.Style_RedBtn, PROGRAM.FONTS["Segoe UI"], 8)						
+		}
+
+		GUI_Settings.Redraw()
+	}
 }

@@ -56,6 +56,10 @@ Hotkey, ~*Space, SpaceRoutine
 ; }
 Return
 
+^numpad1::
+GUI_Settings.SetTranslation("All")
+Return
+
 ; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   
 SpaceRoutine() {

@@ -548,16 +548,16 @@ StringContains(string, match) {
 		return true
 }
 
-Get_TextCtrlSize(txt, fontName, fontSize, maxWidth="", params="") {
+Get_TextCtrlSize(txt, fontName, fontSize, maxWidth="", params="", ctrlType="Text") {
 /*		Create a control with the specified text to retrieve
  *		the space (width/height) it would normally take
 */
 	Gui, GetTextSize:Destroy
 	Gui, GetTextSize:Font, S%fontSize%,% fontName
 	if (maxWidth) 
-		Gui, GetTextSize:Add, Text,x0 y0 +Wrap w%maxWidth% hwndTxtHandler,% txt
+		Gui, GetTextSize:Add, %ctrlType%,x0 y0 +Wrap w%maxWidth% hwndTxtHandler,% txt
 	else 
-		Gui, GetTextSize:Add, Text,x0 y0 %params% hwndTxtHandler,% txt
+		Gui, GetTextSize:Add, %ctrlType%,x0 y0 %params% hwndTxtHandler,% txt
 	coords := Get_ControlCoords("GetTextSize", TxtHandler)
 	Gui, GetTextSize:Destroy
 
