@@ -1,5 +1,5 @@
 = = = = = = = = = = = = =	
-1.14 (15 March 2019)
+1.14 (18 March 2019)
 	Features:
 	- Price Verify is now automated.
 	It was not done previously because the request would put the script on "hold".
@@ -23,6 +23,7 @@
 	- Price Verify: Unable to verify gems and maps prices.
 	- Hotkeys: Mouse buttons would not work due to their ScanCode being empty. Their VirtualKey will be used instead.
 	- When minimized, resetting the main interface's position from the tray menu would save an incorrect value.
+	- Pressing Space to cancel easy whispering from poe.trade/poeapp/etc wouldn't work.
 	- When minimized with the "Minimize interface to the bottom left instead?" setting enabled, resetting the main interface's position from the tray menu would set an incorrect position.
 	- On main interface creation, the main interface would appear for a split second without any transparency before applying the user transparency settings.
 
