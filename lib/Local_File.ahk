@@ -480,7 +480,9 @@ Set_LocalSettings() {
 			isValueValid := LocalSettings_IsValueValid(iniSect, iniKey, iniValue)
 			if RegExMatch(iniSect, "O)SETTINGS_CUSTOM_BUTTON_(.*)", iniSectPat) && IsBetween(iniSectPat.1, 1, 5) {
 				iniSectNum := iniSectPat.1
-				isValueValid := doesCustBtn%iniSectNum%Exist=True?True:False
+				isValueValid := iniKey="Name"?isValueValid
+				: doesCustBtn%iniSectNum%Exist=True?True
+				: False
 			}
 
 			if (!isValueValid) {

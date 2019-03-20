@@ -3989,7 +3989,7 @@ Class GUI_Settings {
 			Menu, CBMenu, Add
 			Menu, CBMenu, Add, Hide this button, Settings_ContextMenu_Resize
 
-			Menu, CBMenu, Disable,% CtrlName
+			try Menu, CBMenu, Disable,% CtrlName
 
 			if IsContaining(btnInfos.Slots, "3,6,9") {
 				Menu, CBMenu, Disable, Size: Medium
