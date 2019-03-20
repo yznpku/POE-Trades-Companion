@@ -1,4 +1,9 @@
 = = = = = = = = = = = = =	
+1.14.2 (20 March 2019)
+	Fixes:
+	- PoeApp currency whispers would no longer be recognized due to a change on their part.
+	- If one of the first five buttons would have their name set as empty, it would be impossible to right click on them to rename them again.
+
 1.14.1 (18 March 2019)
 	Fix: When using the executable version, the app would reload upon verifying an item's price.
 	For this reason, the feature has been temporarily disabled for the executable version.
