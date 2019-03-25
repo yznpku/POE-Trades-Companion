@@ -1,9 +1,14 @@
+A Dab of Ink
 A Mother's Parting Gift
 Abandoned Wealth
+Aberrant Fossil
 Abyss
 Academy
+Acid Caverns
 Acid Lakes
+Aetheric Fossil
 Alleyways
+Alone in the Darkness
 Ambush
 Anarchy
 Anarchy's Price
@@ -19,6 +24,7 @@ Arena
 Arid Lake
 Armourer's Scrap
 Armoury
+Arrogance of the Vaal
 Arsenal
 Ashen Wood
 Assassin's Favour
@@ -30,6 +36,7 @@ Basilica
 Bazaar
 Beach
 Beacon
+Beauty Through Death
 Belfry
 Bestiary Orb
 Beyond
@@ -44,8 +51,12 @@ Blessing of Uul-Netol
 Blessing of Xoph
 Blind Venture
 Bloodlines
+Bloodstained Fossil
 Bog
 Bone Crypt
+Boon of Justice
+Boon of the First Ones
+Bound Fossil
 Boundless Realms
 Bowyer's Dream
 Breach
@@ -74,16 +85,19 @@ Colosseum
 Conservatory
 Coral Ruins
 Core
+Corroded Fossil
 Courthouse
 Courtyard
 Coves
 Coveted Possession
+Crater
 Crematorium
 Crimson Temple
 Crypt
 Crystal Ore
 Cursed Crypt
 Dark Forest
+Dark Temptation
 Deafening Essence of Anger
 Deafening Essence of Anguish
 Deafening Essence of Contempt
@@ -106,6 +120,7 @@ Deafening Essence of Wrath
 Deafening Essence of Zeal
 Death
 Defiled Cathedral
+Dense Fossil
 Desert
 Desert Spring
 Destined to Crumble
@@ -122,6 +137,8 @@ Earth Drinker
 Eber's Key
 Emperor of Purity
 Emperor's Luck
+Enchanted Fossil
+Encrusted Fossil
 Engineer's Orb
 Esh's Breachstone
 Essence
@@ -134,23 +151,42 @@ Eternal Orb
 Exalted Orb
 Exalted Shard
 Excavation
+Faceted Fossil
 Factory
 Fields
 Flooded Mine
 Forbidden Power
 Forge of the Phoenix
+Fractured Fossil
 Fragment of the Chimera
 Fragment of the Hydra
 Fragment of the Minotaur
 Fragment of the Phoenix
+Frigid Fossil
+Fungal Hollow
 Gardens
 Gemcutter's Prism
 Gemcutter's Promise
 Geode
 Ghetto
 Gift of the Gemling Queen
+Gilded Ambush Scarab
+Gilded Bestiary Scarab
+Gilded Breach Scarab
+Gilded Cartography Scarab
+Gilded Divination Scarab
+Gilded Elder Scarab
+Gilded Fossil
+Gilded Harbinger Scarab
+Gilded Perandus Scarab
+Gilded Reliquary Scarab
+Gilded Shaper Scarab
+Gilded Sulphite Scarab
+Gilded Torment Scarab
+Glacier
 Glassblower's Bauble
 Glimmer of Hope
+Glyphic Fossil
 Gorge
 Grave Knowledge
 Graveyard
@@ -163,6 +199,7 @@ Haunted Mansion
 Her Mask
 Heterochromia
 High Gardens
+Hollow Fossil
 hope
 House of Mirrors
 Hubris
@@ -176,6 +213,7 @@ Invasion
 Inya's Key
 Ivory Temple
 Jack in the Box
+Jagged Fossil
 Jeweller's Orb
 Journeyman Cartographer's Sextant
 Jungle Valley
@@ -185,6 +223,7 @@ Lair of the Hydra
 Lantador's Lost Love
 Last Hope
 Lava Chamber
+Lava Chambers
 Lava Lake
 Left to Fate
 Leyline
@@ -194,6 +233,7 @@ Lingering Remnants
 Lookout
 Lost Worlds
 Loyalty
+Lucent Fossil
 Lucky Connections
 Lucky Deck
 Lysah's Respite
@@ -206,11 +246,13 @@ Maze
 Maze of the Minotaur
 Merciless Armament
 Mesa
+Metallic Fossil
 Might is Right
 Mineral Pools
 Mirror of Kalandra
 Mirror Shard
 Mitts
+Monochrome
 Moon Temple
 Mortal Grief
 Mortal Hope
@@ -247,6 +289,7 @@ Pen
 Peninsula
 Perandus
 Perandus Coin
+Perfect Fossil
 Perfection
 Phantasmagoria
 Pier
@@ -254,11 +297,34 @@ Pit
 Pit of the Chimera
 Plateau
 Plaza
+Polished Ambush Scarab
+Polished Bestiary Scarab
+Polished Breach Scarab
+Polished Cartography Scarab
+Polished Divination Scarab
+Polished Elder Scarab
+Polished Harbinger Scarab
+Polished Perandus Scarab
+Polished Reliquary Scarab
+Polished Shaper Scarab
+Polished Sulphite Scarab
+Polished Torment Scarab
 Port
 Portal Scroll
+Potent Alchemical Resonator
+Potent Chaotic Resonator
+Powerful Alchemical Resonator
+Powerful Chaotic Resonator
 Precinct
 Pride Before the Fall
+Prime Alchemical Resonator
+Prime Chaotic Resonator
+Primitive Alchemical Resonator
+Primitive Chaotic Resonator
+Primordial Blocks
 Primordial Pool
+Prismatic Fossil
+Pristine Fossil
 Promenade
 Prophecy
 Prosperity
@@ -277,12 +343,27 @@ Reinforced Steel Net
 Relic Chambers
 Remnant of Corruption
 Residence
+Rusted Ambush Scarab
+Rusted Bestiary Scarab
+Rusted Breach Scarab
+Rusted Cartography Scarab
+Rusted Divination Scarab
+Rusted Elder Scarab
+Rusted Harbinger Scarab
+Rusted Perandus Scarab
+Rusted Reliquary Scarab
+Rusted Shaper Scarab
+Rusted Sulphite Scarab
+Rusted Torment Scarab
 Sacrifice at Dawn
 Sacrifice at Dusk
 Sacrifice at Midnight
 Sacrifice at Noon
 Sacrifice set
+Sambodhi's Vow
+Sanctified Fossil
 Scholar of the Seas
+Scorched Fossil
 Screaming Essence of Anger
 Screaming Essence of Anguish
 Screaming Essence of Contempt
@@ -306,6 +387,8 @@ Screaming Essence of Zeal
 Scriptorium
 Scroll of Wisdom
 Sepulchre
+Serrated Fossil
+Seven Years Bad Luck
 Sewer
 Shaped Academy
 Shaped Acid Lakes
@@ -373,6 +456,7 @@ Shaped Lookout
 Shaped Malformation
 Shaped Marshes
 Shaped Mausoleum
+Shaped Maze
 Shaped Mesa
 Shaped Mineral Pools
 Shaped Moon Temple
@@ -450,6 +534,7 @@ Shrieking Essence of Woe
 Shrieking Essence of Wrath
 Shrieking Essence of Zeal
 Shrine
+Shuddering Fossil
 Siege
 Silver Coin
 Simple Iron Net
@@ -473,6 +558,7 @@ Sulphur Wastes
 Summit
 Sunken City
 Talisman
+Tangled Fossil
 Tempest
 Temple
 Terrace
@@ -490,6 +576,7 @@ The Blazing Fire
 The Body
 The Breach
 The Brittle Emperor
+The Cacophony
 The Calling
 The Carrion Crow
 The Cartographer
@@ -515,6 +602,7 @@ The Dreamer
 The Dreamland
 The Drunken Aristocrat
 The Encroaching Darkness
+The Endless Darkness
 The Endurance
 The Enlightened
 The Ethereal
@@ -533,6 +621,7 @@ The Garish Power
 The Gemcutter
 The Gentleman
 The Gladiator
+The Golden Era
 The Hale Heart
 The Harvester
 The Hermit
@@ -540,24 +629,33 @@ The Hoarder
 The Hunger
 The Immortal
 The Incantation
+The Innocent
 The Inoculated
 The Insatiable
 The Inventor
 The Iron Bard
 The Jester
 The Jeweller's Boon
+The Journey
 The King's Blade
 The King's Heart
+The Landing
 The Last One Standing
 The Lich
+The Life Thief
 The Lion
 The Lord in Black
+The Lord of Celebration
 The Lover
 The Lunaris Priestess
+The Mad King
 The Master
+The Master Artisan
 The Mayor
 The Mercenary
+The Messenger
 The Metalsmith's Gift
+The Nurse
 The Oath
 The Obscured
 The Offering
@@ -569,6 +667,7 @@ The Penitent
 The Poet
 The Polymath
 The Porcupine
+The Price of Protection
 The Professor
 The Puzzle
 The Queen
@@ -578,11 +677,13 @@ The Risk
 The Rite of Elements
 The Road to Power
 The Ruthless Ceinture
+The Sacrifice
 The Saint's Treasure
 The Samurai's Eye
 The Scarred Meadow
 The Scavenger
 The Scholar
+The Seeker
 The Sephirot
 The Sigil
 The Siren
@@ -602,6 +703,7 @@ The Throne
 The Tower
 The Traitor
 The Trial
+The Twilight Moon
 The Twins
 The Tyrant
 The Undaunted
@@ -616,6 +718,7 @@ The Warden
 The Warlord
 The Watcher
 The Web
+The Wilted Rose
 The Wind
 The Witch
 The Wolf
@@ -630,6 +733,7 @@ Three Faces in the Dark
 Three Voices
 Thunderous Skies
 Time-Lost Relic
+Timeworn Reliquary Key
 Torment
 Torture Chamber
 Tower

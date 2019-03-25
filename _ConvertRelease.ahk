@@ -1,9 +1,13 @@
 ﻿#SingleInstance, Force
 #NoEnv
 
+if (!A_IsAdmin) {
+	ReloadWithParams("", getCurrentParams:=True, asAdmin:=True)
+}
+
 PROGRAM := {"CURL_EXECUTABLE": A_ScriptDir "\lib\third-party\curl.exe"}
-generateCurrencyData := False
-generateLeagueTxt := False
+generateCurrencyData := True
+generateLeagueTxt := True
 
 ; Basic tray menu
 if ( !A_IsCompiled && FileExist(A_ScriptDir "\resources\icon.ico") )
@@ -21,21 +25,7 @@ ver := RegExReplace(ver, "[a-zA-Z]") ; Remove any possible alpha char
 ver := StrReplace(ver, "_", "99.") ; If _ detected (beta), use 99 as ver
 StringReplace ver,ver,`.,`.,UseErrorLevel
 
-
-ToolTip, Compiling POE Trades Companion.exe
-CompileFile(A_ScriptDir "\POE Trades Companion.ahk", A_ScriptDir "\POE Trades Companion.exe")
-; CompileFile(A_ScriptDir "\POE Trades Companion.ahk", A_ScriptDir "\POE Trades Companion.exe", "POE Trades Companion", ver, "© lemasato.github.io " A_YYYY)
-
-; Updater file 
-ToolTip, Compiling Updater.exe
-CompileFile(A_ScriptDir "\Updater.ahk", A_ScriptDir "\Updater.exe")
-; CompileFile(A_ScriptDir "\Updater.ahk", A_ScriptDir "\Updater.exe", "POE Trades Companion: Updater", "1.0", "© lemasato.github.io " A_YYYY)
-
-; Updater file v2
-ToolTip, Updater_v2.exe
-CompileFile(A_ScriptDir "\Updater_v2.ahk", A_ScriptDir "\Updater_v2.exe")
-; CompileFile(A_ScriptDir "\Updater_v2.ahk", A_ScriptDir "\Updater_v2.exe", "POE Trades Companion: Updater", "2.1", "© lemasato.github.io " A_YYYY)
-
+; Alternative files
 if (generateCurrencyData) {
 	ToolTip, Creating poeTradeCurrencyData.json
 	PoeTrade_GenerateCurrencyData()
@@ -48,6 +38,21 @@ if (generateLeagueTxt) {
 	*/
 	; ToolTip, Creating TradingLeagues.txt
 }
+
+; Main executable
+ToolTip, Compiling POE Trades Companion.exe
+CompileFile(A_ScriptDir "\POE Trades Companion.ahk", A_ScriptDir "\POE Trades Companion.exe")
+; CompileFile(A_ScriptDir "\POE Trades Companion.ahk", A_ScriptDir "\POE Trades Companion.exe", "POE Trades Companion", ver, "© lemasato.github.io " A_YYYY)
+
+; Updater file 
+; ToolTip, Compiling Updater.exe
+; CompileFile(A_ScriptDir "\Updater.ahk", A_ScriptDir "\Updater.exe")
+; CompileFile(A_ScriptDir "\Updater.ahk", A_ScriptDir "\Updater.exe", "POE Trades Companion: Updater", "1.0", "© lemasato.github.io " A_YYYY)
+
+; Updater file v2
+; ToolTip, Updater_v2.exe
+; CompileFile(A_ScriptDir "\Updater_v2.ahk", A_ScriptDir "\Updater_v2.exe")
+; CompileFile(A_ScriptDir "\Updater_v2.ahk", A_ScriptDir "\Updater_v2.exe", "POE Trades Companion: Updater", "2.1", "© lemasato.github.io " A_YYYY)
 
 
 ; End
@@ -101,8 +106,25 @@ CompileFile(source, dest, fileDesc="NONE", fileVer="NONE", fileCopyright="NONE")
 	}
 }
 
+ReloadWithParams(params, getCurrentParams=False, asAdmin=False) {
+	if (getCurrentParams) {
+		params .= " " Get_CmdLineParameters()
+	}
+
+	if (asAdmin)
+		runMode := "RunAs"
+	else runMode := ""
+
+	Sleep 10
+	DllCall("shell32\ShellExecute" (A_IsUnicode ? "":"A"),uint,0,str,runMode,str,(A_IsCompiled ? A_ScriptFullPath
+	: A_AhkPath),str,(A_IsCompiled ? "": """" . A_ScriptFullPath . """" . A_Space) params,str,A_WorkingDir,int,1)
+	ExitApp
+	Sleep 10000
+}
+
 #Include %A_ScriptDir%\lib\
 #Include CompileAhk2Exe.ahk
+#Include CmdLineParameters.ahk
 #Include EasyFuncs.ahk
 #Include Logs.ahk
 #Include SetFileInfos.ahk

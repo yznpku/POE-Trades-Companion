@@ -15,31 +15,31 @@
 	if (lastChar = "s") ; poeapp adds an "s" for >1 currencies
 		StringTrimRight, currencyWithoutS, currency, 1
 
-	if !IsIn(currency, PROGRAM.DATA.CURRENCY_LIST) {
-		currencyFullName := PROGRAM.DATA.POETRADE_CURRENCY_DATA[currency] ? PROGRAM.DATA.POETRADE_CURRENCY_DATA[currency]
-			:	PROGRAM.DATA.POEDOTCOM_CURRENCY_DATA[currency] ? PROGRAM.DATA.POEDOTCOM_CURRENCY_DATA[currency]
-			:	""
-		if (currencyFullName)
-			isCurrencyListed := True
-	}
-	else { ; Currency is in list
-		currencyFullName := currency
-		isCurrencyListed := True
-	}
-	if (!currencyFullName && currencyWithoutS) { ; Couldn't retrieve full name, and currency is possibly plural
-		if IsIn(currencyWithoutS, PROGRAM.DATA.CURRENCY_LIST) ; Currency is in list, was most likely plural
-		{
-			currencyFullName := currencyWithoutS
-			isCurrencyListed := True
-		}
-	}
-	else if !(currencyFullName) { ; Unknown currency name
-		AppendToLogs(A_ThisFunc "(currency=" currency "): Unknown currency name.")
-	}
+	if RegExMatch(currency, "O) Map$", pat) ; If ends with map
+        StringTrimRight, currencyWithoutMap, currency,% StrLen(pat.0) ; Remove it from name
 
-	currencyFullName := (currencyFullName)?(currencyFullName):(currency)
+	currencyToCheckList := []
+	currencyToCheckList.Push(currency), currencyToCheckList.Push(currencyWithoutS), currencyToCheckList.Push(currencyWithoutMap)
+
+	isCurrencyListed := False, currencyFullName := ""
+	for index, thisCurrency in currencyToCheckList {
+		if !IsIn(thisCurrency, PROGRAM.DATA.CURRENCY_LIST) {
+			currencyFullName := PROGRAM.DATA.POETRADE_CURRENCY_DATA[thisCurrency] ? PROGRAM.DATA.POETRADE_CURRENCY_DATA[thisCurrency]
+				:	PROGRAM.DATA.POEDOTCOM_CURRENCY_DATA[thisCurrency] ? PROGRAM.DATA.POEDOTCOM_CURRENCY_DATA[thisCurrency]
+				:	""
+			isCurrencyListed := currencyFullName?True:False
+		}
+		else { ; Currency is in list
+			isCurrencyListed := True, currencyFullName := thisCurrency
+		}
+
+		if (isCurrencyListed=True)
+			Break
+	}
+	if !(currencyFullName) ; Unknown currency name
+		AppendToLogs(A_ThisFunc "(currency=" currency "): Unknown currency name.")
+
 	Return {Name:currencyFullName, Is_Listed:isCurrencyListed}
-	; return currencyFullName
 }
 
 Do_Action(actionType, actionContent="", isHotkey=False, uniqueNum="") {
@@ -136,6 +136,8 @@ Do_Action(actionType, actionContent="", isHotkey=False, uniqueNum="") {
 		SendEvent,{Raw}%actionContentWithVariables%
 	else if (actionType = "IGNORE_SIMILAR_TRADE")
 		GUI_Trades.AddActiveTrade_To_IgnoreList()
+	else if (actionType = "CLOSE_SIMILAR_TABS")
+		GUI_Trades.CloseOtherTabsForSameItem()
 	else if (actionType = "SHOW_GRID")
 		GUI_Trades.ShowActiveTabItemGrid()
 
@@ -156,8 +158,8 @@ Get_Changelog(removeTrails=False) {
 	}
 
 	len := StrLen(changelog)
-	if ( len > 65000 ) {
-		trim := len - 65000
+	if ( len > 60000 ) {
+		trim := len - 60000
 		StringTrimRight, changelog, changelog, %trim%
 		changelog .= "`n`n`n[ Changelog file trimmed. See full changelog file GitHub ]"
 	}
@@ -202,6 +204,12 @@ Replace_TradeVariables(string) {
 	string := StrReplace(string, "`%itemPrice`%", tabContent.Price != ""?tabContent.Price : "[unpriced]")
 
 	string := StrReplace(string, "`%lastWhisper`%", GuiTrades.Last_Whisper_Name)
+	string := StrReplace(string, "`%lastWhisperReceived`%", GuiTrades.Last_Whisper_Name)
+	string := StrReplace(string, "`%lwr`%", GuiTrades.Last_Whisper_Name)
+
+	string := StrReplace(string, "`%sentWhisper`%", GuiTrades.Last_Whisper_Sent_Name)
+	string := StrReplace(string, "`%lastWhisperSent`%", GuiTrades.Last_Whisper_Sent_Name)
+	string := StrReplace(string, "`%lws`%", GuiTrades.Last_Whisper_Sent_Name)
 
 	return string
 }
@@ -226,7 +234,7 @@ Get_SkinAssetsAndSettings() {
 		keysAndValues := INI.Get(skinAssetsFile, A_LoopField,, 1)
 
 		for key, value in keysAndValues	{
-			if IsIn(key, "Normal,Hover,Press,Active,Inactive,Background,Icon,Header,Tabs_Background,Tabs_Underline")
+			if IsIn(key, "Normal,Hover,Press,Active,Inactive,Background,Icon,Header,HeaderMin,Tabs_Background,Tabs_Underline")
 			|| (A_LoopField = "Trade_Verify" && IsIn(key, "Grey,Orange,Green,Red"))
 				skinAssets[A_LoopField][key] := skinFolder "\" value
 			else {

@@ -3,7 +3,7 @@
 	
 	Loop, %0% {
 		param := ""
-		param := RegExReplace(%A_Index%, "(.*)=(.*)", "$1=""$2""") ; Add quotes to parameters. In case any contain a space
+		param := RegExReplace(%A_Index%, "(.*?)=(.*)", "$1=""$2""") ; Add quotes to parameters. In case any contain a space
 
 		if (param)
 			params .= A_Space . param

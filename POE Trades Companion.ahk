@@ -38,6 +38,17 @@ Menu,Tray,Add
 Menu,Tray,Add,Reload,Tray_Reload
 Menu,Tray,Add,Close,Tray_Exit
 Menu,Tray,Icon
+; Left click
+OnMessage(0x404, "AHK_NOTIFYICON") 
+
+Hotkey, IfWinActive, ahk_group POEGameGroup
+Hotkey, ^RButton, StackClick
+
+Hotkey, IfWinActive
+Hotkey, ~*Space, SpaceRoutine
+
+Hotkey, IfWinActive,% "ahk_pid " DllCall("GetCurrentProcessId")
+
 
 ; try {
 	Start_Script()
@@ -46,53 +57,21 @@ Menu,Tray,Icon
 ; 	MsgBox, 16,, % "Exception thrown!`n`nwhat: " e.what "`nfile: " e.file
 ;         . "`nline: " e.line "`nmessage: " e.message "`nextra: " e.extra
 ; }
-; msgbox
 Return
 
 ; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  
+SpaceRoutine() {
+	global PROGRAM, AUTOWHISPER_CANCEL, AUTOWHISPER_WAITKEYUP, SPACEBAR_WAIT
 
-#IfWinActive ahk_group POEGameGroup
-^+LButton::StackClick()
-
-#IfWinActive ahk_group GUITradesGroup
-^SC00F::GUI_Trades.SelectNextTab() ; Ctrl Tab
-^+SC00F::GUI_Trades.SelectPreviousTab() ; Ctrl Shift Tab 
-^SC002::GUI_Trades.SetActiveTab(1) ; 1
-^SC003::GUI_Trades.SetActiveTab(2) ; 2
-^SC004::GUI_Trades.SetActiveTab(3) ; 3
-^SC005::GUI_Trades.SetActiveTab(4) ; 4
-^SC006::GUI_Trades.SetActiveTab(5) ; 5
-^SC007::GUI_Trades.SetActiveTab(6) ; 6
-^SC008::GUI_Trades.SetActiveTab(7) ; 7
-^SC009::GUI_Trades.SetActiveTab(8) ; 8
-^SC00A::GUI_Trades.SetActiveTab(9) ; 9
-^WheelDown::GUI_Trades.SelectNextTab() ; Ctrl WheelDown
-^^WheelUp::GUI_Trades.SelectPreviousTab() ; Ctrl WheelUp
-
-#IfWinActive
-
-~*Space::
-	global PROGRAM, AUTOWHISPER_CANCEL, AUTOWHISPER_WAITKEYUP
 	if (SPACEBAR_WAIT) {
 		SplashTextOff()
 	}
 	else if (AUTOWHISPER_WAITKEYUP) {
 		AUTOWHISPER_CANCEL := True
-		ShowToolTip(PROGRAM.NAME "`nEasy whisper cancelled.")
+		ShowToolTip(PROGRAM.NAME "`nEasy whisper canceled.")
 	}
-Return
-
-GUI_Trades_RefreshIgnoreList:
-	GUI_Trades.RefreshIgnoreList()
-return
-
-GUI_Trades_CopyItemInfos_CurrentTab_Timer:
-	SetTimer, GUI_Trades_CopyItemInfos_CurrentTab, Delete
-	SetTimer, GUI_Trades_CopyItemInfos_CurrentTab, -500
-return
-GUI_Trades_CopyItemInfos_CurrentTab:
-	Gui_Trades.CopyItemInfos()
-return
+}
 
 ; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -111,12 +90,13 @@ Start_Script() {
 
 	; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	Handle_CmdLineParameters() 		; RUNTIME_PARAMETERS
+	Load_DebugJSON()
 
 	MyDocuments 					:= (RUNTIME_PARAMETERS.MyDocuments)?(RUNTIME_PARAMETERS.MyDocuments):(A_MyDocuments)
 
 	; Set global - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	PROGRAM.NAME					:= "POE Trades Companion"
-	PROGRAM.VERSION 				:= "1.13.4"
+	PROGRAM.VERSION 				:= "1.14.2"
 	PROGRAM.IS_BETA					:= IsContaining(PROGRAM.VERSION, "beta")?"True":"False"
 
 	PROGRAM.GITHUB_USER 			:= "lemasato"
@@ -124,22 +104,23 @@ Start_Script() {
 	PROGRAM.GUTHUB_BRANCH			:= "master"
 
 	PROGRAM.MAIN_FOLDER 			:= MyDocuments "\lemasato\" PROGRAM.NAME
-	PROGRAM.SFX_FOLDER 				:= PROGRAM.MAIN_FOLDER "\SFX"
 	PROGRAM.LOGS_FOLDER 			:= PROGRAM.MAIN_FOLDER "\Logs"
-	PROGRAM.SKINS_FOLDER 			:= PROGRAM.MAIN_FOLDER "\Skins"
-	PROGRAM.FONTS_FOLDER 			:= PROGRAM.MAIN_FOLDER "\Fonts"
-	PROGRAM.DATA_FOLDER				:= PROGRAM.MAIN_FOLDER "\Data"
-	PROGRAM.IMAGES_FOLDER			:= PROGRAM.MAIN_FOLDER "\Images"
-	PROGRAM.ICONS_FOLDER			:= PROGRAM.MAIN_FOLDER "\Icons"
+	PROGRAM.DATA_FOLDER				:= (A_IsCompiled?PROGRAM.MAIN_FOLDER:A_ScriptDir) . (A_IsCompiled?"\Data":"\data")
+	PROGRAM.SFX_FOLDER 				:= (A_IsCompiled?PROGRAM.MAIN_FOLDER:A_ScriptDir) . (A_IsCompiled?"\SFX":"\resources\sfx")
+	PROGRAM.SKINS_FOLDER 			:= (A_IsCompiled?PROGRAM.MAIN_FOLDER:A_ScriptDir) . (A_IsCompiled?"\Skins":"\resources\skins")
+	PROGRAM.FONTS_FOLDER 			:= (A_IsCompiled?PROGRAM.MAIN_FOLDER:A_ScriptDir) . (A_IsCompiled?"\Fonts":"\resources\fonts")
+	PROGRAM.IMAGES_FOLDER			:= (A_IsCompiled?PROGRAM.MAIN_FOLDER:A_ScriptDir) . (A_IsCompiled?"\Images":"\resources\imgs")
+	PROGRAM.ICONS_FOLDER			:= (A_IsCompiled?PROGRAM.MAIN_FOLDER:A_ScriptDir) . (A_IsCompiled?"\Icons":"\resources\icons")
 
 	prefsFileName 					:= (RUNTIME_PARAMETERS.InstanceName)?(RUNTIME_PARAMETERS.InstanceName "_Preferences.ini"):("Preferences.ini")
 	backupFileName 					:= (RUNTIME_PARAMETERS.InstanceName)?(RUNTIME_PARAMETERS.InstanceName "_Trades_Backup.ini"):("Trades_Backup.ini")
+	tradesHistoryFileName 			:= (RUNTIME_PARAMETERS.InstanceName)?(RUNTIME_PARAMETERS.InstanceName "_Trades_History.ini"):("Trades_History.ini")
 	PROGRAM.FONTS_SETTINGS_FILE		:= PROGRAM.FONTS_FOLDER "\Settings.ini"
 	PROGRAM.INI_FILE 				:= PROGRAM.MAIN_FOLDER "\" prefsFileName
 	PROGRAM.LOGS_FILE 				:= PROGRAM.LOGS_FOLDER "\" A_YYYY "-" A_MM "-" A_DD " " A_Hour "h" A_Min "m" A_Sec "s.txt"
 	PROGRAM.CHANGELOG_FILE 			:= PROGRAM.MAIN_FOLDER "\changelog.txt"
 	PROGRAM.CHANGELOG_FILE_BETA 	:= PROGRAM.MAIN_FOLDER "\changelog_beta.txt"
-	PROGRAM.TRADES_HISTORY_FILE 	:= PROGRAM.MAIN_FOLDER "\Trades_History.ini" 
+	PROGRAM.TRADES_HISTORY_FILE 	:= PROGRAM.MAIN_FOLDER "\" tradesHistoryFileName
 	PROGRAM.TRADES_BACKUP_FILE		:= PROGRAM.MAIN_FOLDER "\" backupFileName
 
 	PROGRAM.NEW_FILENAME			:= PROGRAM.MAIN_FOLDER "\POE-TC-NewVersion.exe"
@@ -159,7 +140,7 @@ Start_Script() {
 	GAME.INI_FILE 					:= GAME.MAIN_FOLDER "\production_Config.ini"
 	GAME.INI_FILE_COPY 		 		:= PROGRAM.MAIN_FOLDER "\production_Config.ini"
 	GAME.EXECUTABLES 				:= "PathOfExile.exe,PathOfExile_x64.exe,PathOfExileSteam.exe,PathOfExile_x64Steam.exe"
-	GAME.CHALLENGE_LEAGUE 			:= "Delve"
+	GAME.CHALLENGE_LEAGUE 			:= "Synthesis"
 
 	PROGRAM.SETTINGS.SUPPORT_MESSAGE 	:= "@%buyerName% " PROGRAM.NAME ": view-thread/1755148"
 
@@ -168,9 +149,8 @@ Start_Script() {
 	SetWorkingDir,% PROGRAM.MAIN_FOLDER
 
 	; Auto admin reload - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-	if (!A_IsAdmin && !RUNTIME_PARAMETERS.SkipAdmin) {
-		; GUI_SimpleWarn.Show("", "Reloading to request admin privilieges in 3...`nClick on this window to reload now.", "Green", "White", {CountDown:True, CountDown_Timer:1000, CountDown_Count:3, WaitClose:1, CloseOnClick:True})
-		; ReloadWithParams(" /MyDocuments=""" MyDocuments """", getCurrentParams:=True, asAdmin:=True)
+	if (!A_IsAdmin && !RUNTIME_PARAMETERS.SkipAdmin && !DEBUG.SETTINGS.skip_admin) {
+		ReloadWithParams(" /MyDocuments=""" MyDocuments """", getCurrentParams:=True, asAdmin:=True)
 	}
 
 	; Game executables groups - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -184,8 +164,11 @@ Start_Script() {
 	StringTrimRight, POEGameList, POEGameList, 1
 
 	; Create local directories - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-	directories := PROGRAM.MAIN_FOLDER "`n" PROGRAM.SFX_FOLDER "`n" PROGRAM.LOGS_FOLDER "`n" PROGRAM.SKINS_FOLDER
-	. "`n" PROGRAM.FONTS_FOLDER "`n" PROGRAM.IMAGES_FOLDER "`n" PROGRAM.DATA_FOLDER "`n" PROGRAM.ICONS_FOLDER
+	if (A_IsCompiled)
+		directories := PROGRAM.MAIN_FOLDER "`n" PROGRAM.SFX_FOLDER "`n" PROGRAM.LOGS_FOLDER "`n" PROGRAM.SKINS_FOLDER
+		. "`n" PROGRAM.FONTS_FOLDER "`n" PROGRAM.IMAGES_FOLDER "`n" PROGRAM.DATA_FOLDER "`n" PROGRAM.ICONS_FOLDER
+	else
+		directories := PROGRAM.MAIN_FOLDER "`n" PROGRAM.LOGS_FOLDER
 
 	Loop, Parse, directories, `n, `r
 	{
@@ -202,13 +185,11 @@ Start_Script() {
 	Create_LogsFile()
 	Delete_OldLogsFile()
 
-	Load_DebugJSON()
-
 	if (!RUNTIME_PARAMETERS.NewInstance)
 		Close_PreviousInstance()
 	TrayRefresh()
 
-	if !(DEBUG.settings.skip_assets_extracting)
+	if (A_IsCompiled) && !(DEBUG.settings.skip_assets_extracting)
 		AssetsExtract()
 
 	; Currency names for stats gui - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -226,6 +207,13 @@ Start_Script() {
 
 	FileRead, gggCurrency,% PROGRAM.DATA_FOLDER "\poeDotComCurrencyData.json"
 	PROGRAM["DATA"]["POEDOTCOM_CURRENCY_DATA"] := JSON.Load(gggCurrency)
+
+	; Maps data for ITemGrid - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	FileRead, mapsData,% PROGRAM.DATA_FOLDER "\mapsData.json"
+	PROGRAM.DATA.MAPS_DATA := JSON.Load(mapsData)
+
+	FileRead, uniqueMapsList,% PROGRAM.DATA_FOLDER "\UniqueMaps.txt"
+	PROGRAM.DATA.UNIQUE_MAPS_LIST := uniqueMapsList
 
 	; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -286,7 +274,9 @@ Start_Script() {
 	TrayMenu()
 	EnableHotkeys()
 
-	ImageButton_TestDelay()
+	; ImageButton_TestDelay()
+	GUI_Intercom.Create()
+	GUI_TradesMinimized.Create()
 	Gui_Trades.Create()
 	GUI_Trades.LoadBackup()
 
@@ -315,6 +305,8 @@ Start_Script() {
 		INI.Set(PROGRAM.INI_FILE, "GENERAL", "ShowChangelog", "False")
 		PROGRAM.SETTINGS.PROGRAM.Show_Changelogs := ""
 		PROGRAM.SETTINGS.GENERAL.ShowChangelog := "False"
+		TrayNotifications.Show(PROGRAM.Name, "Successfully updated to v" PROGRAM.VERSION
+		. "`nTake a look at the new changes!")
 		GUI_Settings.Show("Misc Updating")
 	}
 	
@@ -337,9 +329,11 @@ Return
 #Include Class_GUI_SimpleWarn.ahk
 #Include Class_Gui_ChooseInstance.ahk
 #Include Class_Gui_ItemGrid.ahk
+#Include Intercom_Receiver.ahk
 #Include Class_Gui_MyStats.ahk
 #Include Class_Gui_Settings.ahk
 #Include Class_Gui_Trades.ahk
+#Include Class_Gui_TradesMinimized.ahk
 #Include WM_Messages.ahk
 
 #Include AssetsExtract.ahk
@@ -359,6 +353,7 @@ Return
 #Include Misc.ahk
 #Include OnClipboardChange.ahk
 #Include PoeTrade.ahk
+#Include PushBullet.ahk
 #Include Reload.ahk
 #Include ShowToolTip.ahk
 #Include SplashText.ahk
@@ -374,18 +369,21 @@ Return
 #Include ChooseColor.ahk
 #Include Class_ImageButton.ahk
 #Include Clip.ahk
+#Include cURL.ahk
+#Include CSV.ahk
 #Include Download.ahk
 #Include Extract2Folder.ahk
 #Include FGP.ahk
 #Include GDIP.ahk
+#Include Get_ProcessInfos.ahk
 #Include JSON.ahk
 #Include LV_SetSelColors.ahk
-#Include PushBullet.ahk
 #Include SetEditCueBanner.ahk
 #Include StdOutStream.ahk
 #Include StringtoHex.ahk
 #Include TilePicture.ahk
-#Include cURL.ahk
+#Include WinHttpRequest.ahk
+
 
 if (A_IsCompiled) {
 	#Include %A_ScriptDir%/FileInstall_Cmds.ahk

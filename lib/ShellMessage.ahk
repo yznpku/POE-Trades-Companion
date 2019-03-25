@@ -20,7 +20,7 @@ ShellMessage(wParam,lParam) {
 /*			Triggered upon activating a window
  *			Is used to correctly position the Trades GUI while in Overlay mode
 */
-	global PROGRAM, GuiTrades, GuiSettings, POEGameList
+	global PROGRAM, GuiTrades, GuiTradesMinimized, GuiSettings, POEGameList
 
 	if ( wParam=4 || wParam=32772 ||wParam=5 ) { ; 4=HSHELL_WINDOWACTIVATED | 32772=HSHELL_RUDEAPPACTIVATED | 5=HSHELL_GETMINRECT
 		if WinActive("ahk_id" GuiTrades.Handle) {
@@ -50,15 +50,26 @@ ShellMessage(wParam,lParam) {
 					WinGet, activeWinHwnd, ID, A	
 				}
 
-				if (activeWinExe && IsIn(activeWinExe, POEGameList)) || (activeWinHwnd && GuiSettings.Handle && activeWinHwnd = GuiSettings.Handle) {
+				if (activeWinHwnd = GuiTrades.Handle) || (activeWinHwnd = GuiTradesMinimized.Handle) { ; Fix unable to min/max while HideInterfaceWhenOutOfGame=True
 					Gui_Trades.SetTransparency_Automatic()
-					Gui, Trades:Show, NoActivate
 				}
-				else
-					Gui, Trades:Show, NoActivate Hide
+				else if (activeWinExe && IsIn(activeWinExe, POEGameList)) || (activeWinHwnd && GuiSettings.Handle && activeWinHwnd = GuiSettings.Handle) {
+					Gui_Trades.SetTransparency_Automatic()
+					if (GuiTrades.Is_Minimized)
+						Gui, TradesMinimized:Show, NoActivate
+					else Gui, Trades:Show, NoActivate
+				}
+				else {
+					if (GuiTrades.Is_Minimized)
+						Gui, TradesMinimized:Hide
+					else Gui, Trades:Hide
+				}
 			}
-			else
-				Gui, Trades:Show, NoActivate
+			else {
+				if (GuiTrades.Is_Minimized)
+					Gui, TradesMinimized:Show, NoActivate
+				else Gui, Trades:Show, NoActivate
+			}
 
 			if ( PROGRAM.SETTINGS.SETTINGS_MAIN.TradesGUI_Mode = "Dock")
 				GUI_Trades.DockMode_SetPosition()
@@ -72,6 +83,8 @@ ShellMessage(wParam,lParam) {
 			}
 
 			Gui, Trades:+LastFound
+			WinSet, AlwaysOnTop, On
+			Gui, TradesMinimized:+LastFound
 			WinSet, AlwaysOnTop, On
 		}
 

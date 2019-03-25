@@ -51,8 +51,14 @@
 	filePath := "lib\third-party\curl.exe"
 	appendToFile .= FileInstall("""" filePath """", "PROGRAM.MAIN_FOLDER """ "\" "curl.exe" """", 2)
 
+;	- - - - LINK SHORTCUTS
+	filePath := "Wiki.url"
+	appendToFile .= FileInstall("""" filePath """", "PROGRAM.MAIN_FOLDER """ "\" "Wiki.url" """", 2)
+	filePath := "GitHub.url"
+	appendToFile .= FileInstall("""" filePath """", "PROGRAM.MAIN_FOLDER """ "\" "GitHub.url" """", 2)
+
 ;	- - - - DATA
-	allowedFiles := "CurrencyNames.txt,poetradeCurrencyNames.json,poeTradeCurrencyData.json,poeDotComCurrencyData.json"
+	allowedFiles := "CurrencyNames.txt,poetradeCurrencyNames.json,poeTradeCurrencyData.json,poeDotComCurrencyData.json,mapsData.json,UniqueMaps.txt"
 	Loop, Files,% A_ScriptDir "\data\*"
 	{
 		RegExMatch(A_LoopFileFullPath, "O)\\data\\(.*)", path)
@@ -147,7 +153,11 @@
 	FileAppend,% appendToFile "`n",% installFile
 	Sleep 10
 
-	RunWait,% installFile " /r"
+	; https://autohotkey.com/board/topic/6717-how-to-find-autohotkey-directory/
+	cl := DllCall( "GetCommandLine", "str" )
+	StringMid, path_AHk, cl, 2, InStr( cl, """", true, 2 )-2
+
+	installFile_run_cmd := % """" path_AHk """" " /r " """" installFile """"
 	.		" /MAIN_FOLDER=" 	"""" PROGRAM.MAIN_FOLDER """"
 	.		" /SFX_FOLDER=" 	"""" PROGRAM.SFX_FOLDER """"
 	.		" /LOGS_FOLDER=" 	"""" PROGRAM.LOGS_FOLDER """"
@@ -156,5 +166,7 @@
 	.		" /DATA_FOLDER=" 	"""" PROGRAM.DATA_FOLDER """"
 	.		" /IMAGES_FOLDER=" 	"""" PROGRAM.IMAGES_FOLDER """"
 	.		" /ICONS_FOLDER=" 	"""" PROGRAM.ICONS_FOLDER """"
-	.		" /LOGS_FILE="		"""" PROGRAM.LOGS_FILE """",% A_ScriptDir
+	.		" /LOGS_FILE="		"""" PROGRAM.LOGS_FILE """"
+
+	RunWait,% installFile_run_cmd,% A_ScriptDir
 }

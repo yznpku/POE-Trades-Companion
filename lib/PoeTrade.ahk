@@ -13,6 +13,11 @@
         }           
     }
 
+    if (!nice || !dataTxt || StrLen(nice) < 100 || StrLen(dataTxt) < 100) {
+        MsgBox, 4096,% "",% "Error while retrieving currency data from poe.trade"
+        return
+    }
+
     fileLocation := A_ScriptDir "/data/poeTradeCurrencyData.json"
     FileDelete,% fileLocation
     FileAppend,% nice,% fileLocation
@@ -27,7 +32,8 @@ PoeTrade_GetCurrencyData() {
 
     Url := "http://currency.poe.trade/"
 	postData 	:= ""
-	options	:= ""
+	options	    := ""
+    options     .= "`n" "TimeOut: 25"
 
 	reqHeaders	:= []
 	reqHeaders.push("User-Agent:Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Safari/537.36")
@@ -123,7 +129,7 @@ PoETrade_GetMatchingCurrencyTradeData(dataObj, itemURL) {
                 foundObj[A_LoopField] := foundPat.1
             }
 
-            sellBuyRatio := RemoveTrailingZeroes(foundObj.sellvalue / foundObj.buyvalue)
+            sellBuyRatio := RemoveTrailingZeroes(foundObj.buyvalue / foundObj.sellvalue)
             isSameAccount := foundObj.username = dataObj.username ? True : False
             isSameRatio := sellBuyRatio = dataObj.sellBuyRatio ? True : False
 
@@ -131,14 +137,17 @@ PoETrade_GetMatchingCurrencyTradeData(dataObj, itemURL) {
                 foundMatchIndex++
                 isMatching := isSameRatio=True?True:False
                 matchingDatas[foundMatchIndex] := foundObj
-                matchingDatas[foundMatchIndex].SellBuyRatio := sellBuyRatio
+                matchingDatas[foundMatchIndex].SellBuyRatio := RemoveTrailingZeroes(sellBuyRatio)
                 matchingDatas[foundMatchIndex].IsSameRatio := isSameRatio
             }
         }
         else    
             Break
     }
-    return matchingDatas
+    if matchingDatas.Count()
+        return matchingDatas
+    else
+        return
 }
 
 PoeTrade_GetMatchingItemData(dataObj, itemURL) {
@@ -156,7 +165,7 @@ PoeTrade_GetMatchingItemData(dataObj, itemURL) {
         if (foundPos) {
             tBody := htmlPat.0, regexPos := foundPos+1
 
-            saleInfoTags := "seller,buyout,ign,league,name,tab,level,quality,x,y", foundObj := {}
+            saleInfoTags := "seller,buyout,ign,league,name,tab,level,quality,x,y,map-tier", foundObj := {}
             Loop, Parse, saleInfoTags,% ","
             {
                 RegExMatch(tBody, "iO)data-" A_LoopField "=""(.*?)""", foundPat)
@@ -165,7 +174,7 @@ PoeTrade_GetMatchingItemData(dataObj, itemURL) {
 
             ; poe.trade data-x and data-y start at 1 instead of 0 like in the whisper, so we add +1
             if (foundObj.seller = dataObj.seller) && (foundObj.league = dataObj.league)
-            && (foundObj.tab = dataObj.tab) && (foundObj.level = dataObj.level_min) && (foundObj.quality = dataObj.q_min)
+            && (foundObj.tab = dataObj.tab) && ((foundObj.level = dataObj.level) || (foundObj["map-tier"] = dataObj.level)) && (foundObj.quality = dataObj.quality)
             && (foundObj.x+1 = dataObj.x) && (foundObj.y+1 = dataObj.y) { ; Item is the same
                 return foundObj
             }
@@ -231,6 +240,18 @@ PoeTrade_CreateCurrencyPayload(obj, addDefaultParams=False) {
             payload .= (payload)?("&" payloadStr):(payloadStr)
         }
     }
+
+    if (poeTradeObj.have = "") {
+        logsLine := "Failed to get currency ID for """ obj.have """ (have)"
+        logsAppend := logsAppend ? "`n" logsLine : logsLine, payload := ""
+    }
+    if (poeTradeObj.want = "") {
+        logsLine := "Failed to get currency ID for """ obj.want """ (want)"
+        logsAppend := logsAppend ? "`n" logsLine : logsLine, payload := ""
+    }
+
+    if (logsAppend)
+        AppendToLogs(logsAppend)
 
     return payload
 }
@@ -304,6 +325,7 @@ PoeTrade_GetSource(url) {
 	payLength	:= StrLen(postData)
 	url 		:= "http://poe.trade/search"
 	options	    := ""
+    options     .= "`n" "TimeOut: 25"
 
 	reqHeaders	:= []
 	reqHeaders.push("Connection: keep-alive")
@@ -327,6 +349,7 @@ CurrencyPoeTrade_GetSource(url, skipPayload=False) {
     postData 	:= payload
 	payLength	:= StrLen(postData)
 	options	    := ""
+    options     .= "`n" "TimeOut: 25"
 
 	reqHeaders	:= []
 	reqHeaders.push("User-Agent:Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Safari/537.36")

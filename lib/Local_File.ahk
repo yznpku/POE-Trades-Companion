@@ -34,7 +34,7 @@ Get_LocalSettings_DefaultValues() {
 	settings.SETTINGS_MAIN.TradingWhisperSFXPath 										:= PROGRAM.SFX_FOLDER "\WW_MainMenu_Letter.wav" 
 	settings.SETTINGS_MAIN.RegularWhisperSFXPath 										:= ""
 	settings.SETTINGS_MAIN.BuyerJoinedAreaSFXPath 										:= ""
-	settings.SETTINGS_MAIN.NoTabsTransparency 											:= "30"
+	settings.SETTINGS_MAIN.NoTabsTransparency 											:= "0"
 	settings.SETTINGS_MAIN.TabsOpenTransparency 										:= "100"
 	settings.SETTINGS_MAIN.HideInterfaceWhenOutOfGame 									:= "False"
 	settings.SETTINGS_MAIN.CopyItemInfosOnTabChange 									:= "False"
@@ -58,6 +58,10 @@ Get_LocalSettings_DefaultValues() {
 	settings.SETTINGS_MAIN.PushBulletOnWhisperMessage									:= "False"
 	settings.SETTINGS_MAIN.PushBulletOnlyWhenAfk										:= "True"
 	settings.SETTINGS_MAIN.PoeAccounts													:= ""
+	settings.SETTINGS_MAIN.MinimizeInterfaceToBottomLeft								:= "False"
+	settings.SETTINGS_MAIN.ItemGridHideNormalTab										:= "False"
+	settings.SETTINGS_MAIN.ItemGridHideQuadTab											:= "False"
+	settings.SETTINGS_MAIN.ItemGridHideNormalTabAndQuadTabForMaps						:= "True"
 
 
 	settings.SETTINGS_CUSTOMIZATION_SKINS 												:= {}
@@ -304,6 +308,10 @@ LocalSettings_IsValueValid(iniSect, iniKey, iniValue) {
 			isValueValid := True
 		else if (iniKey = "PoeAccounts")
 			isValueValid := True
+		else if (iniKey = "MinimizeInterfaceToBottomLeft")
+			isValueValid := IsIn(iniValue, "True,False") ? True : False	
+		else if IsIn(iniKey, "ItemGridHideNormalTab,ItemGridHideQuadTab,ItemGridHideNormalTabAndQuadTabForMaps")
+			isValueValid := IsIn(iniValue, "True,False") ? True : False	
 	}
 
 	else if IsIn(iniSect, "SETTINGS_CUSTOMIZATION_SKINS,SETTINGS_CUSTOMIZATION_SKINS_UserDefined") {
@@ -472,11 +480,13 @@ Set_LocalSettings() {
 			isValueValid := LocalSettings_IsValueValid(iniSect, iniKey, iniValue)
 			if RegExMatch(iniSect, "O)SETTINGS_CUSTOM_BUTTON_(.*)", iniSectPat) && IsBetween(iniSectPat.1, 1, 5) {
 				iniSectNum := iniSectPat.1
-				isValueValid := doesCustBtn%iniSectNum%Exist=True?True:False
+				isValueValid := iniKey="Name"?isValueValid
+				: doesCustBtn%iniSectNum%Exist=True?True
+				: False
 			}
 
 			if (!isValueValid) {
-				if (IsFirstTimeRunning != "True" && !IsIn(iniKey, "IsFirstTimeRunning,AddShowGridActionToInviteButtons,RemoveCopyItemInfosIfGridActionExists"))
+				if (IsFirstTimeRunning != "True" && !IsIn(iniKey, "IsFirstTimeRunning,AddShowGridActionToInviteButtons,RemoveCopyItemInfosIfGridActionExists,LastUpdateCheck"))
 					warnMsg .= "Section: " iniSect "`nKey: " iniKey "`nValue: " iniValue "`nDefault value: " defValue "`n`n"
 				Restore_LocalSettings(iniSect, iniKey)
 			}
@@ -519,8 +529,10 @@ Get_LocalSettings() {
 		}
 	}
 
+	/*	No longer used
 	PROGRAM.OS := {}
 	PROGRAM.OS.RESOLUTION_DPI := Get_DpiFactor()
+	*/
 
 	return settingsObj
 }

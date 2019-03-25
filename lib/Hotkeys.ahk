@@ -37,22 +37,29 @@ UpdateHotkeys() {
 }
 
 DisableHotkeys() {
-	global PROGRAM, POEGameGroup
+	global PROGRAM
 
 	; Disable hotkeys
 	for hk, nothing in PROGRAM.HOTKEYS {
 		if (hk != "") {
 			Hotkey, IfWinActive, ahk_group POEGameGroup
-			Hotkey,% hk, Off
+			try Hotkey,% hk, Off
+			Hotkey, IfWinActive
+
+			logsStr := "Disabled hotkey with key """ hk """"
+			logsAppend .= logsAppend ? "`n" logsStr : logsStr
 		}
 	}
+
+	if (logsAppend)
+		AppendToLogs(logsAppend)
 
 	; Reset the arr 
 	PROGRAM.HOTKEYS := {}
 }
 
 EnableHotkeys() {
-	global PROGRAM, POEGameGroup
+	global PROGRAM
 	programName := PROGRAM.NAME, iniFilePath := PROGRAM.INI_FILE
 	Set_TitleMatchMode("RegEx")
 
@@ -63,13 +70,18 @@ EnableHotkeys() {
 		acContent := thisHotkeySettings.Content
 		acType := thisHotkeySettings.Type
 		hk := thisHotkeySettings.Hotkey
+		hkSC := TransformKeyStr_ToScanCodeStr(hk)
+		if !(hkSC)
+			hkSC := TransformKeyStr_ToVirtualKeyStr(hk)
 
 		if (toggle = "True") && (hk != "") && (acType != "") {
-			PROGRAM.HOTKEYS[hk] := {}
-			PROGRAM.HOTKEYS[hk].Content := acContent
-			PROGRAM.HOTKEYS[hk].Type := acType
+			PROGRAM.HOTKEYS[hkSC] := {}
+			PROGRAM.HOTKEYS[hkSC].Content := acContent
+			PROGRAM.HOTKEYS[hkSC].Type := acType
 			Hotkey, IfWinActive, ahk_group POEGameGroup
-			Hotkey,% hk, OnHotkeyPress, On
+			try Hotkey,% hkSC, OnHotkeyPress, On
+			logsStr := "Enabled hotkey with key """ hk """ (sc/vk: """ hkSC """)"
+			logsAppend .= logsAppend ? "`n" logsStr : logsStr
 		}
 	}
 
@@ -78,9 +90,17 @@ EnableHotkeys() {
 		acContent := thisHotkeySettings.Action_1_Content
 		acType := thisHotkeySettings.Action_1_Type
 		hk := thisHotkeySettings.Hotkey
+		hkSC := TransformKeyStr_ToScanCodeStr(hk)
+		if !(hkSC)
+			hkSC := TransformKeyStr_ToVirtualKeyStr(hk)
 
-		if (hk != "") || (acType != "") {
-			PROGRAM.HOTKEYS[hk] := {}
+		if (A_Index > 1000) {
+			AppendToLogs(A_ThisFunc "(): Broke out of loop after 1000.")
+			Break
+		}
+
+		if IsObject(thisHotkeySettings) {
+			PROGRAM.HOTKEYS[hkSC] := {}
 
 			Loop {
 				LoopAcType := thisHotkeySettings["Action_" A_Index "_Type"]
@@ -89,21 +109,63 @@ EnableHotkeys() {
 				if !(LoopAcType)
 					Break
 
-				PROGRAM.HOTKEYS[hk]["Action_" A_Index "_Type"] := LoopAcType
-				PROGRAM.HOTKEYS[hk]["Action_" A_Index "_Content"] := LoopAcContent
-				PROGRAM.HOTKEYS[hk]["Actions_Count"] := A_Index
+				PROGRAM.HOTKEYS[hkSC]["Action_" A_Index "_Type"] := LoopAcType
+				PROGRAM.HOTKEYS[hkSC]["Action_" A_Index "_Content"] := LoopAcContent
+				PROGRAM.HOTKEYS[hkSC]["Actions_Count"] := A_Index
 			}
-			if (hk != "") {
+			if (hk != "") && (hkSC != "") {
 				Hotkey, IfWinActive, ahk_group POEGameGroup
-				Hotkey,% hk, OnHotkeyPress, On
+				try {
+					Hotkey,% hkSC, OnHotkeyPress, On
+					logsStr := "Enabled hotkey with key """ hk """ (sc/vk: """ hkSC """)"
+					logsAppend .= logsAppend ? "`n" logsStr : logsStr
+				}
+				catch {
+					logsStr := "Failed to enable hotkey doe to key or sc/vk being empty: key """ hk """ (sc/vk: """ hkSC """)"
+					logsAppend .= logsAppend ? "`n" logsStr : logsStr
+				}
 			}
-		}
-		else if (A_Index > 1000) {
-			AppendToLogs(A_ThisFunc "(): Broke out of loop after 1000.")
-			Break
 		}
 		else
 			Break
 	}
+
+	if (logsAppend)
+		AppendToLogs(logsAppend)
+		
 	Set_TitleMatchMode()
+}
+
+TransformKeyStr_ToVirtualKeyStr(hk) {
+	hkStr := hk, hkLen := StrLen(hk)
+	Loop 3 {
+		char := SubStr(hkStr, A_Index, A_Index)
+		if IsIn(char, "^,+,!,#") && (hkLen > A_Index)
+			hkStr_final .= char
+	}
+	StringTrimLeft, hkStr_noMods, hkStr,% StrLen(hkStr_final)
+	hkVK := GetKeyVK(hkStr_noMods), hkVK := Format("VK{:X}", hkVK)
+	hkStr_final .= hkVK
+
+    if (hkVK = "VK0")
+        return
+
+	return hkStr_final
+}
+
+TransformKeyStr_ToScanCodeStr(hk) {
+	hkStr := hk, hkLen := StrLen(hk)
+	Loop 3 {
+		char := SubStr(hkStr, A_Index, A_Index)
+		if IsIn(char, "^,+,!,#") && (hkLen > A_Index)
+			hkStr_final .= char
+	}
+	StringTrimLeft, hkStr_noMods, hkStr,% StrLen(hkStr_final)
+	hkSC := GetKeySC(hkStr_noMods), hkSC := Format("SC{:X}", hkSC)
+	hkStr_final .= hkSC
+
+    if (hkSC = "SC0")
+        return
+
+	return hkStr_final
 }
