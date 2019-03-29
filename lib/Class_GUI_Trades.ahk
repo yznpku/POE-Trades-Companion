@@ -417,8 +417,20 @@
 		global GuiTrades, GuiTradesMinimized
 
 		winHandle := GuiTrades.Is_Minimized ? GuiTradesMinimized.Handle : GuiTrades.Handle
+		
 		if !IsWindowInScreenBoundaries(_win:="ahk_id " winHandle, _screen:="All", _adv:=False) {
+			bounds := IsWindowInScreenBoundaries(_win:="ahk_id " winHandle, _screen:="All", _adv:=True)
+			for index, nothing in bounds {
+				appendTxt := "Monitor ID: " index
+				. "`nWin_X: " bounds[index].Win_X " | Win_Y: " bounds[index].Win_Y " - Win_W: " bounds[index].Win_W " | Win_H: " bounds[index].Win_H
+				. "`nMon_L: " bounds[index].Mon_L " | Mon_T: " bounds[index].Mon_T " | Mon_R: " bounds[index].Mon_R " | Mon_B: " bounds[index].Mon_B
+				. "`nIsInBoundaries_H: " bounds[index].IsInBoundaries_H " | IsInBoundaries_V: " bounds[index].IsInBoundaries_V
+				appendTxtFinal := appendTxtFinal ? appendTxtFinal "`n" appendTxt : appendTxt
+			}
+			AppendToLogs("Reset GUI Trades position due to being deemed out of bounds."
+			. "`n" appendTxtFinal)
 			Gui_Trades.ResetPosition()
+			
 			TrayNotifications.Show("Position has been reset", "The interface has been detected to be out of bounds and has its position has been reset.")
 		}
 	}
