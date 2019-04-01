@@ -32,7 +32,9 @@
 
 UpdateHotkeys() {
 	DisableHotkeys()
+	Sleep 100
 	Declare_LocalSettings()
+	Sleep 100
 	EnableHotkeys()
 }
 
@@ -43,13 +45,17 @@ DisableHotkeys() {
 	for hk, nothing in PROGRAM.HOTKEYS {
 		if (hk != "") {
 			Hotkey, IfWinActive, ahk_group POEGameGroup
-			try Hotkey,% hk, Off
-			Hotkey, IfWinActive
-
-			logsStr := "Disabled hotkey with key """ hk """"
+			try {
+				Hotkey,% hk, Off
+				logsStr := "Disabled hotkey with key """ hk """"
+			}
+			catch
+				logsStr := "Failed to disable hotkey with key """ hk """"
+			
 			logsAppend .= logsAppend ? "`n" logsStr : logsStr
 		}
 	}
+	Hotkey, IfWinActive
 
 	if (logsAppend)
 		AppendToLogs(logsAppend)
@@ -59,7 +65,7 @@ DisableHotkeys() {
 }
 
 EnableHotkeys() {
-	global PROGRAM
+	global PROGRAM, POEGameGroup
 	programName := PROGRAM.NAME, iniFilePath := PROGRAM.INI_FILE
 	Set_TitleMatchMode("RegEx")
 
@@ -79,8 +85,13 @@ EnableHotkeys() {
 			PROGRAM.HOTKEYS[hkSC].Content := acContent
 			PROGRAM.HOTKEYS[hkSC].Type := acType
 			Hotkey, IfWinActive, ahk_group POEGameGroup
-			try Hotkey,% hkSC, OnHotkeyPress, On
-			logsStr := "Enabled hotkey with key """ hk """ (sc/vk: """ hkSC """)"
+			try {
+				Hotkey,% hkSC, OnHotkeyPress
+				Hotkey,% hkSC, OnHotkeyPress, On
+				logsStr := "Enabled hotkey with key """ hk """ (sc/vk: """ hkSC """)"
+			}
+			catch
+				logsStr := "Failed to enable hotkey with key """ hk """ (sc/vk: """ hkSC """)"
 			logsAppend .= logsAppend ? "`n" logsStr : logsStr
 		}
 	}
