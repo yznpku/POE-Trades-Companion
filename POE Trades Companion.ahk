@@ -350,6 +350,7 @@ Return
 #Include ManageFonts.ahk
 #Include Misc.ahk
 #Include OnClipboardChange.ahk
+#Include PoeDotCom.ahk
 #Include PoeTrade.ahk
 #Include PushBullet.ahk
 #Include Reload.ahk
@@ -374,6 +375,7 @@ Return
 #Include FGP.ahk
 #Include GDIP.ahk
 #Include Get_ProcessInfos.ahk
+#Include IEComObj.ahk
 #Include JSON.ahk
 #Include LV_SetSelColors.ahk
 #Include SetEditCueBanner.ahk
@@ -387,7 +389,3 @@ if (A_IsCompiled) {
 	#Include %A_ScriptDir%/FileInstall_Cmds.ahk
 	Return
 }
-
-^numpad1::
-PoeTrade_GetSource("http://poe.trade/search?seller=z0rhawk")
-return

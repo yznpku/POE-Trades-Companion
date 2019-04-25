@@ -50,11 +50,11 @@ Do_Action(actionType, actionContent="", isHotkey=False, uniqueNum="") {
 	tabContent := isHotkey ? "" : GUI_Trades.GetTabContent(activeTab)
 	tabPID := isHotkey ? "" : tabContent.PID
 
-	WRITE_SEND_ACTIONS := "SEND_MSG,SEND_TO_BUYER,SEND_TO_LAST_WHISPER"
-						. ",INVITE_BUYER,TRADE_BUYER,KICK_BUYER"
+	WRITE_SEND_ACTIONS := "SEND_MSG,SEND_TO_BUYER,SEND_TO_LAST_WHISPER,SEND_TO_LAST_WHISPER_SENT"
+						. ",INVITE_BUYER,TRADE_BUYER,KICK_BUYER,KICK_MYSELF"
 						. ",CMD_AFK,CMD_AUTOREPLY,CMD_DND,CMD_HIDEOUT,CMD_OOS,CMD_REMAINING"
 
-	WRITE_DONT_SEND_ACTIONS := "WRITE_MSG,WRITE_TO_BUYER,WRITE_TO_LAST_WHISPER,CMD_WHOIS"
+	WRITE_DONT_SEND_ACTIONS := "WRITE_MSG,WRITE_TO_BUYER,WRITE_TO_LAST_WHISPER,WRITE_TO_LAST_WHISPER_SENT,CMD_WHOIS"
 
 	WRITE_GO_BACK_ACTIONS := "WRITE_THEN_GO_BACK"
 
@@ -96,8 +96,16 @@ Do_Action(actionType, actionContent="", isHotkey=False, uniqueNum="") {
 		; ControlClick,,% "ahk_id " GuiTrades.Handle " ahk_id " GuiTrades_Controls["hBTN_Custom" actionType_NumOnly],,,, NA
 	}
 
-	else if IsIn(actionType, WRITE_SEND_ACTIONS)
-		Send_GameMessage("WRITE_SEND", actionContentWithVariables, tabPID)
+	else if IsIn(actionType, WRITE_SEND_ACTIONS) {
+		if (actionType = "KICK_MYSELF") {
+			if (!PROGRAM.SETTINGS.SETTINGS_MAIN.PoeAccounts)
+				TrayNotifications.Show("Cannot kick self from party", "No account name found.`nPlease input your account name in the settings.")
+			else
+				Send_GameMessage("WRITE_SEND", actionContentWithVariables, tabPID)
+		}
+		else
+			Send_GameMessage("WRITE_SEND", actionContentWithVariables, tabPID)
+	}
 	else if IsIn(actionType, WRITE_DONT_SEND_ACTIONS) {
 		Send_GameMessage("WRITE_DONT_SEND", actionContentWithVariables, tabPID)
 		ignoreFollowingActions := True
@@ -191,7 +199,7 @@ Reset_Clipboard() {
 }
 
 Replace_TradeVariables(string) {
-	global GuiTrades
+	global PROGRAM, GuiTrades
 	activeTab := GuiTrades.Active_Tab
 
 	tabContent := Gui_Trades.GetTabContent(activeTab)
@@ -210,6 +218,9 @@ Replace_TradeVariables(string) {
 	string := StrReplace(string, "`%sentWhisper`%", GuiTrades.Last_Whisper_Sent_Name)
 	string := StrReplace(string, "`%lastWhisperSent`%", GuiTrades.Last_Whisper_Sent_Name)
 	string := StrReplace(string, "`%lws`%", GuiTrades.Last_Whisper_Sent_Name)
+
+	firstAcc := StrSplit(PROGRAM.SETTINGS.SETTINGS_MAIN.PoeAccounts, ",").1
+	string := StrReplace(string, "`%myself`%", PoeDotCom_GetCurrentlyLoggedCharacter(firstAcc))
 
 	return string
 }

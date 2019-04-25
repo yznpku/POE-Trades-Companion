@@ -152,6 +152,7 @@ Class GUI_Settings {
 			, "INVITE_BUYER":"Invite buyer to party"
 			, "TRADE_BUYER":"Send trade to buyer"
 			, "KICK_BUYER":"Kick buyer from party"
+			, "KICK_MYSELF":"Kick yourself from party"
 
 			, "SAVE_TRADE_STATS":"Save trade stats"
 			, "COPY_ITEM_INFOS":"Copy tab item infos"
@@ -192,6 +193,7 @@ Class GUI_Settings {
 			, "INVITE_BUYER":"Invite your buyer to your party."
 			, "TRADE_BUYER":"Send a trade request to your buyer."
 			, "KICK_BUYER":"Kick your buyer out of your party."
+			, "KICK_MYSELF":"Kick yourself out of current party."
 
 			, "SAVE_TRADE_STATS":"Save the trade stats. You can see your saved stats from the Stats tray option."
 			, "COPY_ITEM_INFOS":"Copy the tab's item infos, for usage with the in-game stash search."
@@ -231,6 +233,7 @@ Class GUI_Settings {
 			, "INVITE_BUYER":"/invite %buyer%"
 			, "TRADE_BUYER":"/tradewith %buyer%"
 			, "KICK_BUYER":"/kick %buyer%"
+			, "KICK_MYSELF":"/kick %myself%"
 
 			, "CMD_AFK":"/afk "
 			, "CMD_AUTOREPLY":"/autoreply "
@@ -241,7 +244,7 @@ Class GUI_Settings {
 			, "CMD_WHOIS":"/whois"
 			, "":""}
 
-		global ACTIONS_READONLY := "INVITE_BUYER,TRADE_BUYER,KICK_BUYER"
+		global ACTIONS_READONLY := "INVITE_BUYER,TRADE_BUYER,KICK_BUYER,KICK_MYSELF"
 			. ",SAVE_TRADE_STATS,COPY_ITEM_INFOS,GO_TO_NEXT_TAB,GO_TO_PREVIOUS_TAB"
 			. ",CLOSE_TAB,TOGGLE_MIN_MAX,FORCE_MIN,FORCE_MAX,CMD_OOS,CMD_REMAINING"
 			. ",IGNORE_SIMILAR_TRADE,CLOSE_SIMILAR_TABS,SHOW_GRID"
@@ -264,6 +267,7 @@ Class GUI_Settings {
 		. "|" ACTIONS_TEXT_NAME.INVITE_BUYER
 		. "|" ACTIONS_TEXT_NAME.TRADE_BUYER
 		. "|" ACTIONS_TEXT_NAME.KICK_BUYER
+		. "|" ACTIONS_TEXT_NAME.KICK_MYSELF
 		. "| "
 		. "|------------ Special ------------|"
 		. "|" ACTIONS_TEXT_NAME.CLOSE_TAB
