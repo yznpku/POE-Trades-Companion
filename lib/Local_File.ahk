@@ -29,6 +29,7 @@ Get_LocalSettings_DefaultValues() {
 	settings.GENERAL.AddShowGridActionToInviteButtons									:= "True"
 	settings.GENERAL.HasAskedForImport													:= "True"
 	settings.GENERAL.RemoveCopyItemInfosIfGridActionExists								:= "True"
+	settings.GENERAL.ReplaceOldTradeVariables											:= "True"
 
 	settings.SETTINGS_MAIN 																:= {}
 	settings.SETTINGS_MAIN.TradingWhisperSFXPath 										:= PROGRAM.SFX_FOLDER "\WW_MainMenu_Letter.wav" 
@@ -246,7 +247,7 @@ LocalSettings_IsValueValid(iniSect, iniKey, iniValue) {
 	isFirstTimeRunning := INI.Get(PROGRAM.INI_FILE, "GENERAL", "IsFirstTimeRunning")
 
 	if (iniSect = "GENERAL") {
-		if IsIn(iniKey, "IsFirstTimeRunning,AddShowGridActionToInviteButtons,HasAskedForImport,RemoveCopyItemInfosIfGridActionExists")
+		if IsIn(iniKey, "IsFirstTimeRunning,AddShowGridActionToInviteButtons,HasAskedForImport,RemoveCopyItemInfosIfGridActionExists,ReplaceOldTradeVariables")
 			isValueValid := IsIn(iniValue, "True,False") ? True : False	
 	}
 
@@ -614,8 +615,7 @@ Update_LocalSettings() {
 						hasGrid := True, gridActionIndex:= loopActionIndex
 				}
 				if (hasCopy = True && hasGrid = True) {
-					AppendToLogs(A_ThisFunc "(): Removing COPY_ITEM_INFOS action to button with"
-					. "`n" "ID: """ cbIndex """ - Action index: """ loopActionIndex """. Action ID: """ copyActionIndex """")
+					AppendToLogs(A_ThisFunc "(): Removing COPY_ITEM_INFOS action to button with" . "`t" "ID: """ cbIndex """ - Action index: """ loopActionIndex """. Action ID: """ copyActionIndex """")
 
 					; Reduce action num by one, for every action after COPY_ITEM_INFOS
 					startReplaceIndex := copyActionIndex
@@ -624,8 +624,7 @@ Update_LocalSettings() {
 						INI.Set(iniFile, "SETTINGS_CUSTOM_BUTTON_" cbIndex, "Action_" startReplaceIndex "_Type", loopedSetting["Action_" startReplaceIndex+1 "_Type"])
 						startReplaceIndex++
 
-						AppendToLogs(A_ThisFunc "(): Reducing action index by one for button with"
-						. "`n" "ID: """ cbIndex """ - Action index: """ loopActionIndex """. Action ID: """ startReplaceIndex+1 """")
+						AppendToLogs(A_ThisFunc "(): Reducing action index by one for button with" . "`t" "ID: """ cbIndex """ - Action index: """ loopActionIndex """. Action ID: """ startReplaceIndex+1 """")
 					}
 					; Remove COPY_ITEM_INFOS action
 					INI.Remove(iniFile, "SETTINGS_CUSTOM_BUTTON_" cbIndex, "Action_" loopActionIndex "_Content")
@@ -639,6 +638,104 @@ Update_LocalSettings() {
 		}
 		AppendToLogs(A_ThisFunc "(): Finished removing COPY_ITEM_INFOS action to buttons with SHOW_GRID action.")
 		INI.Set(iniFile, "GENERAL", "RemoveCopyItemInfosIfGridActionExists", "False")
+	}
+
+	if (localSettings.GENERAL.ReplaceOldTradeVariables = "True") {
+		AppendToLogs(A_ThisFunc "(): ReplaceOldTradeVariables detected as True."
+		. "`n" "Replacing trade variables with new updated names.")
+		variablesToReplace := {"%buyerName%":"%buyer%", "%itemName%":"%item%", "%itemPrice%":"%price%", "%lastWhisper%":"%lwr%"
+		, "%lastWhisperReceived%":"%lwr%", "%sentWhisper%":"%lws%", "%lastWhisperSent%":"%lws%"}
+		; custom buttons
+		Loop {
+			cbIndex := A_Index
+			loopedBtn := localSettings["SETTINGS_CUSTOM_BUTTON_" cbIndex]
+			if IsObject(loopedBtn) {
+				Loop {
+					loopActionIndex := A_Index
+					loopedActionContent := loopedBtn["Action_" loopActionIndex "_Content"]
+					loopedActionType := loopedBtn["Action_" loopActionIndex "_Type"]
+
+					if (!loopedActionType) || (loopedActionType = "") || (loopActionIndex > 50) {
+						loopActionIndex--
+						Break
+					}
+
+					hasReplaced := False, replaceCount := 0
+					for key, value in variablesToReplace {
+						if IsContaining(loopedActionContent, key) {
+							loopedActionContent := StrReplace(loopedActionContent, key, value, replaceCount)
+						}
+						hasReplaced := hasReplaced=True?True : replaceCount?True : False
+					}
+
+					if (hasReplaced) {
+						AppendToLogs(A_ThisFunc "(): Replacing " key " variable to button with" . "`t" "ID: """ cbIndex """ - Action index: """ loopActionIndex """")
+						INI.Set(iniFile, "SETTINGS_CUSTOM_BUTTON_" cbIndex, "Action_" loopActionIndex "_Content", """" loopedActionContent """")
+					}
+				}
+			}
+			else if (cbIndex > 20)
+				Break
+			else
+				Break
+		}
+		; hotkeys basic
+		Loop 15 {
+			hkIndex := A_Index
+			loopedHK := localSettings["SETTINGS_HOTKEY_" hkIndex]
+
+			loopedActionContent := loopedHK["Content"]
+			loopedActionType := loopedHK["Type"]
+
+			hasReplaced := False, replaceCount := 0
+			for key, value in variablesToReplace {
+				if IsContaining(loopedActionContent, key)
+					loopedActionContent := StrReplace(loopedActionContent, key, value, replaceCount)
+				hasReplaced := hasReplaced=True?True : replaceCount?True : False
+			}
+			
+			if (hasReplaced) {
+				AppendToLogs(A_ThisFunc "(): Replacing " key " variable to hotkey with"	. "`t" "ID: """ cbIndex """")
+				INI.Set(iniFile, "SETTINGS_HOTKEY_" hkIndex, "Content", """" loopedActionContent """")
+			}
+		}
+		; hotkeys adv
+		Loop {
+			hkIndex := A_Index
+			loopedHK := localSettings["SETTINGS_HOTKEY_ADV_" hkIndex]
+			if IsObject(loopedHK) {
+				Loop {
+					loopActionIndex := A_Index
+					loopedActionContent := loopedHK["Action_" loopActionIndex "_Content"]
+					loopedActionType := loopedHK["Action_" loopActionIndex "_Type"]
+
+					if (!loopedActionType) || (loopedActionType = "") || (loopActionIndex > 50) {
+						loopActionIndex--
+						Break
+					}
+
+					hasReplaced := False, replaceCount := 0
+					for key, value in variablesToReplace {
+						if IsContaining(loopedActionContent, key) {
+							loopedActionContent := StrReplace(loopedActionContent, key, value, replaceCount)
+						}
+						hasReplaced := hasReplaced=True?True : replaceCount?True : False
+					}
+
+					if (hasReplaced) {
+						AppendToLogs(A_ThisFunc "(): Replacing " key " variable to hotkey adv with" . "`t" "ID: """ cbIndex """ - Action index: """ loopActionIndex """")	
+						INI.Set(iniFile, "SETTINGS_HOTKEY_ADV_" hkIndex, "Action_" loopActionIndex "_Content", """" loopedActionContent """")
+					}
+				}
+			}
+			else if (hkIndex > 200)
+				Break
+			else
+				Break
+		}
+
+		AppendToLogs(A_ThisFunc "(): Finished replacing trade variables with new updated names.")
+		INI.Set(iniFile, "GENERAL", "ReplaceOldTradeVariables", "False")
 	}
 	
 	if (localSettings.GENERAL.IsFirstTimeRunning = "True") {

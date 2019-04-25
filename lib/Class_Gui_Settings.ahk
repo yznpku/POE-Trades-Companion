@@ -533,7 +533,7 @@ Class GUI_Settings {
 
 		GuiSettings.CustomButtons_SlotPositions := {}
 		custButFirstX := leftMost2+17, custButSecondX := custButFirstX+custButWidthOneThird+5, custButThirdX := custButSecondX+custButWidthOneThird+5
-		custButFirstY := upMost2+60, custButSecondY := custButFirstY+custButHeight+5, custButThirdY := custButSecondY+custButHeight+5
+		custButFirstY := upMost2+90, custButSecondY := custButFirstY+custButHeight+5, custButThirdY := custButSecondY+custButHeight+5
 		Loop 9 {
 			slotX := IsIn(A_Index, "1,4,7") ? custButFirstX
 				:  IsIn(A_Index, "2,5,8") ? custButSecondX
@@ -560,7 +560,10 @@ Class GUI_Settings {
 		}
 
 		; * * Top text
-		Gui.Add("Settings", "Text", "xp yp+20 BackgroundTrans w525 Center", "Left click to set the button behaviour - Right click for sizing options`nDrag to change button slot (empty slot required)")
+		Gui.Add("Settings", "Text", "xp yp+20 w525 BackgroundTrans Center", "Left click to set the button behaviour - Right click for sizing options"
+		. "`nDrag to change button slot (empty slot required)")
+		Gui.Add("Settings", "Text", "xp y+7 w525 BackgroundTrans Center", "You can use variables in your messages to indicate"
+		. "`nbuyer name (%buyer%), item name (%item%), item price (%price%)")
 
 		; * * Custom buttons
 		GuiSettings.CustomButtons_IsSlotTaken := {}
