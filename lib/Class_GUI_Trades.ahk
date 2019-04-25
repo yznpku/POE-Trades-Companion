@@ -1487,12 +1487,14 @@
 		else
 			stashLeague := newTabStash
 
-		if RegExMatch(newTabItem, "O)(.*)\(Lvl:(.*) / Qual:(.*)\)", itemPat) {
+		if RegExMatch(newTabItem, "O)(.*)\(Lvl:(.*) / Qual:(.*)\)", itemPat) { ; quality gem, get only gem name
 			itemName := itemPat.1, itemLevel := itemPat.2, itemQuality := itemPat.3
 		}
-		else if RegExMatch(newTabItem, "O)(.*)\(T(\d+)\)", itemPat) {
+		else if RegExMatch(newTabItem, "O)(.*)\(T(\d+)\)", itemPat) { ; map item, get only map name
 			itemName := itemPat.1, itemLevel := itemPat.2
 		}
+		else
+			itemName := newTabItem
 
 		if RegExMatch(newTabTimeStamp, "O)(.*)/(.*)/(.*) (.*):(.*):(.*)", timeStampPat) {
 			timeYear := timeStampPat.1, timeMonth := timeStampPat.2, timeDay := timeStampPat.3
