@@ -440,7 +440,7 @@ Parse_GameLogs(strToParse) {
 		,"currencyPoeTrade":poeTradeCurrencyRegex
 		,"poeApp":poeAppRegEx
 		,"poeApp_Unpriced":poeAppUnpricedRegex
-		,"poeApp_currency":poeAppCurrencyRegex}
+		,"poeApp_Currency":poeAppCurrencyRegex}
 
 	langs := "RUS,POR,THA,GER,FRE,SPA"
 	Loop, Parse, langs,% "," ; Adding ggg trans regex to allTradingRegEx
@@ -558,7 +558,7 @@ Parse_GameLogs(strToParse) {
 				RegExMatch(whispMsg, "iSO)" tradeRegExStr, tradePat)
 
 				isPoeTrade := IsIn(tradeRegExName, "poeTrade,poeTrade_Unpriced,currencyPoeTrade")
-				isPoeApp := IsIn(tradeRegExName, "poeApp,poeApp_Unpriced")
+				isPoeApp := IsIn(tradeRegExName, "poeApp,poeApp_Currency,poeApp_Unpriced")
 				isGGGRus := IsContaining(tradeRegExName, "ggg_rus")
 				isGGGPor := IsContaining(tradeRegExName, "ggg_por")
 				isGGGTha := IsContaining(tradeRegExName, "ggg_tha")
