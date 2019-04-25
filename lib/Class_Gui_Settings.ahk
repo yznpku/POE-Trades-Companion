@@ -140,10 +140,12 @@ Class GUI_Settings {
 
 		global ACTIONS_TEXT_NAME := { "":""
 			, "SEND_MSG":"Send message"
-			, "SEND_TO_LAST_WHISPER":"Send to last whisper"
+			, "SEND_TO_LAST_WHISPER":"Send to last who whispered you"
+			, "SEND_TO_LAST_WHISPER_SENT":"Send to last you whispered"
 			, "WRITE_MSG":"Write message"
 			, "WRITE_THEN_GO_BACK":"Write and go back to {X}"
-			, "WRITE_TO_LAST_WHISPER":"Write to last whisper received"
+			, "WRITE_TO_LAST_WHISPER":"Write to last who whispered you"
+			, "WRITE_TO_LAST_WHISPER_SENT":"Write to last you whispered"
 
 			, "SEND_TO_BUYER":"Send to buyer"
 			, "WRITE_TO_BUYER":"Write to buyer"
@@ -178,10 +180,12 @@ Class GUI_Settings {
 
 		global ACTIONS_DEFAULT_CONTENT := { "":""
 			, "SEND_MSG":"Send a message into chat."
-			, "SEND_TO_LAST_WHISPER":"Send a message to your last whisper. (Uses the %lastWhisper% Trade Variable)"
+			, "SEND_TO_LAST_WHISPER":"Send a message to the last person who whispered you. (Uses the %lwr% Trade Variable)"
+			, "SEND_TO_LAST_WHISPER_SENT":"Send a message to the last person you whispered. (Uses the %lws% Trade Variable)"
 			, "WRITE_MSG":"Write a message without sending it into chat."
 			, "WRITE_THEN_GO_BACK":"Write a message and go back to {X} so you can write something in-between."
-			, "WRITE_TO_LAST_WHISPER":"Write a message to your last whisper without sending it. (Uses the %lastWhisper% Trade Variable)"
+			, "WRITE_TO_LAST_WHISPER":"Write a message to the last person who whispered you without sending it. (Uses the %lwr% Trade Variable)"
+			, "WRITE_TO_LAST_WHISPER_SENT":"Write a message to the last person you whispered without sending it. (Uses the %lws% Trade Variable)"
 
 			, "SEND_TO_BUYER":"Send a message to your buyer."
 			, "WRITE_TO_BUYER":"Write a message to your buyer without sending it."
@@ -218,8 +222,10 @@ Class GUI_Settings {
 			, "":""}
 
 		global ACTIONS_FORCED_CONTENT := { "":""
-			, "SEND_TO_LAST_WHISPER":"@%lastWhisper% "
-			, "WRITE_TO_LAST_WHISPER":"@%lastWhisper% "
+			, "SEND_TO_LAST_WHISPER":"@%lwr% "
+			, "WRITE_TO_LAST_WHISPER":"@%lwr% "
+			, "SEND_TO_LAST_WHISPER_SENT":"@%lws% "
+			, "WRITE_TO_LAST_WHISPER_SENT":"@%lws% "
 			, "SEND_TO_BUYER":"@%buyer% "
 			, "WRITE_TO_BUYER":"@%buyer% "
 			, "INVITE_BUYER":"/invite %buyer%"
@@ -246,9 +252,11 @@ Class GUI_Settings {
 		. "------------ Simple ------------"
 		. "|" ACTIONS_TEXT_NAME.SEND_MSG
 		. "|" ACTIONS_TEXT_NAME.SEND_TO_LAST_WHISPER
+		. "|" ACTIONS_TEXT_NAME.SEND_TO_LAST_WHISPER_SENT
 		. "|" ACTIONS_TEXT_NAME.WRITE_MSG
 		. "|" ACTIONS_TEXT_NAME.WRITE_THEN_GO_BACK
 		. "|" ACTIONS_TEXT_NAME.WRITE_TO_LAST_WHISPER
+		. "|" ACTIONS_TEXT_NAME.WRITE_TO_LAST_WHISPER_SENT
 		. "| "
 		. "|--------- Interactions ---------|"
 		. "|" ACTIONS_TEXT_NAME.SEND_TO_BUYER
