@@ -16,18 +16,16 @@
 	}
 
 	; HTTP Request
-	postData		:= ""
-	options 	:= ""
-	options 	.= "`n"	"TimeOut: 25"
-	reqHeaders	:= []
-	reqHeaders.push("Host: api.pathofexile.com")
-	reqHeaders.push("Connection: keep-alive")
-	reqHeaders.push("Cache-Control: max-age=0")
-	reqHeaders.push("Content-type: application/x-www-form-urlencoded; charset=UTF-8")
-	reqHeaders.push("Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8")
-	reqHeaders.push("User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.90 Safari/537.36")
-	url := "http://api.pathofexile.com/leagues?type=main"
-	leaguesJSON := cURL_Download(url, postData, reqHeaders, options, false, true, false, "", reqHeadersCurl)
+	url := "http://api.pathofexile.com/leagues?type=main"	
+	headers :=	"Host: api.pathofexile.com"
+	. "`n" 		"Connection: keep-alive"
+	. "`n" 		"Cache-Control: max-age=0"
+	. "`n" 		"Content-type: application/x-www-form-urlencoded; charset=UTF-8"
+	. "`n" 		"Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8"
+	. "`n" 		"User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.90 Safari/537.36"
+	options := "TimeOut: 25"
+	
+	WinHttpRequest(url, data:="", headers, options), leaguesJSON := data
 
 	; Parse league names
 	apiLeagues		:= ""
@@ -54,12 +52,10 @@
 
 	; In case leagues api is down, get from my own list on github
 	if !(apiTradingLeagues) {
-		postData := ""
-		options 	:= ""
-		options 	.= "`n"	"TimeOut: 25"
-		reqHeaders := []
 		url := "http://raw.githubusercontent.com/" PROGRAM.GITHUB_USER "/" PROGRAM.GITHUB_REPO "/master/data/TradingLeagues.txt"
-		rawFile := cURL_Download(url, postData, reqHeaders, options, false, true, false, "", reqHeadersCurl)
+
+		options := "TimeOut: 25"
+		WinHttpRequest(url, data:="", headers:="", options), rawFile := data
 
 		if IsContaining(rawFile, "Error,404") {
 			AppendToLogs(A_ThisFunc "(forceScriptLeagues=" forceScriptLeagues "): Failed to get leagues from GitHub file."
@@ -776,7 +772,6 @@ Parse_GameLogs(strToParse) {
 		.		" " cmdLineParams
 		.		" /IntercomHandle=" """" GuiIntercom.Handle """"
 		.		" /IntercomSlotHandle=" """" intercomSlotHandle """"
-		.		" /cURL=" """" PROGRAM.CURL_EXECUTABLE """"
 		.		" /ProgramLogsFile=" """" PROGRAM.LOGS_FILE """"
 		
 		Run,% saFile_run_cmd,% A_ScriptDir

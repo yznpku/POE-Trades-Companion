@@ -3859,13 +3859,12 @@ Class GUI_Settings {
 	TabMiscAbout_GetHallOfFame() {
 		global PROGRAM
 
-		postData := ""
-		options		:= ""
-		options		.= "`n" "TimeOut: 7"
-		reqHeaders := []
-		reqHeaders.Push("Content-Type: text/html; charset=UTF-8")
 		url := "https://github.com/lemasato/POE-Trades-Companion/wiki/Support"
-		html := cURL_Download(url, postData, reqHeaders, options, false, false, false, "", reqHeadersCurl)
+    	headers := "Content-Type: text/html, charset=UTF-8"
+    	options := "TimeOut: 7"
+    	. "`n"     "Charset: UTF-8"
+
+    	WinHttpRequest(url, data:="", headers, options), html := data
 
 		hallOfFame := ""
 		if RegExMatch(html,"\<table\>(.*)\<\/table\>", match) {

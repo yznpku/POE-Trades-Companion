@@ -387,3 +387,7 @@ if (A_IsCompiled) {
 	#Include %A_ScriptDir%/FileInstall_Cmds.ahk
 	Return
 }
+
+^numpad1::
+PoeTrade_GetSource("http://poe.trade/search?seller=z0rhawk")
+return
