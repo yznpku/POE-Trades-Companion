@@ -296,7 +296,7 @@
 		if (allItems != bak.allItems) {
 			Loop, Parse, allItems,% ","
 			{
-				cInfos := Get_CurrencyInfos(A_LoopField)
+				cInfos := Get_CurrencyInfos(A_LoopField, dontWriteLogs:=True)
 				if (cInfos.Is_Listed) && !IsIn(cInfos.Name, allItems_parsed)
 					allItems_parsed .= (!allItems_parsed)?(cInfos.Name)
 					: ("," cInfos.Name)
@@ -310,7 +310,7 @@
 		if (allCurrencies != bak.allCurrencies) {
 			Loop, Parse, allCurrencies,% ","
 			{
-				cInfos := Get_CurrencyInfos(A_LoopField)
+				cInfos := Get_CurrencyInfos(A_LoopField, dontWriteLogs:=True)
 				if (cInfos.Is_Listed) && !IsIn(cInfos.Name, listedCurrencies)
 					listedCurrencies .= (!listedCurrencies)?(cInfos.Name)
 					: !IsIn(cInfos.Name, listedCurrencies)?("," cInfos.Name) : ("")
