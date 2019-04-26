@@ -17,7 +17,7 @@
 					:(!_title && _msg)?(msgTexTSize.H+(2*yOffset))
 					:(titleTextSize.H+msgTexTSize.H-(2*yOffset))
 
-		Gui.New("SimpleWarn", "+AlwaysOnTop +ToolWindow -Caption -Border +LabelGUI_SimpleWarn_ +HwndhGuiSimpleWarn", "SimpleWarn")
+		Gui.New("SimpleWarn", "+AlwaysOnTop +ToolWindow -Caption -Border +LabelGUI_SimpleWarn_ +HwndhGuiSimpleWarn", "POE TC - Warning")
 		Gui.Margin("SimpleWarn", 0, 0)
 		
 		Gui.Color("SimpleWarn", _colorBckgrnd)

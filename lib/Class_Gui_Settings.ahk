@@ -108,7 +108,7 @@ Class GUI_Settings {
 		
 		; Initialize gui arrays
 		Gui, Settings:Destroy
-		Gui.New("Settings", "-Caption -Border +LabelGUI_Settings_ +HwndhGuiSettings", "Settings")
+		Gui.New("Settings", "-Caption -Border +LabelGUI_Settings_ +HwndhGuiSettings", "POE TC - Settings")
 		; Gui.New("Settings", "+AlwaysOnTop +ToolWindow +LabelGUI_Settings_ +HwndhGuiSettings", "Settings")
 		GuiSettings.Is_Created := False
 

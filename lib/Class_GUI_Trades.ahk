@@ -47,7 +47,7 @@
 
 		; Initialize gui arrays
 		Gui, Trades:Destroy
-		Gui.New("Trades", "+AlwaysOnTop +ToolWindow +LastFound -SysMenu -Caption -Border +LabelGUI_Trades_ +HwndhGuiTrades", "Trades")
+		Gui.New("Trades", "+AlwaysOnTop +ToolWindow +LastFound -SysMenu -Caption -Border +LabelGUI_Trades_ +HwndhGuiTrades", "POE TC - Trades")
 		guiCreated := False
 
 		; Font name and size
