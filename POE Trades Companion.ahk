@@ -366,6 +366,7 @@ Return
 #Include %A_ScriptDir%\lib\third-party\
 #Include AddToolTip.ahk
 #Include ChooseColor.ahk
+#Include class_EasyIni.ahk
 #Include Class_ImageButton.ahk
 #Include Clip.ahk
 #Include cURL.ahk
