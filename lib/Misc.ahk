@@ -1,4 +1,4 @@
-﻿Get_CurrencyInfos(currency) {
+﻿Get_CurrencyInfos(currency, dontWriteLogs=False) {
 /*		Compare the specified currency with poe.trade abridged currency names to retrieve the real currency name.
 		When the string is plural, check if the full list of currencies contains its non-plural counterpart.
  */
@@ -19,10 +19,15 @@
         StringTrimRight, currencyWithoutMap, currency,% StrLen(pat.0) ; Remove it from name
 
 	currencyToCheckList := []
-	currencyToCheckList.Push(currency), currencyToCheckList.Push(currencyWithoutS), currencyToCheckList.Push(currencyWithoutMap)
+	currencyToCheckList.Push(currency)
+	if (currencyWithoutS)
+		currencyToCheckList.Push(currencyWithoutS)
+	if (currencyWithoutMap)
+		currencyToCheckList.Push(currencyWithoutMap)
 
 	isCurrencyListed := False, currencyFullName := ""
-	for index, thisCurrency in currencyToCheckList {
+	Loop % currencyToCheckList.MaxIndex() {
+		thisCurrency := currencyToCheckList[A_Index]
 		if !IsIn(thisCurrency, PROGRAM.DATA.CURRENCY_LIST) {
 			currencyFullName := PROGRAM.DATA.POETRADE_CURRENCY_DATA[thisCurrency] ? PROGRAM.DATA.POETRADE_CURRENCY_DATA[thisCurrency]
 				:	PROGRAM.DATA.POEDOTCOM_CURRENCY_DATA[thisCurrency] ? PROGRAM.DATA.POEDOTCOM_CURRENCY_DATA[thisCurrency]
@@ -36,7 +41,7 @@
 		if (isCurrencyListed=True)
 			Break
 	}
-	if !(currencyFullName) ; Unknown currency name
+	if (!currencyFullName && dontWriteLogs=False) ; Unknown currency name 
 		AppendToLogs(A_ThisFunc "(currency=" currency "): Unknown currency name.")
 
 	Return {Name:currencyFullName, Is_Listed:isCurrencyListed}

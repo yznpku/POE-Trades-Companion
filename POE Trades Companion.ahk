@@ -293,7 +293,6 @@ Start_Script() {
 	}
 
 	if (DEBUG.settings.open_mystats_gui) {
-		GUI_MyStats.Create()
 		GUI_MyStats.Show()
 	}
 
