@@ -50,6 +50,10 @@
 		Gui.New("Trades", "+AlwaysOnTop +ToolWindow +LastFound -SysMenu -Caption -Border +LabelGUI_Trades_ +HwndhGuiTrades", "POE TC - Trades")
 		guiCreated := False
 
+		; WS_EX_NOACTIVATE, allows to keep game window activated while using the GUI
+		Gui, Trades:+LastFound
+		WinSet, ExStyle, 0x08000000
+
 		; Font name and size
 		if (PROGRAM.SETTINGS.SETTINGS_CUSTOMIZATION_SKINS.Preset = "User Defined") {
 			settings_fontName := PROGRAM.SETTINGS.SETTINGS_CUSTOMIZATION_SKINS.UseRecommendedFontSettings="1"?SKIN.Settings.FONT.Name : PROGRAM.SETTINGS.SETTINGS_CUSTOMIZATION_SKINS_UserDefined.Font
@@ -181,7 +185,7 @@
 
 		Gui.Margin("Trades", 0, 0)
 		Gui.Color("Trades", "White")
-		Gui.Font("Trades", settings_fontName, settings_fontSize, settings_fontQual)
+		Gui.Font("Trades", settings_fontName, settings_fontSize, settings_fontQual)	
 
 		; = = TAB CTRL = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 		Gui.Add("Trades", "Tab2", "x0 y0 w0 h0 hwndhTab_AllTabs Choose1")
@@ -2224,12 +2228,33 @@
 	EnableHotkeys() {
 		global GuiTrades, PROGRAM
 
-		codes := ["^SCF","^+SCF","^SC2","^SC3","^SC4","^SC5","^SC6","^SC7","^SC8","^SC9","^SCA","^WheelDown","^WheelUp"]
-		for index, code in codes {
-			if !IsObject(PROGRAM.HOTKEYS[code]) { ; Don't declare if user has custom hotkey for that. Fix HK working only IG or on TradesGUI (???)
-				Hotkey, IfWinActive,% "ahk_id " GuiTrades.Handle
-				Hotkey, %code%, GUI_Trades_SelectTab, On
-			}
+		for hk, value in PROGRAM.HOTKEYS {
+			noModsHKArr := RemoveModifiersFromHotkeyStr(hk, returnMods:=True), noModsHK := noModsHKArr.1, onlyModsHK := noModsHKArr.2
+			hkKeyName := GetKeyName(noModsKey)
+			
+			if (keyName = "Tab") && IsContaining(onlyModsHK, "^") && !IsContaining(onlyModsHK, "+,#,!")
+				hasCtrlTabHK := True
+			if (keyName = "Tab") && IsContaining(onlyModsHK, "^") && IsContaining(onlyModsHK, "+") && !IsContaining(onlyModsHK, "#,!")
+				hasCTrlShiftTabHK := True
+			if (keyName = "WheelDown") && IsContaining(onlyModsHK, "^") && !IsContaining(onlyModsHK, "+,#,!")
+				hasCtrlWheelDownHK := True
+			if (keyName = "WheelUp") && IsContaining(onlyModsHK, "^") && !IsContaining(onlyModsHK, "+,#,!")
+				hasCtrlWheelUpHK := True
+		}
+
+		GuiTrades.HOTKEYS := {}
+		if (!hasCtrlTabHK)
+			GuiTrades.HOTKEYS.Push("^SC00F")
+		if (!hasCTrlShiftTabHK)
+			GuiTrades.HOTKEYS.Push("^+SC00F")
+		if (!hasCtrlWheelDownHK)
+			GuiTrades.HOTKEYS.Push("^WheelDown")
+		if (!hasCtrlWheelUpHK)
+			GuiTrades.HOTKEYS.Push("^WheelUp")
+		
+		Loop % GuiTrades.HOTKEYS.MaxIndex() {
+			Hotkey, IfWinActive,% "ahk_group POEGameGroup"
+			Hotkey,% "~" GuiTrades.HOTKEYS[A_Index], GUI_Trades_SelectTab_Hotkey, On
 		} 
 	}
 
@@ -2239,10 +2264,9 @@
 			return
 
 		try {
-			codes := ["^SCF","^+SCF","^SC2","^SC3","^SC4","^SC5","^SC6","^SC7","^SC8","^SC9","^SCA","^WheelDown","^WheelUp"]
-			for index, code in codes { 
-				Hotkey, IfWinActive,% "ahk_id " GuiTrades.Handle
-				Hotkey, %code%, Off
+			Loop % GuiTrades.HOTKEYS.MaxIndex() { 
+				Hotkey, IfWinActive,% "ahk_group POEGameGroup"
+				Hotkey,% "~" GuiTrades.HOTKEYS[A_Index], Off
 			}
 		}
 	}
@@ -2258,15 +2282,14 @@ GUI_Trades_UpdateSlotContent(params*) {
 	GUI_Trades.UpdateSlotContent(params*)
 }
 
-GUI_Trades_SelectTab:
-	if IsIn(A_ThisHotkey, "^SC00F,^WheelDown")
-		GUI_Trades.SelectNextTab(returnToFirst:=True)
-	else if IsIn(A_ThisHotkey, "^+SC00F,^WheelUp")
-		GUI_Trades.SelectPreviousTab(returnToFirst:=True)
-	else if IsIn(A_ThisHotkey, "^SC002,^SC003,^SC004,^SC005,^SC006,^SC007,^SC008^SC009^SC00A") {
-		lastChar := SubStr(A_ThisHotkey, 0, 1)
-		tabNum := IsNum(lastChar) ? lastChar-1 : lastChar = "A" ? 9 : 1
-		GUI_Trades.SetActiveTab(tabNum, autoScroll:=True, skipWarn:=True)
+GUI_Trades_SelectTab_Hotkey:
+	MouseGetPos, , , undermouseWinHwnd
+	if (underMouseWinHwnd = GuiTrades.Handle) {
+		StringTrimLeft, thishotkey, A_ThisHotkey, 1 ; Removes ~
+		if IsIn(thishotkey, "^SC00F,^WheelDown") ; Ctrl+Tab / Ctrl+WheelDown
+			GUI_Trades.SelectNextTab(returnToFirst:=True)
+		else if IsIn(thishotkey, "^+SC00F,^WheelUp") ; Ctrl+Tab / Ctrl+WheelUp
+			GUI_Trades.SelectPreviousTab(returnToFirst:=True)
 	}
 return
 
