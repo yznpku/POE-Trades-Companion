@@ -30,6 +30,7 @@ Get_LocalSettings_DefaultValues() {
 	settings.GENERAL.HasAskedForImport													:= "True"
 	settings.GENERAL.RemoveCopyItemInfosIfGridActionExists								:= "True"
 	settings.GENERAL.ReplaceOldTradeVariables											:= "True"
+	settings.GENERAL.UpdateKickMyselfOutOfPartyHideoutHotkey							:= "True"
 
 	settings.SETTINGS_MAIN 																:= {}
 	settings.SETTINGS_MAIN.TradingWhisperSFXPath 										:= PROGRAM.SFX_FOLDER "\WW_MainMenu_Letter.wav" 
@@ -245,7 +246,7 @@ LocalSettings_IsValueValid(iniSect, iniKey, iniValue) {
 	isFirstTimeRunning := INI.Get(PROGRAM.INI_FILE, "GENERAL", "IsFirstTimeRunning")
 
 	if (iniSect = "GENERAL") {
-		if IsIn(iniKey, "IsFirstTimeRunning,AddShowGridActionToInviteButtons,HasAskedForImport,RemoveCopyItemInfosIfGridActionExists,ReplaceOldTradeVariables")
+		if IsIn(iniKey, "IsFirstTimeRunning,AddShowGridActionToInviteButtons,HasAskedForImport,RemoveCopyItemInfosIfGridActionExists,ReplaceOldTradeVariables,UpdateKickMyselfOutOfPartyHideoutHotkey")
 			isValueValid := IsIn(iniValue, "True,False") ? True : False	
 	}
 
@@ -486,7 +487,7 @@ Set_LocalSettings() {
 
 			if (!isValueValid) {
 				if (IsFirstTimeRunning != "True")
-				&& !IsIn(iniKey, "IsFirstTimeRunning,AddShowGridActionToInviteButtons,HasAskedForImport,RemoveCopyItemInfosIfGridActionExists,ReplaceOldTradeVariables,LastUpdateCheck")
+				&& !IsIn(iniKey, "IsFirstTimeRunning,AddShowGridActionToInviteButtons,HasAskedForImport,RemoveCopyItemInfosIfGridActionExists,ReplaceOldTradeVariables,UpdateKickMyselfOutOfPartyHideoutHotkey,LastUpdateCheck")
 					warnMsg .= "Section: " iniSect "`nKey: " iniKey "`nValue: " iniValue "`nDefault value: " defValue "`n`n"
 				Restore_LocalSettings(iniSect, iniKey)
 			}
@@ -735,6 +736,19 @@ Update_LocalSettings() {
 
 		AppendToLogs(A_ThisFunc "(): Finished replacing trade variables with new updated names.")
 		INI.Set(iniFile, "GENERAL", "ReplaceOldTradeVariables", "False")
+	}
+
+	if (localSettings.GENERAL.UpdateKickMyselfOutOfPartyHideoutHotkey = "True") {
+		AppendToLogs(A_ThisFunc "(): UpdateKickMyselfOutOfPartyHideoutHotkey detected as True."
+		. "`n" "Replacing adv hotkey with new action.")
+
+		if (localSettings.SETTINGS_HOTKEY_ADV_1.Name = "Kick myself out of party + hideout") {
+			INI.Remove(iniFile, "SETTINGS_HOTKEY_ADV_1")
+			Restore_LocalSettings("SETTINGS_HOTKEY_ADV_1")
+		}
+
+		AppendToLogs(A_ThisFunc "(): Finished replacing adv hotkey with new action.")
+		INI.Set(iniFile, "GENERAL", "UpdateKickMyselfOutOfPartyHideoutHotkey", "False")
 	}
 	
 	if (localSettings.GENERAL.IsFirstTimeRunning = "True") {
