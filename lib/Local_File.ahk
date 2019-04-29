@@ -215,13 +215,11 @@ Get_LocalSettings_DefaultValues() {
 
 	settings.SETTINGS_HOTKEY_ADV_1														:= {}
 	settings.SETTINGS_HOTKEY_ADV_1.Name 												:= "Kick myself out of party + hideout"
-	settings.SETTINGS_HOTKEY_ADV_1.Hotkey 												:= ""
-	settings.SETTINGS_HOTKEY_ADV_1.Action_1_Type 										:= "SENDINPUT"
-	settings.SETTINGS_HOTKEY_ADV_1.Action_1_Content 									:= """{Enter}/kick MyMainChar{Enter}"""
-	settings.SETTINGS_HOTKEY_ADV_1.Action_2_Type 										:= "SENDINPUT"
-	settings.SETTINGS_HOTKEY_ADV_1.Action_2_Content 									:= """{Enter}/kick MySecondChar{Enter}"""
-	settings.SETTINGS_HOTKEY_ADV_1.Action_3_Type 										:= "CMD_HIDEOUT"
-	settings.SETTINGS_HOTKEY_ADV_1.Action_3_Content 									:= """/hideout"""
+	settings.SETTINGS_HOTKEY_ADV_1.Hotkey 												:= "+F2"
+	settings.SETTINGS_HOTKEY_ADV_1.Action_1_Type 										:= "KICK_MYSELF"
+	settings.SETTINGS_HOTKEY_ADV_1.Action_1_Content 									:= """/kick %myself%"""
+	settings.SETTINGS_HOTKEY_ADV_1.Action_2_Type 										:= "CMD_HIDEOUT"
+	settings.SETTINGS_HOTKEY_ADV_1.Action_2_Content 									:= """/hideout"""
 
 	hw := A_DetectHiddenWindows
 	DetectHiddenWindows, On
