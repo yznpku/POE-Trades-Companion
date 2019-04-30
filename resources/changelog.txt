@@ -1,4 +1,31 @@
 = = = = = = = = = = = = =	
+1.14.3 (30 Apr 2019)
+	Features:
+	- Added two new actions to send, or write, a message to the last person you whispered.
+	This was previously only available through the %lws% variable.
+	- Added a new action to kick your currently logged character from the party.
+	- Added a new variable referring to your current character name: %myself%.
+	
+	Changes:
+	- Vastly improved the loading of the Stats interface.
+	- The default league filter for the Stats interface will now be set to the current challenge league, instead of All.
+	- Added a button to apply filters in the Stats interface, instead of applying the filter on change.
+	- Double clicking on the tray icon will open the Settings interface.
+	- Clicking on the Trades interface will no longer activate its window, effectively working more as an overlay.
+	This allows to let the game window active when clicking on the Trades interface.
+	- Added a tip about variables on top of the Buttons tab from the Settings interface.
+	- Any button or hotkey that was using old variable names will automatically be replaced to use the new variable names.
+	(Example: %buyerName%, %itemName% and %itemPrice% will respectively be replaced to %buyer%, %item% and %price%).
+	- The "Kick myself out of party + hideout" hotkey has been modified to use the new action to kick yourself from the party. Shift+F2 has also been assigned as the hotkey.
+	Note that this change will only be automated if you didn't delete or rename this hotkey. Otherwise, you'll have to create a new hotkey manually.
+
+	Fixes:
+	- Update checking wasn't working for some users.
+	- The interface position would be reset on start due to being deemed out of bounds for some users.
+	- Some hotkeys could not properly be declared after closing the Settings interface.
+	- Price checking wouldn't work for poeapp.com currency whispers.
+	- The close button for the Stats interface was one pixel off.
+
 1.14.2 (20 March 2019)
 	Fixes:
 	- PoeApp currency whispers would no longer be recognized due to a change on their part.
