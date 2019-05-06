@@ -472,26 +472,26 @@ Class GUI_Settings {
 
 		; * * Skin
 		Gui.Add("Settings", "DropDownList", "xp+10 y+5 wp-20 hwndhDDL_SkinPreset")
-		Gui.Add("Settings", "Text", "x" leftMost2+15 " y+20 w250 Center","Skin base:")
+		Gui.Add("Settings", "Text", "x" leftMost2+15 " y+20 w250 Center hwndhTEXT_SkinBase","Skin base:")
 		Gui.Add("Settings", "ListBox", "x" leftMost2+15 " y+5 wp R5 hwndhLB_SkinBase")
-		Gui.Add("Settings", "Text", "x+10 yp","Scaling size (`%):")
+		Gui.Add("Settings", "Text", "x+10 yp hwndhTEXT_ScalingSize","Scaling size (`%):")
 		Gui.Add("Settings", "Edit", "x+5 yp-3 w60 R1 ReadOnly hwndhEDIT_SkinScalingPercentage")
 		Gui.Add("Settings", "UpDown", "Range5-200 hwndhUPDOWN_SkinScalingPercentage")
 
 		; * * Font
-		Gui.Add("Settings", "Text", "x" leftMost2+15 " y+70 w250 Center BackgroundTrans","Text font:")
+		Gui.Add("Settings", "Text", "x" leftMost2+15 " y+70 w250 Center BackgroundTrans hwndhTEXT_TextFont","Text font:")
 		Gui.Add("Settings", "ListBox", "x" leftMost2+15 " y+5 w250 R5 hwndhLB_SkinFont")
 		Gui.Add("Settings", "Checkbox", "x+10 yp hwndhCB_UseRecommendedFontSettings","Use recommended font settings?")
 		Gui.Add("Settings", "Text", "xp y+10 hwndhTEXT_FontSize","Font size:")
 		Gui.Add("Settings", "Edit", "xp+75 yp-3 w60 R1 ReadOnly hwndhEDIT_SkinFontSize")
 		Gui.Add("Settings", "UpDown", "Range1-24 hwndhUPDOWN_SkinFontSize")
 		fontSizeTextPos := Get_ControlCoords("Settings", GuiSettings_Controls.hTEXT_FontSize)
-		Gui.Add("Settings", "Text", "x" fontSizeTextPos.X " y+10","Font quality:")
+		Gui.Add("Settings", "Text", "x" fontSizeTextPos.X " y+10 hwndhTEXT_FontQuality","Font quality:")
 		Gui.Add("Settings", "Edit", "xp+75 yp-3 w60 R1 ReadOnly hwndhEDIT_SkinFontQuality")
 		Gui.Add("Settings", "UpDown", "Range0-5 hwndhUPDOWN_SkinFontQuality")
 
 		; * * Text colors
-		Gui.Add("Settings", "Text", "x" leftMost2+15 " y+25","Text color:")
+		Gui.Add("Settings", "Text", "x" leftMost2+15 " y+25 hwndhTEXT_TextColor","Text color:")
 		Gui.Add("Settings", "DropDownList", "x+5 yp-3 w140 hwndhDDL_ChangeableFontColorTypes")
 		ddlHeight := Get_ControlCoords("Settings", GuiSettings_Controls.hDDL_ChangeableFontColorTypes).H
 		Gui.Add("Settings", "Progress", "x+5 yp w" ddlHeight " h" ddlHeight " BackgroundRed hwndhPROGRESS_ColorSquarePreview")
@@ -549,7 +549,7 @@ Class GUI_Settings {
 		}
 
 		; * * Top text
-		Gui.Add("Settings", "Text", "xp yp+20 BackgroundTrans w525 Center", "Left click to set the button behaviour - Right click for sizing options`nDrag to change button slot (empty slot required)")
+		Gui.Add("Settings", "Text", "xp yp+20 BackgroundTrans w525 Center hwndhTEXT_ButtonsTabTopTip", "Left click to set the button behaviour - Right click for sizing options`nDrag to change button slot (empty slot required)")
 
 		; * * Custom buttons
 		GuiSettings.CustomButtons_IsSlotTaken := {}
@@ -732,16 +732,16 @@ Class GUI_Settings {
 		yourVerCoords := Get_ControlCoords("Settings", GuiSettings_Controls.hTEXT_YourVersion)
 		programVerCoords := Get_ControlCoords("Settings", GuiSettings_Controls.hTEXT_ProgramVer)
 
-		Gui.Add("Settings", "Text", "x" yourVerCoords.X " y+10", "Latest Stable:")
+		Gui.Add("Settings", "Text", "x" yourVerCoords.X " y+10 hwndhTEXT_LatestStable", "Latest Stable:")
 		Gui.Add("Settings", "Text", "x" programVerCoords.X " yp BackgroundTrans hwndhTEXT_LatestStableVer")
-		Gui.Add("Settings", "Text", "x" yourVerCoords.X " y+5", "Latest BETA:")
+		Gui.Add("Settings", "Text", "x" yourVerCoords.X " y+5 hwndhTEXT_LatestBETA", "Latest BETA:")
 		Gui.Add("Settings", "Text", "x" programVerCoords.X " yp BackgroundTrans hwndhTEXT_LatestBetaVer")
 		Gui.Add("Settings", "Button", "x" yourVerCoords.X " y+10 R1 hwndhBTN_CheckForUpdates", "Check for updates manually")
 		Gui.Add("Settings", "Text", "x+5 yp+7 hwndhTEXT_MinsAgo", "(x mins ago)")
 
 		; Gui.Add("Settings", "Checkbox", "x400 y" upMost2+20 " hwndhCB_AllowToUpdateAutomaticallyOnStart", "Allow to update automatically on start?")
 		; Gui.Add("Settings", "Checkbox", "xp y+5 hwndhCB_AllowPeriodicUpdateCheck", "Allow automatic update check every 2hours?")
-		Gui.Add("Settings", "Text", "x380 y" upMost2+20 " ", "Check for updates: ")
+		Gui.Add("Settings", "Text", "x380 y" upMost2+20 " hwndhTEXT_CheckForUpdatesWhen", "Check for updates: ")
 		Gui.Add("Settings", "DropDownList", "x+5 yp-2 w155 hwndhDDL_CheckForUpdate", "Only on application start|On start + every 5 hours|On start + every day")
 		Gui.Add("Settings", "Checkbox", "xp y+10 hwndhCB_UseBeta", "Use the BETA branch?")		
 		Gui.Add("Settings", "Checkbox", "xp y+5 hwndhCB_DownloadUpdatesAutomatically", "Download updates`nautomatically?")
@@ -4229,22 +4229,38 @@ Class GUI_Settings {
 		GUI_Settings.DestroyBtnImgList()
 
 		trans := GUI_Settings.GetTranslation(_lang, _ctrlName)
-		
-		if (_ctrlName) {
+
+		noResizeCtrls := "hBTN_CloseGUI"
+		. ",hBTN_SectionSettings,hBTN_TabSettingsMain,hBTN_SectionCustomization,hBTN_TabCustomizationSkins,hBTN_TabCustomizationButtons,hBTN_SectionHotkeys,hBTN_TabHotkeysBasic,hBTN_TabHotkeysAdvanced,hBTN_SectionMisc,hBTN_TabMiscUpdating,hBTN_TabMiscAbout,hBTN_ResetToDefaultSettings"
+		. ",hBTN_SaveChangesToAction,hBTN_AddAsNewAction"
+		. ",hBTN_ChangeHKType,hBTN_HotkeyAdvSaveChangesToAction,hBTN_HotkeyAdvAddAsNewAction"
+		. ",hDDL_CheckForUpdate"
+
+		; noSmallerCtrls := "hBTN_BrowseTradingWhisperSFX,hBTN_BrowseRegularWhisperSFX,hBTN_BrowseBuyerJoinedAreaSFX"
+		; . ",hBTN_RecreateTradesGUI"
+		; . ",hBTN_CheckForUpdates"
+
+		if (_ctrlName && trans) {
 			GuiControl, Settings:,% GuiSettings_Controls[_ctrlName],% trans
 		}
 		else {
 			for ctrlName, ctrlTranslation in trans {
 				ctrlHandle := GuiSettings_Controls[ctrlName]
 
-				if !IsIn(ctrlName, "hBTN_CloseGUI,hBTN_ResetToDefaultSettings")
-				&& !IsContaining(ctrlName, "hBTN_Tab,hBTN_Section") { ; Readjust size to fit translation
-					ctrlType := IsContaining(ctrlName, "hCB_") ? "CheckBox" : IsContaining(ctrlName, "hTEXT_") ? "Text" : IsContaining(ctrlName, "hBTN_") ? "Button" : "Text"
+				if !IsIn(ctrlName, noResizeCtrls) { ; Readjust size to fit translation
+					ctrlType := IsContaining(ctrlName, "hCB_") ? "CheckBox"
+						: IsContaining(ctrlName, "hTEXT_") ? "Text"
+						: IsContaining(ctrlName, "hBTN_") ? "Button"
+						: IsContaining(ctrlName, "hDDL_") ? "DropDownList"
+						: IsContaining(ctrlName, "hEDIT_") ? "Edit"
+						 : "Text"
+
 					txtSize := Get_TextCtrlSize(txt:=ctrlTranslation, fontName:=GuiSettings.Font, fontSize:=GuiSettings.Font_Size, maxWidth:="", params:="", ctrlType)
 					GuiControl, Settings:Move,% ctrlHandle,% "w" txtSize.W
 				}
 
-				GuiControl, Settings:,% ctrlHandle,% ctrlTranslation ; Set translation
+				if (ctrlHandle && ctrlTranslation)
+					GuiControl, Settings:,% ctrlHandle,% ctrlTranslation ; Set translation
 
 				if IsContaining(ctrlName, "hBTN_Section") ; Imgbtn section
 					ImageButton.Create(ctrlHandle, GuiSettings.Style_Section, PROGRAM.FONTS["Segoe UI"], 8)
@@ -4253,6 +4269,7 @@ Class GUI_Settings {
 				else if (ctrlName = "hBTN_ResetToDefaultSettings") ; Imgbtn reset settings
 					ImageButton.Create(ctrlHandle, GuiSettings.Style_ResetBtn, PROGRAM.FONTS["Segoe UI"], 8)	
 			}
+			
 			GuiControl, Settings:,% GuiSettings_Controls["hBTN_CloseGUI"],% "X"
 			ImageButton.Create(GuiSettings_Controls["hBTN_CloseGUI"], GuiSettings.Style_RedBtn, PROGRAM.FONTS["Segoe UI"], 8)						
 		}

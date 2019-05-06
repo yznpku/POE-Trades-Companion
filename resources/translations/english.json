@@ -22,6 +22,7 @@
     },
 
     "GUI_Settings": {
+        "_____ TABS AND SECTIONS _____":"",
         "hBTN_SectionSettings": "Settings",
         "hBTN_TabSettingsMain": "Main",
         "hBTN_SectionCustomization": "Customization",
@@ -35,6 +36,7 @@
         "hBTN_TabMiscAbout": "About",
         "hBTN_ResetToDefaultSettings": "RESET SETTINGS\nTO DEFAULT",
 
+        "_____ TAB SETTINGS MAIN _____":"",
         "hCB_HideInterfaceWhenOutOfGame": "Hide interface when tabbed out of game?",
         "hCB_MinimizeInterfaceToBottomLeft": "Minimize interface on bottom left corner?",
         "hCB_CopyItemInfosOnTabChange": "Copy item infos on tab change?",
@@ -42,7 +44,6 @@
         "hCB_AutoMinimizeOnAllTabsClosed": "Auto minimize once all tabs are closed?",
         "hCB_AutoMaximizeOnFirstNewTab": "Auto maximize on first new tab?",
         "hCB_SendTradingWhisperUponCopyWhenHoldingCTRL": "Hold CTRL when copying trading\nwhisper to instantly send in game?",
-
         "hTEXT_PlaySoundNotificationWhen": "Play a sound notification for...",
         "hCB_TradingWhisperSFXToggle": "Trading whispers received?",
         "hBTN_BrowseTradingWhisperSFX": "Browse file",
@@ -57,20 +58,49 @@
         "hCB_PushBulletOnTradingWhisper": "Trading whispers?",
         "hCB_PushBulletOnWhisperMessage": "Regular whispers?",
         "hCB_PushBulletOnlyWhenAfk": "Get PB Notifications only when /afk?",
-
         "hTEXT_POEAccountsList": "POE Accounts list (Case sensitive, separate with comma):",
-
         "hCB_AllowClicksToPassThroughWhileInactive": "Make the interface click-through\nwhen all tabs are closed?",
         "hTEXT_NoTabsTransparency": "Interface transparency\nNo tabs remaining",
         "hTEXT_TabsOpenTransparency": "Interface transparency\nTabs still open",
-
         "hCB_ItemGridHideNormalTab": "Hide normal tab location?",
         "hCB_ItemGridHideQuadTab": "Hide quad tab location?",
-        "hCB_ItemGridHideNormalTabAndQuadTabForMaps": "Hide normal and quad locations, for maps?"
+        "hCB_ItemGridHideNormalTabAndQuadTabForMaps": "Hide normal and quad locations, for maps?",
         
+        "_____ TAB CUSTOMIZATION SKINS _____" : "",
+        "hTEXT_SkinBase":"Skin base:",
+        "hTEXT_ScalingSize":"Scaling size (%)",
+        "hTEXT_TextFont":"Text font:",
+        "hCB_UseRecommendedFontSettings":"Use recommended font settings?",
+        "hTEXT_FontQuality":"Font quality:",
+        "hTEXT_TextColor":"Text color:",
+        "hBTN_ShowColorPicker":"Show Color Picker",
+        "hBTN_RecreateTradesGUI":"Click here to apply your changes now",
 
+        "_____ TAB CUSTOMIZATION BUTTONS _____" : "",
+        "hTEXT_ButtonsTabTopTip":"Left click to set the button behaviour - Right click for sizing options\nDrag to change button slot (empty slot required)\n\nYou can use variables in your messages to indicate\nbuyer name (%buyer%), item name (%item%), item price (%price%)",
+        "hBTN_SaveChangesToAction":"Save changes to action...",
+        "hBTN_AddAsNewAction":"Add as a new action",
+        "hLV_ButtonsActions":"#|Type|Content",
 
-        
+        "_____ TAB HOTKEYS ADVANCED _____" : "",
+        "hBTN_ChangeHKType":"HK Type Switch",
+        "hBTN_HotkeyAdvSaveChangesToAction":"Save changes to action...",
+        "hBTN_HotkeyAdvAddAsNewAction":"Add as a new action",
+        "hLV_HotkeyAdvActionsList":"#|Type|Content",
+
+        "_____ TAB MISC UPDATING _____" : "",
+        "hTEXT_YourVersion":"Your version:",
+        "hTEXT_LatestStable":"Latest stable:",
+        "hTEXT_LatestBETA":"Latest BETA:",
+        "hBTN_CheckForUpdates":"Check for updates manually",
+        "hTEXT_CheckForUpdatesWhen":"Check for updates...",
+        "hDDL_CheckForUpdate":"Only on application start|On start + every 5 hours|On start + every day",
+        "hCB_UseBeta":"Use the BETA branch?",
+        "hCB_DownloadUpdatesAutomatically":"Download updates\nautomatically?",
+
+        "_____ TAB MISC ABOUT _____" : "",
+        "hTEXT_About":"POE Trades Companion is a tool meant to enhance your trading experience.\n\nUpon receiving a trading whisper (poe.trade / poeapp.com),\nthe most important informations from the trade will be shown in a convenient interface.\n\nUp to nine custom buttons to interact with your buyer, five special smaller buttons to do the strict minimum, and many hotkeys are available to make trading more enjoyable.",
+        "":""
     },
 
     "ACTIONS": {
