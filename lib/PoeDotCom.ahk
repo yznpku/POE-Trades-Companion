@@ -59,3 +59,29 @@ PoeDotCom_GetCurrencyData() {
 
     return currencies
 }
+
+PoeDotCom_GetCurrentlyLoggedCharacter(accName) {
+    if !(accName)
+        return
+
+    url := "https://www.pathofexile.com/character-window/get-characters?accountName=" accName
+    headers := "Content-Type: application/json"
+    . "`n"     "Cache-Control: no-store, no-cache, must-revalidate"
+    options := "TimeOut: 7"
+    . "`n"     "Charset: UTF-8"
+
+    WinHttpRequest(url, data:="", headers, options), charsJSON := data
+    charsJSON := JSON.Load(charsJSON)
+
+    for index, nothing in charsJSON  {
+        if (charsJSON[index].lastActive = True) {
+            lastChar := charsJSON[index].name  
+            Break
+        }
+    }
+
+    if !(lastChar)
+        TrayNotifications.Show("Couldn't access characters for account", "Unable to retrieve character list for account """ accName """. Please make sure that your character list is set on public on your pathofexile.com profile.")
+    
+    return lastChar        
+}

@@ -1,4 +1,4 @@
-﻿Get_CurrencyInfos(currency) {
+﻿Get_CurrencyInfos(currency, dontWriteLogs=False) {
 /*		Compare the specified currency with poe.trade abridged currency names to retrieve the real currency name.
 		When the string is plural, check if the full list of currencies contains its non-plural counterpart.
  */
@@ -19,10 +19,15 @@
         StringTrimRight, currencyWithoutMap, currency,% StrLen(pat.0) ; Remove it from name
 
 	currencyToCheckList := []
-	currencyToCheckList.Push(currency), currencyToCheckList.Push(currencyWithoutS), currencyToCheckList.Push(currencyWithoutMap)
+	currencyToCheckList.Push(currency)
+	if (currencyWithoutS)
+		currencyToCheckList.Push(currencyWithoutS)
+	if (currencyWithoutMap)
+		currencyToCheckList.Push(currencyWithoutMap)
 
 	isCurrencyListed := False, currencyFullName := ""
-	for index, thisCurrency in currencyToCheckList {
+	Loop % currencyToCheckList.MaxIndex() {
+		thisCurrency := currencyToCheckList[A_Index]
 		if !IsIn(thisCurrency, PROGRAM.DATA.CURRENCY_LIST) {
 			currencyFullName := PROGRAM.DATA.POETRADE_CURRENCY_DATA[thisCurrency] ? PROGRAM.DATA.POETRADE_CURRENCY_DATA[thisCurrency]
 				:	PROGRAM.DATA.POEDOTCOM_CURRENCY_DATA[thisCurrency] ? PROGRAM.DATA.POEDOTCOM_CURRENCY_DATA[thisCurrency]
@@ -36,7 +41,7 @@
 		if (isCurrencyListed=True)
 			Break
 	}
-	if !(currencyFullName) ; Unknown currency name
+	if (!currencyFullName && dontWriteLogs=False) ; Unknown currency name 
 		AppendToLogs(A_ThisFunc "(currency=" currency "): Unknown currency name.")
 
 	Return {Name:currencyFullName, Is_Listed:isCurrencyListed}
@@ -50,11 +55,11 @@ Do_Action(actionType, actionContent="", isHotkey=False, uniqueNum="") {
 	tabContent := isHotkey ? "" : GUI_Trades.GetTabContent(activeTab)
 	tabPID := isHotkey ? "" : tabContent.PID
 
-	WRITE_SEND_ACTIONS := "SEND_MSG,SEND_TO_BUYER,SEND_TO_LAST_WHISPER"
-						. ",INVITE_BUYER,TRADE_BUYER,KICK_BUYER"
+	WRITE_SEND_ACTIONS := "SEND_MSG,SEND_TO_BUYER,SEND_TO_LAST_WHISPER,SEND_TO_LAST_WHISPER_SENT"
+						. ",INVITE_BUYER,TRADE_BUYER,KICK_BUYER,KICK_MYSELF"
 						. ",CMD_AFK,CMD_AUTOREPLY,CMD_DND,CMD_HIDEOUT,CMD_OOS,CMD_REMAINING"
 
-	WRITE_DONT_SEND_ACTIONS := "WRITE_MSG,WRITE_TO_BUYER,WRITE_TO_LAST_WHISPER,CMD_WHOIS"
+	WRITE_DONT_SEND_ACTIONS := "WRITE_MSG,WRITE_TO_BUYER,WRITE_TO_LAST_WHISPER,WRITE_TO_LAST_WHISPER_SENT,CMD_WHOIS"
 
 	WRITE_GO_BACK_ACTIONS := "WRITE_THEN_GO_BACK"
 
@@ -96,8 +101,16 @@ Do_Action(actionType, actionContent="", isHotkey=False, uniqueNum="") {
 		; ControlClick,,% "ahk_id " GuiTrades.Handle " ahk_id " GuiTrades_Controls["hBTN_Custom" actionType_NumOnly],,,, NA
 	}
 
-	else if IsIn(actionType, WRITE_SEND_ACTIONS)
-		Send_GameMessage("WRITE_SEND", actionContentWithVariables, tabPID)
+	else if IsIn(actionType, WRITE_SEND_ACTIONS) {
+		if (actionType = "KICK_MYSELF") {
+			if (!PROGRAM.SETTINGS.SETTINGS_MAIN.PoeAccounts)
+				TrayNotifications.Show("Cannot kick self from party", "No account name found.`nPlease input your account name in the settings.")
+			else
+				Send_GameMessage("WRITE_SEND", actionContentWithVariables, tabPID)
+		}
+		else
+			Send_GameMessage("WRITE_SEND", actionContentWithVariables, tabPID)
+	}
 	else if IsIn(actionType, WRITE_DONT_SEND_ACTIONS) {
 		Send_GameMessage("WRITE_DONT_SEND", actionContentWithVariables, tabPID)
 		ignoreFollowingActions := True
@@ -191,7 +204,7 @@ Reset_Clipboard() {
 }
 
 Replace_TradeVariables(string) {
-	global GuiTrades
+	global PROGRAM, GuiTrades
 	activeTab := GuiTrades.Active_Tab
 
 	tabContent := Gui_Trades.GetTabContent(activeTab)
@@ -210,6 +223,9 @@ Replace_TradeVariables(string) {
 	string := StrReplace(string, "`%sentWhisper`%", GuiTrades.Last_Whisper_Sent_Name)
 	string := StrReplace(string, "`%lastWhisperSent`%", GuiTrades.Last_Whisper_Sent_Name)
 	string := StrReplace(string, "`%lws`%", GuiTrades.Last_Whisper_Sent_Name)
+
+	firstAcc := StrSplit(PROGRAM.SETTINGS.SETTINGS_MAIN.PoeAccounts, ",").1
+	string := StrReplace(string, "`%myself`%", PoeDotCom_GetCurrentlyLoggedCharacter(firstAcc))
 
 	return string
 }

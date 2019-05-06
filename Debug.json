@@ -1,11 +1,13 @@
 {
+	"enable" : false,
+	
 	"settings" : {
-		"skip_admin" : true,
+		"skip_admin" : false,
 		
 		"use_chat_logs" : false,
 		"simulate_new_trade_while_tab_close" : false,
 		
-		"skip_update_check" : true,
+		"skip_update_check" : false,
 		"force_update_check" : false,
 		
 		"skip_assets_extracting" : false,

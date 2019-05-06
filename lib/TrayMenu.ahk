@@ -25,6 +25,7 @@
 	Menu,Tray,Add,Reload, Tray_Reload
 	Menu,Tray,Add,Close, Tray_Exit
 	Menu,Tray,Icon
+	Menu,Tray,Default,Settings ; Double click
 
 	; Pos lock check
 	if (PROGRAM.SETTINGS.SETTINGS_MAIN.TradesGUI_Locked = "True")
@@ -70,6 +71,8 @@ Tray_CreateSettings() {
 	GUI_Settings.Show()
 }
 Tray_OpenSettings() {
+	global CANCEL_TRAY_MENU
+	CANCEL_TRAY_MENU := True
 	GUI_Settings.Show()
 }
 Tray_OpenStats() {

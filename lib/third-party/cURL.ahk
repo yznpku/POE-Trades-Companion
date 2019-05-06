@@ -271,13 +271,15 @@ cURL_ParseReturnedHeaders(output) {
 
 ; only works if no post data required/not downloading for example .zip files
 cURL_DownloadFallback(url, ByRef html, e, critical, errorMsg, PreventErrorMsg = false) {
+	global PROGRAM
+
 	ErrorLevel := 0
 	fileName := RandomStr() . ".txt"
 	
-	UrlDownloadToFile, %url%, %A_ScriptDir%\temp\%fileName%
+	UrlDownloadToFile, %url%,% PROGRAM.TEMP_FOLDER "\" fileName
 	If (!ErrorLevel) {
-		FileRead, html, %A_ScriptDir%\temp\%fileName%
-		FileDelete, %A_ScriptDir%\temp\%fileName%
+		FileRead, html,% PROGRAM.TEMP_FOLDER "\" fileName
+		FileDelete,% PROGRAM.TEMP_FOLDER "\" fileName
 	} Else If (!PreventErrorMsg) {
 		SplashTextOff
 		msg 		:= "Error while downloading <" url "> using UrlDownloadToFile (cURL_DownloadFallback)."

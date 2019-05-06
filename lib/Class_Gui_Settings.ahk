@@ -105,7 +105,7 @@ Class GUI_Settings {
 		
 		; Initialize gui arrays
 		Gui, Settings:Destroy
-		Gui.New("Settings", "-Caption -Border +LabelGUI_Settings_ +HwndhGuiSettings", "Settings")
+		Gui.New("Settings", "-Caption -Border +LabelGUI_Settings_ +HwndhGuiSettings", "POE TC - Settings")
 		; Gui.New("Settings", "+AlwaysOnTop +ToolWindow +LabelGUI_Settings_ +HwndhGuiSettings", "Settings")
 		GuiSettings.Is_Created := False
 
@@ -137,16 +137,19 @@ Class GUI_Settings {
 
 		global ACTIONS_TEXT_NAME := { "":""
 			, "SEND_MSG":"Send message"
-			, "SEND_TO_LAST_WHISPER":"Send to last whisper"
+			, "SEND_TO_LAST_WHISPER":"Send to last who whispered you"
+			, "SEND_TO_LAST_WHISPER_SENT":"Send to last you whispered"
 			, "WRITE_MSG":"Write message"
 			, "WRITE_THEN_GO_BACK":"Write and go back to {X}"
-			, "WRITE_TO_LAST_WHISPER":"Write to last whisper received"
+			, "WRITE_TO_LAST_WHISPER":"Write to last who whispered you"
+			, "WRITE_TO_LAST_WHISPER_SENT":"Write to last you whispered"
 
 			, "SEND_TO_BUYER":"Send to buyer"
 			, "WRITE_TO_BUYER":"Write to buyer"
 			, "INVITE_BUYER":"Invite buyer to party"
 			, "TRADE_BUYER":"Send trade to buyer"
 			, "KICK_BUYER":"Kick buyer from party"
+			, "KICK_MYSELF":"Kick yourself from party"
 
 			, "SAVE_TRADE_STATS":"Save trade stats"
 			, "COPY_ITEM_INFOS":"Copy tab item infos"
@@ -175,16 +178,19 @@ Class GUI_Settings {
 
 		global ACTIONS_DEFAULT_CONTENT := { "":""
 			, "SEND_MSG":"Send a message into chat."
-			, "SEND_TO_LAST_WHISPER":"Send a message to your last whisper. (Uses the %lastWhisper% Trade Variable)"
+			, "SEND_TO_LAST_WHISPER":"Send a message to the last person who whispered you. (Uses the %lwr% Trade Variable)"
+			, "SEND_TO_LAST_WHISPER_SENT":"Send a message to the last person you whispered. (Uses the %lws% Trade Variable)"
 			, "WRITE_MSG":"Write a message without sending it into chat."
 			, "WRITE_THEN_GO_BACK":"Write a message and go back to {X} so you can write something in-between."
-			, "WRITE_TO_LAST_WHISPER":"Write a message to your last whisper without sending it. (Uses the %lastWhisper% Trade Variable)"
+			, "WRITE_TO_LAST_WHISPER":"Write a message to the last person who whispered you without sending it. (Uses the %lwr% Trade Variable)"
+			, "WRITE_TO_LAST_WHISPER_SENT":"Write a message to the last person you whispered without sending it. (Uses the %lws% Trade Variable)"
 
 			, "SEND_TO_BUYER":"Send a message to your buyer."
 			, "WRITE_TO_BUYER":"Write a message to your buyer without sending it."
 			, "INVITE_BUYER":"Invite your buyer to your party."
 			, "TRADE_BUYER":"Send a trade request to your buyer."
 			, "KICK_BUYER":"Kick your buyer out of your party."
+			, "KICK_MYSELF":"Kick yourself out of current party."
 
 			, "SAVE_TRADE_STATS":"Save the trade stats. You can see your saved stats from the Stats tray option."
 			, "COPY_ITEM_INFOS":"Copy the tab's item infos, for usage with the in-game stash search."
@@ -215,13 +221,16 @@ Class GUI_Settings {
 			, "":""}
 
 		global ACTIONS_FORCED_CONTENT := { "":""
-			, "SEND_TO_LAST_WHISPER":"@%lastWhisper% "
-			, "WRITE_TO_LAST_WHISPER":"@%lastWhisper% "
+			, "SEND_TO_LAST_WHISPER":"@%lwr% "
+			, "WRITE_TO_LAST_WHISPER":"@%lwr% "
+			, "SEND_TO_LAST_WHISPER_SENT":"@%lws% "
+			, "WRITE_TO_LAST_WHISPER_SENT":"@%lws% "
 			, "SEND_TO_BUYER":"@%buyer% "
 			, "WRITE_TO_BUYER":"@%buyer% "
 			, "INVITE_BUYER":"/invite %buyer%"
 			, "TRADE_BUYER":"/tradewith %buyer%"
 			, "KICK_BUYER":"/kick %buyer%"
+			, "KICK_MYSELF":"/kick %myself%"
 
 			, "CMD_AFK":"/afk "
 			, "CMD_AUTOREPLY":"/autoreply "
@@ -232,7 +241,7 @@ Class GUI_Settings {
 			, "CMD_WHOIS":"/whois"
 			, "":""}
 
-		global ACTIONS_READONLY := "INVITE_BUYER,TRADE_BUYER,KICK_BUYER"
+		global ACTIONS_READONLY := "INVITE_BUYER,TRADE_BUYER,KICK_BUYER,KICK_MYSELF"
 			. ",SAVE_TRADE_STATS,COPY_ITEM_INFOS,GO_TO_NEXT_TAB,GO_TO_PREVIOUS_TAB"
 			. ",CLOSE_TAB,TOGGLE_MIN_MAX,FORCE_MIN,FORCE_MAX,CMD_OOS,CMD_REMAINING"
 			. ",IGNORE_SIMILAR_TRADE,CLOSE_SIMILAR_TABS,SHOW_GRID"
@@ -243,9 +252,11 @@ Class GUI_Settings {
 		. "------------ Simple ------------"
 		. "|" ACTIONS_TEXT_NAME.SEND_MSG
 		. "|" ACTIONS_TEXT_NAME.SEND_TO_LAST_WHISPER
+		. "|" ACTIONS_TEXT_NAME.SEND_TO_LAST_WHISPER_SENT
 		. "|" ACTIONS_TEXT_NAME.WRITE_MSG
 		. "|" ACTIONS_TEXT_NAME.WRITE_THEN_GO_BACK
 		. "|" ACTIONS_TEXT_NAME.WRITE_TO_LAST_WHISPER
+		. "|" ACTIONS_TEXT_NAME.WRITE_TO_LAST_WHISPER_SENT
 		. "| "
 		. "|--------- Interactions ---------|"
 		. "|" ACTIONS_TEXT_NAME.SEND_TO_BUYER
@@ -253,6 +264,7 @@ Class GUI_Settings {
 		. "|" ACTIONS_TEXT_NAME.INVITE_BUYER
 		. "|" ACTIONS_TEXT_NAME.TRADE_BUYER
 		. "|" ACTIONS_TEXT_NAME.KICK_BUYER
+		. "|" ACTIONS_TEXT_NAME.KICK_MYSELF
 		. "| "
 		. "|------------ Special ------------|"
 		. "|" ACTIONS_TEXT_NAME.CLOSE_TAB
@@ -522,7 +534,7 @@ Class GUI_Settings {
 
 		GuiSettings.CustomButtons_SlotPositions := {}
 		custButFirstX := leftMost2+17, custButSecondX := custButFirstX+custButWidthOneThird+5, custButThirdX := custButSecondX+custButWidthOneThird+5
-		custButFirstY := upMost2+60, custButSecondY := custButFirstY+custButHeight+5, custButThirdY := custButSecondY+custButHeight+5
+		custButFirstY := upMost2+90, custButSecondY := custButFirstY+custButHeight+5, custButThirdY := custButSecondY+custButHeight+5
 		Loop 9 {
 			slotX := IsIn(A_Index, "1,4,7") ? custButFirstX
 				:  IsIn(A_Index, "2,5,8") ? custButSecondX
@@ -549,8 +561,10 @@ Class GUI_Settings {
 		}
 
 		; * * Top text
-		Gui.Add("Settings", "Text", "xp yp+20 BackgroundTrans w525 Center hwndhTEXT_ButtonsTabTopTip", "Left click to set the button behaviour - Right click for sizing options`nDrag to change button slot (empty slot required)")
-
+		Gui.Add("Settings", "Text", "xp yp+20 w525 BackgroundTrans hwndhTEXT_ButtonsTabTopTip Center", "Left click to set the button behaviour - Right click for sizing options"
+		. "`nDrag to change button slot (empty slot required)")
+		Gui.Add("Settings", "Text", "xp y+7 w525 BackgroundTrans hwndhTEXT_ButtonsTabTopTip2 Center", "You can use variables in your messages to indicate"
+		. "`nbuyer name (%buyer%), item name (%item%), item price (%price%)")
 		; * * Custom buttons
 		GuiSettings.CustomButtons_IsSlotTaken := {}
 		Loop 9 {
@@ -3856,13 +3870,12 @@ Class GUI_Settings {
 	TabMiscAbout_GetHallOfFame() {
 		global PROGRAM
 
-		postData := ""
-		options		:= ""
-		options		.= "`n" "TimeOut: 7"
-		reqHeaders := []
-		reqHeaders.Push("Content-Type: text/html; charset=UTF-8")
 		url := "https://github.com/lemasato/POE-Trades-Companion/wiki/Support"
-		html := cURL_Download(url, postData, reqHeaders, options, false, false, false, "", reqHeadersCurl)
+    	headers := "Content-Type: text/html, charset=UTF-8"
+    	options := "TimeOut: 7"
+    	. "`n"     "Charset: UTF-8"
+
+    	WinHttpRequest(url, data:="", headers, options), html := data
 
 		hallOfFame := ""
 		if RegExMatch(html,"\<table\>(.*)\<\/table\>", match) {
@@ -3986,7 +3999,7 @@ Class GUI_Settings {
 			Menu, CBMenu, Add
 			Menu, CBMenu, Add, Hide this button, Settings_ContextMenu_Resize
 
-			Menu, CBMenu, Disable,% CtrlName
+			try Menu, CBMenu, Disable,% CtrlName
 
 			if IsContaining(btnInfos.Slots, "3,6,9") {
 				Menu, CBMenu, Disable, Size: Medium

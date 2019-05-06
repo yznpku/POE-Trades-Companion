@@ -7,7 +7,7 @@ Class GUI_ImportPre1dot13Settings {
         global GuiImportPre1dot13Settings, GuiImportPre1dot13Settings_Controls, GuiImportPre1dot13Settings_Submit
         
         Gui, ImportPre1dot13Settings:Destroy
-		Gui.New("ImportPre1dot13Settings", "-Caption -Border +LabelGUI_ImportPre1dot13Settings_ +HwndhGuiImportPre1dot13Settings", "Importing pre-1.13 settings")
+		Gui.New("ImportPre1dot13Settings", "-Caption -Border +LabelGUI_ImportPre1dot13Settings_ +HwndhGuiImportPre1dot13Settings", "POE TC - Importing pre-1.13 settings")
 		GuiImportPre1dot13Settings.Is_Created := False
 
 		guiCreated := False

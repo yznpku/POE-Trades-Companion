@@ -16,18 +16,16 @@
 	}
 
 	; HTTP Request
-	postData		:= ""
-	options 	:= ""
-	options 	.= "`n"	"TimeOut: 25"
-	reqHeaders	:= []
-	reqHeaders.push("Host: api.pathofexile.com")
-	reqHeaders.push("Connection: keep-alive")
-	reqHeaders.push("Cache-Control: max-age=0")
-	reqHeaders.push("Content-type: application/x-www-form-urlencoded; charset=UTF-8")
-	reqHeaders.push("Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8")
-	reqHeaders.push("User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.90 Safari/537.36")
-	url := "http://api.pathofexile.com/leagues?type=main"
-	leaguesJSON := cURL_Download(url, postData, reqHeaders, options, false, true, false, "", reqHeadersCurl)
+	url := "http://api.pathofexile.com/leagues?type=main"	
+	headers :=	"Host: api.pathofexile.com"
+	. "`n" 		"Connection: keep-alive"
+	. "`n" 		"Cache-Control: max-age=0"
+	. "`n" 		"Content-type: application/x-www-form-urlencoded; charset=UTF-8"
+	. "`n" 		"Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8"
+	. "`n" 		"User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.90 Safari/537.36"
+	options := "TimeOut: 25"
+	
+	WinHttpRequest(url, data:="", headers, options), leaguesJSON := data
 
 	; Parse league names
 	apiLeagues		:= ""
@@ -54,12 +52,10 @@
 
 	; In case leagues api is down, get from my own list on github
 	if !(apiTradingLeagues) {
-		postData := ""
-		options 	:= ""
-		options 	.= "`n"	"TimeOut: 25"
-		reqHeaders := []
 		url := "http://raw.githubusercontent.com/" PROGRAM.GITHUB_USER "/" PROGRAM.GITHUB_REPO "/master/data/TradingLeagues.txt"
-		rawFile := cURL_Download(url, postData, reqHeaders, options, false, true, false, "", reqHeadersCurl)
+
+		options := "TimeOut: 25"
+		WinHttpRequest(url, data:="", headers:="", options), rawFile := data
 
 		if IsContaining(rawFile, "Error,404") {
 			AppendToLogs(A_ThisFunc "(forceScriptLeagues=" forceScriptLeagues "): Failed to get leagues from GitHub file."
@@ -228,8 +224,8 @@ Send_GameMessage(actionType, msgString, gamePID="") {
 	Return
 
 	Send_GameMessage_ClearChat:
-		if !IsIn(firstChar, "/,`%,&,#,@") { ; Not a command. We send / then remove it to make sure chat is empty
-			SendEvent,/{BackSpace}
+		if !IsIn(firstChar, "/,%,&,#,@") { ; Not a command. We send / then remove it to make sure chat is empty
+			SendEvent,{Space}/{BackSpace}
 		}
 	Return
 
@@ -359,6 +355,8 @@ Parse_GameLogs(strToParse) {
 										, Other:1, Item:2, Price:3, League:4}
 	static poeAppUnpricedRegex 		:= {String:"(.*)wtb (.*) in (.*)"
 										, Other:1, Item:2, League:3}
+	static poeAppCurrencyRegex		:= {String:"(.*)I'd like to buy your (.*) for my (.*) in (.*)"
+										, Other:1, Item:2, Price:3, League:4}
 	static poeAppStashRegex 		:= {String:"\(stash ""(.*)""; left (\d+), top (\d+)\)(.*)"
 										, Tab:1, Left:2, Top:3, Other:4}
 	static poeAppQualityRegEx 		:= {String:"(.*) \((\d+)/(\d+)%\)"
@@ -441,7 +439,8 @@ Parse_GameLogs(strToParse) {
 		,"poeTrade_Unpriced":poeTradeUnpricedRegex
 		,"currencyPoeTrade":poeTradeCurrencyRegex
 		,"poeApp":poeAppRegEx
-		,"poeApp_Unpriced":poeAppUnpricedRegex}
+		,"poeApp_Unpriced":poeAppUnpricedRegex
+		,"poeApp_Currency":poeAppCurrencyRegex}
 
 	langs := "RUS,POR,THA,GER,FRE,SPA"
 	Loop, Parse, langs,% "," ; Adding ggg trans regex to allTradingRegEx
@@ -559,7 +558,7 @@ Parse_GameLogs(strToParse) {
 				RegExMatch(whispMsg, "iSO)" tradeRegExStr, tradePat)
 
 				isPoeTrade := IsIn(tradeRegExName, "poeTrade,poeTrade_Unpriced,currencyPoeTrade")
-				isPoeApp := IsIn(tradeRegExName, "poeApp,poeApp_Unpriced")
+				isPoeApp := IsIn(tradeRegExName, "poeApp,poeApp_Currency,poeApp_Unpriced")
 				isGGGRus := IsContaining(tradeRegExName, "ggg_rus")
 				isGGGPor := IsContaining(tradeRegExName, "ggg_por")
 				isGGGTha := IsContaining(tradeRegExName, "ggg_tha")
@@ -773,7 +772,6 @@ Parse_GameLogs(strToParse) {
 		.		" " cmdLineParams
 		.		" /IntercomHandle=" """" GuiIntercom.Handle """"
 		.		" /IntercomSlotHandle=" """" intercomSlotHandle """"
-		.		" /cURL=" """" PROGRAM.CURL_EXECUTABLE """"
 		.		" /ProgramLogsFile=" """" PROGRAM.LOGS_FILE """"
 		
 		Run,% saFile_run_cmd,% A_ScriptDir
@@ -830,6 +828,7 @@ IsTradingWhisper(str) {
 	; poeapp.com regex
 	poeAppRegex := "@.* wtb .* listed for .* in .*"
 	poeAppUnpricedRegex := "@.* wtb .* in .*"
+	poeAppCurrencyRegex := "@.* I'd like to buy your .* for my .* in .*"
 	; ggg regex
 	RUS_gggRegEx			:= "@.* Здравствуйте, хочу купить у вас .* за (.*) в лиге.*"
 	RUS_gggUnpricedRegEx	:= "@.* Здравствуйте, хочу купить у вас .* в лиге.*"
@@ -857,7 +856,7 @@ IsTradingWhisper(str) {
 
 	allRegexes := []
 	allRegexes.Push(poeTradeRegex, poeTradeUnpricedRegex, currencyPoeTradeRegex
-		, poeAppRegex, poeAppUnpricedRegex
+		, poeAppRegex, poeAppUnpricedRegex, poeAppCurrencyRegex
 		, RUS_gggRegEx, RUS_gggUnpricedRegEx, RUS_gggCurrencyRegEx
 		, POR_gggRegEx, POR_gggUnpricedRegEx, POR_gggCurrencyRegEx
 		, THA_gggRegEx, THA_gggUnpricedRegEx, THA_gggCurrencyRegEx

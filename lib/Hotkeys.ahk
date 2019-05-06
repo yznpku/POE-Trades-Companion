@@ -32,7 +32,9 @@
 
 UpdateHotkeys() {
 	DisableHotkeys()
+	Sleep 100
 	Declare_LocalSettings()
+	Sleep 100
 	EnableHotkeys()
 }
 
@@ -43,13 +45,17 @@ DisableHotkeys() {
 	for hk, nothing in PROGRAM.HOTKEYS {
 		if (hk != "") {
 			Hotkey, IfWinActive, ahk_group POEGameGroup
-			try Hotkey,% hk, Off
-			Hotkey, IfWinActive
-
-			logsStr := "Disabled hotkey with key """ hk """"
+			try {
+				Hotkey,% hk, Off
+				logsStr := "Disabled hotkey with key """ hk """"
+			}
+			catch
+				logsStr := "Failed to disable hotkey with key """ hk """"
+			
 			logsAppend .= logsAppend ? "`n" logsStr : logsStr
 		}
 	}
+	Hotkey, IfWinActive
 
 	if (logsAppend)
 		AppendToLogs(logsAppend)
@@ -59,7 +65,7 @@ DisableHotkeys() {
 }
 
 EnableHotkeys() {
-	global PROGRAM
+	global PROGRAM, POEGameGroup
 	programName := PROGRAM.NAME, iniFilePath := PROGRAM.INI_FILE
 	Set_TitleMatchMode("RegEx")
 
@@ -79,8 +85,13 @@ EnableHotkeys() {
 			PROGRAM.HOTKEYS[hkSC].Content := acContent
 			PROGRAM.HOTKEYS[hkSC].Type := acType
 			Hotkey, IfWinActive, ahk_group POEGameGroup
-			try Hotkey,% hkSC, OnHotkeyPress, On
-			logsStr := "Enabled hotkey with key """ hk """ (sc/vk: """ hkSC """)"
+			try {
+				Hotkey,% hkSC, OnHotkeyPress
+				Hotkey,% hkSC, OnHotkeyPress, On
+				logsStr := "Enabled hotkey with key """ hk """ (sc/vk: """ hkSC """)"
+			}
+			catch
+				logsStr := "Failed to enable hotkey with key """ hk """ (sc/vk: """ hkSC """)"
 			logsAppend .= logsAppend ? "`n" logsStr : logsStr
 		}
 	}
@@ -138,10 +149,12 @@ EnableHotkeys() {
 
 TransformKeyStr_ToVirtualKeyStr(hk) {
 	hkStr := hk, hkLen := StrLen(hk)
-	Loop 3 {
-		char := SubStr(hkStr, A_Index, A_Index)
-		if IsIn(char, "^,+,!,#") && (hkLen > A_Index)
+	Loop 9 {
+		char := SubStr(hkStr, A_Index, 1)
+		if IsIn(char, "^,+,!,#,<,>,*,~,$") && (hkLen > A_Index)
 			hkStr_final .= char
+		else
+			Break
 	}
 	StringTrimLeft, hkStr_noMods, hkStr,% StrLen(hkStr_final)
 	hkVK := GetKeyVK(hkStr_noMods), hkVK := Format("VK{:X}", hkVK)
@@ -155,10 +168,12 @@ TransformKeyStr_ToVirtualKeyStr(hk) {
 
 TransformKeyStr_ToScanCodeStr(hk) {
 	hkStr := hk, hkLen := StrLen(hk)
-	Loop 3 {
-		char := SubStr(hkStr, A_Index, A_Index)
-		if IsIn(char, "^,+,!,#") && (hkLen > A_Index)
+	Loop 9 {
+		char := SubStr(hkStr, A_Index, 1)
+		if IsIn(char, "^,+,!,#,<,>,*,~,$") && (hkLen > A_Index)
 			hkStr_final .= char
+		else
+			Break
 	}
 	StringTrimLeft, hkStr_noMods, hkStr,% StrLen(hkStr_final)
 	hkSC := GetKeySC(hkStr_noMods), hkSC := Format("SC{:X}", hkSC)
@@ -168,4 +183,24 @@ TransformKeyStr_ToScanCodeStr(hk) {
         return
 
 	return hkStr_final
+}
+
+RemoveModifiersFromHotkeyStr(hk, returnMods=False) {
+	hkStr := hk, hkLen := StrLen(hk), charsToRemove := 0
+	Loop 9 {
+		char := SubStr(hkStr, A_Index, 1)
+		if IsIn(char, "^,+,!,#,<,>,*,~,$") && (hkLen > A_Index)
+			charsToRemove++
+		else
+			Break
+	}
+	if (returnMods=False) {
+		StringTrimLeft, hkStrNoMods, hkStr, %charsToRemove%
+		return hkStrNoMods
+	}
+	else {
+		StringTrimLeft, hkStrNoMods, hkStr, %charsToRemove%
+		StringTrimRight, hkStrOnlyMods, hkStr,% hkLen-charsToRemove
+		return [hkStrNoMods,hkStrOnlyMods]
+	}
 }

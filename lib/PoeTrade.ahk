@@ -44,7 +44,7 @@ PoeTrade_GetCurrencyData() {
 	reqHeaders.push("Referer:http://poe.trade/")
 	reqHeaders.push("Upgrade-Insecure-Requests:1")
 
-	html := cURL_Download(url, postData, reqHeaders, options, false)
+	html := cURL_Download(url, postData, reqHeaders, options, useFallback:=false)
 
     regexPos := 1, categories := {}
     Loop {
@@ -336,7 +336,7 @@ PoeTrade_GetSource(url) {
 	reqHeaders.push("Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
 	reqHeaders.push("Referer: http://poe.trade/")
 
-    html := cURL_Download(url, postData, reqHeaders, options, false)
+    html := cURL_Download(url, postData, reqHeaders, options, useFallback:=false)
 
     return html
 }
@@ -360,7 +360,7 @@ CurrencyPoeTrade_GetSource(url, skipPayload=False) {
 	reqHeaders.push("Referer:http://currency.poe.trade")
 	reqHeaders.push("Upgrade-Insecure-Requests:1")
 
-    html := cURL_Download(url, postData, reqHeaders, options, false)
+    html := cURL_Download(url, postData, reqHeaders, options, useFallback:=false)
 
     return html
 }

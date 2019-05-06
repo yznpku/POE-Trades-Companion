@@ -10,6 +10,9 @@
 		FileRead, debugJSON,% A_ScriptDir "\Debug.json"
 		parsed_debugJSON := JSON.Load(debugJSON)
 
+		if (parsed_debugJSON.enable != True)
+			Return
+
 		for key, value in parsed_debugJSON
 			if (value=True)
 				logsStr := logsStr?logsStr ", " key "=" value : key "=" value

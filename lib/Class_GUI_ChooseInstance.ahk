@@ -4,7 +4,7 @@
 		global GuiChooseInstance, GuiChooseInstance_Controls, GuiChooseInstance_Submit
 		static guiWidth, guiHeight
 
-		Gui.New("ChooseInstance", "+AlwaysOnTop +SysMenu -MinimizeBox -MaximizeBox +LabelGUI_ChooseInstance_ +HwndhGuiChooseInstance", "Game Instances")
+		Gui.New("ChooseInstance", "+AlwaysOnTop +SysMenu -MinimizeBox -MaximizeBox +LabelGUI_ChooseInstance_ +HwndhGuiChooseInstance", "POE TC - Game Instances")
 
 		GameIcon_W := 48, GameIcon_H := 48
 		FillSelected_W := GameIcon_W, FillSelected_H := GameIcon_H
