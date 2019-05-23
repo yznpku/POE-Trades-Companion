@@ -105,7 +105,7 @@ Class GUI_Settings {
 		
 		; Initialize gui arrays
 		Gui, Settings:Destroy
-		Gui.New("Settings", "-Caption -Border +LabelGUI_Settings_ +HwndhGuiSettings", "POE TC - Settings")
+		Gui.New("Settings", "-Caption -Border +LabelGUI_Settings_ +HwndhGuiSettings +AlwaysOnTop", "POE TC - Settings")
 		; Gui.New("Settings", "+AlwaysOnTop +ToolWindow +LabelGUI_Settings_ +HwndhGuiSettings", "Settings")
 		GuiSettings.Is_Created := False
 
@@ -398,26 +398,26 @@ Class GUI_Settings {
 		Gui.Add("Settings", "GroupBox", "x" leftMost2 " y" upMost2 " cBlack w525 h" guiHeight-80, "Settings Main" )
 
 		; * * First group
-		Gui.Add("Settings", "CheckBox", "x" leftMost2+10 " y" upMost2+20 "  BackgroundTrans hwndhCB_HideInterfaceWhenOutOfGame", "Hide the interface when not in game?")
+		Gui.Add("Settings", "CheckBox", "x" leftMost2+10 " y" upMost2+20 "  BackgroundTrans hwndhCB_HideInterfaceWhenOutOfGame", "Hide interface when tabbed out of game?")
 		cbNotInGamePos := Get_ControlCoords("Settings", GuiSettings_Controls.hCB_HideInterfaceWhenOutOfGame)
-		Gui.Add("Settings", "CheckBox", "xp y+5 hwndhCB_MinimizeInterfaceToBottomLeft", "Minimize interface to bottom left instead?" )
+		Gui.Add("Settings", "CheckBox", "xp y+5 hwndhCB_MinimizeInterfaceToBottomLeft", "Minimize interface to bottom left corner?" )
 		Gui.Add("Settings", "CheckBox", "xp y+15 hwndhCB_CopyItemInfosOnTabChange", "Copy the item infos on tab change?")
 		Gui.Add("Settings", "CheckBox", "xp y+1 hwndhCB_AutoFocusNewTabs", "Auto focus new tabs?")
 		Gui.Add("Settings", "CheckBox", "xp y+15 hwndhCB_AutoMinimizeOnAllTabsClosed", "Auto minimize once all tabs are closed?")
-		Gui.Add("Settings", "CheckBox", "xp y+1 hwndhCB_AutoMaximizeOnFirstNewTab", "Auto maximize on first new tab creation?")
-		Gui.Add("Settings", "CheckBox", "xp y+12 hwndhCB_SendTradingWhisperUponCopyWhenHoldingCTRL", "Hold CTRL when copying trading`nwhisper to instantly send it in game?")
-		secondRowX := cbNotInGamePos.X+cbNotInGamePos.W+45
+		Gui.Add("Settings", "CheckBox", "xp y+1 hwndhCB_AutoMaximizeOnFirstNewTab", "Auto maximize on first new tab?")
+		Gui.Add("Settings", "CheckBox", "xp y+12 hwndhCB_SendTradingWhisperUponCopyWhenHoldingCTRL Center", "Hold CTRL when copying trading`nwhisper to instantly send it in game?")
+		secondRowX := cbNotInGamePos.X+cbNotInGamePos.W+20
 
 		; * * Notifications
-		Gui.Add("Settings", "Text", "xp y+17 hwndhTEXT_PlaySoundNotificationWhen", "Play a sound notification when...")
+		Gui.Add("Settings", "Text", "xp y+17 hwndhTEXT_PlaySoundNotificationWhen", "Play a sound notification when... ")
 		Gui.Add("Settings", "CheckBox", "x" leftMost2+25 " y+10 hwndhCB_TradingWhisperSFXToggle w160", "Trading whisper received?")
-		Gui.Add("Settings", "Edit", "x+0 yp-4 w160 R1 ReadOnly hwndhEDIT_TradingWhisperSFXPath")
+		Gui.Add("Settings", "Edit", "x+5 yp-4 w160 R1 ReadOnly hwndhEDIT_TradingWhisperSFXPath")
 		Gui.Add("Settings", "Button", "x+0 yp-1 w75 hp+2 ReadOnly hwndhBTN_BrowseTradingWhisperSFX", "Browse file")
 		Gui.Add("Settings", "CheckBox", "x" leftMost2+25 " y+5 w160 hwndhCB_RegularWhisperSFXToggle", "Regular whisper received?")
-		Gui.Add("Settings", "Edit", "x+0 yp-4 w160 R1 ReadOnly hwndhEDIT_RegularWhisperSFXPath")
+		Gui.Add("Settings", "Edit", "x+5 yp-4 w160 R1 ReadOnly hwndhEDIT_RegularWhisperSFXPath")
 		Gui.Add("Settings", "Button", "x+0 yp-1 w75 hp+2 ReadOnly hwndhBTN_BrowseRegularWhisperSFX", "Browse file")
 		Gui.Add("Settings", "CheckBox", "x" leftMost2+25 " y+5 w160 hwndhCB_BuyerJoinedAreaSFXToggle", "Buyer joined area?")
-		Gui.Add("Settings", "Edit", "x+0 yp-4 w160 R1 ReadOnly hwndhEDIT_BuyerJoinedAreaSFXPath")
+		Gui.Add("Settings", "Edit", "x+5 yp-4 w160 R1 ReadOnly hwndhEDIT_BuyerJoinedAreaSFXPath")
 		Gui.Add("Settings", "Button", "x+0 yp-1 w75 hp+2 ReadOnly hwndhBTN_BrowseBuyerJoinedAreaSFX", "Browse file")
 		; Gui.Add("Settings", "CheckBox", "x" leftMost2+10 " y+0 w110 hwndhCB_RegularWhisperSFXToggle", "Whiser received from buyer?")
 		; Gui.Add("Settings", "Edit", "x+0 yp+2 w160 R1 ReadOnly hwndhEDIT_RegularWhisperSFXPath")
@@ -427,21 +427,21 @@ Class GUI_Settings {
 		; Gui.Add("Settings", "CheckBox", "x+5 yp", "Trading whisper")
 		; Gui.Add("Settings", "CheckBox", "x+5 yp", "%")
 		; Gui.Add("Settings", "CheckBox", "x+5 yp", "@")
-		Gui.Add("Settings", "CheckBox", "x" leftMost2+10 " y+10 hwndhCB_ShowTabbedTrayNotificationOnWhisper Center", "Show a tray notification when receiving a`nwhisper while tabbed out of the game?")
+		Gui.Add("Settings", "CheckBox", "x" leftMost2+10 " y+10 hwndhCB_ShowTabbedTrayNotificationOnWhisper Center", "Show a notification when receiving`na whisper while tabbed out of game?")
 
-		Gui.Add("Settings", "Text", "x" leftMost2+10 " y+17 hwndhTEXT_PushBulletNotifications", "PushBullet notifications:")
+		Gui.Add("Settings", "Text", "x" leftMost2+10 " y+17 hwndhTEXT_PushBulletNotifications", "PushBullet Notifications:")
 		Gui.Add("Settings", "Text", "x" leftMost2+25 " y+7 hwndhTEXT_PushBulletToken", "Token: ")
 		Gui.Add("Settings", "Edit", "x+5 yp-3 w250 hwndhEDIT_PushBulletToken")
-		Gui.Add("Settings", "Text", "x" leftMost2+25 " y+10 hwndhTEXT_GetPBNotificationsFor", "Get PB notifications for:")
-		Gui.Add("Settings", "CheckBox", "x+5 yp hwndhCB_PushBulletOnTradingWhisper", "Trading whispers?")
+		Gui.Add("Settings", "Text", "x" leftMost2+25 " y+10 hwndhTEXT_GetPBNotificationsFor", "Get PB Notifications for... ")
+		Gui.Add("Settings", "CheckBox", "x+10 yp hwndhCB_PushBulletOnTradingWhisper", "Trading whispers?")
 		; Gui.Add("Settings", "CheckBox", "x+0 yp hwndhCB_PushBulletOnGlobalMessage", "#")
 		Gui.Add("Settings", "CheckBox", "x+0 yp hwndhCB_PushBulletOnWhisperMessage", "Regular whispers?")
 		; Gui.Add("Settings", "CheckBox", "x+0 yp hwndhCB_PushBulletOnPartyMessage", "Party messages")
 		; Gui.Add("Settings", "CheckBox", "x+0 yp hwndhCB_PushBulletOnTradeMessage", "$")
-		Gui.Add("Settings", "CheckBox", "x" leftMost2+25 " y+7 hwndhCB_PushBulletOnlyWhenAfk", "Get PB notifications only when /afk?")
+		Gui.Add("Settings", "CheckBox", "x" leftMost2+25 " y+7 hwndhCB_PushBulletOnlyWhenAfk", "Get PB Notifications only when /afk?")
 		
 		; * * Accounts
-		Gui.Add("Settings", "Text", "x" leftMost2+10 " y+20 Center hwndhTEXT_POEAccountsList", "POE accounts list. Case sensitive. Separate using a comma:")
+		Gui.Add("Settings", "Text", "x" leftMost2+10 " y+20 Center hwndhTEXT_POEAccountsList", "POE Accounts list (Case sensitive, separate with comma):")
 		Gui.Add("Settings", "Edit", "xp y+5 w215 hwndhEDIT_PoeAccounts")
 
 		; * * Msg mode
@@ -450,16 +450,16 @@ Class GUI_Settings {
 		; Gui.Add("Settings", "Text", "x+20 yp hwndhTXT_SendMessagesModeTip", "Choose a mode to have informations about how it works.")
 
 		; * * Transparency
-		Gui.Add("Settings", "Checkbox", "x" secondRowX " y" cbNotInGamePos.Y-5 " Center hwndhCB_AllowClicksToPassThroughWhileInactive", "Allow clicks to pass through`nthe interface while no tabs remain?")
+		Gui.Add("Settings", "Checkbox", "x" secondRowX " y" cbNotInGamePos.Y-5 " Center hwndhCB_AllowClicksToPassThroughWhileInactive", "Make the interface click-through`nwhen all tabs are closed?")
 		Gui.Add("Settings", "Text", "x" secondRowX " y+10 Center hwndhTEXT_NoTabsTransparency", "Interface transparency`nNo tab remaining")
 		Gui.Add("Settings", "Slider", "x+1 yp w120 AltSubmit ToolTip Range0-100 hwndhSLIDER_NoTabsTransparency")
 		Gui.Add("Settings", "Text", "x" secondRowX " y+5 Center hwndhTEXT_TabsOpenTransparency", "Interface transparency`nTabs still open")
 		Gui.Add("Settings", "Slider", "x+1 yp w120 AltSubmit ToolTip Range30-100 hwndhSLIDER_TabsOpenTransparency")
 
 		; * * Map Tab settings
-		Gui.Add("Settings", "Checkbox", "x" secondRowX " y+10 hwndhCB_ItemGridHideNormalTab", "Hide normal tab location")
-		Gui.Add("Settings", "Checkbox", "xp y+5 hwndhCB_ItemGridHideQuadTab", "Hide quad tab location")
-		Gui.Add("Settings", "Checkbox", "xp y+5 hwndhCB_ItemGridHideNormalTabAndQuadTabForMaps", "Hide normal and quad locations for maps")
+		Gui.Add("Settings", "Checkbox", "x" secondRowX " y+10 hwndhCB_ItemGridHideNormalTab", "Hide normal tab location?")
+		Gui.Add("Settings", "Checkbox", "xp y+5 hwndhCB_ItemGridHideQuadTab", "Hide quad tab location?")
+		Gui.Add("Settings", "Checkbox", "xp y+5 hwndhCB_ItemGridHideNormalTabAndQuadTabForMaps", "Hide normal and quad locations, for maps?")
 		
 		; * * Subroutines + User settings
 		GuiSettings.TabSettingsMain_Controls := "hCB_HideInterfaceWhenOutOfGame,hCB_MinimizeInterfaceToBottomLeft,hCB_CopyItemInfosOnTabChange,hCB_AutoFocusNewTabs,hCB_AutoMinimizeOnAllTabsClosed,hCB_AutoMaximizeOnFirstNewTab,hCB_SendTradingWhisperUponCopyWhenHoldingCTRL"
@@ -480,7 +480,7 @@ Class GUI_Settings {
 		Gui.Add("Settings", "GroupBox", "x" leftMost2 " y" upMost2 " cBlack w525 h" guiHeight-80, "Customization Skins")
 
 		; * * Preset
-		Gui.Add("Settings", "Text", "xp yp+20 w525 Center BackgroundTrans","Preset: ")
+		Gui.Add("Settings", "Text", "xp yp+20 w525 Center hwndhTEXT_Preset BackgroundTrans","Preset: ")
 
 		; * * Skin
 		Gui.Add("Settings", "DropDownList", "xp+10 y+5 wp-20 hwndhDDL_SkinPreset")
@@ -737,8 +737,6 @@ Class GUI_Settings {
 		*/
 		Gui, Settings:Tab, Misc Updating
 
-		Gui.Font("Settings", "Consolas", "8")
-
 		Gui.Add("Settings", "GroupBox", "x" leftMost2 " y" upMost2 " cBlack w525 h115 hwndhGB_UpdateCheck", "You are up to date!")
 
 		Gui.Add("Settings", "Text", "x" leftMost2+20 " y" upMost2+20 " hwndhTEXT_YourVersion", "Your version:")
@@ -755,8 +753,8 @@ Class GUI_Settings {
 
 		; Gui.Add("Settings", "Checkbox", "x400 y" upMost2+20 " hwndhCB_AllowToUpdateAutomaticallyOnStart", "Allow to update automatically on start?")
 		; Gui.Add("Settings", "Checkbox", "xp y+5 hwndhCB_AllowPeriodicUpdateCheck", "Allow automatic update check every 2hours?")
-		Gui.Add("Settings", "Text", "x380 y" upMost2+20 " hwndhTEXT_CheckForUpdatesWhen", "Check for updates: ")
-		Gui.Add("Settings", "DropDownList", "x+5 yp-2 w155 hwndhDDL_CheckForUpdate", "Only on application start|On start + every 5 hours|On start + every day")
+		Gui.Add("Settings", "Text", "x380 y" upMost2+20 " hwndhTEXT_CheckForUpdatesWhen", "Check for updates... ")
+		Gui.Add("Settings", "DropDownList", "x+5 yp-2 w155 hwndhDDL_CheckForUpdate AltSubmit", "Only on application start|On start + every 5 hours|On start + every day")
 		Gui.Add("Settings", "Checkbox", "xp y+10 hwndhCB_UseBeta", "Use the BETA branch?")		
 		Gui.Add("Settings", "Checkbox", "xp y+5 hwndhCB_DownloadUpdatesAutomatically", "Download updates`nautomatically?")
 		
@@ -890,6 +888,7 @@ Class GUI_Settings {
 
 		if (foundHwnd) {
 			Gui, Settings:Show, xCenter yCenter
+			GUI_Settings.SetTranslation("english")
 		}
 		else {
 			AppendToLogs("GUI_Settings.Show(" whichTab "): Non existent. Recreating.")
@@ -3761,7 +3760,9 @@ Class GUI_Settings {
 				if (loopedCtrl = "hBTN_CheckForUpdates")
 					__f := GUI_Settings.TabMiscUpdating_CheckForUpdates.bind(GUI_Settings)
 				else if (isCheckbox)
-					__f := GUI_Settings.TabMiscUpdating_OnCheckboxToggle.bind(Gui_Settings, loopedCtrl)
+					__f := GUI_Settings.TabMiscUpdating_OnCheckboxToggle.bind(GUI_Settings, loopedCtrl)
+				else if (loopedCtrl = "hDDL_CheckForUpdate")
+					__f := GUI_Settings.TabMiscUpdating_OnCheckForUpdatesDDLChange.bind(GUI_Settings, loopedCtrl)
 				else 
 					__f := 
 
@@ -3783,16 +3784,16 @@ Class GUI_Settings {
 				thisTabSettings[key] := cbValue
 			}
 			if (key = "CheckForUpdatePeriodically") {
-				ddlValue := value="OnStartOnly" ? "Only on application start"
-					: value="OnStartAndEveryFiveHours" ? "On start + every 5 hours"
-					: value="OnStartAndEveryDay" ? "On start + every day"
-					: ""
+				ddlValue := value="OnStartOnly" ? 1
+					: value="OnStartAndEveryFiveHours" ? 2
+					: value="OnStartAndEveryDay" ? 3
+					: 1
 				thisTabSettings[key] := ddlValue
 			}
 		}
 		; GuiControl, Settings:,% GuiSettings_Controls.hCB_AllowToUpdateAutomaticallyOnStart ,% thisTabSettings.AllowToUpdateAutomaticallyOnStart
 		; GuiControl, Settings:,% GuiSettings_Controls.hCB_AllowPeriodicUpdateCheck ,% thisTabSettings.AllowPeriodicUpdateCheck
-		GuiControl, Settings:ChooseString,% GuiSettings_Controls.hDDL_CheckForUpdate,% thisTabSettings.CheckForUpdatePeriodically
+		GuiControl, Settings:Choose,% GuiSettings_Controls.hDDL_CheckForUpdate,% thisTabSettings.CheckForUpdatePeriodically
 		GuiControl, Settings:,% GuiSettings_Controls.hCB_UseBeta,% thisTabSettings.UseBeta
 		GuiControl, Settings:,% GuiSettings_Controls.hCB_DownloadUpdatesAutomatically,% thisTabSettings.DownloadUpdatesAutomatically
 	}
@@ -3819,10 +3820,10 @@ Class GUI_Settings {
 		GuiControl, Settings:,% GuiSettings_Controls.hTEXT_LatestBetaVer,% thisTabSettings.LatestBeta
 		GuiControl, Settings:,% GuiSettings_Controls.hTEXT_MinsAgo,% "(" timeDiff " mins ago)"
 		; Update control size
-		GuiControl, Settings:Move,% GuiSettings_Controls.hTEXT_ProgramVer,% "w" Get_TextCtrlSize(PROGRAM.VERSION, "Consolas", "8").W
-		GuiControl, Settings:Move,% GuiSettings_Controls.hTEXT_LatestStableVer,% "w" Get_TextCtrlSize(thisTabSettings.LatestStable, "Consolas", "8").W
-		GuiControl, Settings:Move,% GuiSettings_Controls.hTEXT_LatestBetaVer,% "w" Get_TextCtrlSize(thisTabSettings.LatestBeta, "Consolas", "8").W
-		GuiControl, Settings:Move,% GuiSettings_Controls.hTEXT_MinsAgo,% "w" Get_TextCtrlSize("(" timeDiff " mins ago)", "Consolas", "8").W
+		GuiControl, Settings:Move,% GuiSettings_Controls.hTEXT_ProgramVer,% "w" Get_TextCtrlSize(PROGRAM.VERSION, "Segoe UI", "8").W
+		GuiControl, Settings:Move,% GuiSettings_Controls.hTEXT_LatestStableVer,% "w" Get_TextCtrlSize(thisTabSettings.LatestStable, "Segoe UI", "8").W
+		GuiControl, Settings:Move,% GuiSettings_Controls.hTEXT_LatestBetaVer,% "w" Get_TextCtrlSize(thisTabSettings.LatestBeta, "Segoe UI", "8").W
+		GuiControl, Settings:Move,% GuiSettings_Controls.hTEXT_MinsAgo,% "w" Get_TextCtrlSize("(" timeDiff " mins ago)", "Segoe UI", "8").W
 	}
 
 	TabMiscUpdating_OnCheckboxToggle(CtrlName) {
@@ -3844,6 +3845,19 @@ Class GUI_Settings {
 
 		UpdateCheck(checkType:="forced", notifOrBox:="box")
 		GUI_Settings.TabMiscUpdating_UpdateVersionsText()
+	}
+
+	TabMiscUpdating_OnCheckForUpdatesDDLChange(CtrlName, CtrlHwnd) {
+		global PROGRAM, GuiSettings_Controls
+		iniFile := PROGRAM.INI_FILE
+	
+		ddlVal := GUI_Settings.Submit(CtrlName)
+		valStr := ddlVal=1 ? "OnStartOnly"
+			: ddlVal=2 ? "OnStartAndEveryFiveHours"
+			: ddlVal=3 ? "OnStartAndEveryDay"
+			: "OnStartAndEveryFiveHours"
+
+		INI.Set(iniFile, "UPDATING", "CheckForUpdatePeriodically", valStr)
 	}
 
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
@@ -4076,138 +4090,39 @@ Class GUI_Settings {
 		Return
 	}
 
-	GetControlToolTip(ctrlN) {
-		global DEBUG
-
-		_tooltips := {"":""
-
-		,	"hIMG_GitHub"	: "Visit the GitHub repository for this project."
-		, 	"hIMG_PoE"		: "Visit the pathofexile.com thread for this project."
-		, 	"hIMG_Reddit"	: "Visit my submitted Reddit posts."
-		, 	"hIMG_Discord"	: "Invitation link to my Discord server."
-		,	"hIMG_Paypal"	: "Support me through Paypal."
-			.				  "`nYour name will forever be graved to the Hall of Fame, visible in the About tab."
-
-
-		,	"hCB_HideInterfaceWhenOutOfGame": 				"Hides the interface when tabbed out of game."
-		,	"hCB_MinimizeInterfaceToBottomLeft": 			"Minimize the interface to the bottom-left of its position instead of top-right."
-		,	"hCB_CopyItemInfosOnTabChange": 				"Copies the tab's item infos upon changing tabs."
-		,	"hCB_AutoFocusNewTabs": 						"When receiving a new trading whisper, activates the new tab."
-		, 	"hCB_AutoMinimizeOnAllTabsClosed": 				"Puts the interface in its minimized state upon closing the last open tab."
-		, 	"hCB_AutoMaximizeOnFirstNewTab": 				"Puts the interface in its maximized state upon creating the first tab."
-		, 	"hCB_AllowClicksToPassThroughWhileInactive": 	"When no tabs remain, mouse clicks will go through the interface."
-			. 												"`nMake sure to reduce the ""No tab remaining"" transparency for the best experience."
-		, 	"hSLIDER_NoTabsTransparency": 					"Transparency of the interface when no tab are remaining."
-			. 												 "`nBest to be used with the ""click through"" setting for the best experience."
-		, 	"hSLIDER_TabsOpenTransparency": 				"Transparency of the interface while tabs are still open."
-		,	"hCB_SendTradingWhisperUponCopyWhenHoldingCTRL":"Instantly send the whisper in-game if you are holding CTRL"
-			.												"`nwhen clicking on the trading website copy whisper button."
-
-		,	"hCB_TradingWhisperSFXToggle": 				"Play a custom sound when receiving a trading whisper."
-		,	"hCB_RegularWhisperSFXToggle": 				"Play a custom sound when receiving a regular whisper."
-		,	"hCB_BuyerJoinedAreaSFXToggle":				"Play a custom sound when a buyer joined your area."
-		,	"hCB_ShowTabbedTrayNotificationOnWhisper": 	"While tabbed out of the game, shows a tray notification for whispers received."
-
-		,	"hDDL_SendMsgMode": "!! ADVANCED USERS !!"
-			.					"`nChooses the way in-game messages should be sent."
-
-		,	"hEDIT_PushBulletToken":"Your PushBullet token."
-			.						"`nCan be obtained by clicking ""Create Access Token"" at: https://www.pushbullet.com/#settings/account"
-		, 	"hCB_PushBulletOnTradingWhisper":"Receive a PB notification upon receiving a trading whisper"
-		, 	"hCB_PushBulletOnPartyMessage":"Receive a PB notification upon receiving a party message"
-		, 	"hCB_PushBulletOnWhisperMessage":"Receive a PB notification upon receiving a regular whisper"
-		, 	"hCB_PushBulletOnlyWhenAfk":"Receive a PB notification only if you are AFK."
-
-		,	"hEDIT_PoeAccounts":"Your PoE accounts names."
-			.					"`nUsed for the price verify feature."
-			. 					"`n!! CASE SENSITIVE !!"
-
-		,	"hCB_ItemGridHideNormalTab":"Hide the box that shows the item location in a normal tab."
-		,	"hCB_ItemGridHideQuadTab":"Hide the box that shows the item location in a quad tab."
-		,	"hCB_ItemGridHideNormalTabAndQuadTabForMaps":"When the item is a map, hide the boxes that shows the item location in normal and quad tab."
-
-
-		,	"hDDL_SkinPreset":					"Choose among the skins presets here."
-		, 	"hLB_SkinBase":						"!! ADVANCED USERS !!"
-		, 	"hEDIT_SkinScalingPercentage":		"!! ADVANCED USERS !!"
-			.							 	 	"`nIncreases or decreases the interface size."
-		, 	"hLB_SkinFont":						"!! ADVANCED USERS !!"
-		,	"hCB_UseRecommendedFontSettings":	"!! ADVANCED USERS !!"
-		,	"hEDIT_SkinFontSize":				"!! ADVANCED USERS !!"
-			.					 				"`nIncreases or decreases the font size."
-		, 	"hEDIT_SkinFontQuality":			"!! ADVANCED USERS !!"
-			.									"`nIncreases or decreases the font quality."
-			.									"`nIf your font has rendering issues with a value of 5, try lower values."
-		, 	"hDDL_ChangeableFontColorTypes":	"!! ADVANCED USERS !!"
-		, 	"hBTN_ShowColorPicker":				"!! ADVENCED USERS !!"
-
-		,	"hBTN_CustomBtn_1": "Click on this button to set his behaviour."
-			.					   "`nRight click for sizing options."
-			.					   "`nDrag to set its position."
-		,	"hTEXT_CustomBtnSlot_1": "Empty button slot. Click to add a button here."
-		,	"hBTN_UnicodeBtn_1": "Right click to change pre-defined action."
-			.					 "`nDrag to set its position."
-		,	"hDDL_ActionType":"Actions list. Choose one of the actions that should be performed."			
-		,	"hEDIT_ActionContent":"Actions content. Set the message that should be sent with this action."
-		,	"hBTN_ReplaceCurrentLine":"Replace the currently selected action in the list."
-		,	"hBTN_AddActionAtCurrentLine":"Add the new action at the currently selected line of the list."
-		,	"hBTN_AddActionAtEnd":"Add the new action at the end of the list."
-		, 	"hBTN_SaveChangesToAction": "Show a menu to select which button to save the changes to."
-		,	"hBTN_AddAsNewAction": "Add as a new action to the end of the list."
-			.					   "`nIf the last action is ""Close tab"" or a ""Write Message"" action, it will be added before it."
-		,	"hLV_ButtonsActions":"List of actions that will be performed upon clicking this button."
-
-
-		,	"hDDL_HotkeyActionType1":"Actions list. Choose the action that should be performed."
-		,	"hEDIT_HotkeyActionContent1":"Action content. Set the message that should be sent with this action."
-		,	"hCB_HotkeyToggle1":"Toggle ON/OFF."
-		,	"hHK_HotkeyKeys1":"Hotkey's keys."
-
-
-		,	"hDDL_HotkeyAdvExistingList":"List of already registered hotkeys profiles."
-		,	"hBTN_HotkeyAdvAddNewProfile":"Add a new hotkey profile."
-		,	"hBTN_HotkeyAdvDeleteCurrentProfile":"Delete the currently selected hotkey profile."
-		,	"hEDIt_HotkeyAdvName":"Hotkey profile name."
-		,	"hHK_HotkeyAdvHotkey":"Hotkey profile keys."
-		,	"hDDL_HotkeyAdvActionType":"Actions list. Choose one of the actions that should be performed."
-		,	"hEDIT_HotkeyAdvActionContent":"Action content. Set the message that should be sent with this action."
-		, 	"hBTN_HotkeyAdvSaveChangesToAction": "Show a menu to select which button to save the changes to."
-		,	"hBTN_HotkeyAdvAddAsNewAction": "Add as a new action to the end of the list."
-			.					   "`nIf the last action is ""Close tab"" or a ""Write Message"" action, it will be added before it."
-		,	"hLV_HotkeyAdvActionsList":"List of actions that will be performed upon pressing this hotkey."
-
+	GetControlToolTip(ctrlName) {
+		global GuiSettings, DEBUG
 		
-		,	"hDDL_CheckForUpdate": 					"Decides when to check for updates."
-			.										"`nAutomatic update checks can only be done once every ~35 mins."
-			.										"`nThis is done to avoid spamming the GitHub API."
-		, 	"hCB_UseBeta": 							"Receive BETA udpates."
-		, 	"hCB_DownloadUpdatesAutomatically": 	"Upgrades to the latest version on start."
-		, 	"hBTN_CheckForUpdates":					"Force checking for updates."
+		_tip := (ctrlName = "hSLIDER_NoTabsTransparency") ? 	GuiSettings.TRANSLATIONS["hTEXT_NoTabsTransparency_ToolTip"]
+			: (ctrlName = "hSLIDER_TabsOpenTransparency") ? 	GuiSettings.TRANSLATIONS["hTEXT_TabsOpenTransparency_ToolTip"]
+			: (ctrlName = "hEDIT_TradingWhisperSFXPath") ? 		GuiSettings.TRANSLATIONS["hCB_TradingWhisperSFXToggle_ToolTip"]
+			: (ctrlName = "hEDIT_RegularWhisperSFXPath") ? 		GuiSettings.TRANSLATIONS["hCB_RegularWhisperSFXToggle_ToolTip"]
+			: (ctrlName = "hEDIT_BuyerJoinedAreaSFXPath") ? 	GuiSettings.TRANSLATIONS["hCB_BuyerJoinedAreaSFXToggle_ToolTip"]
+			: (ctrlName = "hEDIT_PushBulletToken") ? 			GuiSettings.TRANSLATIONS["hTEXT_PushBulletToken_ToolTip"]
+			: (ctrlName = "hTEXT_GetPBNotificationsFor") ? 		GuiSettings.TRANSLATIONS["hTEXT_PushBulletNotifications_ToolTip"]
+			: (ctrlName = "hEDIT_PoeAccounts") ? 				GuiSettings.TRANSLATIONS["hTEXT_POEAccountsList_ToolTip"]
+			: (ctrlName = "hDDL_SkinPreset") ? 					GuiSettings.TRANSLATIONS["hTEXT_Preset_ToolTip"]
+			: (ctrlName = "hLB_SkinBase") ? 					GuiSettings.TRANSLATIONS["hTEXT_SkinBase_ToolTip"]
+			: (ctrlName = "hLB_SkinFont") ? 					GuiSettings.TRANSLATIONS["hTEXT_TextFont_ToolTip"]
+			: IsIn(ctrlName, "hEDIT_SkinScalingPercentage,hUPDOWN_SkinScalingPercentage") ?		GuiSettings.TRANSLATIONS["hTEXT_ScalingSize_ToolTip"]
+			: IsIn(ctrlName, "hEDIT_SkinFontSize,hUPDOWN_SkinFontSize") ? 						GuiSettings.TRANSLATIONS["hTEXT_FontSize_ToolTip"]
+			: IsIn(ctrlName, "hEDIT_SkinFontQuality,hUPDOWN_SkinFontQuality") ?	 				GuiSettings.TRANSLATIONS["hTEXT_FontQuality_ToolTip"]
+			: IsIn(ctrlName, "hDDL_ChangeableFontColorTypes,hPROGRESS_ColorSquarePreview") ? 	GuiSettings.TRANSLATIONS["hTEXT_TextColor_ToolTip"]
+			: IsContaining(ctrlName, "hBTN_CustomBtn_") ? 			GuiSettings.TRANSLATIONS["hBTN_CustomBtn_1_ToolTip"]
+			: IsContaining(ctrlName, "hTEXT_CustomBtnSlot_") ? 		GuiSettings.TRANSLATIONS["hTEXT_CustomBtnSlot_1_ToolTip"]
+			: IsContaining(ctrlName, "hBTN_UnicodeBtn_") ? 			GuiSettings.TRANSLATIONS["hBTN_UnicodeBtn_1_ToolTip"]
+			: IsContaining(ctrlName, "hTEXT_UnicodeBtnSlot_") ?		GuiSettings.TRANSLATIONS["hTEXT_UnicodeBtnSlot_1_ToolTip"]
+			: IsContaining(ctrlName, "hDDL_HotkeyActionType") ? 	GuiSettings.TRANSLATIONS["hDDL_HotkeyActionType1_ToolTip"]
+			: IsContaining(ctrlName, "hEDIT_HotkeyActionContent") ? GuiSettings.TRANSLATIONS["hEDIT_HotkeyActionContent1_ToolTip"]
+			: IsContaining(ctrlName, "hCB_HotkeyToggle") ?		 	GuiSettings.TRANSLATIONS["hCB_HotkeyToggle1_ToolTip"]
+			: IsContaining(ctrlName, "hHK_HotkeyKeys") ? 			GuiSettings.TRANSLATIONS["hHK_HotkeyKeys1_ToolTip"]
+			: GuiSettings.TRANSLATIONS[ctrlName "_ToolTip"]
 
-
-		,	"hEDIT_HallOfFame":":)"
-
-		, "":""}
-		
-		Loop 8 { ; Set same as first one
-			_tooltips["hBTN_CustomBtn_" A_Index+1] := _tooltips["hBTN_CustomBtn_1"]
-			_tooltips["hTEXT_CustomBtnSlot_" A_Index+1] := _tooltips["hTEXT_CustomBtnSlot_1"]
-		}
-		Loop 4 ; Set same as first one
-			_tooltips["hBTN_UnicodeBtn_" A_Index+1] := _tooltips["hBTN_UnicodeBtn_1"]
-		Loop 14 { ; Set same as first one
-			_tooltips["hDDL_HotkeyActionType" A_Index+1] := _tooltips["hDDL_HotkeyActionType1"]
-			_tooltips["hEDIT_HotkeyActionContent" A_Index+1] := _tooltips["hEDIT_HotkeyActionContent1"]
-			_tooltips["hCB_HotkeyToggle" A_Index+1] := _tooltips["hCB_HotkeyToggle1"]
-			_tooltips["hHK_HotkeyKeys" A_Index+1] := _tooltips["hHK_HotkeyKeys1"]
-		}
-
-		_tip := _tooltips[ctrlN]
 		if (DEBUG.SETTINGS.instant_settings_tooltips)
-			_tip := _tip? _tip "`n" ctrlN : "No tooltip for this control`n" ctrlN
+			_tip := _tip? _tip "`n`n" ctrlName : "No tooltip for this control`n`n" ctrlName
 
-		if (DEBUG.SETTINGS.settings_copy_ctrlname && ctrlN)
-			Set_Clipboard(ctrlN)
+		if (DEBUG.SETTINGS.settings_copy_ctrlname && ctrlName)
+			Set_Clipboard(ctrlName)
 
 		return _tip
 	}
@@ -4228,6 +4143,8 @@ Class GUI_Settings {
 
 	GetTranslation(_lang="english", _ctrlName="") {
 		FileRead, content,% A_ScriptDir "/resources/translations/english.json"
+		engTrans := JSON.Load(content)
+		FileRead, content,% A_ScriptDir "/resources/translations/" _lang ".json"
 		transJSON := JSON.Load(content)
 
 		if (_ctrlName)
@@ -4245,42 +4162,77 @@ Class GUI_Settings {
 
 		noResizeCtrls := "hBTN_CloseGUI"
 		. ",hBTN_SectionSettings,hBTN_TabSettingsMain,hBTN_SectionCustomization,hBTN_TabCustomizationSkins,hBTN_TabCustomizationButtons,hBTN_SectionHotkeys,hBTN_TabHotkeysBasic,hBTN_TabHotkeysAdvanced,hBTN_SectionMisc,hBTN_TabMiscUpdating,hBTN_TabMiscAbout,hBTN_ResetToDefaultSettings"
+		. ",hLV_ButtonsActions,hLV_HotkeyAdvActionsList"
 		. ",hBTN_SaveChangesToAction,hBTN_AddAsNewAction"
 		. ",hBTN_ChangeHKType,hBTN_HotkeyAdvSaveChangesToAction,hBTN_HotkeyAdvAddAsNewAction"
 		. ",hDDL_CheckForUpdate"
 
-		; noSmallerCtrls := "hBTN_BrowseTradingWhisperSFX,hBTN_BrowseRegularWhisperSFX,hBTN_BrowseBuyerJoinedAreaSFX"
-		; . ",hBTN_RecreateTradesGUI"
-		; . ",hBTN_CheckForUpdates"
+		noSmallerCtrls := "hBTN_BrowseTradingWhisperSFX,hBTN_BrowseRegularWhisperSFX,hBTN_BrowseBuyerJoinedAreaSFX"
+		. ",hCB_SendTradingWhisperUponCopyWhenHoldingCTRL,hCB_ShowTabbedTrayNotificationOnWhisper,hTEXT_POEAccountsList"
+		. ",hCB_AllowClicksToPassThroughWhileInactive,hTEXT_NoTabsTransparency,hTEXT_TabsOpenTransparency"
+		. ",hTEXT_Preset,hTEXT_SkinBase,hTEXT_TextFont,hBTN_RecreateTradesGUI"
+		. ",hTEXT_ButtonsTabTopTip,hTEXT_ButtonsTabTopTip2"
+		. ",hTEXT_About,hBTN_CheckForUpdates"
 
-		if (_ctrlName && trans) {
-			GuiControl, Settings:,% GuiSettings_Controls[_ctrlName],% trans
+		needsCenterCtrls := "hCB_SendTradingWhisperUponCopyWhenHoldingCTRL,hCB_ShowTabbedTrayNotificationOnWhisper,hTEXT_POEAccountsList,hCB_AllowClicksToPassThroughWhileInactive,hTEXT_NoTabsTransparency,hTEXT_TabsOpenTransparency,hTEXT_Preset"
+		. ",hTEXT_SkinBase,hTEXT_TextFont"
+		. ",hTEXT_ButtonsTabTopTip,hTEXT_ButtonsTabTopTip2"
+		. ",hTEXT_About"
+
+		if (_ctrlName) {
+			if (trans) ; selected trans
+				GuiControl, Settings:,% GuiSettings_Controls[_ctrlName],% trans
+			else ; default eng trans
+				GuiControl, Settings:,% GuiSettings_Controls[_ctrlName],% GUI_Settings.GetTranslation("english", _ctrlName)
 		}
 		else {
+			GuiSettings.TRANSLATIONS := trans
+
 			for ctrlName, ctrlTranslation in trans {
-				ctrlHandle := GuiSettings_Controls[ctrlName]
+				if !( SubStr(ctrlName, -7) = "_ToolTip" ) { ; if not a tooltip
+					ctrlHandle := GuiSettings_Controls[ctrlName]
 
-				if !IsIn(ctrlName, noResizeCtrls) { ; Readjust size to fit translation
 					ctrlType := IsContaining(ctrlName, "hCB_") ? "CheckBox"
-						: IsContaining(ctrlName, "hTEXT_") ? "Text"
-						: IsContaining(ctrlName, "hBTN_") ? "Button"
-						: IsContaining(ctrlName, "hDDL_") ? "DropDownList"
-						: IsContaining(ctrlName, "hEDIT_") ? "Edit"
-						 : "Text"
+							: IsContaining(ctrlName, "hTEXT_") ? "Text"
+							: IsContaining(ctrlName, "hBTN_") ? "Button"
+							: IsContaining(ctrlName, "hDDL_") ? "DropDownList"
+							: IsContaining(ctrlName, "hEDIT_") ? "Edit"
+							: "Text"	
 
-					txtSize := Get_TextCtrlSize(txt:=ctrlTranslation, fontName:=GuiSettings.Font, fontSize:=GuiSettings.Font_Size, maxWidth:="", params:="", ctrlType)
-					GuiControl, Settings:Move,% ctrlHandle,% "w" txtSize.W
+					if !IsIn(ctrlName, noResizeCtrls) { ; Readjust size to fit translation
+						txtSize := Get_TextCtrlSize(txt:=ctrlTranslation, fontName:=GuiSettings.Font, fontSize:=GuiSettings.Font_Size, maxWidth:="", params:="", ctrlType)
+						txtPos := Get_ControlCoords("Settings", ctrlHandle)
+
+						if (IsIn(ctrlName, noSmallerCtrls) && (txtSize.W > txtPos.W))
+						|| !IsIn(ctrlName, noSmallerCtrls)
+							GuiControl, Settings:Move,% ctrlHandle,% "w" txtSize.W
+					}
+
+					if (ctrlHandle) { ; set translation
+						if (ctrlType = "DropDownList")
+							ddlValue := GUI_Settings.Submit(ctrlName)
+
+						if (ctrlTranslation) ; selected trans
+							GuiControl, Settings:,% ctrlHandle,% ctrlTranslation
+						else ; default eng trans
+							GuiControl, Settings:,% ctrlHandle,% GUI_Settings.GetTranslation("english", ctrlName)
+
+						if (ctrlType = "DropDownList")
+							GuiControl, Settings:Choose,% ctrlHandle,% ddlValue
+					}
+
+					if IsIn(ctrlName, needsCenterCtrls) {
+						GuiControl, Settings:-Center,% ctrlHandle
+						GuiControl, Settings:+Center,% ctrlHandle
+					}
+
+					if IsContaining(ctrlName, "hBTN_Section") ; Imgbtn section
+						ImageButton.Create(ctrlHandle, GuiSettings.Style_Section, PROGRAM.FONTS["Segoe UI"], 8)
+					else if IsContaining(ctrlName, "hBTN_Tab") ; Imgbtn tab
+						ImageButton.Create(ctrlHandle, GuiSettings.Style_Tab, PROGRAM.FONTS["Segoe UI"], 8)
+					else if (ctrlName = "hBTN_ResetToDefaultSettings") ; Imgbtn reset settings
+						ImageButton.Create(ctrlHandle, GuiSettings.Style_ResetBtn, PROGRAM.FONTS["Segoe UI"], 8)	
 				}
-
-				if (ctrlHandle && ctrlTranslation)
-					GuiControl, Settings:,% ctrlHandle,% ctrlTranslation ; Set translation
-
-				if IsContaining(ctrlName, "hBTN_Section") ; Imgbtn section
-					ImageButton.Create(ctrlHandle, GuiSettings.Style_Section, PROGRAM.FONTS["Segoe UI"], 8)
-				else if IsContaining(ctrlName, "hBTN_Tab") ; Imgbtn tab
-					ImageButton.Create(ctrlHandle, GuiSettings.Style_Tab, PROGRAM.FONTS["Segoe UI"], 8)
-				else if (ctrlName = "hBTN_ResetToDefaultSettings") ; Imgbtn reset settings
-					ImageButton.Create(ctrlHandle, GuiSettings.Style_ResetBtn, PROGRAM.FONTS["Segoe UI"], 8)	
 			}
 			
 			GuiControl, Settings:,% GuiSettings_Controls["hBTN_CloseGUI"],% "X"

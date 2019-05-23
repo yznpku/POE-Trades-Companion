@@ -59,10 +59,6 @@ Hotkey, IfWinActive,% "ahk_pid " DllCall("GetCurrentProcessId")
 ; }
 Return
 
-^numpad1::
-GUI_Settings.SetTranslation("All")
-Return
-
 ; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   
 SpaceRoutine() {
