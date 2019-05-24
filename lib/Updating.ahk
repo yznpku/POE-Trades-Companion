@@ -107,8 +107,8 @@ UpdateCheck(checkType="normal", notifOrBox="notif") {
 	updateRel := IsUpdateAvailable()
 	if !(updateRel) {
 		trayMsg := StrReplace(PROGRAM.TRANSLATIONS.TrayNotifications.NoUpdateFound_Msg, "%version%", A_Tab PROGRAM.VERSION)
-		trayMsg := StrReplace(trayMsg, "%stable%", A_Tab "__STABLE__") ; TO_DO
-		trayMsg := StrReplace(trayMsg, "%beta%", A_Tab "__BETA__") ; TO_DO
+		trayMsg := StrReplace(trayMsg, "%stable%", A_Tab PROGRAM.SETTINGS.UPDATING.LatestStable)
+		trayMsg := StrReplace(trayMsg, "%beta%", A_Tab PROGRAM.SETTINGS.UPDATING.LatestBeta)
 		TrayNotifications.Show(PROGRAM.TRANSLATIONS.TrayNotifications.NoUpdateFound_Title, trayMsg)
 		return
 	}

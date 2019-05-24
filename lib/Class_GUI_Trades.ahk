@@ -1157,7 +1157,7 @@
 			GUI_Trades.SetTabStyleWhisperReceived(tabContent.Buyer)
 
 		tabContent := GUI_Trades.GetTabContent(GuiTrades.Tabs_Count)
-		GUI_Trades.VerifyItemPrice(tabContent) ; TO_DO disabled bcs it lags the script, need to see if we can do the request without interupting script. until then, user needs to click on color dot
+		GUI_Trades.VerifyItemPrice(tabContent)
 	}
 
 	GenerateUniqueID() {

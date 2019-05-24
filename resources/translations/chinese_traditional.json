@@ -99,7 +99,7 @@
         "hTEXT_LatestBETA":"最新測試版(BETA):",
         "hBTN_CheckForUpdates":"點擊檢查更新",
         "hTEXT_CheckForUpdatesWhen":"檢查更新中... ",
-        "hDDL_CheckForUpdate":"|應用啟動時檢查更新|應用啟動時，且運行時每5小時檢查更新|應用啟動時，且運行時每日檢查更新",
+        "hDDL_CheckForUpdate":"應用啟動時檢查更新|應用啟動時，且運行時每5小時檢查更新|應用啟動時，且運行時每日檢查更新",
         "hCB_UseBeta":"下載BETA分支? (默認更新為穩定版stable)",
         "hCB_DownloadUpdatesAutomatically":"自動下載更新? ",
 

@@ -129,7 +129,28 @@
         "hTEXT_TextColor" : "Text color:",
 		"hTEXT_TextColor_ToolTip" : "/!\\ ADVANCED USERS ONLY /!\\\nDecide the font color for specific elements.",
         "hBTN_ShowColorPicker" : "Show Color Picker",
-        "hBTN_RecreateTradesGUI" : "Click here to apply your changes now",
+		"hBTN_RecreateTradesGUI" : "Click here to apply your changes now",
+		"COLORS_TYPES" : {
+			"Border":"Border",
+			"Title_No_Trades" : "Title (No trades)",
+			"Title_Trades" : "Title (Trades on queue)",
+			"Trade_Info_1" : "Trade Infos",
+			"Tab_Active" : "Tab (Active)",
+			"Tab_Inactive" : "Tab (Inactive)",
+			"Tab_Hover" : "Tab (Hover)",
+			"Tab_Press" : "Tab (Press)",
+			"Tab_Joined_Active" : "Tab Joined (Active)",
+			"Tab_Joined_Inactive" : "Tab Joined (Inactive)",
+			"Tab_Joined_Hover" : "Tab Joined (Hover)",
+			"Tab_Joined_Press" : "Tab Joined (Press)",
+			"Tab_Whisper_Active" : "Tab Whisper (Active)",
+			"Tab_Whisper_Inactive" : "Tab Whisper (Inactive)",
+			"Tab_Whisper_Hover" : "Tab Whisper (Hover)",
+			"Tab_Whisper_Press" : "Tab Whisper (Press)",
+			"Button_Normal" : "Button (Normal)",
+			"Button_Hover" : "Button (Hover)",
+			"Button_Press" : "Button (Press)"
+		},
 
         "_____ TAB CUSTOMIZATION BUTTONS _____" : "",
         "hTEXT_ButtonsTabTopTip" : "Left click to set the button behaviour - Right click for sizing options\nDrag to change button slot (empty slot required)",
@@ -200,7 +221,7 @@
 		"RMENU_ActionInvite" : "Invite",
 		"RMENU_ActionTrade" : "Trade",
 		"RMENU_ActionKick" : "Kick"
-    },
+	},
 	
 	"GUI_MyStats" : {
 		"hGB_FilteringOptions" : "Filtering Options",
@@ -299,15 +320,119 @@
 	},
 
     "ACTIONS" : {
+		"SECTIONS" : {
+			"Simple" : "Simple",
+			"Interactions" : "Interactions",
+			"Special" : "Special",
+			"Commands" : "Commands",
+			"Miscellaneous" : "Miscellaneous",
+			"CustomButtons" : "Custom Buttons"
+		},
+
         "TEXT_NAME" : {
+			"SEND_MSG" : "Send message",
+			"SEND_TO_LAST_WHISPER" : "Send to last who whispered you",
+			"SEND_TO_LAST_WHISPER_SENT" : "Send to last you whispered",
+			"WRITE_MSG" : "Write message",
+			"WRITE_THEN_GO_BACK" : "Write and go back to {X}",
+			"WRITE_TO_LAST_WHISPER" : "Write to last who whispered you",
+			"WRITE_TO_LAST_WHISPER_SENT" : "Write to last you whispered",
+
+			"SEND_TO_BUYER" : "Send to buyer",
+			"WRITE_TO_BUYER" : "Write to buyer",
+			"INVITE_BUYER" : "Invite buyer to party",
+			"TRADE_BUYER" : "Send trade to buyer",
+			"KICK_BUYER" : "Kick buyer from party",
+			"KICK_MYSELF" : "Kick yourself from party",
+
+			"SAVE_TRADE_STATS" : "Save trade stats",
+			"COPY_ITEM_INFOS" : "Copy tab item infos",
+			"GO_TO_NEXT_TAB" : "Go to next tab",
+			"GO_TO_PREVIOUS_TAB" : "Go to previous tab",
+			"CLOSE_TAB" : "Close current tab",
+			"TOGGLE_MIN_MAX" : "Toggle min/max",
+			"FORCE_MIN" : "Force minimized",
+			"FORCE_MAX" : "Force maximized",
+			"IGNORE_SIMILAR_TRADE" : "Ignore tab item for 10mins",
+			"CLOSE_SIMILAR_TABS" : "Close other tabs for same item",
+			"SHOW_GRID" : "Show item location grid",
+
+			"CMD_AFK" : "/afk",
+			"CMD_AUTOREPLY" : "/autoreply",
+			"CMD_DND" : "/dnd",
+			"CMD_HIDEOUT" : "/hideout",
+			"CMD_OOS" : "/oos",
+			"CMD_REMAINING" : "/remaining",
+			"CMD_WHOIS" : "/whois",
+
+			"SENDINPUT" : "SendInput",
+			"SENDEVENT" : "SendEvent",
+			"SLEEP" : "Wait {X} milliseconds"
         },
 
         "DEFAULT_CONTENT" : {
+			"SEND_MSG" : "Send a message into chat.",
+			"SEND_TO_LAST_WHISPER" : "Send a message to the last person who whispered you. (Uses the %lwr% Trade Variable)",
+			"SEND_TO_LAST_WHISPER_SENT" : "Send a message to the last person you whispered. (Uses the %lws% Trade Variable)",
+			"WRITE_MSG" : "Write a message without sending it into chat.",
+			"WRITE_THEN_GO_BACK" : "Write a message and go back to {X} so you can write something in-between.",
+			"WRITE_TO_LAST_WHISPER" : "Write a message to the last person who whispered you without sending it. (Uses the %lwr% Trade Variable)",
+			"WRITE_TO_LAST_WHISPER_SENT" : "Write a message to the last person you whispered without sending it. (Uses the %lws% Trade Variable)",
 
+			"SEND_TO_BUYER" : "Send a message to your buyer.",
+			"WRITE_TO_BUYER" : "Write a message to your buyer without sending it.",
+			"INVITE_BUYER" : "Invite your buyer to your party.",
+			"TRADE_BUYER" : "Send a trade request to your buyer.",
+			"KICK_BUYER" : "Kick your buyer out of your party.",
+			"KICK_MYSELF" : "Kick yourself out of current party.",
+
+			"SAVE_TRADE_STATS" : "Save the trade stats. You can see your saved stats from the Stats tray option.",
+			"COPY_ITEM_INFOS" : "Copy the tab's item infos, for usage with the in-game stash search.",
+			"GO_TO_NEXT_TAB" : "Select the next tab.",
+			"GO_TO_PREVIOUS_TAB" : "Select the previous tab",
+			"CLOSE_TAB" : "Close the current tab",
+			"TOGGLE_MIN_MAX" : "Toggle the GUI between minimized and maximized.",
+			"FORCE_MIN" : "Force the GUI to go into minimized form.",
+			"FORCE_MAX" : "Force the GUI to go into maximized form.",
+			"IGNORE_SIMILAR_TRADE" : "Ignore whispers for items with the same price and stash for 10 minutes.",
+			"CLOSE_SIMILAR_TABS" : "Close any other tab matching the same item, price and stash location.",
+			"SHOW_GRID" : "Show the item location grid.",
+
+			"CMD_AFK" : "Send the /afk command into chat. You can write anything next to the command to customize your AFK message.",
+			"CMD_AUTOREPLY" : "Send the /autoreply command into chat. You can write anything next to the command to customize your autoreply message",
+			"CMD_DND" : "Send the /dnd command into chat. You can write anything next to the command to customize your DND message",
+			"CMD_HIDEOUT" : "Send the /hideout command into chat.",
+			"CMD_OOS" : "Send the /oos command into chat.",
+			"CMD_REMAINING" : "Send the /remaining command into chat.",
+			"CMD_WHOIS" : "Send the /whois command into chat. You can write any name (or Trade Variable) next to the command.",
+
+			"SENDINPUT" : "Uses AutoHotKey SendInput command instead of directly sending the messages into chat.",
+			"SENDINPUT_RAW" : "Uses AutoHotKey SendInput command with the {Raw} parameter instead of directly sending the messages into chat.",
+			"SENDEVENT" : "Uses AutoHotKey SendEvent command instead of directly sending the messages into chat.",
+			"SENDEVENT_RAW" : "Uses AutoHotKey SendEvent command with the {Raw} parameter instead of directly sending the messages into chat.",
+
+			"SLEEP" : "Uses AutoHotkey Sleep command to add a delay before the next action."
         },
 
         "FORCED_CONTENT" : {
+			"SEND_TO_LAST_WHISPER" : "@%lwr% ",
+			"WRITE_TO_LAST_WHISPER" : "@%lwr% ",
+			"SEND_TO_LAST_WHISPER_SENT" : "@%lws% ",
+			"WRITE_TO_LAST_WHISPER_SENT" : "@%lws% ",
+			"SEND_TO_BUYER" : "@%buyer% ",
+			"WRITE_TO_BUYER" : "@%buyer% ",
+			"INVITE_BUYER" : "/invite %buyer%",
+			"TRADE_BUYER" : "/tradewith %buyer%",
+			"KICK_BUYER" : "/kick %buyer%",
+			"KICK_MYSELF" : "/kick %myself%",
 
+			"CMD_AFK" : "/afk ",
+			"CMD_AUTOREPLY" : "/autoreply ",
+			"CMD_DND" : "/dnd ",
+			"CMD_HIDEOUT" : "/hideout",
+			"CMD_OOS" : "/oos",
+			"CMD_REMAINING" : "/remaining",
+			"CMD_WHOIS" : "/whois"
         }
     }
 }

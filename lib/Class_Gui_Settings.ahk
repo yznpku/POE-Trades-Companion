@@ -135,111 +135,21 @@ Class GUI_Settings {
 			, [3, "0xf9a231", "0xe7740e", "Red", 0]  ; press
 			, [0, "0xe7740e", "", "Red", 0 ] ] ; default
 
-		global ACTIONS_TEXT_NAME := { "":""
-			, "SEND_MSG":"Send message"
-			, "SEND_TO_LAST_WHISPER":"Send to last who whispered you"
-			, "SEND_TO_LAST_WHISPER_SENT":"Send to last you whispered"
-			, "WRITE_MSG":"Write message"
-			, "WRITE_THEN_GO_BACK":"Write and go back to {X}"
-			, "WRITE_TO_LAST_WHISPER":"Write to last who whispered you"
-			, "WRITE_TO_LAST_WHISPER_SENT":"Write to last you whispered"
+		global ACTIONS_SECTIONS := {}
+		for key, value in PROGRAM.TRANSLATIONS.ACTIONS.SECTIONS
+			ACTIONS_SECTIONS[key] := value
 
-			, "SEND_TO_BUYER":"Send to buyer"
-			, "WRITE_TO_BUYER":"Write to buyer"
-			, "INVITE_BUYER":"Invite buyer to party"
-			, "TRADE_BUYER":"Send trade to buyer"
-			, "KICK_BUYER":"Kick buyer from party"
-			, "KICK_MYSELF":"Kick yourself from party"
+		global ACTIONS_TEXT_NAME := {}
+		for key, value in PROGRAM.TRANSLATIONS.ACTIONS.TEXT_NAME
+			ACTIONS_TEXT_NAME[key] := value
 
-			, "SAVE_TRADE_STATS":"Save trade stats"
-			, "COPY_ITEM_INFOS":"Copy tab item infos"
-			, "GO_TO_NEXT_TAB":"Go to next tab"
-			, "GO_TO_PREVIOUS_TAB":"Go to previous tab"
-			, "CLOSE_TAB":"Close current tab"
-			, "TOGGLE_MIN_MAX":"Toggle min/max"
-			, "FORCE_MIN":"Force minimized"
-			, "FORCE_MAX":"Force maximized"
-			, "IGNORE_SIMILAR_TRADE":"Ignore tab item for 10mins"
-			, "CLOSE_SIMILAR_TABS":"Close other tabs for same item"
-			, "SHOW_GRID":"Show item location grid"
+		global ACTIONS_DEFAULT_CONTENT := {}
+		for key, value in PROGRAM.TRANSLATIONS.ACTIONS.DEFAULT_CONTENT
+			ACTIONS_DEFAULT_CONTENT[key] := value
 
-			, "CMD_AFK":"/afk"
-			, "CMD_AUTOREPLY":"/autoreply"
-			, "CMD_DND":"/dnd"
-			, "CMD_HIDEOUT":"/hideout"
-			, "CMD_OOS":"/oos"
-			, "CMD_REMAINING":"/remaining"
-			, "CMD_WHOIS":"/whois"
-
-			, "SENDINPUT":"SendInput"
-			, "SENDEVENT":"SendEvent"
-			, "SLEEP":"Wait {X} milliseconds"
-			, "":""}
-
-		global ACTIONS_DEFAULT_CONTENT := { "":""
-			, "SEND_MSG":"Send a message into chat."
-			, "SEND_TO_LAST_WHISPER":"Send a message to the last person who whispered you. (Uses the %lwr% Trade Variable)"
-			, "SEND_TO_LAST_WHISPER_SENT":"Send a message to the last person you whispered. (Uses the %lws% Trade Variable)"
-			, "WRITE_MSG":"Write a message without sending it into chat."
-			, "WRITE_THEN_GO_BACK":"Write a message and go back to {X} so you can write something in-between."
-			, "WRITE_TO_LAST_WHISPER":"Write a message to the last person who whispered you without sending it. (Uses the %lwr% Trade Variable)"
-			, "WRITE_TO_LAST_WHISPER_SENT":"Write a message to the last person you whispered without sending it. (Uses the %lws% Trade Variable)"
-
-			, "SEND_TO_BUYER":"Send a message to your buyer."
-			, "WRITE_TO_BUYER":"Write a message to your buyer without sending it."
-			, "INVITE_BUYER":"Invite your buyer to your party."
-			, "TRADE_BUYER":"Send a trade request to your buyer."
-			, "KICK_BUYER":"Kick your buyer out of your party."
-			, "KICK_MYSELF":"Kick yourself out of current party."
-
-			, "SAVE_TRADE_STATS":"Save the trade stats. You can see your saved stats from the Stats tray option."
-			, "COPY_ITEM_INFOS":"Copy the tab's item infos, for usage with the in-game stash search."
-			, "GO_TO_NEXT_TAB":"Select the next tab."
-			, "GO_TO_PREVIOUS_TAB":"Select the previous tab"
-			, "CLOSE_TAB":"Close the current tab"
-			, "TOGGLE_MIN_MAX":"Toggle the GUI between minimized and maximized."
-			, "FORCE_MIN":"Force the GUI to go into minimized form."
-			, "FORCE_MAX":"Force the GUI to go into maximized form."
-			, "IGNORE_SIMILAR_TRADE":"Ignore whispers for items with the same price and stash for 10 minutes."
-			, "CLOSE_SIMILAR_TABS":"Close any other tab matching the same item, price and stash location."
-			, "SHOW_GRID":"Show the item location grid."
-
-			, "CMD_AFK":"Send the /afk command into chat. You can write anything next to the command to customize your AFK message."
-			, "CMD_AUTOREPLY":"Send the /autoreply command into chat. You can write anything next to the command to customize your autoreply message"
-			, "CMD_DND":"Send the /dnd command into chat. You can write anything next to the command to customize your DND message"
-			, "CMD_HIDEOUT":"Send the /hideout command into chat."
-			, "CMD_OOS":"Send the /oos command into chat."
-			, "CMD_REMAINING":"Send the /remaining command into chat."
-			, "CMD_WHOIS":"Send the /whois command into chat. You can write any name (or Trade Variable) next to the command."
-
-			, "SENDINPUT":"Uses AutoHotKey SendInput command instead of directly sending the messages into chat."
-			, "SENDINPUT_RAW":"Uses AutoHotKey SendInput command with the {Raw} parameter instead of directly sending the messages into chat."
-			, "SENDEVENT":"Uses AutoHotKey SendEvent command instead of directly sending the messages into chat."
-			, "SENDEVENT_RAW":"Uses AutoHotKey SendEvent command with the {Raw} parameter instead of directly sending the messages into chat."
-
-			, "SLEEP":"Uses AutoHotkey Sleep command to add a delay before the next action."
-			, "":""}
-
-		global ACTIONS_FORCED_CONTENT := { "":""
-			, "SEND_TO_LAST_WHISPER":"@%lwr% "
-			, "WRITE_TO_LAST_WHISPER":"@%lwr% "
-			, "SEND_TO_LAST_WHISPER_SENT":"@%lws% "
-			, "WRITE_TO_LAST_WHISPER_SENT":"@%lws% "
-			, "SEND_TO_BUYER":"@%buyer% "
-			, "WRITE_TO_BUYER":"@%buyer% "
-			, "INVITE_BUYER":"/invite %buyer%"
-			, "TRADE_BUYER":"/tradewith %buyer%"
-			, "KICK_BUYER":"/kick %buyer%"
-			, "KICK_MYSELF":"/kick %myself%"
-
-			, "CMD_AFK":"/afk "
-			, "CMD_AUTOREPLY":"/autoreply "
-			, "CMD_DND":"/dnd "
-			, "CMD_HIDEOUT":"/hideout"
-			, "CMD_OOS":"/oos"
-			, "CMD_REMAINING":"/remaining"
-			, "CMD_WHOIS":"/whois"
-			, "":""}
+		global ACTIONS_FORCED_CONTENT := {}
+		for key, value in PROGRAM.TRANSLATIONS.ACTIONS.FORCED_CONTENT
+			ACTIONS_FORCED_CONTENT[key] := value
 
 		global ACTIONS_READONLY := "INVITE_BUYER,TRADE_BUYER,KICK_BUYER,KICK_MYSELF"
 			. ",SAVE_TRADE_STATS,COPY_ITEM_INFOS,GO_TO_NEXT_TAB,GO_TO_PREVIOUS_TAB"
@@ -248,8 +158,12 @@ Class GUI_Settings {
 		Loop 9
 			ACTIONS_READONLY .= ",CUSTOM_BUTTON_" A_Index
 
+		global COLORS_TYPES := {}
+		for key, value in PROGRAM.TRANSLATIONS.GUI_Settings.COLORS_TYPES
+			COLORS_TYPES[key] := value
+
 		global ACTIONS_AVAILABLE := ""
-		. "------------ Simple ------------"
+		. "-> " ACTIONS_SECTIONS.Simple
 		. "|" ACTIONS_TEXT_NAME.SEND_MSG
 		. "|" ACTIONS_TEXT_NAME.SEND_TO_LAST_WHISPER
 		. "|" ACTIONS_TEXT_NAME.SEND_TO_LAST_WHISPER_SENT
@@ -258,15 +172,15 @@ Class GUI_Settings {
 		. "|" ACTIONS_TEXT_NAME.WRITE_TO_LAST_WHISPER
 		. "|" ACTIONS_TEXT_NAME.WRITE_TO_LAST_WHISPER_SENT
 		. "| "
-		. "|--------- Interactions ---------|"
+		. "|-> " ACTIONS_SECTIONS.Interactions
 		. "|" ACTIONS_TEXT_NAME.SEND_TO_BUYER
 		. "|" ACTIONS_TEXT_NAME.WRITE_TO_BUYER
 		. "|" ACTIONS_TEXT_NAME.INVITE_BUYER
 		. "|" ACTIONS_TEXT_NAME.TRADE_BUYER
 		. "|" ACTIONS_TEXT_NAME.KICK_BUYER
 		. "|" ACTIONS_TEXT_NAME.KICK_MYSELF
-		. "| "
-		. "|------------ Special ------------|"
+		. "|  "
+		. "|-> " ACTIONS_SECTIONS.Special
 		. "|" ACTIONS_TEXT_NAME.CLOSE_TAB
 		. "|" ACTIONS_TEXT_NAME.SAVE_TRADE_STATS
 		. "|" ACTIONS_TEXT_NAME.SHOW_GRID
@@ -278,8 +192,8 @@ Class GUI_Settings {
 		. "|" ACTIONS_TEXT_NAME.FORCE_MAX		
 		. "|" ACTIONS_TEXT_NAME.GO_TO_NEXT_TAB
 		. "|" ACTIONS_TEXT_NAME.GO_TO_PREVIOUS_TAB
-		. "| "
-		. "|--------- Commands ---------|"
+		. "|   "
+		. "|-> " ACTIONS_SECTIONS.Commands
 		. "|" ACTIONS_TEXT_NAME.CMD_AFK
 		. "|" ACTIONS_TEXT_NAME.CMD_AUTOREPLY
 		. "|" ACTIONS_TEXT_NAME.CMD_DND
@@ -287,33 +201,11 @@ Class GUI_Settings {
 		. "|" ACTIONS_TEXT_NAME.CMD_OOS
 		. "|" ACTIONS_TEXT_NAME.CMD_REMAINING
 		. "|" ACTIONS_TEXT_NAME.CMD_WHOIS
-		. "| "
-		. "|------- Miscellaneous -------|"
+		. "|    "
+		. "|-> " ACTIONS_SECTIONS.Miscellaneous
 		. "|" ACTIONS_TEXT_NAME.SENDINPUT
 		. "|" ACTIONS_TEXT_NAME.SENDEVENT
 		. "|" ACTIONS_TEXT_NAME.SLEEP
-
-		global COLORS_TYPES := { "":""
-			, Border:"Border"
-			, Title_No_Trades:"Title (No trades)"
-			, Title_Trades:"Title (Trades on queue)"
-			, Trade_Info_1:"Trade Infos"
-			, Tab_Active:"Tab (Active)"
-			, Tab_Inactive:"Tab (Inactive)"
-			, Tab_Hover:"Tab (Hover)"
-			, Tab_Press:"Tab (Press)"
-			, Tab_Joined_Active:"Tab Joined (Active)"
-			, Tab_Joined_Inactive:"Tab Joined (Inactive)"
-			, Tab_Joined_Hover:"Tab Joined (Hover)"
-			, Tab_Joined_Press:"Tab Joined (Press)"
-			, Tab_Whisper_Active:"Tab Whisper (Active)"
-			, Tab_Whisper_Inactive:"Tab Whisper (Inactive)"
-			, Tab_Whisper_Hover:"Tab Whisper (Hover)"
-			, Tab_Whisper_Press:"Tab Whisper (Press)"
-			, Button_Normal:"Button (Normal)"
-			, Button_Hover:"Button (Hover)"
-			, Button_Press:"Button (Press)"
-			, "":""}
 
 		/* * * * * * *
 		* 	CREATION
@@ -611,7 +503,7 @@ Class GUI_Settings {
 		GUI_Settings.SetDefaultListView("hLV_ButtonsActions")
 		Loop, Parse, ACTIONS_AVAILABLE,% "|"
 		{
-			if (A_LoopField && A_LoopField != " " && !IsContaining(A_LoopField, "----")) {
+			if (A_LoopField && A_LoopField != " " && !IsContaining(A_LoopField, "-> ")) {
 				LV_Add("", loopIndex, A_LoopField, "")
 				loopIndex++
 			}
@@ -714,7 +606,7 @@ Class GUI_Settings {
 		loopIndex := 1
 		Loop, Parse, ACTIONS_AVAILABLE,% "|"
 		{
-			if (A_LoopField && A_LoopField != " " && !IsContaining(A_LoopField, "----")) {
+			if (A_LoopField && A_LoopField != " " && !IsContaining(A_LoopField, "-> ")) {
 				LV_Add("", loopIndex, A_LoopField, "")
 				loopIndex++
 			}
@@ -1797,8 +1689,8 @@ Class GUI_Settings {
 		global PROGRAM, ACTIONS_AVAILABLE, ACTIONS_TEXT_NAME
 
 		actionsList := ACTIONS_AVAILABLE
-			. "| "
-			. "|----- Custom Buttons -----"
+			. "|     "
+			. "|-> " PROGRAM.TRANSLATIONS.ACTIONS.SECTIONS.CustomButtons
 
 		Loop 9 {
 			btnName := PROGRAM.SETTINGS["SETTINGS_CUSTOM_BUTTON_" A_Index].Name
@@ -1836,7 +1728,7 @@ Class GUI_Settings {
 		SetEditCueBanner(GuiSettings_Controls.hEDIT_ActionContent, contentPlaceholder)
 		ShowToolTip(contentPlaceholder)
 
-		if IsContaining(actionType, "----") || (!actionType) {
+		if IsContaining(actionType, "-> ") || (!actionType) {
 			GetKeyState, isUpArrowPressed, Up, P
 			GetKeyState, isDownArrowPressed, Down, P
 
@@ -1847,7 +1739,7 @@ Class GUI_Settings {
 			if (isUpArrowPressed = "D") {
 				if (chosenItemNum = 1)
 					GuiControl, Settings:Choose,% CtrlHwnd,% 2
-				else GuiControl, Settings:Choose,% CtrlHwnd,% chosenItemNum-1 ; TO_DO apparently bug, chose first space instead of closest one, though it works fine in custom button
+				else GuiControl, Settings:Choose,% CtrlHwnd,% chosenItemNum-1
 			}
 			else ; just go down
 				GuiControl, Settings:Choose,% CtrlHwnd,% chosenItemNum+1
@@ -1978,7 +1870,7 @@ Class GUI_Settings {
 			Return
 		}
 		
-		if (!actionType) || IsContaining(actionType, "----")
+		if (!actionType) || IsContaining(actionType, "-> ")
 			Return
 
 		if (whatDo = "Replace") {
@@ -2814,7 +2706,7 @@ Class GUI_Settings {
 		SetEditCueBanner(GuiSettings_Controls["hEDIT_HotkeyActionContent" CtrlNum], contentPlaceholder)
 		ShowToolTip(contentPlaceholder)
 
-		if IsContaining(actionType, "----") {
+		if IsContaining(actionType, "-> ") {
 			GetKeyState, isUpArrowPressed, Up, P
 			GetKeyState, isDownArrowPressed, Down, P
 
@@ -2823,7 +2715,7 @@ Class GUI_Settings {
 			GuiControl, Settings:-AltSubmit,% CtrlHwnd
 
 			if (isUpArrowPressed = "D")
-				GuiControl, Settings:Choose,% CtrlHwnd,% chosenItemNum-1 ; TO_DO apparently bug, chose first space instead of closest one, though it works fine in custom button
+				GuiControl, Settings:Choose,% CtrlHwnd,% chosenItemNum-1
 			else ; just go down
 				GuiControl, Settings:Choose,% CtrlHwnd,% chosenItemNum+1
 
@@ -3296,7 +3188,7 @@ Class GUI_Settings {
 		SetEditCueBanner(GuiSettings_Controls.hEDIT_HotkeyAdvActionContent, contentPlaceholder)
 		ShowToolTip(contentPlaceholder)
 
-		if IsContaining(actionType, "----") || (!actionType) {
+		if IsContaining(actionType, "-> ") || (!actionType) {
 			GetKeyState, isUpArrowPressed, Up, P
 			GetKeyState, isDownArrowPressed, Down, P
 
@@ -3307,7 +3199,7 @@ Class GUI_Settings {
 			if (isUpArrowPressed = "D") {
 				if (chosenItemNum = 1)
 					GuiControl, Settings:Choose,% CtrlHwnd,% 2
-				else GuiControl, Settings:Choose,% CtrlHwnd,% chosenItemNum-1 ; TO_DO apparently bug, chose first space instead of closest one, though it works fine in custom button
+				else GuiControl, Settings:Choose,% CtrlHwnd,% chosenItemNum-1
 			}
 			else ; just go down
 				GuiControl, Settings:Choose,% CtrlHwnd,% chosenItemNum+1
@@ -3594,7 +3486,7 @@ Class GUI_Settings {
 			Return
 		}
 
-		if (!actionType) || IsContaining(actionType, "----") || (!hkInfos.Name)
+		if (!actionType) || IsContaining(actionType, "-> ") || (!hkInfos.Name)
 			Return
 
 		if (whatDo = "Replace") {
@@ -4235,7 +4127,7 @@ Class GUI_Settings {
 
 					if (ctrlHandle) { ; set translation
 						if (ctrlType = "DropDownList")
-							ddlValue := GUI_Settings.Submit(ctrlName)
+							ddlValue := GUI_Settings.Submit(ctrlName), ctrlTranslation := "|" ctrlTranslation
 
 						if (ctrlTranslation != "") { ; selected trans
 							if (ctrlType = "ListView") {

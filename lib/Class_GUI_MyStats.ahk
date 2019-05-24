@@ -518,7 +518,7 @@
 
 					if (ctrlHandle) { ; set translation
 						if (ctrlType = "DropDownList")
-							ddlValue := GUI_MyStats.Submit(ctrlName)
+							ddlValue := GUI_MyStats.Submit(ctrlName), ctrlTranslation := "|" ctrlTranslation
 
 						if (ctrlTranslation != "") { ; selected trans
 							if (ctrlType = "ListView") {
