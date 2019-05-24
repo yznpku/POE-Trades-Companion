@@ -114,9 +114,9 @@
 
 		if IsIn(CtrlHwnd, GuiTradesMinimized_Controls.hTXT_HeaderGhost "," GuiTradesMinimized_Controls.hTEXT_Title) {
 			try Menu, HeaderMenu, DeleteAll
-			Menu, HeaderMenu, Add, Lock Position?, Gui_TradesMinimized_ContextMenu_LockPosition
+			Menu, HeaderMenu, Add,% PROGRAM.TRANSLATIONS.TrayMenu.LockPosition, Gui_TradesMinimized_ContextMenu_LockPosition
 			if (PROGRAM.SETTINGS.SETTINGS_MAIN.TradesGUI_Locked = "True")
-				Menu, HeaderMenu, Check, Lock Position?
+				Menu, HeaderMenu, Check,% PROGRAM.TRANSLATIONS.TrayMenu.LockPosition
 			Menu, HeaderMenu, Show
 		}
 		Return

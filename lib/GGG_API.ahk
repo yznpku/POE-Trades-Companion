@@ -21,7 +21,7 @@
 				  :(IsBetween(attempts, 3, 4))?(600000) ; 10mins
 				  :(1800000)
 	if (attempts > 1) {
-		TrayNotifications.Show(PROGRAM.Name, "Now retrying to retrieve leagues from API...")
+		TrayNotifications.Show(PROGRAM.TRANSLATIONS.TrayNotifications.ReachLeaguesAPIRetry_Title, "")
 	}
 	Try {
 ;		Retrieve from online API
@@ -36,9 +36,8 @@
 		Set_Format("Float", "0")
 
 		AppendtoLogs("Failed to reach Leagues API. Obj.Message: """ WinHttpReq.Message """")
-		TrayNotifications.Show(PROGRAM.Name, "Failed to reach the Leagues API."
-		. "`n" 								"Whispers from temporary leagues may fail to appear correclty."
-		. "`n`n"							"Retrying in " (nextAttempt/1000)/60 "minutes...", {Fade_Timer:10000})
+		trayMsg := StrReplace(PROGRAM.TRANSLATIONS.TrayNotifications.ReachLeaguesAPIFail_Msg, "%time%", (nextAttempt/1000)/60)
+		TrayNotifications.Show(PROGRAM.TRANSLATIONS.TrayNotifications.ReachLeaguesAPIFail_Title, trayMsg, {Fade_Timer:10000})
 		SetTimer,% A_ThisFunc, -%nextAttempt%
 
 		Set_Format()
@@ -49,7 +48,8 @@
 
 	if (attempts > 1) {
 		AppendtoLogs("Successfully reached Leagues API on attempt " attempts})
-		TrayNotifications.Show(PROGRAM.Name, "Successfully retrieved leagues from API on attempt " attempts, {Fade_Timer:5000})
+		trayMsg := StrReplace(PROGRAM.TRANSLATIONS.TrayNotifications.ReachLeaguesAPISuccess_Msg, "%number%", attempts)
+		TrayNotifications.Show(PROGRAM.TRANSLATIONS.TrayNotifications.ReachLeaguesAPISuccess_Title, trayMsg, {Fade_Timer:5000})
 		attempts := 0
 	}
 

@@ -78,11 +78,14 @@ Do_Action(actionType, actionContent="", isHotkey=False, uniqueNum="") {
 	actionContentWithVariables := Replace_TradeVariables(actionContent)
 	StringSplit, contentWords, actionContentWithVariables,% A_Space
 	if ( SubStr(actionContentWithVariables, 1, 2) = "@ ") {
-		TrayNotifications.Show("Canceled message.", "Canceled from sending a message to " contentWords1 " because the variable content is empty: " actionContent)
+		trayMsg := StrReplace(PROGRAM.TRANSLATIONS.TrayNotifications.MessageCanceledVarEmpty_Msg, "%name%", contentWords1)
+		trayMsg := StrReplace(trayMsg, "%variable%", actionContent)
+		TrayNotifications.Show(PROGRAM.TRANSLATIONS.TrayNotifications.MessageCanceled_Title, trayMsg)
 		return
 	}
 	else if ( SubStr(contentWords1, 2, 1) = "%" || SubStr(contentWords1, 0, 1) = "%" ) {
-		TrayNotifications.Show("Canceled message.", "Canceled from sending a message because the variable name is mistyped: " actionContent)
+		trayMsg := StrReplace(PROGRAM.TRANSLATIONS.TrayNotifications.MessageCanceledVarTypo_Msg, "%variable%", actionContent)
+		TrayNotifications.Show(PROGRAM.TRANSLATIONS.TrayNotifications.MessageCanceled_Title, trayMsg)
 		return
 	}
 
@@ -104,7 +107,7 @@ Do_Action(actionType, actionContent="", isHotkey=False, uniqueNum="") {
 	else if IsIn(actionType, WRITE_SEND_ACTIONS) {
 		if (actionType = "KICK_MYSELF") {
 			if (!PROGRAM.SETTINGS.SETTINGS_MAIN.PoeAccounts)
-				TrayNotifications.Show("Cannot kick self from party", "No account name found.`nPlease input your account name in the settings.")
+				TrayNotifications.Show(PROGRAM.TRANSLATIONS.TrayNotifications.FailedToKickSelf_Title, PROGRAM.TRANSLATIONS.TrayNotifications.FailedToKickSelf_Msg)
 			else
 				Send_GameMessage("WRITE_SEND", actionContentWithVariables, tabPID)
 		}
@@ -189,8 +192,8 @@ Set_Clipboard(str) {
 	Clipboard := str
 	ClipWait, 2, 1
 	if (ErrorLevel) {
-		TrayNotifications.Show(PROGRAM.NAME, "Unable to clipboard the following content: " str
-			.	"`nThis may be due to an external clipboard manager creating conflict.")
+		trayMsg := StrReplace(PROGRAM.TRANSLATIONS.TrayNotifications.ClipboardFailedToUpdate_Msg, "%message", str)
+		TrayNotifications.Show(PROGRAM.TRANSLATIONS.TrayNotifications.ClipboardFailedToUpdate_Title, PROGRAM.TRANSLATIONS.TrayNotifications.ClipboardFailedToUpdate_Msg)
 		return 1
 	}
 	SET_CLIPBOARD_CONTENT := str

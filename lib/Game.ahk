@@ -114,16 +114,12 @@ Send_GameMessage(actionType, msgString, gamePID="") {
 	}
 	if (ErrorLevel) {
 		AppendToLogs(A_ThisFunc "(actionType=" actionType ", msgString=" msgString ", gamePID=" gamePID "): WinWaitActive timed out.")
-		TrayNotifications.Show("Window timeout", "Game window wasn't focused after 2 seconds, canceling sending message.")
+		TrayNotifications.Show(PROGRAM.TRANSLATIONS.TrayNotifications.GameWindowFocusTimedOut_Title, PROGRAM.TRANSLATIONS.TrayNotifications.GameWindowFocusTimedOut_Msg)
 		return "WINWAITACTIVE_TIMEOUT"
 	}
 
 	if (!isToolSameElevation) {
-		MsgBox(4096+48+4, "POE Trades Companion - Reload as admin?", ""
-		. "Would you like to automatically reload the tool with admin elevation? All tabs will still be there after reloading."
-		. "`n"
-		. "`n" PROGRAM.NAME " cannot interact with the game instance (PID " gamePID ") because the game is running as admin and the tool is not."
-		. " To avoid this warning in the future, make sure to start the tool as admin.")
+		MsgBox(4096+48+4, PROGRAM.NAME " - " PROGRAM.TRANSLATIONS.MessageBoxes.ReloadAsAdmin_Title, PROGRAM.TRANSLATIONS.MessageBoxes.ReloadAsAdmin_Msg)
 
 		IfMsgBox, Yes
 		{
@@ -153,7 +149,7 @@ Send_GameMessage(actionType, msgString, gamePID="") {
 			if (!err)
 				SendEvent, ^{sc02F}
 			else
-				TrayNotifications.Show("Failed to send message.", "The clipboard couldn't be updated with the message content.`nClipboard: " Clipboard "`nMessage: " msgString)
+				TrayNotifications.Show(PROGRAM.TRANSLATIONS.TrayNotifications.FailedToSendMessage_Title, PROGRAM.TRANSLATIONS.TrayNotifications.FailedToSendMessage_Msg)
 			; SetTimer, Reset_Clipboard, -700
 		}
 		else if (sendMsgMode = "SendInput")
@@ -180,7 +176,7 @@ Send_GameMessage(actionType, msgString, gamePID="") {
 			if (!err)
 				SendEvent, ^{sc02F}
 			else
-				TrayNotifications.Show("Failed to send message.", "The clipboard couldn't be updated with the message content.`nClipboard: " Clipboard "`nMessage: " msgString)
+				TrayNotifications.Show(PROGRAM.TRANSLATIONS.TrayNotifications.FailedToSendMessage_Title, PROGRAM.TRANSLATIONS.TrayNotifications.FailedToSendMessage_Msg)
 			; SetTimer, Reset_Clipboard, -700
 		}
 		else if (sendMsgMode = "SendInput")
@@ -208,7 +204,7 @@ Send_GameMessage(actionType, msgString, gamePID="") {
 			if (!err)
 				SendEvent, ^{sc02F}
 			else
-				TrayNotifications.Show("Failed to send message.", "The clipboard couldn't be updated with the message content.`nClipboard: " Clipboard "`nMessage: " msgString)
+				TrayNotifications.Show(PROGRAM.TRANSLATIONS.TrayNotifications.FailedToSendMessage_Title, PROGRAM.TRANSLATIONS.TrayNotifications.FailedToSendMessage_Msg)
 			; SetTimer, Reset_Clipboard, -700
 		}
 		else if (sendMsgMode = "SendInput")
@@ -280,7 +276,7 @@ Get_RunningInstances() {
 }
 
 Get_GameLogsFile() {
-	global POEGameArr
+	global PROGRAM, POEGameArr
 
 	runningInstances := Get_RunningInstances()
 	Loop % runningInstances.Count {
@@ -298,7 +294,8 @@ Get_GameLogsFile() {
 		logsFile := runningInstances[1]["Folder"] "\logs\Client.txt"
 	}
 	if !FileExist(logsFile) && (logsFile != "\logs\Client.txt") {
-		TrayNotifications.Show("Logs file not found", "The specified file does not exist:`n" logsFile)
+		trayMsg := StrReplace(PROGRAM.TRANSLATIONS.TrayNotifications.GameLogsFileNotFound_Msg, "%file%", logsFile)
+		TrayNotifications.Show(PROGRAM.TRANSLATIONS.TrayNotifications.GameLogsFileNotFound_Title, trayMsg)
 		Return
 	}
 
@@ -322,7 +319,8 @@ Monitor_GameLogs() {
 			AppendToLogs("Monitoring logs file: """ logsFile """.")
 			if (PROGRAM.SETTINGS.SETTINGS_MAIN.TradesGUI_Mode = "Dock")
 				GUI_Trades.DockMode_Cycle()
-			TrayNotifications.Show("Ready for trading!", "Monitoring chat logs in " logsFile)
+			trayMsg := StrReplace(PROGRAM.TRANSLATIONS.TrayNotifications.MonitoringGameLogsFileSuccess_Msg, "%file%", logsFile)
+			TrayNotifications.Show(PROGRAM.TRANSLATIONS.TrayNotifications.MonitoringGameLogsFileSuccess_Title, trayMsg)
 		}
 		else {
 			SetTimer,% A_ThisFunc, -10000
@@ -687,9 +685,12 @@ Parse_GameLogs(strToParse) {
 
 					if !WinActive("ahk_pid " instancePID) { ; If the instance is not active
 						if ( PROGRAM.SETTINGS.SETTINGS_MAIN.ShowTabbedTrayNotificationOnWhisper = "True" ) {
-							notifTxt := "Item: " A_Tab tradeItemFull "`nPrice: " A_Tab tradePrice "`nStash: " A_Tab tradeStashFull
-							notifTxt .= tradeOther ? "`nOther: " A_Tab tradeOther : ""
-							TrayNotifications.Show("Buying request from " whispName ":", notifTxt)
+							trayTitle := StrReplace(PROGRAM.TRANSLATIONS.TrayNotifications.TradingWhisperReceived_Title, "%buyer%", whispName)
+							trayMsg := StrReplace(PROGRAM.TRANSLATIONS.TrayNotifications.TradingWhisperReceived_Msg, "%item%", A_Tab tradeItemFull)
+							trayMsg := StrReplace(trayMsg, "%price%", A_Tab tradePrice)
+							trayMsg := StrReplace(trayMsg, "%stash%", A_Tab tradeStashFull)
+							trayMsg := StrReplace(trayMsg, "%other%", A_Tab tradeOther)
+							TrayNotifications.Show(trayTitle, trayMsg)
 						}
 					}
 
@@ -704,10 +705,13 @@ Parse_GameLogs(strToParse) {
 					if (doPBNote = True) && StrLen(PROGRAM.SETTINGS.SETTINGS_MAIN.PushBulletToken) > 5 {
 						cmdLineParamsObj := {}
 						cmdLineParamsObj.PB_Token := PROGRAM.SETTINGS.SETTINGS_MAIN.PushBulletToken
-						cmdLineParamsObj.PB_Title := "Buying request from " whispName ":"
+						cmdLineParamsObj.PB_Title := StrReplace(PROGRAM.TRANSLATIONS.TrayNotifications.TradingWhisperReceived_Title, "%buyer%", whispName)
 
-						pbTxt := "Item: " tradeItemFull "\nPrice: " tradePrice "\nStash: " tradeStashFull
-						pbTxt .= tradeOther ? "\nOther: " tradeOther : ""
+						trayMsg := StrReplace(PROGRAM.TRANSLATIONS.TrayNotifications.TradingWhisperReceived_Msg, "%item%", A_Tab tradeItemFull)
+						trayMsg := StrReplace(trayMsg, "%price%", A_Tab tradePrice)
+						trayMsg := StrReplace(trayMsg, "%stash%", A_Tab tradeStashFull)
+						trayMsg := StrReplace(trayMsg, "%other%", A_Tab tradeOther)
+
 						cmdLineParamsObj.PB_Message := pbTxt
 						
 						GoSub, Parse_GameLogs_PushBulletNotifications_SA
@@ -728,7 +732,8 @@ Parse_GameLogs(strToParse) {
 
 				if !WinActive("ahk_pid " instancePID) { ; If the instance is not active
 					if ( PROGRAM.SETTINGS.SETTINGS_MAIN.ShowTabbedTrayNotificationOnWhisper = "True" ) {
-						TrayNotifications.Show("Whisper from " whispName ":", whispMsg)
+						trayTitle := StrReplace(PROGRAM.TRANSLATIONS.TrayNotifications.RegularWhisperReceived_Title, "%name%", whispName)
+						TrayNotifications.Show(trayTitle, whispMsg)
 					}
 				}
 
@@ -743,7 +748,7 @@ Parse_GameLogs(strToParse) {
 				if (doPBNote = True) && StrLen(PROGRAM.SETTINGS.SETTINGS_MAIN.PushBulletToken) > 5 {
 					cmdLineParamsObj := {}
 					cmdLineParamsObj.PB_Token := PROGRAM.SETTINGS.SETTINGS_MAIN.PushBulletToken
-					cmdLineParamsObj.PB_Title := "Whisper from " whispName ":"
+					cmdLineParamsObj.PB_Title := StrReplace(PROGRAM.TRANSLATIONS.TrayNotifications.RegularWhisperReceived_Title, "%name%", whispName)
 					cmdLineParamsObj.PB_Message := whispMsg
 					
 					GoSub, Parse_GameLogs_PushBulletNotifications_SA
@@ -779,6 +784,7 @@ Parse_GameLogs(strToParse) {
 }
 
 Read_GameLogs(logsFile) {
+	global PROGRAM
 	global sLOGS_FILE, sLOGS_TIMER
 	static logsFileObj
 
@@ -794,7 +800,7 @@ Read_GameLogs(logsFile) {
 	else if (logsFileObj.pos > logsFileObj.length) || (logsFileObj.pos < 0) && (logsFileObj) {
 		AppendToLogs(A_ThisFunc "(logsFile=" logsFile "): Restarting logs file monitor."
 		. "logsFileObj.pos: """ logsFileObj.pos """ - logsFileObj.length: """ logsFileObj.length """")
-		TrayNotifications.Show("Restarting logs file monitoring", "An issue occured while reading the logs file. Restarting the monitoring function.")
+		TrayNotifications.Show(PROGRAM.TRANSLATIONS.TrayNotifications.RestartingGameLogsMonitoring_Title, PROGRAM.TRANSLATIONS.TrayNotifications.RestartingGameLogsMonitoring_Msg)
 		logsFileObj.Close()
 		logsFileObj := FileOpen(logsFile, "r")
 		logsFileObj.Read()

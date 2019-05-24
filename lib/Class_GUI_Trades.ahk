@@ -157,14 +157,8 @@
 
 		; Info text content and pos
 		InfoMsg_X := TradeInfos_X, InfoMsg_Y := TradeInfos_Y, InfosMsg_W := TradeInfos_W
-		InfoMsg_NoTradeMsg := "All trade requests have been answered"
-				    . "`nor no whisper has been received yet."
-				    . "`n`nRight click on the tray icon,"
-				    . "`nthen [Settings] to set your preferences."
-		InfoMsg_NoGameInstanceMsg := "No game instance could be found,"
-					   . "`nretrying in XX seconds..."
-					   . "`n`nRight click on the tray icon,"
-					   . "`nthen [Settings] to set your preferences."
+		InfoMsg_NoTradeMsg := PROGRAM.TRANSLATIONS.GUI_Trades.NoTradeMsg
+		InfoMsg_NoGameInstanceMsg := PROGRAM.TRANSLATIONS.GUI_Trades.NoGameInstanceMsg
 
 		; Set required gui array variables
 		GuiTrades.Height_Maximized := guiFullHeight
@@ -388,15 +382,15 @@
 
 		if (CtrlHwnd = GuiTrades_Controls.hBTN_CloseTab) {
 			try Menu, CloseTabMenu, DeleteAll
-			Menu, CloseTabMenu, Add, Close other tabs for same item, Gui_Trades_ContextMenu_CloseOtherTabsWithSameItem
-			Menu, CloseTabMenu, Add, Close all tabs, Gui_Trades_ContextMenu_CloseAllTabs
+			Menu, CloseTabMenu, Add,% PROGRAM.TRANSLATIONS.GUI_Trades.RMENU_CloseOtherTabsForSameItem, Gui_Trades_ContextMenu_CloseOtherTabsWithSameItem
+			Menu, CloseTabMenu, Add,% PROGRAM.TRANSLATIONS.GUI_Trades.RMENU_CloseAllTabs, Gui_Trades_ContextMenu_CloseAllTabs
 			Menu, CloseTabMenu, Show
 		}
 		else if IsIn(CtrlHwnd, GuiTrades_Controls.hTXT_HeaderGhost "," GuiTrades_Controls.hTEXT_Title) {
 			try Menu, HeaderMenu, DeleteAll
-			Menu, HeaderMenu, Add, Lock Position?, Gui_Trades_ContextMenu_LockPosition
+			Menu, HeaderMenu, Add,% PROGRAM.TRANSLATIONS.TrayMenu.LockPosition, Gui_Trades_ContextMenu_LockPosition
 			if (PROGRAM.SETTINGS.SETTINGS_MAIN.TradesGUI_Locked = "True")
-				Menu, HeaderMenu, Check, Lock Position?
+				Menu, HeaderMenu, Check,% PROGRAM.TRANSLATIONS.TrayMenu.LockPosition
 			Menu, HeaderMenu, Show
 		}
 		else
@@ -418,7 +412,7 @@
 	}
 
 	ResetPositionIfOutOfBounds() {
-		global GuiTrades, GuiTradesMinimized
+		global PROGRAM, GuiTrades, GuiTradesMinimized
 
 		winHandle := GuiTrades.Is_Minimized ? GuiTradesMinimized.Handle : GuiTrades.Handle
 		
@@ -435,7 +429,7 @@
 			. "`n" appendTxtFinal)
 			Gui_Trades.ResetPosition()
 			
-			TrayNotifications.Show("Position has been reset", "The interface has been detected to be out of bounds and has its position has been reset.")
+			TrayNotifications.Show(PROGRAM.TRANSLATIONS.TrayNotifications.PositionHasBeenReset_Title, PROGRAM.TRANSLATIONS.TrayNotifications.PositionHasBeenReset_Msg)
 		}
 	}
 
@@ -598,7 +592,7 @@
 		else { ; Instance doesn't exist anymore, replace and do btn action
 			runningInstances := Get_RunningInstances()
 			if !(runningInstances.Count) {
-				TrayNotifications.Show("No game instance found.", "No running game instance could be found.`nMake sure the game is running before trying again.")
+				TrayNotifications.Show(PROGRAM.TRANSLATIONS.TrayNotifications.NoGameInstanceFound_Title, PROGRAM.TRANSLATIONS.TrayNotifications.NoGameInstanceFound_Msg)
 				Return
 			}
 			newInstancePID := GUI_ChooseInstance.Create(runningInstances, "PID").PID
@@ -626,7 +620,7 @@
 		tabContent := GUI_Trades.GetTabContent(tabName)
 
 		if (DEBUG.settings.use_chat_logs || tabContent.Buyer = "iSellStuff") {
-			TrayNotifications.Show("iSellStuff.", "The tab stats for tab with seller ""iSellStuff"" will not be saved.")
+			TrayNotifications.Show(PROGRAM.TRANSLATIONS.TrayNotifications.iSellStuffNotSaved_Title, PROGRAM.TRANSLATIONS.TrayNotifications.iSellStuffNotSaved_Msg)
 			Return
 		}
 
@@ -637,16 +631,15 @@
 		existsAlready := INI.Get(iniFile, index, "Buyer")
 		existsAlready := existsAlready = "ERROR" || existsAlready = "" ? False : True
 		if (existsAlready = True) {
-			MsgBox(4096, "", "There was an error when trying to save the Stats for this trade."
-				. "`nIt seems there is already a trade saved with ID """ index """."
-				. "The tool will now verify for the next ID. If this error appears again, please report it.")
+			trayTxt := StrReplace(PROGRAM.TRANSLATIONS.TrayNotifications.ErrorSavingStatsSameIDExists_Msg, "%number%", index)
+			TrayNotifications.Show(PROGRAM.TRANSLATIONS.TrayNotifications.ErrorSavingStatsSameIDExists_Title, trayTxt)
 			Loop {
 				index++
 				existsAlready := INI.Get(iniFile, index, "Buyer")
 				if (existsAlready = "ERROR" || existsAlready = "")
 					Break
 			}
-			MsgBox(4096, "", "Successfully found available ID: """ index """.")
+			TrayNotifications.Show(PROGRAM.TRANSLATIONS.TrayNotifications.ErrorSavingStatsSameIDExists_Solved_Title, PROGRAM.TRANSLATIONS.TrayNotifications.ErrorSavingStatsSameIDExists_Solved_Msg)
 		}
 		INI.Set(iniFile, "GENERAL", "Index", index)
 
@@ -1843,11 +1836,11 @@
 			GUI_Trades.ResetPosition()
 		}
 
-		Menu, Tray, UnCheck, Mode: Dock
-		Menu, Tray, Check, Mode: Window
-		Menu, Tray, Disable, Cycle Dock
+		Menu, Tray, UnCheck,% PROGRAM.TRANSLATIONS.TrayMenu.ModeDock
+		Menu, Tray, Check,% PROGRAM.TRANSLATIONS.TrayMenu.ModeWindow
+		Menu, Tray, Disable,% PROGRAM.TRANSLATIONS.TrayMenu.CycleDock
 
-		Menu, Tray, Enable, Lock position?
+		Menu, Tray, Enable,% PROGRAM.TRANSLATIONS.TrayMenu.LockPosition
 	}
 
 	Use_DockMode(checkOnly=False) {
@@ -1860,12 +1853,12 @@
 			GUI_Trades.ResetPosition()
 		}
 
-		Menu, Tray, Check, Mode: Dock
-		Menu, Tray, UnCheck, Mode: Window
-		Menu, Tray, Enable, Cycle Dock
+		Menu, Tray, Check,% PROGRAM.TRANSLATIONS.TrayMenu.ModeDock
+		Menu, Tray, UnCheck,% PROGRAM.TRANSLATIONS.TrayMenu.ModeWindow
+		Menu, Tray, Enable,% PROGRAM.TRANSLATIONS.TrayMenu.CycleDock
 
 		Tray_ToggleLockPosition("Check")
-		Menu, Tray, Disable, Lock position?
+		Menu, Tray, Disable,% PROGRAM.TRANSLATIONS.TrayMenu.LockPosition
 
 		GUI_Trades.DockMode_Cycle()
 	}

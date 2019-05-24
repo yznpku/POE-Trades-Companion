@@ -112,6 +112,7 @@ Start_Script() {
 	PROGRAM.FONTS_FOLDER 			:= (A_IsCompiled?PROGRAM.MAIN_FOLDER:A_ScriptDir) . (A_IsCompiled?"\Fonts":"\resources\fonts")
 	PROGRAM.IMAGES_FOLDER			:= (A_IsCompiled?PROGRAM.MAIN_FOLDER:A_ScriptDir) . (A_IsCompiled?"\Images":"\resources\imgs")
 	PROGRAM.ICONS_FOLDER			:= (A_IsCompiled?PROGRAM.MAIN_FOLDER:A_ScriptDir) . (A_IsCompiled?"\Icons":"\resources\icons")
+	PROGRAM.TRANSLATIONS_FOLDER		:= (A_IsCompiled?PROGRAM.MAIN_FOLDER:A_ScriptDir) . (A_IsCompiled?"\Translations":"\resources\translations")
 
 	prefsFileName 					:= (RUNTIME_PARAMETERS.InstanceName)?(RUNTIME_PARAMETERS.InstanceName "_Preferences.ini"):("Preferences.ini")
 	backupFileName 					:= (RUNTIME_PARAMETERS.InstanceName)?(RUNTIME_PARAMETERS.InstanceName "_Trades_Backup.ini"):("Trades_Backup.ini")
@@ -241,6 +242,7 @@ Start_Script() {
 	Update_LocalSettings()
 	localSettings := Get_LocalSettings()
 	Declare_LocalSettings(localSettings)
+	PROGRAM.TRANSLATIONS := GetTranslations(PROGRAM.SETTINGS.GENERAL.Language)
 
 	; Game settings
 	gameSettings := Get_GameSettings()
@@ -302,8 +304,8 @@ Start_Script() {
 		INI.Set(PROGRAM.INI_FILE, "GENERAL", "ShowChangelog", "False")
 		PROGRAM.SETTINGS.PROGRAM.Show_Changelogs := ""
 		PROGRAM.SETTINGS.GENERAL.ShowChangelog := "False"
-		TrayNotifications.Show(PROGRAM.Name, "Successfully updated to v" PROGRAM.VERSION
-		. "`nTake a look at the new changes!")
+		trayMsg := StrReplace(PROGRAM.TRANSLATIONS.TrayNotifications.UpdateSuccessful_Msg, "%version%", PROGRAM.VERSION)
+		TrayNotifications.Show(PROGRAM.TRANSLATIONS.TrayNotifications.UpdateSuccessful_Title, trayMsg)
 		GUI_Settings.Show("Misc Updating")
 	}
 	
@@ -311,7 +313,12 @@ Start_Script() {
 	OnClipboardChange("OnClipboardChange_Func")
 	SetTimer, GUI_Trades_RefreshIgnoreList, 60000 ; One min
 
-	TrayNotifications.Show(PROGRAM.Name, "Right click on the tray icons to access settings.")	
+	trayMsg := PROGRAM.TRANSLATIONS.TrayNotifications.AppLoaded_Msg
+	if (PROGRAM.SETTINGS.SETTINGS_MAIN.NoTabsTransparency <= 20)
+		trayMsg .= "`n`n" . StrReplace(PROGRAM.TRANSLATIONS.TrayNotifications.AppLoadedTransparency_Msg, "%number%", PROGRAM.SETTINGS.SETTINGS_MAIN.NoTabsTransparency)
+	if (PROGRAM.SETTINGS.SETTINGS_MAIN.AllowClicksToPassThroughWhileInactive = "True")
+		trayMsg .= "`n`n" PROGRAM.TRANSLATIONS.TrayNotifications.AppLoadedClickthrough_Msg
+	TrayNotifications.Show(PROGRAM.NAME, trayMsg)
 }
 
 DoNothing:
@@ -356,6 +363,7 @@ Return
 #Include ShowToolTip.ahk
 #Include SplashText.ahk
 #Include StackClick.ahk
+#Include Translations.ahk
 #Include TrayMenu.ahk
 #Include TrayNotifications.ahk
 #Include TrayRefresh.ahk

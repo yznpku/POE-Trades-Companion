@@ -80,8 +80,10 @@ PoeDotCom_GetCurrentlyLoggedCharacter(accName) {
         }
     }
 
-    if !(lastChar)
-        TrayNotifications.Show("Couldn't access characters for account", "Unable to retrieve character list for account """ accName """. Please make sure that your character list is set on public on your pathofexile.com profile.")
+    if !(lastChar) {
+        trayMsg := StrReplace(PROGRAM.TRANSLATIONS.TrayNotifications.FailedToRetrieveAccountCharacters_Msg, "%account%", accName)
+        TrayNotifications.Show(PROGRAM.TRANSLATIONS.TrayNotifications.FailedToRetrieveAccountCharacters_Title, trayMsg)
+    }
     
     return lastChar        
 }

@@ -31,6 +31,7 @@ Get_LocalSettings_DefaultValues() {
 	settings.GENERAL.RemoveCopyItemInfosIfGridActionExists								:= "True"
 	settings.GENERAL.ReplaceOldTradeVariables											:= "True"
 	settings.GENERAL.UpdateKickMyselfOutOfPartyHideoutHotkey							:= "True"
+	settings.GENERAL.Language 															:= "English"
 
 	settings.SETTINGS_MAIN 																:= {}
 	settings.SETTINGS_MAIN.TradingWhisperSFXPath 										:= PROGRAM.SFX_FOLDER "\WW_MainMenu_Letter.wav" 
@@ -248,6 +249,8 @@ LocalSettings_IsValueValid(iniSect, iniKey, iniValue) {
 	if (iniSect = "GENERAL") {
 		if IsIn(iniKey, "IsFirstTimeRunning,AddShowGridActionToInviteButtons,HasAskedForImport,RemoveCopyItemInfosIfGridActionExists,ReplaceOldTradeVariables,UpdateKickMyselfOutOfPartyHideoutHotkey")
 			isValueValid := IsIn(iniValue, "True,False") ? True : False	
+		if (iniKey = "Language")
+			isValueValid := IsIn(iniValue, "english,chinese_simplified,chinese_traditional") ? True : False
 	}
 
 	if (iniSect = "SETTINGS_MAIN") {

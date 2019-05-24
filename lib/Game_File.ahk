@@ -9,9 +9,7 @@
 
 	if !FileExist(gameFile) {
 		AppendtoLogs("File Not Found: """ gameFile """")
-		MsgBox(4096, PROGRAM.NAME, "Your production_Config.ini file could not be found!"
-			. "`nThis file contains all of your Path of Exile settings and is neccesary for us to retrieve your chat key."
-			. "`nYou will still be able to use " PROGRAM.NAME " but your chat key will be considered as ENTER.")
+		MsgBox(4096, PROGRAM.NAME, PROGRAM.TRANSLATIONS.MessageBoxes.GameSettingsFileNotFound)
 	}
 
 	FileRead, fileContent,% gameFile

@@ -105,7 +105,7 @@ Class GUI_Settings {
 		
 		; Initialize gui arrays
 		Gui, Settings:Destroy
-		Gui.New("Settings", "-Caption -Border +LabelGUI_Settings_ +HwndhGuiSettings +AlwaysOnTop", "POE TC - Settings")
+		Gui.New("Settings", "-Caption -Border +LabelGUI_Settings_ +HwndhGuiSettings", "POE TC - " PROGRAM.TRANSLATIONS.TrayMenu.Settings)
 		; Gui.New("Settings", "+AlwaysOnTop +ToolWindow +LabelGUI_Settings_ +HwndhGuiSettings", "Settings")
 		GuiSettings.Is_Created := False
 
@@ -334,7 +334,7 @@ Class GUI_Settings {
 		; * * Title bar
 		Gui.Add("Settings", "Text", "x" leftMost " y" upMost " w" guiWidth-(borderSize*2)-30 " h25 hwndhTEXT_HeaderGhost BackgroundTrans ", "") ; Title bar, allow moving
 		Gui.Add("Settings", "Progress", "xp yp wp hp Background359cfc") ; Title bar background
-		Gui.Add("Settings", "Text", "xp yp wp hp Center 0x200 cWhite BackgroundTrans ", "POE Trades Companion - Settings") ; Title bar text
+		Gui.Add("Settings", "Text", "xp yp wp hp Center 0x200 cWhite BackgroundTrans ", "POE Trades Companion - " PROGRAM.TRANSLATIONS.TrayMenu.Settings) ; Title bar text
 		imageBtnLog .= Gui.Add("Settings", "ImageButton", "x+0 yp w30 hp hwndhBTN_CloseGUI", "X", Style_RedBtn, PROGRAM.FONTS["Segoe UI"], 8)
 		__f := GUI_Settings.DragGui.bind(GUI_Settings, GuiSettings.Handle)
 		GuiControl, Settings:+g,% GuiSettings_Controls.hTEXT_HeaderGhost,% __f
@@ -608,8 +608,7 @@ Class GUI_Settings {
 
 		thisTabCtrlsList .= ",hDDL_ActionType,hEDIT_ActionContent,hBTN_SaveChangesToAction,hBTN_AddAsNewAction,hLV_ButtonsActions"
 
-		Gui, Settings:Default
-		Gui, Settings:ListView,% GuiSettings_Controls.hLV_ButtonsActions
+		GUI_Settings.SetDefaultListView("hLV_ButtonsActions")
 		Loop, Parse, ACTIONS_AVAILABLE,% "|"
 		{
 			if (A_LoopField && A_LoopField != " " && !IsContaining(A_LoopField, "----")) {
@@ -711,7 +710,7 @@ Class GUI_Settings {
 		Gui.Add("Settings", "Button","x" leftMost2+20 " y+7 w245 hwndhBTN_HotkeyAdvSaveChangesToAction", "Save changes to action...")
 		Gui.Add("Settings", "Button","x+10 yp wp hwndhBTN_HotkeyAdvAddAsNewAction", "Add as a new action")
 		Gui.Add("Settings", "ListView", "x" leftMost2+20 " y+10 w500 hwndhLV_HotkeyAdvActionsList -Multi AltSubmit +LV0x10000 R8", "#|Type|Content")
-		Gui, Settings:ListView,% GuiSettings_Controls.hLV_HotkeyAdvActionsList
+		GUI_Settings.SetDefaultListView("hLV_HotkeyAdvActionsList")
 		loopIndex := 1
 		Loop, Parse, ACTIONS_AVAILABLE,% "|"
 		{
@@ -789,11 +788,22 @@ Class GUI_Settings {
 		*/
 		Gui, Settings:Tab
 
+		Gui.Add("Settings", "Picture", "x3 y" guiHeight-27 " w35 h24 hwndhIMG_FlagUK", PROGRAM.IMAGES_FOLDER "\flag_uk.png")
+		Gui.Add("Settings", "Picture", "x+3 yp wp hp hwndhIMG_FlagChina", PROGRAM.IMAGES_FOLDER "\flag_china.png")
+		Gui.Add("Settings", "Picture", "x+3 yp wp hp hwndhIMG_FlagTaiwan", PROGRAM.IMAGES_FOLDER "\flag_taiwan.png")
+
 		Gui.Add("Settings", "Picture", "x" guiWidth-120 " y" guiHeight-45 " hwndhIMG_Paypal", PROGRAM.IMAGES_FOLDER "\DonatePaypal.png")
 		Gui.Add("Settings", "Picture", "xp-70 yp w40 h40 hwndhIMG_Discord", PROGRAM.IMAGES_FOLDER "\Discord.png")
 		Gui.Add("Settings", "Picture", "xp-45 yp w40 h40 hwndhIMG_Reddit", PROGRAM.IMAGES_FOLDER "\Reddit.png")
 		Gui.Add("Settings", "Picture", "xp-45 yp w40 h40 hwndhIMG_PoE", PROGRAM.IMAGES_FOLDER "\PoE.png")
 		Gui.Add("Settings", "Picture", "xp-45 yp w40 h40 hwndhIMG_GitHub", PROGRAM.IMAGES_FOLDER "\GitHub.png")
+
+		__f := GUI_Settings.OnLanguageChange.bind(GUI_Settings, "english")
+		GuiControl, Settings:+g,% GuiSettings_Controls["hIMG_FlagUK"],% __f
+		__f := GUI_Settings.OnLanguageChange.bind(GUI_Settings, "chinese_simplified")
+		GuiControl, Settings:+g,% GuiSettings_Controls["hIMG_FlagChina"],% __f
+		__f := GUI_Settings.OnLanguageChange.bind(GUI_Settings, "chinese_traditional")
+		GuiControl, Settings:+g,% GuiSettings_Controls["hIMG_FlagTaiwan"],% __f
 
 		__f := GUI_Settings.OnPictureLinkClick.bind(GUI_Settings, "Paypal")
 		GuiControl, Settings:+g,% GuiSettings_Controls["hIMG_Paypal"],% __f
@@ -810,6 +820,7 @@ Class GUI_Settings {
 		*	SHOW
 		*/
 
+		GUI_Settings.SetTranslation(PROGRAM.SETTINGS.GENERAL.Language)
 		Gui.Show("Settings", "h" guiHeight " w" guiWidth " NoActivate Hide")
 		; Gui.Show("Settings", "h" guiHeight " w" guiWidth " x-" guiWidth+10 " y" 1010-guiHeight " NoActivate " param)
 		detectHiddenWin := A_DetectHiddenWindows
@@ -852,9 +863,10 @@ Class GUI_Settings {
 	}
 
 	Close() {
+		global PROGRAM
 		Gui, Settings:Hide
 
-		TrayNotifications.Show("Recreating the Trades window with the new skin settings.")
+		TrayNotifications.Show(PROGRAM.TRANSLATIONS.TrayNotifications.RecreatingTradesWindow_Title, PROGRAM.TRANSLATIONS.TrayNotifications.RecreatingTradesWindow_Msg)
 
 		UpdateHotkeys()
 
@@ -878,8 +890,36 @@ Class GUI_Settings {
 			Run,% urlLink
 	}
 
+	OnLanguageChange(lang) {
+		global PROGRAM, GuiSettings, GuiMyStats
+		static prevLang
+		prevLang := prevLang?prevLang:PROGRAM.SETTINGS.GENERAL.Language
+
+		INI.Set(PROGRAM.INI_FILE, "GENERAL", "Language", lang)
+		PROGRAM.SETTINGS.GENERAL.Language := lang
+		PROGRAM.TRANSLATIONS := GetTranslations(lang)
+		
+		TrayMenu() ; Re-creating tray menu
+		settingsWinExists := WinExist("ahk_id " GuiSettings.Handle)
+		if (settingsWinExists) {
+			if (lang = prevLang)
+				GUI_Settings.SetTranslation(lang)
+			else {
+				GUI_Settings.Create()
+				GUI_Settings.Show()
+			}
+		}
+		else
+			GUI_Settings.Create()
+		statsWinExists := WinExist("ahk_id " GuiMyStats.Handle)
+		if (statsWinExists)
+			GUI_MyStats.SetTranslation(lang)
+
+		prevLang := lang
+	}
+
 	Show(whichTab="") {
-		global GuiSettings
+		global PROGRAM, GuiSettings
 
 		hiddenWin := A_DetectHiddenWindows
 		DetectHiddenWindows, On
@@ -888,7 +928,6 @@ Class GUI_Settings {
 
 		if (foundHwnd) {
 			Gui, Settings:Show, xCenter yCenter
-			GUI_Settings.SetTranslation("english")
 		}
 		else {
 			AppendToLogs("GUI_Settings.Show(" whichTab "): Non existent. Recreating.")
@@ -905,13 +944,8 @@ Class GUI_Settings {
 	ResetToDefaultSettings() {
 		global PROGRAM
 
-		MsgBox(4096+48+4, "", "Are you sure to reset your settings to default?"
-		. "`n" "Your current settings file will be kept and renamed, in case you ever wish to revert the changes."
-		. "`n"
-		. "`n" "Settings file can be found at:"
-		. "`n" PROGRAM.INI_FILE
-		. "`n"
-		. "`n" PROGRAM.NAME " will have to reload if you choose to continue.")
+		boxTxt := StrReplace(PROGRAM.TRANSLATIONS.MessageBoxes.Settings_ConfirmResetToDefault, "%folder%", PROGRAM.MAIN_FOLDER)
+		MsgBox(4096+48+4, "", boxTxt)
 
 		IfMsgBox, Yes
 		{
@@ -1035,11 +1069,11 @@ Class GUI_Settings {
 		if (CtrlName = "hCB_AllowClicksToPassThroughWhileInactive") {
 			if (trueFalse = "True") {
 				GUI_Trades.Enable_ClickThrough()
-				Menu, Tray, Check, Clickthrough?
+				Menu, Tray, Check,% PROGRAM.TRANSLATIONS.TrayMenu.Clickthrough
 			}
 			else {
 				GUI_Trades.Disable_ClickThrough()
-				Menu, Tray, UnCheck, Clickthrough?
+				Menu, Tray, UnCheck,% PROGRAM.TRANSLATIONS.TrayMenu.Clickthrough
 			}
 		}
 	}
@@ -1587,7 +1621,9 @@ Class GUI_Settings {
 	}
 
 	TabCustomizationSkins_RecreateTradesGUI() {
-		TrayNotifications.Show("POE Trades Companion", "Recreating the Trades window with the new skin settings")
+		global PROGRAM
+
+		TrayNotifications.Show(PROGRAM.TRANSLATIONS.TrayNotifications.RecreatingTradesWindow_Title, PROGRAM.TRANSLATIONS.TrayNotifications.RecreatingTradesWindow_Msg)
 		UpdateHotkeys()
 		Declare_SkinAssetsAndSettings()
 		Gui_TradesMinimized.Create()
@@ -1900,14 +1936,14 @@ Class GUI_Settings {
 	}
 
 	TabCustomizationButtons_ShowSaveChangesMenu() {
-		global GuiSettings
+		global PROGRAM, GuiSettings
 		selected := GuiSettings.CustomButtons_LV_SelectedRow
 
-		Gui, Settings:Default
-		Gui, Settings:ListView,% GuiSettings_Controls.hLV_ButtonsActions
+		GUI_Settings.SetDefaultListView("hLV_ButtonsActions")
 
 		try Menu, SaveChangesMenu, DeleteAll
-		Menu, SaveChangesMenu, Add, Currently selected (%selected%), TabCustomizationButtons_ShowSaveChangesMenu_MenuHandler
+		menuItem := StrReplace(PROGRAM.TRANSLATIONS.GUI_Settings.RMENU_CurrentlySelected, "%number%", selected)
+		Menu, SaveChangesMenu, Add,% menuItem, TabCustomizationButtons_ShowSaveChangesMenu_MenuHandler
 		Loop % LV_GetCount()
 			Menu, SaveChangesMenu, Add,% A_Index, TabCustomizationButtons_ShowSaveChangesMenu_MenuHandler
 		Menu, SaveChangesMenu, Show
@@ -1923,10 +1959,9 @@ Class GUI_Settings {
 	}
 
 	TabCustomizationButtons_AddAction(whatDo, whichPos) {
-		global GuiSettings, GuiSettings_Controls
+		global PROGRAM, GuiSettings, GuiSettings_Controls
 
-		Gui, Settings:Default
-		Gui, Settings:ListView,% GuiSettings_Controls.hLV_ButtonsActions
+		GUI_Settings.SetDefaultListView("hLV_ButtonsActions")
 
 		actionType := GUI_Settings.Submit("hDDL_ActionType"), AutoTrimStr(actionType)
 		actionContent := GUI_Settings.Submit("hEDIT_ActionContent")
@@ -1937,7 +1972,9 @@ Class GUI_Settings {
 
 		if (whatDo = "Replace" && whichPos < lvCount)
 		&& IsIn(actionShortName, "WRITE_THEN_GO_BACK,WRITE_MSG,WRITE_TO_LAST_WHISPER,WRITE_TO_BUYER,CLOSE_TAB") {
-			MsgBox(4096, "", "This action can only be set as the last action for this button. Please remove or re-order actions.")
+			boxTxt := StrReplace(PROGRAM.TRANSLATIONS.MessageBoxes.Settings_ThisActionCanOnlyBeLast, "%thisAction%", actionType)
+			boxTxt := StrReplace(boxTxt, "%lastAction%", lastAction)
+			MsgBox(4096, "", boxTxt)
 			Return
 		}
 		
@@ -1955,12 +1992,16 @@ Class GUI_Settings {
 			if (whichPos = "") {
 				if IsIn(actionShortName, "WRITE_THEN_GO_BACK,WRITE_MSG,WRITE_TO_LAST_WHISPER,WRITE_TO_BUYER,CLOSE_TAB")
 				&& IsIn(lastActionShortName, "WRITE_THEN_GO_BACK,WRITE_MSG,WRITE_TO_LAST_WHISPER,WRITE_TO_BUYER") {
-					MsgBox(4096, "", "You may not add this action (" actionType ") because the last action (" lastAction ") does not send the message.")
+					boxTxt := StrReplace(PROGRAM.TRANSLATIONS.MessageBoxes.Settings_LastActionIsWrite, "%thisAction%", actionType)
+					boxTxt := StrReplace(boxTxt, "%lastAction%", lastAction)
+					MsgBox(4096, "", boxTxt)
 					return
 				}
 				else if IsIn(actionShortName, "WRITE_THEN_GO_BACK,WRITE_MSG,WRITE_TO_LAST_WHISPER,WRITE_TO_BUYER,CLOSE_TAB")
 				&& IsIn(lastActionShortName, "CLOSE_TAB") {
-					MsgBox(4096, "", "You may not add this action (" actionType ") because the last action (" lastAction ") is closing the tab.")
+					boxTxt := StrReplace(PROGRAM.TRANSLATIONS.MessageBoxes.Settings_LastActionIsCloseTab, "%thisAction%", actionType)
+					boxTxt := StrReplace(boxTxt, "%lastAction%", lastAction)
+					MsgBox(4096, "", boxTxt)
 					return
 				}
 				else if IsIn(lastActionShortName, "WRITE_THEN_GO_BACK,WRITE_MSG,WRITE_TO_LAST_WHISPER,WRITE_TO_BUYER,CLOSE_TAB")
@@ -2010,8 +2051,7 @@ Class GUI_Settings {
 			return
 		}
 
-		Gui, Settings:Default
-		Gui, Settings:ListView,% GuiSettings_Controls.hLV_ButtonsActions
+		GUI_Settings.SetDefaultListView("hLV_ButtonsActions")
 
 		btnNum := GuiSettings.CUSTOM_BUTTON_SELECTED
 		btnSection := "SETTINGS_CUSTOM_BUTTON_" btnNum
@@ -2045,8 +2085,7 @@ Class GUI_Settings {
 	TabCustomizationButtons_OnActionsListClick(CtrlHwnd, GuiEvent, EventInfo, GuiEvent2="") {
 		global GuiSettings, GuiSettings_Controls
 
-		Gui, Settings:Default
-		Gui, Settings:ListView,% GuiSettings_Controls.hLV_ButtonsActions
+		GUI_Settings.SetDefaultListView("hLV_ButtonsActions")
 
 		thisFunc := "TabCustomizationButtons_OnActionsListClick"
 
@@ -2070,17 +2109,16 @@ Class GUI_Settings {
 			GoSub %thisFunc%_Get_Selected
 
 			try Menu, RClickMenu, DeleteAll
-			Menu, RClickMenu, Add, Move up, TabCustomizationButtons_OnActionsListClick_Menu
-			Menu, RClickMenu, Add, Move down, TabCustomizationButtons_OnActionsListClick_Menu
+			Menu, RClickMenu, Add,% PROGRAM.TRANSLATIONS.GUI_Settings.RMENU_MoveUp, TabCustomizationButtons_OnActionsListClick_Menu
+			Menu, RClickMenu, Add,% PROGRAM.TRANSLATIONS.GUI_Settings.RMENU_MoveDown, TabCustomizationButtons_OnActionsListClick_Menu
 			Menu, RClickMenu, Add
-			Menu, RClickMenu, Add, Remove this action, TabCustomizationButtons_OnActionsListClick_Menu
+			Menu, RClickMenu, Add,% PROGRAM.TRANSLATIONS.GUI_Settings.RMENU_RemoveThisAction, TabCustomizationButtons_OnActionsListClick_Menu
 			Menu, RClickMenu, Show
 		}
 		Return
 
 		TabCustomizationButtons_OnActionsListClick_Menu:
-			Gui, Settings:Default
-			Gui, Settings:ListView,% GuiSettings_Controls.hLV_ButtonsActions
+			GUI_Settings.SetDefaultListView("hLV_ButtonsActions")
 
 			if (A_ThisMenu = "RClickMenu") {
 				if (A_ThisMenuItem = "Remove this action")
@@ -2097,8 +2135,7 @@ Class GUI_Settings {
 		; LV_GetNext() seems to be the best alternative. Though, it rises an issue when no row is selected.
 		;	Instead of retrieving a blank value, it will retrieve the same value as the previously selected row ID.
 		;	As workaround, when the user does not select any row, we re-highlight the previously selected one.
-			Gui, Settings:Default
-			Gui, Settings:ListView,% GuiSettings_Controls.hLV_ButtonsActions
+			GUI_Settings.SetDefaultListView("hLV_ButtonsActions")
 
 			rowID := LV_GetNext(0, "F")
 			if (rowID = 0) {
@@ -2120,8 +2157,7 @@ Class GUI_Settings {
 	TabCustomizationButtons_GetCurrentButtonActionsList() {
 		global GuiSettings, GuiSettings_Controls
 
-		Gui, Settings:Default
-		Gui, Settings:ListView,% GuiSettings_Controls.hLV_ButtonsActions
+		GUI_Settings.SetDefaultListView("hLV_ButtonsActions")
 		
 		actions := {}
 		Loop % LV_GetCount() {			
@@ -2135,10 +2171,9 @@ Class GUI_Settings {
 	}
 
 	TabCustomizationButtons_MoveAction(side, acNum) {
-		global GuiSettings_Controls
+		global PROGRAM, GuiSettings_Controls
 
-		Gui, Settings:Default
-		Gui, Settings:ListView,% GuiSettings_Controls.hLV_ButtonsActions
+		GUI_Settings.SetDefaultListView("hLV_ButtonsActions")
 
 		LV_GetText(lastActionNum, LV_GetCount(), 1)
 		LV_GetText(lastActionType, LV_GetCount(), 2)
@@ -2146,22 +2181,24 @@ Class GUI_Settings {
 
 		if IsIn(lastActionShortName, "WRITE_THEN_GO_BACK,WRITE_MSG,WRITE_TO_LAST_WHISPER,WRITE_TO_BUYER")
 		&& (lastActionNum = acNum+1) && (side = "Down") {
-			MsgBox(4096, "", "You cannot move this action down because the last action """ lastActionType """ does not send the message.")
+			boxTxt := StrReplace(PROGRAM.TRANSLATIONS.MessageBoxes.Settings_CannotMoveDownBcsLastIsWrite, "%lastAction%", lastActionType)
+			MsgBox(4096, "", boxTxt)
 			Return
 		}
 		else if IsIn(lastActionShortName, "WRITE_THEN_GO_BACK,WRITE_MSG,WRITE_TO_LAST_WHISPER,WRITE_TO_BUYER")
 		&& (lastActionNum = acNum) && (side = "Up") {
-			MsgBox(4096, "", "You cannot move this action up because it does not send the message.")
+			MsgBox(4096, "", PROGRAM.TRANSLATIONS.MessageBoxes.Settings_CannotMoveUpBcsItsWrite)
 			Return
 		}
 		else if (lastActionShortName = "CLOSE_TAB")
 		&& (lastActionNum = acNum+1) && (side = "Down") {
-			MsgBox(4096, "", "You cannot move this action down because the last action """ lastActionType """ closes the tab.")
+			boxTxt := StrReplace(PROGRAM.TRANSLATIONS.MessageBoxes.Settings_CannotMoveDownBcsLastIsCloseTab, "%lastAction%", lastActionType)
+			MsgBox(4096, "", boxTxt)
 			Return
 		}	
 		else if (lastActionShortName = "CLOSE_TAB")
 		&& (lastActionNum = acNum) && (side = "Up") {
-			MsgBox(4096, "", "You cannot move this action up because it closes the tab.")
+			MsgBox(4096, "", PROGRAM.TRANSLATIONS.MessageBoxes.Settings_CannotMoveUpBcsItsCloseTab)
 			Return
 		}
 		else if ( (acNum = LV_GetCount()) && (side = "Down") )
@@ -2309,8 +2346,7 @@ Class GUI_Settings {
 	*/
 		global GuiSettings, GuiSettings_Controls
 
-		Gui, Settings:Default
-		Gui, Settings:ListView,% GuiSettings_Controls.hLV_ButtonsActions
+		GUI_Settings.SetDefaultListView("hLV_ButtonsActions")
 
 		GUI_Settings.TabCustomizationButtons_CustomButton_UpdateSlots(CtrlHwnd)
 
@@ -3112,8 +3148,7 @@ Class GUI_Settings {
 	TabHotkeysAdvanced_SetHotkeyActionsList(actionsList) {
 		global GuiSettings_Controls
 
-		Gui, Settings:Default
-		Gui, Settings:ListView,% GuiSettings_Controls.hLV_HotkeyAdvActionsList
+		GUI_Settings.SetDefaultListView("hLV_HotkeyAdvActionsList")
 
 		Loop % LV_GetCount()
 			LV_Delete()
@@ -3356,8 +3391,7 @@ Class GUI_Settings {
 		if !(hkInfos.Num > 0)
 			Return
 
-		Gui, Settings:Default
-		Gui, Settings:ListView,% GuiSettings_Controls.hLV_HotkeyAdvActionsList
+		GUI_Settings.SetDefaultListView("hLV_HotkeyAdvActionsList")
 
 		thisFunc := "TabHotkeysAdvanced_OnListClick"
 
@@ -3379,17 +3413,16 @@ Class GUI_Settings {
 			GoSub %thisFunc%_Get_Selected
 
 			try Menu, RClickMenu, DeleteAll
-			Menu, RClickMenu, Add, Move up, TabHotkeysAdvanced_OnListClick_Menu
-			Menu, RClickMenu, Add, Move down, TabHotkeysAdvanced_OnListClick_Menu
+			Menu, RClickMenu, Add,% PROGRAM.TRANSLATIONS.GUI_Settings.RMENU_MoveUp, TabHotkeysAdvanced_OnListClick_Menu
+			Menu, RClickMenu, Add,% PROGRAM.TRANSLATIONS.GUI_Settings.RMENU_MoveDown, TabHotkeysAdvanced_OnListClick_Menu
 			Menu, RClickMenu, Add
-			Menu, RClickMenu, Add, Remove this action, TabHotkeysAdvanced_OnListClick_Menu
+			Menu, RClickMenu, Add,% PROGRAM.TRANSLATIONS.GUI_Settings.RMENU_RemoveThisAction, TabHotkeysAdvanced_OnListClick_Menu
 			Menu, RClickMenu, Show
 		}
 		Return
 
 		TabHotkeysAdvanced_OnListClick_Menu:
-			Gui, Settings:Default
-			Gui, Settings:ListView,% GuiSettings_Controls.hLV_ButtonsActions
+			GUI_Settings.SetDefaultListView("hLV_ButtonsActions")
 
 			if (A_ThisMenu = "RClickMenu") {
 				if (A_ThisMenuItem = "Remove this action")
@@ -3407,8 +3440,7 @@ Class GUI_Settings {
 		;	Instead of retrieving a blank value, it will retrieve the same value as the previously selected row ID.
 		;	As workaround, when the user does not select any row, we re-highlight the previously selected one.
 		
-			Gui, Settings:Default
-			Gui, Settings:ListView,% GuiSettings_Controls.hLV_HotkeyAdvActionsList
+			GUI_Settings.SetDefaultListView("hLV_HotkeyAdvActionsList")
 
 			hkInfos := GUI_Settings.TabHotkeysAdvanced_GetActiveHotkeyProfileInfos()
 			if !(hkInfos.Num > 0)
@@ -3435,11 +3467,10 @@ Class GUI_Settings {
 		global GuiSettings
 		selected := GuiSettings.HotkeysAdvanced_Selected_LV_Row
 
-		Gui, Settings:Default
-		Gui, Settings:ListView,% GuiSettings_Controls.hLV_HotkeyAdvActionsList
+		GUI_Settings.SetDefaultListView("hLV_HotkeyAdvActionsList")
 
 		try Menu, HKAdv_SaveChangesMenu, DeleteAll
-		Menu, HKAdv_SaveChangesMenu, Add, Currently selected (%selected%), TabHotkeysAdvanced_ShowSaveChangesMenu_MenuHandler
+		Menu, HKAdv_SaveChangesMenu, Add,% PROGRAM.TRANSLATIONS.GUI_Settings.RMENU_CurrentlySelected "(" selected ")", TabHotkeysAdvanced_ShowSaveChangesMenu_MenuHandler
 		Loop % LV_GetCount()
 			Menu, HKAdv_SaveChangesMenu, Add,% A_Index, TabHotkeysAdvanced_ShowSaveChangesMenu_MenuHandler
 		Menu, HKAdv_SaveChangesMenu, Show
@@ -3486,8 +3517,9 @@ Class GUI_Settings {
 
 		selectedProfile := GUI_Settings.TabHotkeysAdvanced_GetActiveHotkeyProfileInfos()
 		hkStr := Transform_AHKHotkeyString_Into_ReadableHotkeyString(selectedProfile.Hotkey)
-		MsgBox(4096+48+4, "", selectedProfile.Name " (Hotkey: " hkStr ")"
-		. "`nAre you sure you want to delete this hotkey profile?")
+		boxTxt := StrReplace(PROGRAM.TRANSLATIONS.MessageBoxes.Settings_ConfirmDeleteAdvHotkeyProfile, "%name%", selectedProfile.Name)
+		boxTxt := StrReplace(boxTxt, "%hotkey%", hkStr)
+		MsgBox(4096+48+4, "", boxTxt)
 		IfMsgBox, Yes
 		{
 			hkProfiles := GUI_Settings.TabHotkeysAdvanced_GetHotkeyProfiles()
@@ -3513,8 +3545,7 @@ Class GUI_Settings {
 		global GuiSettings, GuiSettings_Controls, PROGRAM
 		iniFile := PROGRAM.INI_FILE
 
-		Gui, Settings:Default
-		Gui, Settings:ListView,% GuiSettings_Controls.hLV_HotkeyAdvActionsList
+		GUI_Settings.SetDefaultListView("hLV_HotkeyAdvActionsList")
 		hkInfos := GUI_Settings.TabHotkeysAdvanced_GetActiveHotkeyProfileInfos()
 		iniSect := "SETTINGS_HOTKEY_ADV_" hkInfos.Num
 
@@ -3544,8 +3575,7 @@ Class GUI_Settings {
 	TabHotkeysAdvanced_AddAction(whatDo, whichPos) {
 		global PROGRAM, GuiSettings, GuiSettings_Controls
 
-		Gui, Settings:Default
-		Gui, Settings:ListView,% GuiSettings_Controls.hLV_HotkeyAdvActionsList
+		GUI_Settings.SetDefaultListView("hLV_HotkeyAdvActionsList")
 
 		hkInfos := GUI_Settings.TabHotkeysAdvanced_GetActiveHotkeyProfileInfos()
 		if !(hkInfos.Num > 0)
@@ -3560,7 +3590,7 @@ Class GUI_Settings {
 
 		if (whatDo = "Replace" && whichPos < lvCount)
 		&& IsIn(actionShortName, "WRITE_THEN_GO_BACK,WRITE_MSG,WRITE_TO_LAST_WHISPER,WRITE_TO_BUYER,CLOSE_TAB") {
-			MsgBox(4096, "", "This action can only be set as the last action for this button. Please remove or re-order actions.")
+			MsgBox(4096, "", PROGRAM.TRANSLATIONS.MessageBoxes.Settings_ThisActionCanOnlyBeLast)
 			Return
 		}
 
@@ -3577,12 +3607,16 @@ Class GUI_Settings {
 			if (whichPos = "") {
 				if IsIn(actionShortName, "WRITE_THEN_GO_BACK,WRITE_MSG,WRITE_TO_LAST_WHISPER,WRITE_TO_BUYER,CLOSE_TAB")
 				&& IsIn(lastActionShortName, "WRITE_THEN_GO_BACK,WRITE_MSG,WRITE_TO_LAST_WHISPER,WRITE_TO_BUYER") {
-					MsgBox(4096, "", "You may not add this action (" actionType ") because the last action (" lastAction ") does not send the message.")
+					boxTxt := StrReplace(PROGRAM.TRANSLATIONS.MessageBoxes.Settings_LastActionIsWrite, "%thisAction%", actionType)
+					boxTxt := StrReplace(boxTxt, "%lastAction%", lastAction)
+					MsgBox(4096, "", boxTxt)
 					return
 				}
 				else if IsIn(actionShortName, "WRITE_THEN_GO_BACK,WRITE_MSG,WRITE_TO_LAST_WHISPER,WRITE_TO_BUYER,CLOSE_TAB")
 				&& IsIn(lastActionShortName, "CLOSE_TAB") {
-					MsgBox(4096, "", "You may not add this action (" actionType ") because the last action (" lastAction ") is closing the tab.")
+					boxTxt := StrReplace(PROGRAM.TRANSLATIONS.MessageBoxes.Settings_LastActionIsCloseTab, "%thisAction%", actionType)
+					boxTxt := StrReplace(boxTxt, "%lastAction%", lastAction)
+					MsgBox(4096, "", boxTxt)
 					return
 				}
 				else if IsIn(lastActionShortName, "WRITE_THEN_GO_BACK,WRITE_MSG,WRITE_TO_LAST_WHISPER,WRITE_TO_BUYER,CLOSE_TAB")
@@ -3626,8 +3660,7 @@ Class GUI_Settings {
 	TabHotkeysAdvanced_GetCurrentHotkeysActionsList() {
 		global GuiSettings, GuiSettings_Controls
 
-		Gui, Settings:Default
-		Gui, Settings:ListView,% GuiSettings_Controls.hLV_HotkeyAdvActionsList
+		GUI_Settings.SetDefaultListView("hLV_HotkeyAdvActionsList")
 		
 		actions := {}
 		Loop % LV_GetCount() {			
@@ -3641,10 +3674,9 @@ Class GUI_Settings {
 	}
 
 	TabHotkeysAdvanced_MoveAction(side, acNum) {
-		global GuiSettings_Controls
+		global PROGRAM, GuiSettings_Controls
 
-		Gui, Settings:Default
-		Gui, Settings:ListView,% GuiSettings_Controls.hLV_HotkeyAdvActionsList
+		GUI_Settings.SetDefaultListView("hLV_HotkeyAdvActionsList")
 
 		LV_GetText(lastActionNum, LV_GetCount(), 1)
 		LV_GetText(lastActionType, LV_GetCount(), 2)
@@ -3652,22 +3684,24 @@ Class GUI_Settings {
 
 		if IsIn(lastActionShortName, "WRITE_THEN_GO_BACK,WRITE_MSG,WRITE_TO_LAST_WHISPER,WRITE_TO_BUYER")
 		&& (lastActionNum = acNum+1) && (side = "Down") {
-			MsgBox(4096, "", "You cannot move this action down because the last action """ lastActionType """ does not send the message.")
+			boxTxt := StrReplace(PROGRAM.TRANSLATIONS.MessageBoxes.Settings_CannotMoveDownBcsLastIsWrite, "%lastAction%", lastActionType)
+			MsgBox(4096, "", boxTxt)
 			Return
 		}
 		else if IsIn(lastActionShortName, "WRITE_THEN_GO_BACK,WRITE_MSG,WRITE_TO_LAST_WHISPER,WRITE_TO_BUYER")
 		&& (lastActionNum = acNum) && (side = "Up") {
-			MsgBox(4096, "", "You cannot move this action up because it does not send the message.")
+			MsgBox(4096, "", PROGRAM.TRANSLATIONS.MessageBoxes.Settings_CannotMoveUpBcsItsWrite)
 			Return
 		}
 		else if (lastActionShortName = "CLOSE_TAB")
 		&& (lastActionNum = acNum+1) && (side = "Down") {
-			MsgBox(4096, "", "You cannot move this action down because the last action """ lastActionType """ closes the tab.")
+			boxTxt := StrReplace(PROGRAM.TRANSLATIONS.MessageBoxes.Settings_CannotMoveDownBcsLastIsCloseTab, "%lastAction%", lastActionType)
+			MsgBox(4096, "", boxTxt)
 			Return
 		}	
 		else if (lastActionShortName = "CLOSE_TAB")
 		&& (lastActionNum = acNum) && (side = "Up") {
-			MsgBox(4096, "", "You cannot move this action up because it closes the tab.")
+			MsgBox(4096, "", PROGRAM.TRANSLATIONS.MessageBoxes.Settings_CannotMoveUpBcsItsCloseTab)
 			Return
 		}
 		else if ( (acNum = LV_GetCount()) && (side = "Down") )
@@ -3696,8 +3730,8 @@ Class GUI_Settings {
 		iniFile := PROGRAM.INI_FILE
 
 		try Menu, HKTypeMenu, DeleteAll
-		Menu, HKTypeMenu, Add, Easy (automatically detect key pressed), HkTypeMenu_Easy
-		Menu, HKTypeMenu, Add, Manual (type key combination manually), HKTypeMenu_Manual
+		Menu, HKTypeMenu, Add,% PROGRAM.TRANSLATIONS.GUI_Settings.RMENU_HkModeEasy, HkTypeMenu_Easy
+		Menu, HKTypeMenu, Add,% PROGRAM.TRANSLATIONS.GUI_Settings.RMENU_HkModeManual, HKTypeMenu_Manual
 		Menu, HKTypeMenu, Show
 		return
 
@@ -4005,22 +4039,22 @@ Class GUI_Settings {
 			try Menu, CBMenu, DeleteAll
 			Menu, CBMenu, Add,% CtrlName,Settings_ContextMenu_DoNothing
 			Menu, CBMenu, Add
-			Menu, CBMenu, Add, Rename, Settings_ContextMenu_Rename
+			Menu, CBMenu, Add,% PROGRAM.TRANSLATIONS.GUI_Settings.RMENU_Rename, Settings_ContextMenu_Rename
 			Menu, CBMenu, Add
-			Menu, CBMenu, Add, Size: Small, Settings_ContextMenu_Resize
-			Menu, CBMenu, Add, Size: Medium, Settings_ContextMenu_Resize
-			Menu, CBMenu, Add, Size: Large, Settings_ContextMenu_Resize
+			Menu, CBMenu, Add,% PROGRAM.TRANSLATIONS.GUI_Settings.RMENU_SizeSmall, Settings_ContextMenu_Resize
+			Menu, CBMenu, Add,% PROGRAM.TRANSLATIONS.GUI_Settings.RMENU_SizeMedium, Settings_ContextMenu_Resize
+			Menu, CBMenu, Add,% PROGRAM.TRANSLATIONS.GUI_Settings.RMENU_SizeLarge, Settings_ContextMenu_Resize
 			Menu, CBMenu, Add
-			Menu, CBMenu, Add, Hide this button, Settings_ContextMenu_Resize
+			Menu, CBMenu, Add,% PROGRAM.TRANSLATIONS.GUI_Settings.RMENU_HideThisButton, Settings_ContextMenu_Resize
 
 			try Menu, CBMenu, Disable,% CtrlName
 
 			if IsContaining(btnInfos.Slots, "3,6,9") {
-				Menu, CBMenu, Disable, Size: Medium
-				Menu, CBMenu, Disable, Size: Large
+				Menu, CBMenu, Disable,% PROGRAM.TRANSLATIONS.GUI_Settings.RMENU_SizeMedium
+				Menu, CBMenu, Disable,% PROGRAM.TRANSLATIONS.GUI_Settings.RMENU_SizeLarge
 			}
 			else if IsContaining(btnInfos.Slot, "2,5,8") {
-				Menu, CBMenu, Disable, Size: Large
+				Menu, CBMenu, Disable,% PROGRAM.TRANSLATIONS.GUI_Settings.RMENU_SizeLarge
 			}
 
 			Menu, CBMenu, Show
@@ -4028,13 +4062,13 @@ Class GUI_Settings {
 		else if IsIn(CtrlHwnd, GuiSettings.UnicodeButtons_HandlesList) {
 
 			try Menu, UBMenu, DeleteAll
-			Menu, UBMenu, Add, Clipboard, Settings_ContextMenu_SetSpecialButton
-			Menu, UBMenu, Add, Whisper, Settings_ContextMenu_SetSpecialButton
-			Menu, UBMenu, Add, Invite, Settings_ContextMenu_SetSpecialButton
-			Menu, UBMenu, Add, Trade, Settings_ContextMenu_SetSpecialButton
-			Menu, UBMenu, Add, Kick, Settings_ContextMenu_SetSpecialButton
+			Menu, UBMenu, Add,% PROGRAM.TRANSLATIONS.GUI_Settings.RMENU_ActionClipboard, Settings_ContextMenu_SetSpecialButton
+			Menu, UBMenu, Add,% PROGRAM.TRANSLATIONS.GUI_Settings.RMENU_ActionWhisper, Settings_ContextMenu_SetSpecialButton
+			Menu, UBMenu, Add,% PROGRAM.TRANSLATIONS.GUI_Settings.RMENU_ActionInvite, Settings_ContextMenu_SetSpecialButton
+			Menu, UBMenu, Add,% PROGRAM.TRANSLATIONS.GUI_Settings.RMENU_ActionTrade, Settings_ContextMenu_SetSpecialButton
+			Menu, UBMenu, Add,% PROGRAM.TRANSLATIONS.GUI_Settings.RMENU_ActionKick, Settings_ContextMenu_SetSpecialButton
 			Menu, UBMenu, Add
-			Menu, UBMenu, Add, Hide this button, Settings_ContextMenu_SetSpecialButton
+			Menu, UBMenu, Add,% PROGRAM.TRANSLATIONS.GUI_Settings.RMENU_HideThisButton, Settings_ContextMenu_SetSpecialButton
 
 			Menu, UBMenu, Show
 		}
@@ -4091,32 +4125,32 @@ Class GUI_Settings {
 	}
 
 	GetControlToolTip(ctrlName) {
-		global GuiSettings, DEBUG
+		global PROGRAM, DEBUG
 		
-		_tip := (ctrlName = "hSLIDER_NoTabsTransparency") ? 	GuiSettings.TRANSLATIONS["hTEXT_NoTabsTransparency_ToolTip"]
-			: (ctrlName = "hSLIDER_TabsOpenTransparency") ? 	GuiSettings.TRANSLATIONS["hTEXT_TabsOpenTransparency_ToolTip"]
-			: (ctrlName = "hEDIT_TradingWhisperSFXPath") ? 		GuiSettings.TRANSLATIONS["hCB_TradingWhisperSFXToggle_ToolTip"]
-			: (ctrlName = "hEDIT_RegularWhisperSFXPath") ? 		GuiSettings.TRANSLATIONS["hCB_RegularWhisperSFXToggle_ToolTip"]
-			: (ctrlName = "hEDIT_BuyerJoinedAreaSFXPath") ? 	GuiSettings.TRANSLATIONS["hCB_BuyerJoinedAreaSFXToggle_ToolTip"]
-			: (ctrlName = "hEDIT_PushBulletToken") ? 			GuiSettings.TRANSLATIONS["hTEXT_PushBulletToken_ToolTip"]
-			: (ctrlName = "hTEXT_GetPBNotificationsFor") ? 		GuiSettings.TRANSLATIONS["hTEXT_PushBulletNotifications_ToolTip"]
-			: (ctrlName = "hEDIT_PoeAccounts") ? 				GuiSettings.TRANSLATIONS["hTEXT_POEAccountsList_ToolTip"]
-			: (ctrlName = "hDDL_SkinPreset") ? 					GuiSettings.TRANSLATIONS["hTEXT_Preset_ToolTip"]
-			: (ctrlName = "hLB_SkinBase") ? 					GuiSettings.TRANSLATIONS["hTEXT_SkinBase_ToolTip"]
-			: (ctrlName = "hLB_SkinFont") ? 					GuiSettings.TRANSLATIONS["hTEXT_TextFont_ToolTip"]
-			: IsIn(ctrlName, "hEDIT_SkinScalingPercentage,hUPDOWN_SkinScalingPercentage") ?		GuiSettings.TRANSLATIONS["hTEXT_ScalingSize_ToolTip"]
-			: IsIn(ctrlName, "hEDIT_SkinFontSize,hUPDOWN_SkinFontSize") ? 						GuiSettings.TRANSLATIONS["hTEXT_FontSize_ToolTip"]
-			: IsIn(ctrlName, "hEDIT_SkinFontQuality,hUPDOWN_SkinFontQuality") ?	 				GuiSettings.TRANSLATIONS["hTEXT_FontQuality_ToolTip"]
-			: IsIn(ctrlName, "hDDL_ChangeableFontColorTypes,hPROGRESS_ColorSquarePreview") ? 	GuiSettings.TRANSLATIONS["hTEXT_TextColor_ToolTip"]
-			: IsContaining(ctrlName, "hBTN_CustomBtn_") ? 			GuiSettings.TRANSLATIONS["hBTN_CustomBtn_1_ToolTip"]
-			: IsContaining(ctrlName, "hTEXT_CustomBtnSlot_") ? 		GuiSettings.TRANSLATIONS["hTEXT_CustomBtnSlot_1_ToolTip"]
-			: IsContaining(ctrlName, "hBTN_UnicodeBtn_") ? 			GuiSettings.TRANSLATIONS["hBTN_UnicodeBtn_1_ToolTip"]
-			: IsContaining(ctrlName, "hTEXT_UnicodeBtnSlot_") ?		GuiSettings.TRANSLATIONS["hTEXT_UnicodeBtnSlot_1_ToolTip"]
-			: IsContaining(ctrlName, "hDDL_HotkeyActionType") ? 	GuiSettings.TRANSLATIONS["hDDL_HotkeyActionType1_ToolTip"]
-			: IsContaining(ctrlName, "hEDIT_HotkeyActionContent") ? GuiSettings.TRANSLATIONS["hEDIT_HotkeyActionContent1_ToolTip"]
-			: IsContaining(ctrlName, "hCB_HotkeyToggle") ?		 	GuiSettings.TRANSLATIONS["hCB_HotkeyToggle1_ToolTip"]
-			: IsContaining(ctrlName, "hHK_HotkeyKeys") ? 			GuiSettings.TRANSLATIONS["hHK_HotkeyKeys1_ToolTip"]
-			: GuiSettings.TRANSLATIONS[ctrlName "_ToolTip"]
+		_tip := (ctrlName = "hSLIDER_NoTabsTransparency") ? 	PROGRAM.TRANSLATIONS.GUI_Settings["hTEXT_NoTabsTransparency_ToolTip"]
+			: (ctrlName = "hSLIDER_TabsOpenTransparency") ? 	PROGRAM.TRANSLATIONS.GUI_Settings["hTEXT_TabsOpenTransparency_ToolTip"]
+			: (ctrlName = "hEDIT_TradingWhisperSFXPath") ? 		PROGRAM.TRANSLATIONS.GUI_Settings["hCB_TradingWhisperSFXToggle_ToolTip"]
+			: (ctrlName = "hEDIT_RegularWhisperSFXPath") ? 		PROGRAM.TRANSLATIONS.GUI_Settings["hCB_RegularWhisperSFXToggle_ToolTip"]
+			: (ctrlName = "hEDIT_BuyerJoinedAreaSFXPath") ? 	PROGRAM.TRANSLATIONS.GUI_Settings["hCB_BuyerJoinedAreaSFXToggle_ToolTip"]
+			: (ctrlName = "hEDIT_PushBulletToken") ? 			PROGRAM.TRANSLATIONS.GUI_Settings["hTEXT_PushBulletToken_ToolTip"]
+			: (ctrlName = "hTEXT_GetPBNotificationsFor") ? 		PROGRAM.TRANSLATIONS.GUI_Settings["hTEXT_PushBulletNotifications_ToolTip"]
+			: (ctrlName = "hEDIT_PoeAccounts") ? 				PROGRAM.TRANSLATIONS.GUI_Settings["hTEXT_POEAccountsList_ToolTip"]
+			: (ctrlName = "hDDL_SkinPreset") ? 					PROGRAM.TRANSLATIONS.GUI_Settings["hTEXT_Preset_ToolTip"]
+			: (ctrlName = "hLB_SkinBase") ? 					PROGRAM.TRANSLATIONS.GUI_Settings["hTEXT_SkinBase_ToolTip"]
+			: (ctrlName = "hLB_SkinFont") ? 					PROGRAM.TRANSLATIONS.GUI_Settings["hTEXT_TextFont_ToolTip"]
+			: IsIn(ctrlName, "hEDIT_SkinScalingPercentage,hUPDOWN_SkinScalingPercentage") ?		PROGRAM.TRANSLATIONS.GUI_Settings["hTEXT_ScalingSize_ToolTip"]
+			: IsIn(ctrlName, "hEDIT_SkinFontSize,hUPDOWN_SkinFontSize") ? 						PROGRAM.TRANSLATIONS.GUI_Settings["hTEXT_FontSize_ToolTip"]
+			: IsIn(ctrlName, "hEDIT_SkinFontQuality,hUPDOWN_SkinFontQuality") ?	 				PROGRAM.TRANSLATIONS.GUI_Settings["hTEXT_FontQuality_ToolTip"]
+			: IsIn(ctrlName, "hDDL_ChangeableFontColorTypes,hPROGRESS_ColorSquarePreview") ? 	PROGRAM.TRANSLATIONS.GUI_Settings["hTEXT_TextColor_ToolTip"]
+			: IsContaining(ctrlName, "hBTN_CustomBtn_") ? 			PROGRAM.TRANSLATIONS.GUI_Settings["hBTN_CustomBtn_1_ToolTip"]
+			: IsContaining(ctrlName, "hTEXT_CustomBtnSlot_") ? 		PROGRAM.TRANSLATIONS.GUI_Settings["hTEXT_CustomBtnSlot_1_ToolTip"]
+			: IsContaining(ctrlName, "hBTN_UnicodeBtn_") ? 			PROGRAM.TRANSLATIONS.GUI_Settings["hBTN_UnicodeBtn_1_ToolTip"]
+			: IsContaining(ctrlName, "hTEXT_UnicodeBtnSlot_") ?		PROGRAM.TRANSLATIONS.GUI_Settings["hTEXT_UnicodeBtnSlot_1_ToolTip"]
+			: IsContaining(ctrlName, "hDDL_HotkeyActionType") ? 	PROGRAM.TRANSLATIONS.GUI_Settings["hDDL_HotkeyActionType1_ToolTip"]
+			: IsContaining(ctrlName, "hEDIT_HotkeyActionContent") ? PROGRAM.TRANSLATIONS.GUI_Settings["hEDIT_HotkeyActionContent1_ToolTip"]
+			: IsContaining(ctrlName, "hCB_HotkeyToggle") ?		 	PROGRAM.TRANSLATIONS.GUI_Settings["hCB_HotkeyToggle1_ToolTip"]
+			: IsContaining(ctrlName, "hHK_HotkeyKeys") ? 			PROGRAM.TRANSLATIONS.GUI_Settings["hHK_HotkeyKeys1_ToolTip"]
+			: PROGRAM.TRANSLATIONS.GUI_Settings[ctrlName "_ToolTip"]
 
 		if (DEBUG.SETTINGS.instant_settings_tooltips)
 			_tip := _tip? _tip "`n`n" ctrlName : "No tooltip for this control`n`n" ctrlName
@@ -4141,24 +4175,17 @@ Class GUI_Settings {
 		WinSet, Redraw
 	}
 
-	GetTranslation(_lang="english", _ctrlName="") {
-		FileRead, content,% A_ScriptDir "/resources/translations/english.json"
-		engTrans := JSON.Load(content)
-		FileRead, content,% A_ScriptDir "/resources/translations/" _lang ".json"
-		transJSON := JSON.Load(content)
-
-		if (_ctrlName)
-			return transJSON["GUI_Settings"][_ctrlName]
-		else
-			return transJSON["GUI_Settings"]
-	}
+	SetDefaultListView(lvName) {
+        global GuiSettings_Controls
+        Gui, Settings:Default
+        Gui, Settings:ListView,% GuiSettings_Controls[lvName]
+    }
 
 	SetTranslation(_lang="english", _ctrlName="") {
 		global PROGRAM, GuiSettings, GuiSettings_Controls
+		trans := PROGRAM.TRANSLATIONS.Gui_Settings
 
 		GUI_Settings.DestroyBtnImgList()
-
-		trans := GUI_Settings.GetTranslation(_lang, _ctrlName)
 
 		noResizeCtrls := "hBTN_CloseGUI"
 		. ",hBTN_SectionSettings,hBTN_TabSettingsMain,hBTN_SectionCustomization,hBTN_TabCustomizationSkins,hBTN_TabCustomizationButtons,hBTN_SectionHotkeys,hBTN_TabHotkeysBasic,hBTN_TabHotkeysAdvanced,hBTN_SectionMisc,hBTN_TabMiscUpdating,hBTN_TabMiscAbout,hBTN_ResetToDefaultSettings"
@@ -4180,14 +4207,10 @@ Class GUI_Settings {
 		. ",hTEXT_About"
 
 		if (_ctrlName) {
-			if (trans) ; selected trans
+			if (trans != "") ; selected trans
 				GuiControl, Settings:,% GuiSettings_Controls[_ctrlName],% trans
-			else ; default eng trans
-				GuiControl, Settings:,% GuiSettings_Controls[_ctrlName],% GUI_Settings.GetTranslation("english", _ctrlName)
 		}
 		else {
-			GuiSettings.TRANSLATIONS := trans
-
 			for ctrlName, ctrlTranslation in trans {
 				if !( SubStr(ctrlName, -7) = "_ToolTip" ) { ; if not a tooltip
 					ctrlHandle := GuiSettings_Controls[ctrlName]
@@ -4197,6 +4220,8 @@ Class GUI_Settings {
 							: IsContaining(ctrlName, "hBTN_") ? "Button"
 							: IsContaining(ctrlName, "hDDL_") ? "DropDownList"
 							: IsContaining(ctrlName, "hEDIT_") ? "Edit"
+							: IsContaining(ctrlName, "hGB_") ? "GroupBox"
+							: IsContaining(ctrlName, "hLV_") ? "ListView"
 							: "Text"	
 
 					if !IsIn(ctrlName, noResizeCtrls) { ; Readjust size to fit translation
@@ -4212,10 +4237,14 @@ Class GUI_Settings {
 						if (ctrlType = "DropDownList")
 							ddlValue := GUI_Settings.Submit(ctrlName)
 
-						if (ctrlTranslation) ; selected trans
+						if (ctrlTranslation != "") { ; selected trans
+							if (ctrlType = "ListView") {
+								GUI_Settings.SetDefaultListView(ctrlName)
+								Loop, Parse, ctrlTranslation, |
+									LV_ModifyCol(A_Index, Options, A_LoopField)
+							}
 							GuiControl, Settings:,% ctrlHandle,% ctrlTranslation
-						else ; default eng trans
-							GuiControl, Settings:,% ctrlHandle,% GUI_Settings.GetTranslation("english", ctrlName)
+						}
 
 						if (ctrlType = "DropDownList")
 							GuiControl, Settings:Choose,% ctrlHandle,% ddlValue

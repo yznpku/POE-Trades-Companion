@@ -6,7 +6,7 @@
 		static guiCreated
 
 		Gui, MyStats:Destroy
-		Gui.New("MyStats", "-Caption +Resize -MaximizeBox +MinSize720x480  +LabelGUI_MyStats_ +HwndhGuiMyStats", "POE TC - My Stats")
+		Gui.New("MyStats", "-Caption +Resize -MaximizeBox +MinSize720x480  +LabelGUI_MyStats_ +HwndhGuiMyStats", "POE TC - " PROGRAM.TRANSLATIONS.TrayMenu.Stats)
 		; Gui.New("MyStats", "-Caption -Border +LabelGUI_MyStats_ +HwndhGuiMyStats", "MyStats")
 		GuiMyStats.Is_Created := False
 
@@ -16,12 +16,12 @@
 		leftMost := borderSize, rightMost := guiWidth-borderSize
 		upMost := borderSize, downMost := guiHeight-borderSize
 
-		Style_Tab := [ [0, "0xEEEEEE", "", "Black", 0, , ""] ; normal
+		GuiMyStats.Style_Tab := Style_Tab := [ [0, "0xEEEEEE", "", "Black", 0, , ""] ; normal
 			, [0, "0xdbdbdb", "", "Black", 0] ; hover
 			, [3, "0x44c6f6", "0x098ebe", "Black", 0]  ; press
 			, [3, "0x44c6f6", "0x098ebe", "White", 0 ] ] ; default
 
-		Style_RedBtn := [ [0, "0xff5c5c", "", "White", 0, , ""] ; normal
+		GuiMyStats.Style_RedBtn := Style_RedBtn := [ [0, "0xff5c5c", "", "White", 0, , ""] ; normal
 			, [0, "0xff5c5c", "", "White", 0] ; hover
 			, [3, "0xe60000", "0xff5c5c", "Black", 0]  ; press
 			, [3, "0xff5c5c", "0xe60000", "White", 0 ] ] ; default
@@ -52,23 +52,23 @@
 		; * * Title bar
 		Gui.Add("MyStats", "Text", "x" leftMost " y" upMost " w" guiWidth-(borderSize*2)-31 " h25 hwndhTEXT_HeaderGhost BackgroundTrans ", "") ; Title bar, allow moving
 		Gui.Add("MyStats", "Progress", "xp yp wp hp hwndhPROGRESS_TitleBackground Background359cfc") ; Title bar background
-		Gui.Add("MyStats", "Text", "xp yp wp hp Center 0x200 cWhite BackgroundTrans hwndhTEXT_TitleText", "POE Trades Companion - My Stats") ; Title bar text
+		Gui.Add("MyStats", "Text", "xp yp wp hp Center 0x200 cWhite BackgroundTrans hwndhTEXT_TitleText", "POE Trades Companion - " PROGRAM.TRANSLATIONS.TrayMenu.Stats) ; Title bar text
 		imageBtnLog .= Gui.Add("MyStats", "ImageButton", "x+0 yp w30 hp hwndhBTN_CloseGUI", "X", Style_RedBtn, PROGRAM.FONTS["Segoe UI"], 8)
 
         ; * * Filtering options
         Gui.Add("MyStats", "GroupBox", "x" leftMost+10 " y+10 w" guiWidth-20 " R12 c000000 hwndhGB_FilteringOptions", "Filtering Options")
-        Gui.Add("MyStats", "Text", "x" leftMost+25 " yp+25 w40", "Buyer:")
+        Gui.Add("MyStats", "Text", "x" leftMost+25 " yp+25 w40 hwndhTEXT_BuyerFilter", "Buyer:")
         Gui.Add("MyStats", "DropDownList", "x+0 yp-2 vvDDL_BuyerFilter hwndhDDL_BuyerFilter w160", "All")
-        Gui.Add("MyStats", "Text", "x+20 yp+2 w50", "Item:")
+        Gui.Add("MyStats", "Text", "x+20 yp+2 w50 hwndhTEXT_ItemFilter", "Item:")
         Gui.Add("MyStats", "DropDownList", "x+5 yp-2 ToolTip hwndhDDL_ItemFilter w160", "All")
-        Gui.Add("MyStats", "Text", "x+20 yp+2 w40", "League:")
+        Gui.Add("MyStats", "Text", "x+20 yp+2 w40 hwndhTEXT_LeagueFilter", "League:")
         Gui.Add("MyStats", "DropDownList", "x+5 yp-2 hwndhDDL_LeagueFilter w160", "All")
 
-        Gui.Add("MyStats", "Text", "x" leftMost+25 " y+20 w40", "Guild:")
+        Gui.Add("MyStats", "Text", "x" leftMost+25 " y+20 w40 hwndhTEXT_GuildFilter", "Guild:")
         Gui.Add("MyStats", "DropDownList", "x+0 yp-2 hwndhDDL_GuildFilter w160", "All")
-        Gui.Add("MyStats", "Text", "x+20 yp+2 w50", "Currency:")
+        Gui.Add("MyStats", "Text", "x+20 yp+2 w50 hwndhTEXT_CurrencyFilter", "Currency:")
         Gui.Add("MyStats", "DropDownList", "x+5 yp-2 hwndhDDL_CurrencyFilter w160", "All")
-        Gui.Add("MyStats", "Text", "x+20 yp+2 w40", "Tab:")
+        Gui.Add("MyStats", "Text", "x+20 yp+2 w40 hwndhTEXT_TabFilter", "Tab:")
         Gui.Add("MyStats", "DropDownList", "x+5 yp-2 hwndhDDL_TabFilter w160", "All")
 
 		ctrlPos := Get_ControlCoords("MyStats", GuiMyStats_Controls.hDDL_TabFilter)
@@ -93,6 +93,7 @@
 
 		GUI_MyStats.EnableSubroutines()
 
+		GUI_MyStats.SetTranslation(PROGRAM.SETTINGS.GENERAL.Language)
         Gui.Show("MyStats", "h" guiHeight " w" guiWidth-1 " NoActivate Hide")
 
 		OnMessage(0x201, "WM_LBUTTONDOWN")
@@ -211,9 +212,8 @@
 			else Break
 		}
 		
-		MsgBox(4096+4, , "This cannot be undone."
-		.	"`nAre you sure you wish to delete this entry from the stats?"
-		.	"`n`n" msg)
+		boxTxt := StrReplace(PROGRAM.TRANSLATIONS.MessageBoxes.MyStats_ConfirmDeleteThisEntry, "%entry%", msg)
+		MsgBox(4096+4, , boxTxt)
 		IfMsgBox, Yes
 		{
 			GUI_MyStats.DisableSubroutines()
@@ -475,8 +475,85 @@
 		CSV_LVSave(filePath, GuiMyStats_Controls.hLV_Stats, "`t", OverWrite:=True, "MyStats")
 		; Showing tray notification and opening locaion folder
 		SplitPath, filePath, fileName, fileFolder
-		TrayNotifications.Show("Stats exported", "Successfully exported stats as " fileName)
+		trayMsg := StrReplace(PROGRAM.TRANSLATIONS.TrayNotifications.StatsExported_Msg, "%file%", fileName)
+		TrayNotifications.Show(PROGRAM.TRANSLATIONS.TrayNotifications.StatsExported_Title, trayMsg)
 		Run, %fileFolder%
+	}
+
+	SetTranslation(_lang="english", _ctrlName="") {
+		global PROGRAM, GuiMyStats, GuiMyStats_Controls
+		trans := PROGRAM.TRANSLATIONS.GUI_MyStats
+
+		GUI_MyStats.DestroyBtnImgList()
+
+		noResizeCtrls := "hBTN_CloseGUI,hGB_FilteringOptions,hLV_Stats"
+		noSmallerCtrls := "hBTN_ApplyFilters,hBTN_ExportAsCSV"
+
+		if (_ctrlName) {
+			if (trans != "") ; selected trans
+				GuiControl, MyStats:,% GuiMyStats_Controls[_ctrlName],% trans
+		}
+		else {
+			for ctrlName, ctrlTranslation in trans {
+				if !( SubStr(ctrlName, -7) = "_ToolTip" ) { ; if not a tooltip
+					ctrlHandle := GuiMyStats_Controls[ctrlName]
+
+					ctrlType := IsContaining(ctrlName, "hCB_") ? "CheckBox"
+							: IsContaining(ctrlName, "hTEXT_") ? "Text"
+							: IsContaining(ctrlName, "hBTN_") ? "Button"
+							: IsContaining(ctrlName, "hDDL_") ? "DropDownList"
+							: IsContaining(ctrlName, "hEDIT_") ? "Edit"
+							: IsContaining(ctrlName, "hGB_") ? "GroupBox"
+							: IsContaining(ctrlName, "hLV_") ? "ListView"
+							: "Text"
+
+					if !IsIn(ctrlName, noResizeCtrls) { ; Readjust size to fit translation
+						txtSize := Get_TextCtrlSize(txt:=ctrlTranslation, fontName:=GuiMyStats.Font, fontSize:=GuiMyStats.Font_Size, maxWidth:="", params:="", ctrlType)
+						txtPos := Get_ControlCoords("MyStats", ctrlHandle)
+
+						if (IsIn(ctrlName, noSmallerCtrls) && (txtSize.W > txtPos.W))
+						|| !IsIn(ctrlName, noSmallerCtrls)
+							GuiControl, MyStats:Move,% ctrlHandle,% "w" txtSize.W
+					}
+
+					if (ctrlHandle) { ; set translation
+						if (ctrlType = "DropDownList")
+							ddlValue := GUI_MyStats.Submit(ctrlName)
+
+						if (ctrlTranslation != "") { ; selected trans
+							if (ctrlType = "ListView") {
+								GUI_MyStats.SetDefaultListView(ctrlName)
+								Loop, Parse, ctrlTranslation, |
+									LV_ModifyCol(A_Index, Options, A_LoopField)
+							}
+							GuiControl, Settings:,% ctrlHandle,% ctrlTranslation
+						}
+
+						if (ctrlType = "DropDownList")
+							GuiControl, MyStats:Choose,% ctrlHandle,% ddlValue
+					}
+
+					if IsIn(ctrlName, needsCenterCtrls) {
+						GuiControl, MyStats:-Center,% ctrlHandle
+						GuiControl, MyStats:+Center,% ctrlHandle
+					}
+
+				}
+			}
+			
+			GuiControl, MyStats:,% GuiMyStats_Controls["hBTN_CloseGUI"],% "X"
+			ImageButton.Create(GuiMyStats_Controls["hBTN_CloseGUI"], GuiMyStats.Style_RedBtn, PROGRAM.FONTS["Segoe UI"], 8)						
+		}
+
+		GUI_MyStats.Redraw()
+	}
+
+	DestroyBtnImgList() {
+		global GuiMyStats_Controls
+
+		for key, value in GuiMyStats_Controls
+			if IsIn(key, "hBTN_CloseGUI")
+				ImageButton.DestroyBtnImgList(value)
 	}
 
 	SetDefaultListView(lvName) {
@@ -486,7 +563,7 @@
     }
 
 	ContextMenu(CtrlHwnd, CtrlName) {
-		global GuiMyStats, GuiMyStats_Controls
+		global PROGRAM, GuiMyStats, GuiMyStats_Controls
 
 		if (CtrlHwnd = GuiMyStats_Controls.hLV_Stats) {
 			GUI_MyStats.SetDefaultListView("hLV_Stats")
@@ -501,7 +578,7 @@
 			GuiMyStats.SelectedRow := rowID
             
             try Menu,RClickMenu,DeleteAll
-            Menu, RClickMenu, Add, Remove this entry, Gui_MyStats_RClickMenu_RemoveSelectedEntry
+            Menu, RClickMenu, Add,% PROGRAM.TRANSLATIONS.GUI_MyStats.RMENU_RemoveThisEntry, Gui_MyStats_RClickMenu_RemoveSelectedEntry
             Menu, RClickMenu, Show
 		}
 		return

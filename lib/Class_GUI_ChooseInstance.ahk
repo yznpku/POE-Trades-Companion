@@ -112,11 +112,11 @@
 	}
 
 	OnGUIClose() {
-		global GuiChooseInstance
+		global PROGRAM, GuiChooseInstance
 		chosenInstance := GuiChooseInstance.Instance
 
 		if !(chosenInstance.Folder) {
-			MsgBox(4096+16, , "No game instance chosen.")
+			MsgBox(4096+16, , PROGRAM.TRANSLATIONS.MessageBoxes.ChooseInstance_NoGameInstanceChosen)
 		}
 		else
 			Gui, ChooseInstance:Destroy
