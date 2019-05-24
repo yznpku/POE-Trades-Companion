@@ -1,0 +1,123 @@
+{
+    "TrayMenu_Simple": {
+        "Loading": "正在载入...",
+        "GitHub": "访问Github页面",
+        "Reload": "重新载入",
+        "Close": "退出"
+    },
+    "TrayMenu": {
+        "Settings": "设置",
+        "Stats": "交易统计",
+		
+		"Language": "Language CHS",
+		"ThisLanguage": "CHS",
+
+        "Clickthrough": "点击穿越",
+        "LockPosition": "锁定位置",
+
+        "ModeWindow": "弹窗模式(可任意移动)",
+        "ModeDock": "锁定模式(固定右上角)",
+        "CycleDock": "重置锁定位置",
+        "ResetPosition": "重置位置",
+
+        "Reload": "重新载入",
+        "Close": "退出"
+    },
+
+    "GUI_Settings": {
+        "_____ TABS AND SECTIONS _____":"",
+        "hBTN_SectionSettings": "设置",
+        "hBTN_TabSettingsMain": "面板选项",
+        "hBTN_SectionCustomization": "自定义",
+        "hBTN_TabCustomizationSkins": "皮肤",
+        "hBTN_TabCustomizationButtons": "面板按钮设置",
+        "hBTN_SectionHotkeys": "热键",
+        "hBTN_TabHotkeysBasic": "基础热键",
+        "hBTN_TabHotkeysAdvanced": "高级热键",
+        "hBTN_SectionMisc": "杂项",
+        "hBTN_TabMiscUpdating": "更新",
+        "hBTN_TabMiscAbout": "关于",
+        "hBTN_ResetToDefaultSettings": "!!!重置为\n默认设置!!!",
+
+        "_____ TAB SETTINGS MAIN _____":"",
+        "hCB_HideInterfaceWhenOutOfGame": "POE处于后台时隐藏插件",
+        "hCB_MinimizeInterfaceToBottomLeft": "最小化插件至左下角 (不勾选为右上角)",
+        "hCB_CopyItemInfosOnTabChange": "切换交易面板时, 复制当前交易面板的物品信息到剪贴板?",
+        "hCB_AutoFocusNewTabs": "当有新交易时, 自动切换至最新的交易面板",
+        "hCB_AutoMinimizeOnAllTabsClosed": "当所有交易面板关闭后, 是否自动将插件最小化?",
+        "hCB_AutoMaximizeOnFirstNewTab": "当首个交易面板弹出时, 是否自动最大化?",
+        "hCB_SendTradingWhisperUponCopyWhenHoldingCTRL": "在交易网站页面中, 按住CTRL然后点击Whisper,\n 是否直接切换至游戏进程并将购买密语发送给卖家?",
+        "hTEXT_PlaySoundNotificationWhen": "自定义提醒音效: ",
+        "hCB_TradingWhisperSFXToggle": "收到交易密语",
+        "hBTN_BrowseTradingWhisperSFX": "浏览文件",
+        "hCB_RegularWhisperSFXToggle": "收到普通密语",
+        "hBTN_BrowseRegularWhisperSFX": "浏览文件",
+        "hCB_BuyerJoinedAreaSFXToggle": "卖家进入你的当前地图",
+        "hBTN_BrowseBuyerJoinedAreaSFX": "浏览文件",
+        "hCB_ShowTabbedTrayNotificationOnWhisper": "当你POE处于后台时, 如果收到密语, \n是否显示托盘通知?",
+        "hTEXT_PushBulletNotifications": "PushBullet推送: (这东西适合那些玩游戏不专心的, 或者暂时不在电脑前的, 可以跨设备接收游戏内密语推送, 首次激活需要科学上网)",
+        "hTEXT_PushBulletToken": "Token:",
+        "hTEXT_GetPBNotificationsFor": "获取PushBullet推送当: ",
+        "hCB_PushBulletOnTradingWhisper": "有交易密语",
+        "hCB_PushBulletOnWhisperMessage": "有任意密语",
+        "hCB_PushBulletOnlyWhenAfk": "只在游戏AFK时才接收PushBullet推送?",
+        "hTEXT_POEAccountsList": "POE账户名列表 (区分大小写, 用英文逗号隔开):",
+        "hCB_AllowClicksToPassThroughWhileInactive": "当所有交易面板关闭后, 插件是否为鼠标穿透?",
+        "hTEXT_NoTabsTransparency": "无交易面板存在时的插件透明度",
+        "hTEXT_TabsOpenTransparency": "有交易面板存在时的插件透明度",
+        "hCB_ItemGridHideNormalTab": "关闭普通仓定位功能?",
+        "hCB_ItemGridHideQuadTab": "关闭四倍仓定位功能?",
+        "hCB_ItemGridHideNormalTabAndQuadTabForMaps": "交易地图时, 关闭任意仓库的定位功能",
+        
+        "_____ TAB CUSTOMIZATION SKINS _____" : "",
+        "hTEXT_Preset":"预设皮肤 (一套皮肤由界面+字体两个部分组成):",
+        "hTEXT_SkinBase":"界面:",
+        "hTEXT_ScalingSize":"界面缩放比例 (%)",
+        "hTEXT_TextFont":"文本字体:",
+        "hCB_UseRecommendedFontSettings":"是否使用推荐字体设置? (不勾选的话可以自行调整字体)",
+        "hTEXT_FontQuality":"字体粗细:",
+        "hTEXT_TextColor":"字体颜色:",
+        "hBTN_ShowColorPicker":"自定义颜色",
+        "hBTN_RecreateTradesGUI":"点击该按钮应用当前修改",
+
+        "_____ TAB CUSTOMIZATION BUTTONS _____" : "",
+        "hTEXT_ButtonsTabTopTip":"左键点击来调整该按钮行为 - 右键点击下面按钮调整按钮大小\n左键点击后拖动按钮可以调整按钮位置 (目标位置需要为空槽位)",
+        "hTEXT_ButtonsTabTopTip2":"你可以使用%xxx%的形式来定义下列三个参数\n买家(你是卖家)角色名(%buyer%), 物品名称 (%item%), 物品价格 (%price%)",
+        "hBTN_SaveChangesToAction":"保存当前步骤的修改...",
+        "hBTN_AddAsNewAction":"添加一个新步骤",
+        "hLV_ButtonsActions":"序号|基本类型|内容",
+
+        "_____ TAB HOTKEYS ADVANCED _____" : "",
+        "hBTN_ChangeHKType":"快捷键设定方式",
+        "hBTN_HotkeyAdvSaveChangesToAction":"保存当前步骤的修改...",
+        "hBTN_HotkeyAdvAddAsNewAction":"添加一个新步骤",
+        "hLV_HotkeyAdvActionsList":"序号|基本类型|内容",
+
+        "_____ TAB MISC UPDATING _____" : "",
+        "hTEXT_YourVersion":"当前版本:",
+        "hTEXT_LatestStable":"最新稳定版(stable):",
+        "hTEXT_LatestBETA":"最新测试版(BETA):",
+        "hBTN_CheckForUpdates":"点击检查更新",
+        "hTEXT_CheckForUpdatesWhen":"检查更新中... ",
+        "hDDL_CheckForUpdate":"|应用启动时检查更新|应用启动时，且运行时每5小时检查更新|应用启动时，且运行时每日检查更新",
+        "hCB_UseBeta":"下载BETA分支? (默认更新为稳定版stable)",
+        "hCB_DownloadUpdatesAutomatically":"自动下载更新? ",
+
+        "_____ TAB MISC ABOUT _____" : "",
+        "hTEXT_About":"POE Trades Companion（POE交易伴侣）旨在增强您的POE交易体验。\n\n当您从poe.trade或poeapp.com收到一个交易密语时，\n应用会弹出一个可视化面板以供您点击。\n\n除了常规的退队/组队等按钮外，插件还支持方便的快捷回话按钮（最高可设置九个），\n同时支持键盘快捷键（需要自己设置），给您以最丝滑的交易体验。"
+        
+    },
+
+    "ACTIONS": {
+        "TEXT_NAME": {
+        },
+
+        "DEFAULT_CONTENT": {
+
+        },
+
+        "FORCED_CONTENT": {
+
+        }
+    }
+}
