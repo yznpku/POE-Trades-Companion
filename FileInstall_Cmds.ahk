@@ -704,6 +704,81 @@ if !InStr(FileExist(PROGRAM.IMAGES_FOLDER ""), "D")
 	FileCreateDir,% PROGRAM.IMAGES_FOLDER ""
 
 if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\imgs\flag_china.png")
+	FileGetSize, destFileSize, % PROGRAM.IMAGES_FOLDER "\flag_china.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\imgs\flag_china.png
+	FileGetSize, destFileSize, % PROGRAM.IMAGES_FOLDER "\flag_china.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\imgs\flag_china.png, % PROGRAM.IMAGES_FOLDER "\flag_china.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\imgs\flag_china.png"
+	.	"`nDest: " PROGRAM.IMAGES_FOLDER "\flag_china.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\imgs\flag_china.png"
+	.	"`nDest: " PROGRAM.IMAGES_FOLDER "\flag_china.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.IMAGES_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.IMAGES_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\imgs\flag_taiwan.png")
+	FileGetSize, destFileSize, % PROGRAM.IMAGES_FOLDER "\flag_taiwan.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\imgs\flag_taiwan.png
+	FileGetSize, destFileSize, % PROGRAM.IMAGES_FOLDER "\flag_taiwan.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\imgs\flag_taiwan.png, % PROGRAM.IMAGES_FOLDER "\flag_taiwan.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\imgs\flag_taiwan.png"
+	.	"`nDest: " PROGRAM.IMAGES_FOLDER "\flag_taiwan.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\imgs\flag_taiwan.png"
+	.	"`nDest: " PROGRAM.IMAGES_FOLDER "\flag_taiwan.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.IMAGES_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.IMAGES_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\imgs\flag_uk.png")
+	FileGetSize, destFileSize, % PROGRAM.IMAGES_FOLDER "\flag_uk.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\imgs\flag_uk.png
+	FileGetSize, destFileSize, % PROGRAM.IMAGES_FOLDER "\flag_uk.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\imgs\flag_uk.png, % PROGRAM.IMAGES_FOLDER "\flag_uk.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\imgs\flag_uk.png"
+	.	"`nDest: " PROGRAM.IMAGES_FOLDER "\flag_uk.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\imgs\flag_uk.png"
+	.	"`nDest: " PROGRAM.IMAGES_FOLDER "\flag_uk.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.IMAGES_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.IMAGES_FOLDER ""
+
+if (A_IsCompiled) {
 	sourceFileSize := Get_ResourceSize("resources\imgs\GitHub.png")
 	FileGetSize, destFileSize, % PROGRAM.IMAGES_FOLDER "\GitHub.png"
 }
@@ -4817,6 +4892,81 @@ if (ErrorLevel) {
 	errorLog .= "`n`n""Failed to extract file!"
 	.	"`nSource: resources\skins\White\TradeVerifyRed.png"
 	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\TradeVerifyRed.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.TRANSLATIONS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.TRANSLATIONS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\translations\chinese_simplified.json")
+	FileGetSize, destFileSize, % PROGRAM.TRANSLATIONS_FOLDER "\chinese_simplified.json"
+}
+else {
+	FileGetSize, sourceFileSize, resources\translations\chinese_simplified.json
+	FileGetSize, destFileSize, % PROGRAM.TRANSLATIONS_FOLDER "\chinese_simplified.json"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\translations\chinese_simplified.json, % PROGRAM.TRANSLATIONS_FOLDER "\chinese_simplified.json", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\translations\chinese_simplified.json"
+	.	"`nDest: " PROGRAM.TRANSLATIONS_FOLDER "\chinese_simplified.json"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\translations\chinese_simplified.json"
+	.	"`nDest: " PROGRAM.TRANSLATIONS_FOLDER "\chinese_simplified.json"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.TRANSLATIONS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.TRANSLATIONS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\translations\chinese_traditional.json")
+	FileGetSize, destFileSize, % PROGRAM.TRANSLATIONS_FOLDER "\chinese_traditional.json"
+}
+else {
+	FileGetSize, sourceFileSize, resources\translations\chinese_traditional.json
+	FileGetSize, destFileSize, % PROGRAM.TRANSLATIONS_FOLDER "\chinese_traditional.json"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\translations\chinese_traditional.json, % PROGRAM.TRANSLATIONS_FOLDER "\chinese_traditional.json", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\translations\chinese_traditional.json"
+	.	"`nDest: " PROGRAM.TRANSLATIONS_FOLDER "\chinese_traditional.json"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\translations\chinese_traditional.json"
+	.	"`nDest: " PROGRAM.TRANSLATIONS_FOLDER "\chinese_traditional.json"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.TRANSLATIONS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.TRANSLATIONS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\translations\english.json")
+	FileGetSize, destFileSize, % PROGRAM.TRANSLATIONS_FOLDER "\english.json"
+}
+else {
+	FileGetSize, sourceFileSize, resources\translations\english.json
+	FileGetSize, destFileSize, % PROGRAM.TRANSLATIONS_FOLDER "\english.json"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\translations\english.json, % PROGRAM.TRANSLATIONS_FOLDER "\english.json", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\translations\english.json"
+	.	"`nDest: " PROGRAM.TRANSLATIONS_FOLDER "\english.json"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\translations\english.json"
+	.	"`nDest: " PROGRAM.TRANSLATIONS_FOLDER "\english.json"
 	.	"`nFlag: " 2
 }
 

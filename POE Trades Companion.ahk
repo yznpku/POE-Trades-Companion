@@ -167,7 +167,7 @@ Start_Script() {
 
 	; Create local directories - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 	directories := PROGRAM.MAIN_FOLDER "`n" PROGRAM.SFX_FOLDER "`n" PROGRAM.LOGS_FOLDER "`n" PROGRAM.SKINS_FOLDER
-	. "`n" PROGRAM.FONTS_FOLDER "`n" PROGRAM.IMAGES_FOLDER "`n" PROGRAM.DATA_FOLDER "`n" PROGRAM.ICONS_FOLDER "`n" PROGRAM.TEMP_FOLDER
+	. "`n" PROGRAM.FONTS_FOLDER "`n" PROGRAM.IMAGES_FOLDER "`n" PROGRAM.DATA_FOLDER "`n" PROGRAM.ICONS_FOLDER "`n" PROGRAM.TEMP_FOLDER "`n" PROGRAM.TRANSLATIONS_FOLDER
 
 	Loop, Parse, directories, `n, `r
 	{
@@ -188,7 +188,7 @@ Start_Script() {
 		Close_PreviousInstance()
 	TrayRefresh()
 
-	if (A_IsCompiled) && !(DEBUG.settings.skip_assets_extracting)
+	if !(DEBUG.settings.skip_assets_extracting)
 		AssetsExtract()
 
 	; Currency names for stats gui - - - - - - - - - - - - - - - - - - - - - - - - - - - -
