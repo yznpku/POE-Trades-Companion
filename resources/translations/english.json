@@ -1,9 +1,4 @@
 {
-    "TrayMenu_Simple" : {
-        "Loading" : "Tool is loading...",
-        "GitHub" : "GitHub"
-    },
-	
     "TrayMenu" : {
         "Settings" : "Settings",
         "Stats" : "My Stats",

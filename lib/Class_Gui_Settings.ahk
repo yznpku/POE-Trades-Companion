@@ -1992,7 +1992,7 @@ Class GUI_Settings {
 	}
 
 	TabCustomizationButtons_OnActionsListClick(CtrlHwnd, GuiEvent, EventInfo, GuiEvent2="") {
-		global GuiSettings, GuiSettings_Controls
+		global PROGRAM, GuiSettings, GuiSettings_Controls
 
 		GUI_Settings.SetDefaultListView("hLV_ButtonsActions")
 
@@ -3294,7 +3294,7 @@ Class GUI_Settings {
 	}
 
 	TabHotkeysAdvanced_OnListClick(CtrlHwnd, GuiEvent, EventInfo, GuiEvent2="") {
-		global GuiSettings, GuiSettings_Controls
+		global PROGRAM, GuiSettings, GuiSettings_Controls
 
 		hkInfos := GUI_Settings.TabHotkeysAdvanced_GetActiveHotkeyProfileInfos()
 		if !(hkInfos.Num > 0)
@@ -3373,13 +3373,14 @@ Class GUI_Settings {
 	*/
 
 	TabHotkeysAdvanced_ShowSaveChangesMenu() {
-		global GuiSettings
+		global PROGRAM, GuiSettings
 		selected := GuiSettings.HotkeysAdvanced_Selected_LV_Row
 
 		GUI_Settings.SetDefaultListView("hLV_HotkeyAdvActionsList")
 
 		try Menu, HKAdv_SaveChangesMenu, DeleteAll
-		Menu, HKAdv_SaveChangesMenu, Add,% PROGRAM.TRANSLATIONS.GUI_Settings.RMENU_CurrentlySelected "(" selected ")", TabHotkeysAdvanced_ShowSaveChangesMenu_MenuHandler
+		menuTxt := StrReplace(PROGRAM.TRANSLATIONS.GUI_Settings.RMENU_CurrentlySelected, "%number%", selected)
+		Menu, HKAdv_SaveChangesMenu, Add,% menuTxt, TabHotkeysAdvanced_ShowSaveChangesMenu_MenuHandler
 		Loop % LV_GetCount()
 			Menu, HKAdv_SaveChangesMenu, Add,% A_Index, TabHotkeysAdvanced_ShowSaveChangesMenu_MenuHandler
 		Menu, HKAdv_SaveChangesMenu, Show

@@ -61,6 +61,8 @@ PoeDotCom_GetCurrencyData() {
 }
 
 PoeDotCom_GetCurrentlyLoggedCharacter(accName) {
+    global PROGRAM
+    
     if !(accName)
         return
 
