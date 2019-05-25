@@ -412,27 +412,6 @@
 			"SENDEVENT_RAW" : "Uses AutoHotKey SendEvent command with the {Raw} parameter instead of directly sending the messages into chat.",
 
 			"SLEEP" : "Uses AutoHotkey Sleep command to add a delay before the next action."
-        },
-
-        "FORCED_CONTENT" : {
-			"SEND_TO_LAST_WHISPER" : "@%lwr% ",
-			"WRITE_TO_LAST_WHISPER" : "@%lwr% ",
-			"SEND_TO_LAST_WHISPER_SENT" : "@%lws% ",
-			"WRITE_TO_LAST_WHISPER_SENT" : "@%lws% ",
-			"SEND_TO_BUYER" : "@%buyer% ",
-			"WRITE_TO_BUYER" : "@%buyer% ",
-			"INVITE_BUYER" : "/invite %buyer%",
-			"TRADE_BUYER" : "/tradewith %buyer%",
-			"KICK_BUYER" : "/kick %buyer%",
-			"KICK_MYSELF" : "/kick %myself%",
-
-			"CMD_AFK" : "/afk ",
-			"CMD_AUTOREPLY" : "/autoreply ",
-			"CMD_DND" : "/dnd ",
-			"CMD_HIDEOUT" : "/hideout",
-			"CMD_OOS" : "/oos",
-			"CMD_REMAINING" : "/remaining",
-			"CMD_WHOIS" : "/whois"
         }
     }
 }

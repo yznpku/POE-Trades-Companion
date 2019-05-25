@@ -147,9 +147,26 @@ Class GUI_Settings {
 		for key, value in PROGRAM.TRANSLATIONS.ACTIONS.DEFAULT_CONTENT
 			ACTIONS_DEFAULT_CONTENT[key] := value
 
-		global ACTIONS_FORCED_CONTENT := {}
-		for key, value in PROGRAM.TRANSLATIONS.ACTIONS.FORCED_CONTENT
-			ACTIONS_FORCED_CONTENT[key] := value
+		global ACTIONS_FORCED_CONTENT := { "":""
+			, "SEND_TO_LAST_WHISPER":"@%lwr% "
+			, "WRITE_TO_LAST_WHISPER":"@%lwr% "
+			, "SEND_TO_LAST_WHISPER_SENT":"@%lws% "
+			, "WRITE_TO_LAST_WHISPER_SENT":"@%lws% "
+			, "SEND_TO_BUYER":"@%buyer% "
+			, "WRITE_TO_BUYER":"@%buyer% "
+			, "INVITE_BUYER":"/invite %buyer%"
+			, "TRADE_BUYER":"/tradewith %buyer%"
+			, "KICK_BUYER":"/kick %buyer%"
+			, "KICK_MYSELF":"/kick %myself%"
+
+			, "CMD_AFK":"/afk "
+			, "CMD_AUTOREPLY":"/autoreply "
+			, "CMD_DND":"/dnd "
+			, "CMD_HIDEOUT":"/hideout"
+			, "CMD_OOS":"/oos"
+			, "CMD_REMAINING":"/remaining"
+			, "CMD_WHOIS":"/whois"
+			, "":""}
 
 		global ACTIONS_READONLY := "INVITE_BUYER,TRADE_BUYER,KICK_BUYER,KICK_MYSELF"
 			. ",SAVE_TRADE_STATS,COPY_ITEM_INFOS,GO_TO_NEXT_TAB,GO_TO_PREVIOUS_TAB"
