@@ -165,7 +165,7 @@
 		"hBTN_SaveChangesToAction_ToolTip" : "Save the changes to one of the existing actions.",
         "hBTN_AddAsNewAction" : "Add as a new action",
 		"hBTN_AddAsNewAction_ToolTip" : "Save the changes as a new action.",
-        "hLV_ButtonsActions" : "#|Type|Content WORKING",
+        "hLV_ButtonsActions" : "#|Type|Content",
 		"hLV_ButtonsActions_ToolTip" : "List of actions that will performed upon clicking this button.\nRight click on an  action allows to move it up/down or remove it.",
 		
 		"____ TAB HOTKEYS BASIC ____"  : "",
