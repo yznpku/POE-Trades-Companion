@@ -85,12 +85,13 @@
     }
 
 	AcceptLang() {
-		global PROGRAM
+		global PROGRAM, GuiChooseLang
 
 		lang := GuiChooseLang.ChoosenLang != "" ? GuiChooseLang.ChoosenLang : "english"
 		INI.Set(PROGRAM.INI_FILE, "GENERAL", "Language", lang)
 		INI.Set(PROGRAM.INI_FILE, "GENERAL", "AskForLanguage", "False")
 		PROGRAM.TRANSLATIONS := GetTranslations(lang)
+
 		Gui, ChooseLang:Destroy
 	}
 

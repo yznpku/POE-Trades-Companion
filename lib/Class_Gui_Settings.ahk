@@ -732,7 +732,6 @@ Class GUI_Settings {
 		*	SHOW
 		*/
 
-		GUI_Settings.SetTranslation(PROGRAM.SETTINGS.GENERAL.Language)
 		Gui.Show("Settings", "h" guiHeight " w" guiWidth " NoActivate Hide")
 		; Gui.Show("Settings", "h" guiHeight " w" guiWidth " x-" guiWidth+10 " y" 1010-guiHeight " NoActivate " param)
 		detectHiddenWin := A_DetectHiddenWindows
@@ -839,11 +838,13 @@ Class GUI_Settings {
 		DetectHiddenWindows, %hiddenWin%
 
 		if (foundHwnd) {
+			GUI_Settings.SetTranslation(PROGRAM.SETTINGS.GENERAL.Language)
 			Gui, Settings:Show, xCenter yCenter
 		}
 		else {
 			AppendToLogs("GUI_Settings.Show(" whichTab "): Non existent. Recreating.")
 			GUI_Settings.Create()
+			GUI_Settings.SetTranslation(PROGRAM.SETTINGS.GENERAL.Language)
 			GUI_Settings.Show()
 		}
 

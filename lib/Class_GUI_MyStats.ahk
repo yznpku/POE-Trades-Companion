@@ -92,8 +92,6 @@
 		*/
 
 		GUI_MyStats.EnableSubroutines()
-
-		GUI_MyStats.SetTranslation(PROGRAM.SETTINGS.GENERAL.Language)
         Gui.Show("MyStats", "h" guiHeight " w" guiWidth-1 " NoActivate Hide")
 
 		OnMessage(0x201, "WM_LBUTTONDOWN")
@@ -526,7 +524,7 @@
 								Loop, Parse, ctrlTranslation, |
 									LV_ModifyCol(A_Index, Options, A_LoopField)
 							}
-							GuiControl, Settings:,% ctrlHandle,% ctrlTranslation
+							GuiControl, MyStats:,% ctrlHandle,% ctrlTranslation
 						}
 
 						if (ctrlType = "DropDownList")
@@ -623,7 +621,7 @@
 	}
 
     Show() {
-		global GuiMyStats
+		global PROGRAM, GuiMyStats
 
 		hiddenWin := A_DetectHiddenWindows
 		DetectHiddenWindows, On
@@ -633,11 +631,13 @@
 		if (foundHwnd) {
 			GUI_MyStats.UpdateData()
 			GUI_MYStats.ApplyFilters()
+			GUI_MyStats.SetTranslation(PROGRAM.SETTINGS.GENERAL.Language)
 			Gui, MyStats:Show, xCenter yCenter
 		}
 		else {
 			AppendToLogs("GUI_MYStats.Show(): Non existent. Recreating.")
 			GUI_MyStats.Create()
+			GUI_MyStats.SetTranslation(PROGRAM.SETTINGS.GENERAL.Language)
 			Gui, MyStats:Show, xCenter yCenter
 		}
 	}
