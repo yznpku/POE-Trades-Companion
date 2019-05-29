@@ -2,12 +2,10 @@
     /*  Retrieve map infos from poe.ninja
     */
     url := "https://poe.ninja/api/Data/GetMapOverview?league=" league
-	postData		:= ""
-	reqHeaders		:= []
-	reqHeaders.Push("Content-Type: text/html; charset=UTF-8")
-	options			:= ""
-    options         .= "`n" "TimeOut: 25"
-	html 			:= cURL_Download(url, ioData := postData, reqHeaders, options, false, false, false, errorMsg)
+	headers := "Content-Type: text/html; charset=UTF-8"
+    options := "TimeOut: 25"
+
+    WinHttpRequest(url, data:="", headers, options), html := data
 
     mapsJSON := JSON.Load(html)
     return mapsJSON
@@ -18,12 +16,10 @@ PoeNinja_GetUniqueMapOverview(league) {
     /*  Retrieve map infos from poe.ninja
     */
     url := "https://poe.ninja/api/Data/GetUniqueMapOverview?league=" league
-	postData		:= ""
-	reqHeaders		:= []
-	reqHeaders.Push("Content-Type: text/html; charset=UTF-8")
-	options			:= ""
-    options         .= "`n" "TimeOut: 25"
-	html 			:= cURL_Download(url, ioData := postData, reqHeaders, options, false, false, false, errorMsg)
+	headers := "Content-Type: text/html; charset=UTF-8"
+    options := "TimeOut: 25"
+
+    WinHttpRequest(url, data:="", headers, options), html := data
 
     uniqueMapsJSON := JSON.Load(html)
     return uniqueMapsJSON

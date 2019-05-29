@@ -106,11 +106,14 @@ UpdateCheck(checkType="normal", notifOrBox="notif") {
 
 	updateRel := IsUpdateAvailable()
 	if !(updateRel) {
-		TrayNotifications.Show(PROGRAM.NAME, "You are up to date!")
+		trayMsg := StrReplace(PROGRAM.TRANSLATIONS.TrayNotifications.NoUpdateFound_Msg, "%version%", A_Tab PROGRAM.VERSION)
+		trayMsg := StrReplace(trayMsg, "%stable%", A_Tab PROGRAM.SETTINGS.UPDATING.LatestStable)
+		trayMsg := StrReplace(trayMsg, "%beta%", A_Tab PROGRAM.SETTINGS.UPDATING.LatestBeta)
+		TrayNotifications.Show(PROGRAM.TRANSLATIONS.TrayNotifications.NoUpdateFound_Title, trayMsg)
 		return
 	}
 	if (updateRel = "ERROR") {
-		TrayNotifications.Show(PROGRAM.NAME, "An error occured when checking for updates`nPlease try again later or update manually.")
+		TrayNotifications.Show(PROGRAM.TRANSLATIONS.TrayNotifications.ErrorOnUpdateCheck_Title, PROGRAM.TRANSLATIONS.TrayNotifications.ErrorOnUpdateCheck_Msg)
 		return
 	}
 
@@ -125,19 +128,18 @@ UpdateCheck(checkType="normal", notifOrBox="notif") {
 
 	if (notifOrBox="box")
 		ShowUpdatePrompt(updTag, updDL)
-	else if (notifOrBox="notif")
-		TrayNotifications.Show(updTag " is available!", "Left click on this notification to run the automatic download.`nRight click to dismiss.", {Is_Update:1, Fade_Timer:20000})
+	else if (notifOrBox="notif") {
+		trayTitle := StrReplace(PROGRAM.TRANSLATIONS.TrayNotifications.UpdateAvailable_Title, "%update%", updTag)
+		TrayNotifications.Show(trayTitle, PROGRAM.TRANSLATIONS.TrayNotifications.UpdateAvailable_Msg, {Is_Update:1, Fade_Timer:20000})
+	}
 }
 
 ShowUpdatePrompt(ver, dl) {
 	global PROGRAM
 
-	MsgBox, 4100,% PROGRAM.NAME " - Update prompt",% ""
-	. "Current:" A_Tab A_Tab PROGRAM.VERSION
-	. "`nAvailable: " A_Tab ver
-	. "`n"
-	. "`nWould you like to update now?"
-	. "`nThe entire updating process is automated."
+	boxMsg := StrReplace(PROGRAM.TRANSLATIONS.MessageBoxes.UpdatePrompt_Msg, "%version%", PROGRAM.VERSION)
+	boxMsg := StrReplace(boxMsg, "%update%", ver)
+	MsgBox(4100, PROGRAM.NAME " - " PROGRAM.TRANSLATIONS.MessageBoxes.UpdatePrompt_Title, boxMsg)
 	IfMsgBox, Yes
 	{
 		DownloadAndRunUpdater(dl)

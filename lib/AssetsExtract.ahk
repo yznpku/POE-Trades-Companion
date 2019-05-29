@@ -139,6 +139,17 @@
 			appendToFile .= FileInstall("""" filePath """", "PROGRAM.SKINS_FOLDER """ "\" path.1 """", replaceFlag)
 		}
 	}
+	
+	; - - - - TRANSLATIONS
+	allowedExtensions := "json"
+	Loop,% A_ScriptDir "\resources\translations\*"
+	{
+		RegExMatch(A_LoopFileFullPath, "O)\\resources\\translations\\(.*)", path)
+		filePath := "resources\translations\" path.1
+
+		if (IsIn(A_LoopFileExt, allowedExtensions))
+			appendToFile .= FileInstall("""" filePath """", "PROGRAM.TRANSLATIONS_FOLDER """ "\" path.1 """", 2)
+	}
 
 	; - - - - 
 	appendToFile .= ""
@@ -158,15 +169,18 @@
 	StringMid, path_AHk, cl, 2, InStr( cl, """", true, 2 )-2
 
 	installFile_run_cmd := % """" path_AHk """" " /r " """" installFile """"
-	.		" /MAIN_FOLDER=" 	"""" PROGRAM.MAIN_FOLDER """"
-	.		" /SFX_FOLDER=" 	"""" PROGRAM.SFX_FOLDER """"
-	.		" /LOGS_FOLDER=" 	"""" PROGRAM.LOGS_FOLDER """"
-	.		" /SKINS_FOLDER=" 	"""" PROGRAM.SKINS_FOLDER """"
-	.		" /FONTS_FOLDER=" 	"""" PROGRAM.FONTS_FOLDER """"
-	.		" /DATA_FOLDER=" 	"""" PROGRAM.DATA_FOLDER """"
-	.		" /IMAGES_FOLDER=" 	"""" PROGRAM.IMAGES_FOLDER """"
-	.		" /ICONS_FOLDER=" 	"""" PROGRAM.ICONS_FOLDER """"
-	.		" /LOGS_FILE="		"""" PROGRAM.LOGS_FILE """"
+	.		" /MAIN_FOLDER=" 			"""" PROGRAM.MAIN_FOLDER """"
+	.		" /SFX_FOLDER=" 			"""" PROGRAM.SFX_FOLDER """"
+	.		" /LOGS_FOLDER=" 			"""" PROGRAM.LOGS_FOLDER """"
+	.		" /SKINS_FOLDER=" 			"""" PROGRAM.SKINS_FOLDER """"
+	.		" /FONTS_FOLDER=" 			"""" PROGRAM.FONTS_FOLDER """"
+	.		" /DATA_FOLDER=" 			"""" PROGRAM.DATA_FOLDER """"
+	.		" /IMAGES_FOLDER=" 			"""" PROGRAM.IMAGES_FOLDER """"
+	.		" /ICONS_FOLDER=" 			"""" PROGRAM.ICONS_FOLDER """"
+	. 		" /TRANSLATIONS_FOLDER="	"""" TRANSLATIONS_FOLDER """"
+	.		" /LOGS_FILE="				"""" PROGRAM.LOGS_FILE """"
 
+	/*	No longer required. Was only ran if the script is uncompiled. But assets are now being loaded from the AHK folder itself, instead of being extracted into the "main folder"
 	RunWait,% installFile_run_cmd,% A_ScriptDir
+	*/
 }

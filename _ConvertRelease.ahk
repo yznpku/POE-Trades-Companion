@@ -137,3 +137,4 @@ ReloadWithParams(params, getCurrentParams=False, asAdmin=False) {
 #Include IEComObj.ahk
 #Include JSON.ahk
 #Include StdOutStream.ahk
+#Include WinHttpRequest.ahk

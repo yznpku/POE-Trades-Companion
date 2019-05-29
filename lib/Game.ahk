@@ -16,18 +16,16 @@
 	}
 
 	; HTTP Request
-	postData		:= ""
-	options 	:= ""
-	options 	.= "`n"	"TimeOut: 25"
-	reqHeaders	:= []
-	reqHeaders.push("Host: api.pathofexile.com")
-	reqHeaders.push("Connection: keep-alive")
-	reqHeaders.push("Cache-Control: max-age=0")
-	reqHeaders.push("Content-type: application/x-www-form-urlencoded; charset=UTF-8")
-	reqHeaders.push("Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8")
-	reqHeaders.push("User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.90 Safari/537.36")
-	url := "http://api.pathofexile.com/leagues?type=main"
-	leaguesJSON := cURL_Download(url, postData, reqHeaders, options, false, true, false, "", reqHeadersCurl)
+	url := "http://api.pathofexile.com/leagues?type=main"	
+	headers :=	"Host: api.pathofexile.com"
+	. "`n" 		"Connection: keep-alive"
+	. "`n" 		"Cache-Control: max-age=0"
+	. "`n" 		"Content-type: application/x-www-form-urlencoded; charset=UTF-8"
+	. "`n" 		"Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8"
+	. "`n" 		"User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.90 Safari/537.36"
+	options := "TimeOut: 25"
+	
+	WinHttpRequest(url, data:="", headers, options), leaguesJSON := data
 
 	; Parse league names
 	apiLeagues		:= ""
@@ -54,12 +52,10 @@
 
 	; In case leagues api is down, get from my own list on github
 	if !(apiTradingLeagues) {
-		postData := ""
-		options 	:= ""
-		options 	.= "`n"	"TimeOut: 25"
-		reqHeaders := []
 		url := "http://raw.githubusercontent.com/" PROGRAM.GITHUB_USER "/" PROGRAM.GITHUB_REPO "/master/data/TradingLeagues.txt"
-		rawFile := cURL_Download(url, postData, reqHeaders, options, false, true, false, "", reqHeadersCurl)
+
+		options := "TimeOut: 25"
+		WinHttpRequest(url, data:="", headers:="", options), rawFile := data
 
 		if IsContaining(rawFile, "Error,404") {
 			AppendToLogs(A_ThisFunc "(forceScriptLeagues=" forceScriptLeagues "): Failed to get leagues from GitHub file."
@@ -118,16 +114,12 @@ Send_GameMessage(actionType, msgString, gamePID="") {
 	}
 	if (ErrorLevel) {
 		AppendToLogs(A_ThisFunc "(actionType=" actionType ", msgString=" msgString ", gamePID=" gamePID "): WinWaitActive timed out.")
-		TrayNotifications.Show("Window timeout", "Game window wasn't focused after 2 seconds, canceling sending message.")
+		TrayNotifications.Show(PROGRAM.TRANSLATIONS.TrayNotifications.GameWindowFocusTimedOut_Title, PROGRAM.TRANSLATIONS.TrayNotifications.GameWindowFocusTimedOut_Msg)
 		return "WINWAITACTIVE_TIMEOUT"
 	}
 
 	if (!isToolSameElevation) {
-		MsgBox(4096+48+4, "POE Trades Companion - Reload as admin?", ""
-		. "Would you like to automatically reload the tool with admin elevation? All tabs will still be there after reloading."
-		. "`n"
-		. "`n" PROGRAM.NAME " cannot interact with the game instance (PID " gamePID ") because the game is running as admin and the tool is not."
-		. " To avoid this warning in the future, make sure to start the tool as admin.")
+		MsgBox(4096+48+4, PROGRAM.NAME " - " PROGRAM.TRANSLATIONS.MessageBoxes.ReloadAsAdmin_Title, PROGRAM.TRANSLATIONS.MessageBoxes.ReloadAsAdmin_Msg)
 
 		IfMsgBox, Yes
 		{
@@ -157,7 +149,7 @@ Send_GameMessage(actionType, msgString, gamePID="") {
 			if (!err)
 				SendEvent, ^{sc02F}
 			else
-				TrayNotifications.Show("Failed to send message.", "The clipboard couldn't be updated with the message content.`nClipboard: " Clipboard "`nMessage: " msgString)
+				TrayNotifications.Show(PROGRAM.TRANSLATIONS.TrayNotifications.FailedToSendMessage_Title, PROGRAM.TRANSLATIONS.TrayNotifications.FailedToSendMessage_Msg)
 			; SetTimer, Reset_Clipboard, -700
 		}
 		else if (sendMsgMode = "SendInput")
@@ -184,7 +176,7 @@ Send_GameMessage(actionType, msgString, gamePID="") {
 			if (!err)
 				SendEvent, ^{sc02F}
 			else
-				TrayNotifications.Show("Failed to send message.", "The clipboard couldn't be updated with the message content.`nClipboard: " Clipboard "`nMessage: " msgString)
+				TrayNotifications.Show(PROGRAM.TRANSLATIONS.TrayNotifications.FailedToSendMessage_Title, PROGRAM.TRANSLATIONS.TrayNotifications.FailedToSendMessage_Msg)
 			; SetTimer, Reset_Clipboard, -700
 		}
 		else if (sendMsgMode = "SendInput")
@@ -212,7 +204,7 @@ Send_GameMessage(actionType, msgString, gamePID="") {
 			if (!err)
 				SendEvent, ^{sc02F}
 			else
-				TrayNotifications.Show("Failed to send message.", "The clipboard couldn't be updated with the message content.`nClipboard: " Clipboard "`nMessage: " msgString)
+				TrayNotifications.Show(PROGRAM.TRANSLATIONS.TrayNotifications.FailedToSendMessage_Title, PROGRAM.TRANSLATIONS.TrayNotifications.FailedToSendMessage_Msg)
 			; SetTimer, Reset_Clipboard, -700
 		}
 		else if (sendMsgMode = "SendInput")
@@ -228,8 +220,8 @@ Send_GameMessage(actionType, msgString, gamePID="") {
 	Return
 
 	Send_GameMessage_ClearChat:
-		if !IsIn(firstChar, "/,`%,&,#,@") { ; Not a command. We send / then remove it to make sure chat is empty
-			SendEvent,/{BackSpace}
+		if !IsIn(firstChar, "/,%,&,#,@") { ; Not a command. We send / then remove it to make sure chat is empty
+			SendEvent,{Space}/{BackSpace}
 		}
 	Return
 
@@ -284,7 +276,7 @@ Get_RunningInstances() {
 }
 
 Get_GameLogsFile() {
-	global POEGameArr
+	global PROGRAM, POEGameArr
 
 	runningInstances := Get_RunningInstances()
 	Loop % runningInstances.Count {
@@ -302,7 +294,8 @@ Get_GameLogsFile() {
 		logsFile := runningInstances[1]["Folder"] "\logs\Client.txt"
 	}
 	if !FileExist(logsFile) && (logsFile != "\logs\Client.txt") {
-		TrayNotifications.Show("Logs file not found", "The specified file does not exist:`n" logsFile)
+		trayMsg := StrReplace(PROGRAM.TRANSLATIONS.TrayNotifications.GameLogsFileNotFound_Msg, "%file%", logsFile)
+		TrayNotifications.Show(PROGRAM.TRANSLATIONS.TrayNotifications.GameLogsFileNotFound_Title, trayMsg)
 		Return
 	}
 
@@ -326,7 +319,8 @@ Monitor_GameLogs() {
 			AppendToLogs("Monitoring logs file: """ logsFile """.")
 			if (PROGRAM.SETTINGS.SETTINGS_MAIN.TradesGUI_Mode = "Dock")
 				GUI_Trades.DockMode_Cycle()
-			TrayNotifications.Show("Ready for trading!", "Monitoring chat logs in " logsFile)
+			trayMsg := StrReplace(PROGRAM.TRANSLATIONS.TrayNotifications.MonitoringGameLogsFileSuccess_Msg, "%file%", logsFile)
+			TrayNotifications.Show(PROGRAM.TRANSLATIONS.TrayNotifications.MonitoringGameLogsFileSuccess_Title, trayMsg)
 		}
 		else {
 			SetTimer,% A_ThisFunc, -10000
@@ -359,6 +353,8 @@ Parse_GameLogs(strToParse) {
 										, Other:1, Item:2, Price:3, League:4}
 	static poeAppUnpricedRegex 		:= {String:"(.*)wtb (.*) in (.*)"
 										, Other:1, Item:2, League:3}
+	static poeAppCurrencyRegex		:= {String:"(.*)I'd like to buy your (.*) for my (.*) in (.*)"
+										, Other:1, Item:2, Price:3, League:4}
 	static poeAppStashRegex 		:= {String:"\(stash ""(.*)""; left (\d+), top (\d+)\)(.*)"
 										, Tab:1, Left:2, Top:3, Other:4}
 	static poeAppQualityRegEx 		:= {String:"(.*) \((\d+)/(\d+)%\)"
@@ -441,7 +437,8 @@ Parse_GameLogs(strToParse) {
 		,"poeTrade_Unpriced":poeTradeUnpricedRegex
 		,"currencyPoeTrade":poeTradeCurrencyRegex
 		,"poeApp":poeAppRegEx
-		,"poeApp_Unpriced":poeAppUnpricedRegex}
+		,"poeApp_Unpriced":poeAppUnpricedRegex
+		,"poeApp_Currency":poeAppCurrencyRegex}
 
 	langs := "RUS,POR,THA,GER,FRE,SPA"
 	Loop, Parse, langs,% "," ; Adding ggg trans regex to allTradingRegEx
@@ -559,7 +556,7 @@ Parse_GameLogs(strToParse) {
 				RegExMatch(whispMsg, "iSO)" tradeRegExStr, tradePat)
 
 				isPoeTrade := IsIn(tradeRegExName, "poeTrade,poeTrade_Unpriced,currencyPoeTrade")
-				isPoeApp := IsIn(tradeRegExName, "poeApp,poeApp_Unpriced")
+				isPoeApp := IsIn(tradeRegExName, "poeApp,poeApp_Currency,poeApp_Unpriced")
 				isGGGRus := IsContaining(tradeRegExName, "ggg_rus")
 				isGGGPor := IsContaining(tradeRegExName, "ggg_por")
 				isGGGTha := IsContaining(tradeRegExName, "ggg_tha")
@@ -688,9 +685,12 @@ Parse_GameLogs(strToParse) {
 
 					if !WinActive("ahk_pid " instancePID) { ; If the instance is not active
 						if ( PROGRAM.SETTINGS.SETTINGS_MAIN.ShowTabbedTrayNotificationOnWhisper = "True" ) {
-							notifTxt := "Item: " A_Tab tradeItemFull "`nPrice: " A_Tab tradePrice "`nStash: " A_Tab tradeStashFull
-							notifTxt .= tradeOther ? "`nOther: " A_Tab tradeOther : ""
-							TrayNotifications.Show("Buying request from " whispName ":", notifTxt)
+							trayTitle := StrReplace(PROGRAM.TRANSLATIONS.TrayNotifications.TradingWhisperReceived_Title, "%buyer%", whispName)
+							trayMsg := StrReplace(PROGRAM.TRANSLATIONS.TrayNotifications.TradingWhisperReceived_Msg, "%item%", A_Tab tradeItemFull)
+							trayMsg := StrReplace(trayMsg, "%price%", A_Tab tradePrice)
+							trayMsg := StrReplace(trayMsg, "%stash%", A_Tab tradeStashFull)
+							trayMsg := StrReplace(trayMsg, "%other%", A_Tab tradeOther)
+							TrayNotifications.Show(trayTitle, trayMsg)
 						}
 					}
 
@@ -705,10 +705,13 @@ Parse_GameLogs(strToParse) {
 					if (doPBNote = True) && StrLen(PROGRAM.SETTINGS.SETTINGS_MAIN.PushBulletToken) > 5 {
 						cmdLineParamsObj := {}
 						cmdLineParamsObj.PB_Token := PROGRAM.SETTINGS.SETTINGS_MAIN.PushBulletToken
-						cmdLineParamsObj.PB_Title := "Buying request from " whispName ":"
+						cmdLineParamsObj.PB_Title := StrReplace(PROGRAM.TRANSLATIONS.TrayNotifications.TradingWhisperReceived_Title, "%buyer%", whispName)
 
-						pbTxt := "Item: " tradeItemFull "\nPrice: " tradePrice "\nStash: " tradeStashFull
-						pbTxt .= tradeOther ? "\nOther: " tradeOther : ""
+						trayMsg := StrReplace(PROGRAM.TRANSLATIONS.TrayNotifications.TradingWhisperReceived_Msg, "%item%", A_Tab tradeItemFull)
+						trayMsg := StrReplace(trayMsg, "%price%", A_Tab tradePrice)
+						trayMsg := StrReplace(trayMsg, "%stash%", A_Tab tradeStashFull)
+						trayMsg := StrReplace(trayMsg, "%other%", A_Tab tradeOther)
+
 						cmdLineParamsObj.PB_Message := pbTxt
 						
 						GoSub, Parse_GameLogs_PushBulletNotifications_SA
@@ -729,7 +732,8 @@ Parse_GameLogs(strToParse) {
 
 				if !WinActive("ahk_pid " instancePID) { ; If the instance is not active
 					if ( PROGRAM.SETTINGS.SETTINGS_MAIN.ShowTabbedTrayNotificationOnWhisper = "True" ) {
-						TrayNotifications.Show("Whisper from " whispName ":", whispMsg)
+						trayTitle := StrReplace(PROGRAM.TRANSLATIONS.TrayNotifications.RegularWhisperReceived_Title, "%name%", whispName)
+						TrayNotifications.Show(trayTitle, whispMsg)
 					}
 				}
 
@@ -744,7 +748,7 @@ Parse_GameLogs(strToParse) {
 				if (doPBNote = True) && StrLen(PROGRAM.SETTINGS.SETTINGS_MAIN.PushBulletToken) > 5 {
 					cmdLineParamsObj := {}
 					cmdLineParamsObj.PB_Token := PROGRAM.SETTINGS.SETTINGS_MAIN.PushBulletToken
-					cmdLineParamsObj.PB_Title := "Whisper from " whispName ":"
+					cmdLineParamsObj.PB_Title := StrReplace(PROGRAM.TRANSLATIONS.TrayNotifications.RegularWhisperReceived_Title, "%name%", whispName)
 					cmdLineParamsObj.PB_Message := whispMsg
 					
 					GoSub, Parse_GameLogs_PushBulletNotifications_SA
@@ -773,7 +777,6 @@ Parse_GameLogs(strToParse) {
 		.		" " cmdLineParams
 		.		" /IntercomHandle=" """" GuiIntercom.Handle """"
 		.		" /IntercomSlotHandle=" """" intercomSlotHandle """"
-		.		" /cURL=" """" PROGRAM.CURL_EXECUTABLE """"
 		.		" /ProgramLogsFile=" """" PROGRAM.LOGS_FILE """"
 		
 		Run,% saFile_run_cmd,% A_ScriptDir
@@ -781,6 +784,7 @@ Parse_GameLogs(strToParse) {
 }
 
 Read_GameLogs(logsFile) {
+	global PROGRAM
 	global sLOGS_FILE, sLOGS_TIMER
 	static logsFileObj
 
@@ -796,7 +800,7 @@ Read_GameLogs(logsFile) {
 	else if (logsFileObj.pos > logsFileObj.length) || (logsFileObj.pos < 0) && (logsFileObj) {
 		AppendToLogs(A_ThisFunc "(logsFile=" logsFile "): Restarting logs file monitor."
 		. "logsFileObj.pos: """ logsFileObj.pos """ - logsFileObj.length: """ logsFileObj.length """")
-		TrayNotifications.Show("Restarting logs file monitoring", "An issue occured while reading the logs file. Restarting the monitoring function.")
+		TrayNotifications.Show(PROGRAM.TRANSLATIONS.TrayNotifications.RestartingGameLogsMonitoring_Title, PROGRAM.TRANSLATIONS.TrayNotifications.RestartingGameLogsMonitoring_Msg)
 		logsFileObj.Close()
 		logsFileObj := FileOpen(logsFile, "r")
 		logsFileObj.Read()
@@ -830,6 +834,7 @@ IsTradingWhisper(str) {
 	; poeapp.com regex
 	poeAppRegex := "@.* wtb .* listed for .* in .*"
 	poeAppUnpricedRegex := "@.* wtb .* in .*"
+	poeAppCurrencyRegex := "@.* I'd like to buy your .* for my .* in .*"
 	; ggg regex
 	RUS_gggRegEx			:= "@.* Здравствуйте, хочу купить у вас .* за (.*) в лиге.*"
 	RUS_gggUnpricedRegEx	:= "@.* Здравствуйте, хочу купить у вас .* в лиге.*"
@@ -857,7 +862,7 @@ IsTradingWhisper(str) {
 
 	allRegexes := []
 	allRegexes.Push(poeTradeRegex, poeTradeUnpricedRegex, currencyPoeTradeRegex
-		, poeAppRegex, poeAppUnpricedRegex
+		, poeAppRegex, poeAppUnpricedRegex, poeAppCurrencyRegex
 		, RUS_gggRegEx, RUS_gggUnpricedRegEx, RUS_gggCurrencyRegEx
 		, POR_gggRegEx, POR_gggUnpricedRegEx, POR_gggCurrencyRegEx
 		, THA_gggRegEx, THA_gggUnpricedRegEx, THA_gggCurrencyRegEx

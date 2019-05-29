@@ -4,7 +4,7 @@
 		global GuiChooseInstance, GuiChooseInstance_Controls, GuiChooseInstance_Submit
 		static guiWidth, guiHeight
 
-		Gui.New("ChooseInstance", "+AlwaysOnTop +SysMenu -MinimizeBox -MaximizeBox +LabelGUI_ChooseInstance_ +HwndhGuiChooseInstance", "Game Instances")
+		Gui.New("ChooseInstance", "+AlwaysOnTop +SysMenu -MinimizeBox -MaximizeBox +LabelGUI_ChooseInstance_ +HwndhGuiChooseInstance", "POE TC - Game Instances")
 
 		GameIcon_W := 48, GameIcon_H := 48
 		FillSelected_W := GameIcon_W, FillSelected_H := GameIcon_H
@@ -112,11 +112,11 @@
 	}
 
 	OnGUIClose() {
-		global GuiChooseInstance
+		global PROGRAM, GuiChooseInstance
 		chosenInstance := GuiChooseInstance.Instance
 
 		if !(chosenInstance.Folder) {
-			MsgBox(4096+16, , "No game instance chosen.")
+			MsgBox(4096+16, , PROGRAM.TRANSLATIONS.MessageBoxes.ChooseInstance_NoGameInstanceChosen)
 		}
 		else
 			Gui, ChooseInstance:Destroy

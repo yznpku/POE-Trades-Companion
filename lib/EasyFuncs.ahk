@@ -1,8 +1,13 @@
 ﻿IsWindowInScreenBoundaries(_win, _screen="All", _adv=False) {
 /*	Returns whether at least 1/3 of the window is within the screen or not
 */
+	hiddenWin := A_DetectHiddenWindows
+	DetectHiddenWindows, On
+
 	WinGetPos, x, y, w, h,% _win
 	win := {x:x,y:y,h:h,w:w}
+
+	DetectHiddenWindows, %hiddenWin%
 
 	mons := {}
 	if (_screen="All") { ; get all mons wa into their own sub array
@@ -17,6 +22,8 @@
 		mons.1 := {T:monwaTop,B:monwaBottom,L:monwaLeft,R:monwaRight}
 	}
 
+	if (_adv)
+		advObj := {}
 	for monIndex, nothing in mons { ; for every subarray
 		mon := mons[monIndex]
 
@@ -32,10 +39,15 @@
 			ver := IsBetween(win.y+win.h/3, mon.t, mon.b)
 
 		if (_adv)
-			return {H:hor,V:ver}
-		else if (hor && ver)
+			advObj[monIndex] := {"Mon_T": mon.t, "Mon_B": mon.b, "Mon_L": mon.l, "Mon_R": mon.r
+				, "Win_X": win.x, "Win_Y": win.y, "Win_W": win.w, "Win_H": win.h
+				, "IsInBoundaries_H": hor, "IsInBoundaries_V": ver}
+		
+		if (hor && ver) && (_adv = False)
 			return True
-	}	
+	}
+	if (_adv)
+		return advObj
 }
 
 GetKeyStateFunc(which) {
@@ -548,16 +560,16 @@ StringContains(string, match) {
 		return true
 }
 
-Get_TextCtrlSize(txt, fontName, fontSize, maxWidth="", params="") {
+Get_TextCtrlSize(txt, fontName, fontSize, maxWidth="", params="", ctrlType="Text") {
 /*		Create a control with the specified text to retrieve
  *		the space (width/height) it would normally take
 */
 	Gui, GetTextSize:Destroy
 	Gui, GetTextSize:Font, S%fontSize%,% fontName
 	if (maxWidth) 
-		Gui, GetTextSize:Add, Text,x0 y0 +Wrap w%maxWidth% hwndTxtHandler,% txt
+		Gui, GetTextSize:Add, %ctrlType%,x0 y0 +Wrap w%maxWidth% hwndTxtHandler,% txt
 	else 
-		Gui, GetTextSize:Add, Text,x0 y0 %params% hwndTxtHandler,% txt
+		Gui, GetTextSize:Add, %ctrlType%,x0 y0 %params% hwndTxtHandler,% txt
 	coords := Get_ControlCoords("GetTextSize", TxtHandler)
 	Gui, GetTextSize:Destroy
 

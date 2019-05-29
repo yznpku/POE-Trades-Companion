@@ -96,7 +96,7 @@ Start_Script() {
 
 	; Set global - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	PROGRAM.NAME					:= "POE Trades Companion"
-	PROGRAM.VERSION 				:= "1.14.BETA_1"
+	PROGRAM.VERSION 				:= "1.15.BETA_1"
 	PROGRAM.IS_BETA					:= IsContaining(PROGRAM.VERSION, "beta")?"True":"False"
 
 	PROGRAM.GITHUB_USER 			:= "lemasato"
@@ -105,12 +105,14 @@ Start_Script() {
 
 	PROGRAM.MAIN_FOLDER 			:= MyDocuments "\lemasato\" PROGRAM.NAME
 	PROGRAM.LOGS_FOLDER 			:= PROGRAM.MAIN_FOLDER "\Logs"
+	PROGRAM.TEMP_FOLDER 			:= PROGRAM.MAIN_FOLDER "\Temp"
 	PROGRAM.DATA_FOLDER				:= (A_IsCompiled?PROGRAM.MAIN_FOLDER:A_ScriptDir) . (A_IsCompiled?"\Data":"\data")
 	PROGRAM.SFX_FOLDER 				:= (A_IsCompiled?PROGRAM.MAIN_FOLDER:A_ScriptDir) . (A_IsCompiled?"\SFX":"\resources\sfx")
 	PROGRAM.SKINS_FOLDER 			:= (A_IsCompiled?PROGRAM.MAIN_FOLDER:A_ScriptDir) . (A_IsCompiled?"\Skins":"\resources\skins")
 	PROGRAM.FONTS_FOLDER 			:= (A_IsCompiled?PROGRAM.MAIN_FOLDER:A_ScriptDir) . (A_IsCompiled?"\Fonts":"\resources\fonts")
 	PROGRAM.IMAGES_FOLDER			:= (A_IsCompiled?PROGRAM.MAIN_FOLDER:A_ScriptDir) . (A_IsCompiled?"\Images":"\resources\imgs")
 	PROGRAM.ICONS_FOLDER			:= (A_IsCompiled?PROGRAM.MAIN_FOLDER:A_ScriptDir) . (A_IsCompiled?"\Icons":"\resources\icons")
+	PROGRAM.TRANSLATIONS_FOLDER		:= (A_IsCompiled?PROGRAM.MAIN_FOLDER:A_ScriptDir) . (A_IsCompiled?"\Translations":"\resources\translations")
 
 	prefsFileName 					:= (RUNTIME_PARAMETERS.InstanceName)?(RUNTIME_PARAMETERS.InstanceName "_Preferences.ini"):("Preferences.ini")
 	backupFileName 					:= (RUNTIME_PARAMETERS.InstanceName)?(RUNTIME_PARAMETERS.InstanceName "_Trades_Backup.ini"):("Trades_Backup.ini")
@@ -164,11 +166,8 @@ Start_Script() {
 	StringTrimRight, POEGameList, POEGameList, 1
 
 	; Create local directories - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-	if (A_IsCompiled)
-		directories := PROGRAM.MAIN_FOLDER "`n" PROGRAM.SFX_FOLDER "`n" PROGRAM.LOGS_FOLDER "`n" PROGRAM.SKINS_FOLDER
-		. "`n" PROGRAM.FONTS_FOLDER "`n" PROGRAM.IMAGES_FOLDER "`n" PROGRAM.DATA_FOLDER "`n" PROGRAM.ICONS_FOLDER
-	else
-		directories := PROGRAM.MAIN_FOLDER "`n" PROGRAM.LOGS_FOLDER
+	directories := PROGRAM.MAIN_FOLDER "`n" PROGRAM.SFX_FOLDER "`n" PROGRAM.LOGS_FOLDER "`n" PROGRAM.SKINS_FOLDER
+	. "`n" PROGRAM.FONTS_FOLDER "`n" PROGRAM.IMAGES_FOLDER "`n" PROGRAM.DATA_FOLDER "`n" PROGRAM.ICONS_FOLDER "`n" PROGRAM.TEMP_FOLDER "`n" PROGRAM.TRANSLATIONS_FOLDER
 
 	Loop, Parse, directories, `n, `r
 	{
@@ -189,7 +188,7 @@ Start_Script() {
 		Close_PreviousInstance()
 	TrayRefresh()
 
-	if (A_IsCompiled) && !(DEBUG.settings.skip_assets_extracting)
+	if !(DEBUG.settings.skip_assets_extracting)
 		AssetsExtract()
 
 	; Currency names for stats gui - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -243,6 +242,7 @@ Start_Script() {
 	Update_LocalSettings()
 	localSettings := Get_LocalSettings()
 	Declare_LocalSettings(localSettings)
+	PROGRAM.TRANSLATIONS := GetTranslations(PROGRAM.SETTINGS.GENERAL.Language)
 
 	; Game settings
 	gameSettings := Get_GameSettings()
@@ -271,6 +271,9 @@ Start_Script() {
 
 	Get_TradingLeagues() ; Getting leagues
 
+	if (PROGRAM.SETTINGS.GENERAL.AskForLanguage = "True")
+		GUI_ChooseLang.Show()
+	
 	TrayMenu()
 	EnableHotkeys()
 
@@ -295,7 +298,6 @@ Start_Script() {
 	}
 
 	if (DEBUG.settings.open_mystats_gui) {
-		GUI_MyStats.Create()
 		GUI_MyStats.Show()
 	}
 
@@ -305,8 +307,8 @@ Start_Script() {
 		INI.Set(PROGRAM.INI_FILE, "GENERAL", "ShowChangelog", "False")
 		PROGRAM.SETTINGS.PROGRAM.Show_Changelogs := ""
 		PROGRAM.SETTINGS.GENERAL.ShowChangelog := "False"
-		TrayNotifications.Show(PROGRAM.Name, "Successfully updated to v" PROGRAM.VERSION
-		. "`nTake a look at the new changes!")
+		trayMsg := StrReplace(PROGRAM.TRANSLATIONS.TrayNotifications.UpdateSuccessful_Msg, "%version%", PROGRAM.VERSION)
+		TrayNotifications.Show(PROGRAM.TRANSLATIONS.TrayNotifications.UpdateSuccessful_Title, trayMsg)
 		GUI_Settings.Show("Misc Updating")
 	}
 	
@@ -314,7 +316,12 @@ Start_Script() {
 	OnClipboardChange("OnClipboardChange_Func")
 	SetTimer, GUI_Trades_RefreshIgnoreList, 60000 ; One min
 
-	TrayNotifications.Show(PROGRAM.Name, "Right click on the tray icons to access settings.")	
+	trayMsg := PROGRAM.TRANSLATIONS.TrayNotifications.AppLoaded_Msg
+	if (PROGRAM.SETTINGS.SETTINGS_MAIN.NoTabsTransparency <= 20)
+		trayMsg .= "`n`n" . StrReplace(PROGRAM.TRANSLATIONS.TrayNotifications.AppLoadedTransparency_Msg, "%number%", PROGRAM.SETTINGS.SETTINGS_MAIN.NoTabsTransparency)
+	if (PROGRAM.SETTINGS.SETTINGS_MAIN.AllowClicksToPassThroughWhileInactive = "True")
+		trayMsg .= "`n`n" PROGRAM.TRANSLATIONS.TrayNotifications.AppLoadedClickthrough_Msg
+	TrayNotifications.Show(PROGRAM.NAME, trayMsg)
 }
 
 DoNothing:
@@ -328,6 +335,7 @@ Return
 #Include Class_GUI_ImportPre1dot13Settings.ahk
 #Include Class_GUI_SimpleWarn.ahk
 #Include Class_Gui_ChooseInstance.ahk
+#Include Class_GUI_ChooseLang.ahk
 #Include Class_Gui_ItemGrid.ahk
 #Include Intercom_Receiver.ahk
 #Include Class_Gui_MyStats.ahk
@@ -352,12 +360,14 @@ Return
 #Include ManageFonts.ahk
 #Include Misc.ahk
 #Include OnClipboardChange.ahk
+#Include PoeDotCom.ahk
 #Include PoeTrade.ahk
 #Include PushBullet.ahk
 #Include Reload.ahk
 #Include ShowToolTip.ahk
 #Include SplashText.ahk
 #Include StackClick.ahk
+#Include Translations.ahk
 #Include TrayMenu.ahk
 #Include TrayNotifications.ahk
 #Include TrayRefresh.ahk
@@ -367,6 +377,7 @@ Return
 #Include %A_ScriptDir%\lib\third-party\
 #Include AddToolTip.ahk
 #Include ChooseColor.ahk
+#Include class_EasyIni.ahk
 #Include Class_ImageButton.ahk
 #Include Clip.ahk
 #Include cURL.ahk
@@ -376,6 +387,7 @@ Return
 #Include FGP.ahk
 #Include GDIP.ahk
 #Include Get_ProcessInfos.ahk
+#Include IEComObj.ahk
 #Include JSON.ahk
 #Include LV_SetSelColors.ahk
 #Include SetEditCueBanner.ahk

@@ -1,3 +1,14 @@
+1.15.BETA_1 (29 May 2019)
+	Features:
+	- French, Traditional Chinese, Simplified Chinese translated interfaces.
+	Upon starting the tool for the first time, you will be asked to choose your language.
+	After that, language can be changed any time from the Settings menu.
+	
+	Changes:
+	- Hiding normal quad tab stash tab item location for maps, is now disabled by default.
+	Not everyone has bought the map stash tab. Having this disabled by default makes more sense.
+
+= = = = = = = = = = = = =	
 1.13.BETA_8 (31 Aug 2018)
 	Features:
 	- You can now update automatically the script using the .ahk version.

@@ -36,10 +36,7 @@
 	Gui, TestDelay:Destroy
 	
 	if (imageButtonDelay > 1001) { ; Took over a second to create two buttons, tell the user about it
-		TrayNotifications.Show(PROGRAM.Name " - Too many fonts (" fontsCount ")","Your system has more than 720 fonts installed."
-																	.  "`nOn Win10, it is known to noticeably slow the tool startup."
-																	. "`n"
-																	. "`nIf the tool takes a long time to start, it is recommended to uninstall fonts (" A_WinDir "\Fonts) until you have 720 fonts or less."
-																	,{Fade_Timer:15000})
+		trayMsg := StrReplace(PROGRAM.TRANSLATIONS.TrayNotifications.ImageButtonDelayTest_Msg, "%folder%", A_WinDir "\Fonts\"
+		TrayNotifications.Show(PROGRAM.TRANSLATIONS.TrayNotifications.ImageButtonDelayTest_Title, trayMsg,{Fade_Timer:15000})
 	}
 }

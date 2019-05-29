@@ -29,6 +29,10 @@ Get_LocalSettings_DefaultValues() {
 	settings.GENERAL.AddShowGridActionToInviteButtons									:= "True"
 	settings.GENERAL.HasAskedForImport													:= "True"
 	settings.GENERAL.RemoveCopyItemInfosIfGridActionExists								:= "True"
+	settings.GENERAL.ReplaceOldTradeVariables											:= "True"
+	settings.GENERAL.UpdateKickMyselfOutOfPartyHideoutHotkey							:= "True"
+	settings.GENERAL.AskForLanguage														:= "True"
+	settings.GENERAL.Language 															:= "english"
 
 	settings.SETTINGS_MAIN 																:= {}
 	settings.SETTINGS_MAIN.TradingWhisperSFXPath 										:= PROGRAM.SFX_FOLDER "\WW_MainMenu_Letter.wav" 
@@ -61,7 +65,7 @@ Get_LocalSettings_DefaultValues() {
 	settings.SETTINGS_MAIN.MinimizeInterfaceToBottomLeft								:= "False"
 	settings.SETTINGS_MAIN.ItemGridHideNormalTab										:= "False"
 	settings.SETTINGS_MAIN.ItemGridHideQuadTab											:= "False"
-	settings.SETTINGS_MAIN.ItemGridHideNormalTabAndQuadTabForMaps						:= "True"
+	settings.SETTINGS_MAIN.ItemGridHideNormalTabAndQuadTabForMaps						:= "False"
 
 
 	settings.SETTINGS_CUSTOMIZATION_SKINS 												:= {}
@@ -214,13 +218,11 @@ Get_LocalSettings_DefaultValues() {
 
 	settings.SETTINGS_HOTKEY_ADV_1														:= {}
 	settings.SETTINGS_HOTKEY_ADV_1.Name 												:= "Kick myself out of party + hideout"
-	settings.SETTINGS_HOTKEY_ADV_1.Hotkey 												:= ""
-	settings.SETTINGS_HOTKEY_ADV_1.Action_1_Type 										:= "SENDINPUT"
-	settings.SETTINGS_HOTKEY_ADV_1.Action_1_Content 									:= """{Enter}/kick MyMainChar{Enter}"""
-	settings.SETTINGS_HOTKEY_ADV_1.Action_2_Type 										:= "SENDINPUT"
-	settings.SETTINGS_HOTKEY_ADV_1.Action_2_Content 									:= """{Enter}/kick MySecondChar{Enter}"""
-	settings.SETTINGS_HOTKEY_ADV_1.Action_3_Type 										:= "CMD_HIDEOUT"
-	settings.SETTINGS_HOTKEY_ADV_1.Action_3_Content 									:= """/hideout"""
+	settings.SETTINGS_HOTKEY_ADV_1.Hotkey 												:= "+F2"
+	settings.SETTINGS_HOTKEY_ADV_1.Action_1_Type 										:= "KICK_MYSELF"
+	settings.SETTINGS_HOTKEY_ADV_1.Action_1_Content 									:= """/kick %myself%"""
+	settings.SETTINGS_HOTKEY_ADV_1.Action_2_Type 										:= "CMD_HIDEOUT"
+	settings.SETTINGS_HOTKEY_ADV_1.Action_2_Content 									:= """/hideout"""
 
 	hw := A_DetectHiddenWindows
 	DetectHiddenWindows, On
@@ -246,8 +248,10 @@ LocalSettings_IsValueValid(iniSect, iniKey, iniValue) {
 	isFirstTimeRunning := INI.Get(PROGRAM.INI_FILE, "GENERAL", "IsFirstTimeRunning")
 
 	if (iniSect = "GENERAL") {
-		if IsIn(iniKey, "IsFirstTimeRunning,AddShowGridActionToInviteButtons,HasAskedForImport,RemoveCopyItemInfosIfGridActionExists")
+		if IsIn(iniKey, "IsFirstTimeRunning,AddShowGridActionToInviteButtons,HasAskedForImport,RemoveCopyItemInfosIfGridActionExists,ReplaceOldTradeVariables,UpdateKickMyselfOutOfPartyHideoutHotkey,AskForLanguage")
 			isValueValid := IsIn(iniValue, "True,False") ? True : False	
+		if (iniKey = "Language")
+			isValueValid := IsIn(iniValue, "english,french,chinese_simplified,chinese_traditional") ? True : False
 	}
 
 	if (iniSect = "SETTINGS_MAIN") {
@@ -480,11 +484,14 @@ Set_LocalSettings() {
 			isValueValid := LocalSettings_IsValueValid(iniSect, iniKey, iniValue)
 			if RegExMatch(iniSect, "O)SETTINGS_CUSTOM_BUTTON_(.*)", iniSectPat) && IsBetween(iniSectPat.1, 1, 5) {
 				iniSectNum := iniSectPat.1
-				isValueValid := doesCustBtn%iniSectNum%Exist=True?True:False
+				isValueValid := iniKey="Name"?isValueValid
+				: doesCustBtn%iniSectNum%Exist=True?True
+				: False
 			}
 
 			if (!isValueValid) {
-				if (IsFirstTimeRunning != "True" && !IsIn(iniKey, "IsFirstTimeRunning,AddShowGridActionToInviteButtons,RemoveCopyItemInfosIfGridActionExists,LastUpdateCheck"))
+				if (IsFirstTimeRunning != "True")
+				&& !IsIn(iniKey, "IsFirstTimeRunning,AddShowGridActionToInviteButtons,HasAskedForImport,RemoveCopyItemInfosIfGridActionExists,ReplaceOldTradeVariables,UpdateKickMyselfOutOfPartyHideoutHotkey,LastUpdateCheck,AskForLanguage")
 					warnMsg .= "Section: " iniSect "`nKey: " iniKey "`nValue: " iniValue "`nDefault value: " defValue "`n`n"
 				Restore_LocalSettings(iniSect, iniKey)
 			}
@@ -612,8 +619,7 @@ Update_LocalSettings() {
 						hasGrid := True, gridActionIndex:= loopActionIndex
 				}
 				if (hasCopy = True && hasGrid = True) {
-					AppendToLogs(A_ThisFunc "(): Removing COPY_ITEM_INFOS action to button with"
-					. "`n" "ID: """ cbIndex """ - Action index: """ loopActionIndex """. Action ID: """ copyActionIndex """")
+					AppendToLogs(A_ThisFunc "(): Removing COPY_ITEM_INFOS action to button with" . "`t" "ID: """ cbIndex """ - Action index: """ loopActionIndex """. Action ID: """ copyActionIndex """")
 
 					; Reduce action num by one, for every action after COPY_ITEM_INFOS
 					startReplaceIndex := copyActionIndex
@@ -622,8 +628,7 @@ Update_LocalSettings() {
 						INI.Set(iniFile, "SETTINGS_CUSTOM_BUTTON_" cbIndex, "Action_" startReplaceIndex "_Type", loopedSetting["Action_" startReplaceIndex+1 "_Type"])
 						startReplaceIndex++
 
-						AppendToLogs(A_ThisFunc "(): Reducing action index by one for button with"
-						. "`n" "ID: """ cbIndex """ - Action index: """ loopActionIndex """. Action ID: """ startReplaceIndex+1 """")
+						AppendToLogs(A_ThisFunc "(): Reducing action index by one for button with" . "`t" "ID: """ cbIndex """ - Action index: """ loopActionIndex """. Action ID: """ startReplaceIndex+1 """")
 					}
 					; Remove COPY_ITEM_INFOS action
 					INI.Remove(iniFile, "SETTINGS_CUSTOM_BUTTON_" cbIndex, "Action_" loopActionIndex "_Content")
@@ -638,12 +643,123 @@ Update_LocalSettings() {
 		AppendToLogs(A_ThisFunc "(): Finished removing COPY_ITEM_INFOS action to buttons with SHOW_GRID action.")
 		INI.Set(iniFile, "GENERAL", "RemoveCopyItemInfosIfGridActionExists", "False")
 	}
+
+	if (localSettings.GENERAL.ReplaceOldTradeVariables = "True") {
+		AppendToLogs(A_ThisFunc "(): ReplaceOldTradeVariables detected as True."
+		. "`n" "Replacing trade variables with new updated names.")
+		variablesToReplace := {"%buyerName%":"%buyer%", "%itemName%":"%item%", "%itemPrice%":"%price%", "%lastWhisper%":"%lwr%"
+		, "%lastWhisperReceived%":"%lwr%", "%sentWhisper%":"%lws%", "%lastWhisperSent%":"%lws%"}
+		; custom buttons
+		Loop {
+			cbIndex := A_Index
+			loopedBtn := localSettings["SETTINGS_CUSTOM_BUTTON_" cbIndex]
+			if IsObject(loopedBtn) {
+				Loop {
+					loopActionIndex := A_Index
+					loopedActionContent := loopedBtn["Action_" loopActionIndex "_Content"]
+					loopedActionType := loopedBtn["Action_" loopActionIndex "_Type"]
+
+					if (!loopedActionType) || (loopedActionType = "") || (loopActionIndex > 50) {
+						loopActionIndex--
+						Break
+					}
+
+					hasReplaced := False, replaceCount := 0
+					for key, value in variablesToReplace {
+						if IsContaining(loopedActionContent, key) {
+							loopedActionContent := StrReplace(loopedActionContent, key, value, replaceCount)
+						}
+						hasReplaced := hasReplaced=True?True : replaceCount?True : False
+					}
+
+					if (hasReplaced) {
+						AppendToLogs(A_ThisFunc "(): Replacing " key " variable to button with" . "`t" "ID: """ cbIndex """ - Action index: """ loopActionIndex """")
+						INI.Set(iniFile, "SETTINGS_CUSTOM_BUTTON_" cbIndex, "Action_" loopActionIndex "_Content", """" loopedActionContent """")
+					}
+				}
+			}
+			else if (cbIndex > 20)
+				Break
+			else
+				Break
+		}
+		; hotkeys basic
+		Loop 15 {
+			hkIndex := A_Index
+			loopedHK := localSettings["SETTINGS_HOTKEY_" hkIndex]
+
+			loopedActionContent := loopedHK["Content"]
+			loopedActionType := loopedHK["Type"]
+
+			hasReplaced := False, replaceCount := 0
+			for key, value in variablesToReplace {
+				if IsContaining(loopedActionContent, key)
+					loopedActionContent := StrReplace(loopedActionContent, key, value, replaceCount)
+				hasReplaced := hasReplaced=True?True : replaceCount?True : False
+			}
+			
+			if (hasReplaced) {
+				AppendToLogs(A_ThisFunc "(): Replacing " key " variable to hotkey with"	. "`t" "ID: """ cbIndex """")
+				INI.Set(iniFile, "SETTINGS_HOTKEY_" hkIndex, "Content", """" loopedActionContent """")
+			}
+		}
+		; hotkeys adv
+		Loop {
+			hkIndex := A_Index
+			loopedHK := localSettings["SETTINGS_HOTKEY_ADV_" hkIndex]
+			if IsObject(loopedHK) {
+				Loop {
+					loopActionIndex := A_Index
+					loopedActionContent := loopedHK["Action_" loopActionIndex "_Content"]
+					loopedActionType := loopedHK["Action_" loopActionIndex "_Type"]
+
+					if (!loopedActionType) || (loopedActionType = "") || (loopActionIndex > 50) {
+						loopActionIndex--
+						Break
+					}
+
+					hasReplaced := False, replaceCount := 0
+					for key, value in variablesToReplace {
+						if IsContaining(loopedActionContent, key) {
+							loopedActionContent := StrReplace(loopedActionContent, key, value, replaceCount)
+						}
+						hasReplaced := hasReplaced=True?True : replaceCount?True : False
+					}
+
+					if (hasReplaced) {
+						AppendToLogs(A_ThisFunc "(): Replacing " key " variable to hotkey adv with" . "`t" "ID: """ cbIndex """ - Action index: """ loopActionIndex """")	
+						INI.Set(iniFile, "SETTINGS_HOTKEY_ADV_" hkIndex, "Action_" loopActionIndex "_Content", """" loopedActionContent """")
+					}
+				}
+			}
+			else if (hkIndex > 200)
+				Break
+			else
+				Break
+		}
+
+		AppendToLogs(A_ThisFunc "(): Finished replacing trade variables with new updated names.")
+		INI.Set(iniFile, "GENERAL", "ReplaceOldTradeVariables", "False")
+	}
+
+	if (localSettings.GENERAL.UpdateKickMyselfOutOfPartyHideoutHotkey = "True") {
+		AppendToLogs(A_ThisFunc "(): UpdateKickMyselfOutOfPartyHideoutHotkey detected as True."
+		. "`n" "Replacing adv hotkey with new action.")
+
+		if (localSettings.SETTINGS_HOTKEY_ADV_1.Name = "Kick myself out of party + hideout") {
+			INI.Remove(iniFile, "SETTINGS_HOTKEY_ADV_1")
+			Restore_LocalSettings("SETTINGS_HOTKEY_ADV_1")
+		}
+
+		AppendToLogs(A_ThisFunc "(): Finished replacing adv hotkey with new action.")
+		INI.Set(iniFile, "GENERAL", "UpdateKickMyselfOutOfPartyHideoutHotkey", "False")
+	}
 	
 	if (localSettings.GENERAL.IsFirstTimeRunning = "True") {
 		AppendToLogs(A_ThisFunc "(): IsFirstTimeRunning detected as True")
 		
-		if (PROGRAM.IS_BETA = "True")
-			GUI_BetaTasks.Show()
+		; if (PROGRAM.IS_BETA = "True")
+			; GUI_BetaTasks.Show()
 
 		INI.Set(iniFile, "GENERAL", "IsFirstTimeRunning", "False")
 	}

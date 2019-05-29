@@ -1,42 +1,45 @@
 ﻿TrayMenu() {
 	global PROGRAM, DEBUG
 
+	trans := PROGRAM.TRANSLATIONS.TrayMenu
+
 	Menu,Tray,DeleteAll
 	if ( !A_IsCompiled && FileExist(A_ScriptDir "\resources\icon.ico") )
 		Menu, Tray, Icon, %A_ScriptDir%\resources\icon.ico
 	Menu,Tray,Tip,POE Trades Companion
 	Menu,Tray,NoStandard
 	if (DEBUG.settings.open_settings_gui) {
-			Menu,Tray,Add,Recreate Settings GUI, Tray_CreateSettings
+			Menu,Tray,Add,Recreate Settings GUI, Tray_CreateSettings ; Recreate Settings GUI
 	}
-	Menu,Tray,Add,Settings, Tray_OpenSettings
-	Menu,Tray,Add,My Stats, Tray_OpenStats
-	if (PROGRAM.IS_BETA = "True")
-		Menu,Tray,Add,Beta tasks, Tray_OpenBetaTasks
+	Menu,Tray,Add,% trans.Settings, Tray_OpenSettings ; Settings
+	Menu,Tray,Add,% trans.Stats, Tray_OpenStats ; My Stats
+	; if (PROGRAM.IS_BETA = "True")
+		; Menu,Tray,Add,Beta tasks, Tray_OpenBetaTasks 
 	Menu,Tray,Add
-	Menu,Tray,Add,Clickthrough?, Tray_ToggleClickthrough
-	Menu,Tray,Add,Lock position?, Tray_ToggleLockPosition
+	Menu,Tray,Add,% trans.Clickthrough, Tray_ToggleClickthrough ; Clickthrough?
+	Menu,Tray,Add,% trans.LockPosition, Tray_ToggleLockPosition ; Lock position?
 	Menu,Tray,Add
-	Menu,Tray,Add,Mode: Window, Tray_ModeWindow
-	Menu,Tray,Add,Mode: Dock, Tray_ModeDock
-	Menu,Tray,Add,Cycle Dock, Tray_CycleDock
-	Menu,Tray,Add,Reset Position, Tray_ResetPosition
+	Menu,Tray,Add,% trans.ModeWindow, Tray_ModeWindow ; Mode: Window
+	Menu,Tray,Add,% trans.ModeDock, Tray_ModeDock ; Mode: Dock
+	Menu,Tray,Add,% trans.CycleDock, Tray_CycleDock ; Cycle Dock
+	Menu,Tray,Add,% trans.ResetPosition, Tray_ResetPosition ; Reset Position
 	Menu,Tray,Add
-	Menu,Tray,Add,Reload, Tray_Reload
-	Menu,Tray,Add,Close, Tray_Exit
+	Menu,Tray,Add,% trans.Reload, Tray_Reload ; Reload
+	Menu,Tray,Add,% trans.Close, Tray_Exit ; Close
 	Menu,Tray,Icon
+	Menu,Tray,Default,% trans.Settings ; On Double click
 
 	; Pos lock check
 	if (PROGRAM.SETTINGS.SETTINGS_MAIN.TradesGUI_Locked = "True")
-		Menu, Tray, Check, Lock Position?
+		Menu, Tray, Check,% trans.LockPosition
 	else
-		Menu, Tray, Uncheck, Lock Position?
+		Menu, Tray, Uncheck,% trans.LockPosition
 
 	; Clickthrough check
 	if (PROGRAM.SETTINGS.SETTINGS_MAIN.AllowClicksToPassThroughWhileInactive = "True") 
-		Menu, Tray, Check, Clickthrough?
+		Menu, Tray, Check,% trans.Clickthrough
 	else
-		Menu, Tray, Uncheck, Clickthrough?
+		Menu, Tray, Uncheck,% trans.Clickthrough
 
 	; TradesGUI Mode check
 	if (PROGRAM.SETTINGS.SETTINGS_MAIN.TradesGUI_Mode = "Window") 
@@ -45,11 +48,11 @@
 		GUI_Trades.Use_DockMode(True)
 
 	; Icons
-	Menu, Tray, Icon,Settings,% PROGRAM.ICONS_FOLDER "\gear.ico"
-	Menu, Tray, Icon,,% PROGRAM.ICONS_FOLDER "\qmark.ico"
-	Menu, Tray, Icon,My Stats,% PROGRAM.ICONS_FOLDER "\chart.ico"
-	Menu, Tray, Icon,Reload,% PROGRAM.ICONS_FOLDER "\refresh.ico"
-	Menu, Tray, Icon,Close,% PROGRAM.ICONS_FOLDER "\x.ico"
+	Menu, Tray, Icon,% trans.Settings,% PROGRAM.ICONS_FOLDER "\gear.ico"
+	; Menu, Tray, Icon,,% PROGRAM.ICONS_FOLDER "\qmark.ico"
+	Menu, Tray, Icon,% trans.Stats,% PROGRAM.ICONS_FOLDER "\chart.ico"
+	Menu, Tray, Icon,% trans.Reload,% PROGRAM.ICONS_FOLDER "\refresh.ico"
+	Menu, Tray, Icon,% trans.Close,% PROGRAM.ICONS_FOLDER "\x.ico"
 }
 
 Tray_OpenBetaTasks() {
@@ -70,6 +73,8 @@ Tray_CreateSettings() {
 	GUI_Settings.Show()
 }
 Tray_OpenSettings() {
+	global CANCEL_TRAY_MENU
+	CANCEL_TRAY_MENU := True
 	GUI_Settings.Show()
 }
 Tray_OpenStats() {
@@ -81,8 +86,7 @@ Tray_ModeWindow() {
 	GUI_Trades.Use_WindowMode()
 	Tray_ToggleLockPosition("Uncheck")
 	Declare_LocalSettings()
-	TrayNotifications.Show(PROGRAM.NAME, "Window mode enabled."
-		. "`nYou can now move the Trades window around freely.")
+	TrayNotifications.Show(PROGRAM.TRANSLATIONS.TrayNotifications.ModeWindowEnabled_Title, PROGRAM.TRANSLATIONS.TrayNotifications.ModeWindowEnabled_Msg)
 }
 Tray_ModeDock() {
 	global PROGRAM
@@ -90,9 +94,8 @@ Tray_ModeDock() {
 	GUI_Trades.Use_DockMode()
 	Tray_ToggleLockPosition("Check")
 	Declare_LocalSettings()
-	TrayNotifications.Show(PROGRAM.NAME, "Dock mode enabled."
-		. "`nThe Trades window will stay on the top right corner of your game window."
-		. "`nIn case you are running multiple instances and Trades window is docking to the wrong game, try using the ""Cycle Dock"" tray option.")
+	trayMsg := StrReplace(PROGRAM.TRANSLATIONS.TrayNotifications.ModeDockEnabled_Msg, "%cycleDock%", PROGRAM.TRANSLATIONS.TrayMenu.CycleDock)
+	TrayNotifications.Show(PROGRAM.TRANSLATIONS.TrayNotifications.ModeDockEnabled_Title, trayMsg)
 }
 Tray_CycleDock() {
 	GUI_Trades.DockMode_Cycle()
@@ -102,7 +105,7 @@ Tray_ToggleClickthrough() {
 
 	GUI_Settings.TabSettingsMain_ToggleClickthroughCheckbox()
 	toggle := PROGRAM.SETTINGS.SETTINGS_MAIN.AllowClicksToPassThroughWhileInactive
-	Menu, Tray,% toggle="True"?"Check":"Uncheck", Clickthrough?
+	Menu, Tray,% toggle="True"?"Check":"Uncheck",% PROGRAM.TRANSLATIONS.TrayMenu.Clickthrough
 }
 Tray_ToggleLockPosition(toggle="") {
 	global PROGRAM
@@ -112,13 +115,13 @@ Tray_ToggleLockPosition(toggle="") {
 	|| (toggle = "Uncheck") {
 		INI.Set(iniFile, "SETTINGS_MAIN", "TradesGUI_Locked", "False")
 		PROGRAM.SETTINGS.SETTINGS_MAIN.TradesGUI_Locked := "False"
-		Menu, Tray, Uncheck, Lock position?
+		Menu, Tray, Uncheck,% PROGRAM.TRANSLATIONS.TrayMenu.LockPosition
 	}
 	else if ( (toggle = "") || (toggle = A_ThisMenuItem) ) && (PROGRAM.SETTINGS.SETTINGS_MAIN.TradesGUI_Locked = "False")
 	|| (toggle = "Check") {
 		INI.Set(iniFile, "SETTINGS_MAIN", "TradesGUI_Locked", "True")
 		PROGRAM.SETTINGS.SETTINGS_MAIN.TradesGUI_Locked := "True"
-		Menu, Tray, Check, Lock position?
+		Menu, Tray, Check,% PROGRAM.TRANSLATIONS.TrayMenu.LockPosition
 	}
 }
 Tray_ResetPosition() {

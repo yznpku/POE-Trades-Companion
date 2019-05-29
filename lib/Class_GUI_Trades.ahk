@@ -47,8 +47,12 @@
 
 		; Initialize gui arrays
 		Gui, Trades:Destroy
-		Gui.New("Trades", "+AlwaysOnTop +ToolWindow +LastFound -SysMenu -Caption -Border +LabelGUI_Trades_ +HwndhGuiTrades", "Trades")
+		Gui.New("Trades", "+AlwaysOnTop +ToolWindow +LastFound -SysMenu -Caption -Border +LabelGUI_Trades_ +HwndhGuiTrades", "POE TC - Trades")
 		guiCreated := False
+
+		; WS_EX_NOACTIVATE, allows to keep game window activated while using the GUI
+		Gui, Trades:+LastFound
+		WinSet, ExStyle, 0x08000000
 
 		; Font name and size
 		if (PROGRAM.SETTINGS.SETTINGS_CUSTOMIZATION_SKINS.Preset = "User Defined") {
@@ -153,14 +157,8 @@
 
 		; Info text content and pos
 		InfoMsg_X := TradeInfos_X, InfoMsg_Y := TradeInfos_Y, InfosMsg_W := TradeInfos_W
-		InfoMsg_NoTradeMsg := "All trade requests have been answered"
-				    . "`nor no whisper has been received yet."
-				    . "`n`nRight click on the tray icon,"
-				    . "`nthen [Settings] to set your preferences."
-		InfoMsg_NoGameInstanceMsg := "No game instance could be found,"
-					   . "`nretrying in XX seconds..."
-					   . "`n`nRight click on the tray icon,"
-					   . "`nthen [Settings] to set your preferences."
+		InfoMsg_NoTradeMsg := PROGRAM.TRANSLATIONS.GUI_Trades.NoTradeMsg
+		InfoMsg_NoGameInstanceMsg := PROGRAM.TRANSLATIONS.GUI_Trades.NoGameInstanceMsg
 
 		; Set required gui array variables
 		GuiTrades.Height_Maximized := guiFullHeight
@@ -181,7 +179,7 @@
 
 		Gui.Margin("Trades", 0, 0)
 		Gui.Color("Trades", "White")
-		Gui.Font("Trades", settings_fontName, settings_fontSize, settings_fontQual)
+		Gui.Font("Trades", settings_fontName, settings_fontSize, settings_fontQual)	
 
 		; = = TAB CTRL = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 		Gui.Add("Trades", "Tab2", "x0 y0 w0 h0 hwndhTab_AllTabs Choose1")
@@ -384,15 +382,15 @@
 
 		if (CtrlHwnd = GuiTrades_Controls.hBTN_CloseTab) {
 			try Menu, CloseTabMenu, DeleteAll
-			Menu, CloseTabMenu, Add, Close other tabs for same item, Gui_Trades_ContextMenu_CloseOtherTabsWithSameItem
-			Menu, CloseTabMenu, Add, Close all tabs, Gui_Trades_ContextMenu_CloseAllTabs
+			Menu, CloseTabMenu, Add,% PROGRAM.TRANSLATIONS.GUI_Trades.RMENU_CloseOtherTabsForSameItem, Gui_Trades_ContextMenu_CloseOtherTabsWithSameItem
+			Menu, CloseTabMenu, Add,% PROGRAM.TRANSLATIONS.GUI_Trades.RMENU_CloseAllTabs, Gui_Trades_ContextMenu_CloseAllTabs
 			Menu, CloseTabMenu, Show
 		}
 		else if IsIn(CtrlHwnd, GuiTrades_Controls.hTXT_HeaderGhost "," GuiTrades_Controls.hTEXT_Title) {
 			try Menu, HeaderMenu, DeleteAll
-			Menu, HeaderMenu, Add, Lock Position?, Gui_Trades_ContextMenu_LockPosition
+			Menu, HeaderMenu, Add,% PROGRAM.TRANSLATIONS.TrayMenu.LockPosition, Gui_Trades_ContextMenu_LockPosition
 			if (PROGRAM.SETTINGS.SETTINGS_MAIN.TradesGUI_Locked = "True")
-				Menu, HeaderMenu, Check, Lock Position?
+				Menu, HeaderMenu, Check,% PROGRAM.TRANSLATIONS.TrayMenu.LockPosition
 			Menu, HeaderMenu, Show
 		}
 		else
@@ -414,12 +412,24 @@
 	}
 
 	ResetPositionIfOutOfBounds() {
-		global GuiTrades, GuiTradesMinimized
+		global PROGRAM, GuiTrades, GuiTradesMinimized
 
 		winHandle := GuiTrades.Is_Minimized ? GuiTradesMinimized.Handle : GuiTrades.Handle
+		
 		if !IsWindowInScreenBoundaries(_win:="ahk_id " winHandle, _screen:="All", _adv:=False) {
+			bounds := IsWindowInScreenBoundaries(_win:="ahk_id " winHandle, _screen:="All", _adv:=True)
+			for index, nothing in bounds {
+				appendTxt := "Monitor ID: " index
+				. "`nWin_X: " bounds[index].Win_X " | Win_Y: " bounds[index].Win_Y " - Win_W: " bounds[index].Win_W " | Win_H: " bounds[index].Win_H
+				. "`nMon_L: " bounds[index].Mon_L " | Mon_T: " bounds[index].Mon_T " | Mon_R: " bounds[index].Mon_R " | Mon_B: " bounds[index].Mon_B
+				. "`nIsInBoundaries_H: " bounds[index].IsInBoundaries_H " | IsInBoundaries_V: " bounds[index].IsInBoundaries_V
+				appendTxtFinal := appendTxtFinal ? appendTxtFinal "`n" appendTxt : appendTxt
+			}
+			AppendToLogs("Reset GUI Trades position due to being deemed out of bounds."
+			. "`n" appendTxtFinal)
 			Gui_Trades.ResetPosition()
-			TrayNotifications.Show("Position has been reset", "The interface has been detected to be out of bounds and has its position has been reset.")
+			
+			TrayNotifications.Show(PROGRAM.TRANSLATIONS.TrayNotifications.PositionHasBeenReset_Title, PROGRAM.TRANSLATIONS.TrayNotifications.PositionHasBeenReset_Msg)
 		}
 	}
 
@@ -582,7 +592,7 @@
 		else { ; Instance doesn't exist anymore, replace and do btn action
 			runningInstances := Get_RunningInstances()
 			if !(runningInstances.Count) {
-				TrayNotifications.Show("No game instance found.", "No running game instance could be found.`nMake sure the game is running before trying again.")
+				TrayNotifications.Show(PROGRAM.TRANSLATIONS.TrayNotifications.NoGameInstanceFound_Title, PROGRAM.TRANSLATIONS.TrayNotifications.NoGameInstanceFound_Msg)
 				Return
 			}
 			newInstancePID := GUI_ChooseInstance.Create(runningInstances, "PID").PID
@@ -610,7 +620,7 @@
 		tabContent := GUI_Trades.GetTabContent(tabName)
 
 		if (DEBUG.settings.use_chat_logs || tabContent.Buyer = "iSellStuff") {
-			TrayNotifications.Show("iSellStuff.", "The tab stats for tab with seller ""iSellStuff"" will not be saved.")
+			TrayNotifications.Show(PROGRAM.TRANSLATIONS.TrayNotifications.iSellStuffNotSaved_Title, PROGRAM.TRANSLATIONS.TrayNotifications.iSellStuffNotSaved_Msg)
 			Return
 		}
 
@@ -621,16 +631,15 @@
 		existsAlready := INI.Get(iniFile, index, "Buyer")
 		existsAlready := existsAlready = "ERROR" || existsAlready = "" ? False : True
 		if (existsAlready = True) {
-			MsgBox(4096, "", "There was an error when trying to save the Stats for this trade."
-				. "`nIt seems there is already a trade saved with ID """ index """."
-				. "The tool will now verify for the next ID. If this error appears again, please report it.")
+			trayTxt := StrReplace(PROGRAM.TRANSLATIONS.TrayNotifications.ErrorSavingStatsSameIDExists_Msg, "%number%", index)
+			TrayNotifications.Show(PROGRAM.TRANSLATIONS.TrayNotifications.ErrorSavingStatsSameIDExists_Title, trayTxt)
 			Loop {
 				index++
 				existsAlready := INI.Get(iniFile, index, "Buyer")
 				if (existsAlready = "ERROR" || existsAlready = "")
 					Break
 			}
-			MsgBox(4096, "", "Successfully found available ID: """ index """.")
+			TrayNotifications.Show(PROGRAM.TRANSLATIONS.TrayNotifications.ErrorSavingStatsSameIDExists_Solved_Title, PROGRAM.TRANSLATIONS.TrayNotifications.ErrorSavingStatsSameIDExists_Solved_Msg)
 		}
 		INI.Set(iniFile, "GENERAL", "Index", index)
 
@@ -1148,7 +1157,7 @@
 			GUI_Trades.SetTabStyleWhisperReceived(tabContent.Buyer)
 
 		tabContent := GUI_Trades.GetTabContent(GuiTrades.Tabs_Count)
-		GUI_Trades.VerifyItemPrice(tabContent) ; TO_DO disabled bcs it lags the script, need to see if we can do the request without interupting script. until then, user needs to click on color dot
+		GUI_Trades.VerifyItemPrice(tabContent)
 	}
 
 	GenerateUniqueID() {
@@ -1243,6 +1252,13 @@
 			global PROGRAM, GuiIntercom, GuiIntercom_Controls
 
 			tabID := GUI_Trades.GetTabNumberFromUniqueID(tabInfos.UniqueID)
+			if (A_IsCompiled) {
+				GUI_Trades.SetTabVerifyColor(tabID, "Orange")
+				GUI_Trades.UpdateSlotContent(tabID, "TradeVerifyInfos", "Automated price verifying has been temporarily"
+				. "\n disabled for the executable version due to issues"
+				. "\n\nPlease use the AHK version if you wish to use this feature")
+				return
+			}
 			GUI_Trades.SetTabVerifyColor(tabID, "Grey")
 		    GUI_Trades.UpdateSlotContent(tabID, "TradeVerifyInfos", "Comparing price on poe.trade...")
 
@@ -1468,12 +1484,14 @@
 		else
 			stashLeague := newTabStash
 
-		if RegExMatch(newTabItem, "O)(.*)\(Lvl:(.*) / Qual:(.*)\)", itemPat) {
+		if RegExMatch(newTabItem, "O)(.*)\(Lvl:(.*) / Qual:(.*)\)", itemPat) { ; quality gem, get only gem name
 			itemName := itemPat.1, itemLevel := itemPat.2, itemQuality := itemPat.3
 		}
-		else if RegExMatch(newTabItem, "O)(.*)\(T(\d+)\)", itemPat) {
+		else if RegExMatch(newTabItem, "O)(.*)\(T(\d+)\)", itemPat) { ; map item, get only map name
 			itemName := itemPat.1, itemLevel := itemPat.2
 		}
+		else
+			itemName := newTabItem
 
 		if RegExMatch(newTabTimeStamp, "O)(.*)/(.*)/(.*) (.*):(.*):(.*)", timeStampPat) {
 			timeYear := timeStampPat.1, timeMonth := timeStampPat.2, timeDay := timeStampPat.3
@@ -1818,11 +1836,11 @@
 			GUI_Trades.ResetPosition()
 		}
 
-		Menu, Tray, UnCheck, Mode: Dock
-		Menu, Tray, Check, Mode: Window
-		Menu, Tray, Disable, Cycle Dock
+		Menu, Tray, UnCheck,% PROGRAM.TRANSLATIONS.TrayMenu.ModeDock
+		Menu, Tray, Check,% PROGRAM.TRANSLATIONS.TrayMenu.ModeWindow
+		Menu, Tray, Disable,% PROGRAM.TRANSLATIONS.TrayMenu.CycleDock
 
-		Menu, Tray, Enable, Lock position?
+		Menu, Tray, Enable,% PROGRAM.TRANSLATIONS.TrayMenu.LockPosition
 	}
 
 	Use_DockMode(checkOnly=False) {
@@ -1835,12 +1853,12 @@
 			GUI_Trades.ResetPosition()
 		}
 
-		Menu, Tray, Check, Mode: Dock
-		Menu, Tray, UnCheck, Mode: Window
-		Menu, Tray, Enable, Cycle Dock
+		Menu, Tray, Check,% PROGRAM.TRANSLATIONS.TrayMenu.ModeDock
+		Menu, Tray, UnCheck,% PROGRAM.TRANSLATIONS.TrayMenu.ModeWindow
+		Menu, Tray, Enable,% PROGRAM.TRANSLATIONS.TrayMenu.CycleDock
 
 		Tray_ToggleLockPosition("Check")
-		Menu, Tray, Disable, Lock position?
+		Menu, Tray, Disable,% PROGRAM.TRANSLATIONS.TrayMenu.LockPosition
 
 		GUI_Trades.DockMode_Cycle()
 	}
@@ -2203,12 +2221,33 @@
 	EnableHotkeys() {
 		global GuiTrades, PROGRAM
 
-		codes := ["^SCF","^+SCF","^SC2","^SC3","^SC4","^SC5","^SC6","^SC7","^SC8","^SC9","^SCA","^WheelDown","^WheelUp"]
-		for index, code in codes {
-			if !IsObject(PROGRAM.HOTKEYS[code]) { ; Don't declare if user has custom hotkey for that. Fix HK working only IG or on TradesGUI (???)
-				Hotkey, IfWinActive,% "ahk_id " GuiTrades.Handle
-				Hotkey, %code%, GUI_Trades_SelectTab, On
-			}
+		for hk, value in PROGRAM.HOTKEYS {
+			noModsHKArr := RemoveModifiersFromHotkeyStr(hk, returnMods:=True), noModsHK := noModsHKArr.1, onlyModsHK := noModsHKArr.2
+			hkKeyName := GetKeyName(noModsKey)
+			
+			if (keyName = "Tab") && IsContaining(onlyModsHK, "^") && !IsContaining(onlyModsHK, "+,#,!")
+				hasCtrlTabHK := True
+			if (keyName = "Tab") && IsContaining(onlyModsHK, "^") && IsContaining(onlyModsHK, "+") && !IsContaining(onlyModsHK, "#,!")
+				hasCTrlShiftTabHK := True
+			if (keyName = "WheelDown") && IsContaining(onlyModsHK, "^") && !IsContaining(onlyModsHK, "+,#,!")
+				hasCtrlWheelDownHK := True
+			if (keyName = "WheelUp") && IsContaining(onlyModsHK, "^") && !IsContaining(onlyModsHK, "+,#,!")
+				hasCtrlWheelUpHK := True
+		}
+
+		GuiTrades.HOTKEYS := {}
+		if (!hasCtrlTabHK)
+			GuiTrades.HOTKEYS.Push("^SC00F")
+		if (!hasCTrlShiftTabHK)
+			GuiTrades.HOTKEYS.Push("^+SC00F")
+		if (!hasCtrlWheelDownHK)
+			GuiTrades.HOTKEYS.Push("^WheelDown")
+		if (!hasCtrlWheelUpHK)
+			GuiTrades.HOTKEYS.Push("^WheelUp")
+		
+		Loop % GuiTrades.HOTKEYS.MaxIndex() {
+			Hotkey, IfWinActive,% "ahk_group POEGameGroup"
+			Hotkey,% "~" GuiTrades.HOTKEYS[A_Index], GUI_Trades_SelectTab_Hotkey, On
 		} 
 	}
 
@@ -2218,10 +2257,9 @@
 			return
 
 		try {
-			codes := ["^SCF","^+SCF","^SC2","^SC3","^SC4","^SC5","^SC6","^SC7","^SC8","^SC9","^SCA","^WheelDown","^WheelUp"]
-			for index, code in codes { 
-				Hotkey, IfWinActive,% "ahk_id " GuiTrades.Handle
-				Hotkey, %code%, Off
+			Loop % GuiTrades.HOTKEYS.MaxIndex() { 
+				Hotkey, IfWinActive,% "ahk_group POEGameGroup"
+				Hotkey,% "~" GuiTrades.HOTKEYS[A_Index], Off
 			}
 		}
 	}
@@ -2237,15 +2275,14 @@ GUI_Trades_UpdateSlotContent(params*) {
 	GUI_Trades.UpdateSlotContent(params*)
 }
 
-GUI_Trades_SelectTab:
-	if IsIn(A_ThisHotkey, "^SC00F,^WheelDown")
-		GUI_Trades.SelectNextTab(returnToFirst:=True)
-	else if IsIn(A_ThisHotkey, "^+SC00F,^WheelUp")
-		GUI_Trades.SelectPreviousTab(returnToFirst:=True)
-	else if IsIn(A_ThisHotkey, "^SC002,^SC003,^SC004,^SC005,^SC006,^SC007,^SC008^SC009^SC00A") {
-		lastChar := SubStr(A_ThisHotkey, 0, 1)
-		tabNum := IsNum(lastChar) ? lastChar-1 : lastChar = "A" ? 9 : 1
-		GUI_Trades.SetActiveTab(tabNum, autoScroll:=True, skipWarn:=True)
+GUI_Trades_SelectTab_Hotkey:
+	MouseGetPos, , , undermouseWinHwnd
+	if (underMouseWinHwnd = GuiTrades.Handle) {
+		StringTrimLeft, thishotkey, A_ThisHotkey, 1 ; Removes ~
+		if IsIn(thishotkey, "^SC00F,^WheelDown") ; Ctrl+Tab / Ctrl+WheelDown
+			GUI_Trades.SelectNextTab(returnToFirst:=True)
+		else if IsIn(thishotkey, "^+SC00F,^WheelUp") ; Ctrl+Tab / Ctrl+WheelUp
+			GUI_Trades.SelectPreviousTab(returnToFirst:=True)
 	}
 return
 

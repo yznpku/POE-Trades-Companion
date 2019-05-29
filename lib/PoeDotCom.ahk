@@ -59,3 +59,33 @@ PoeDotCom_GetCurrencyData() {
 
     return currencies
 }
+
+PoeDotCom_GetCurrentlyLoggedCharacter(accName) {
+    global PROGRAM
+    
+    if !(accName)
+        return
+
+    url := "https://www.pathofexile.com/character-window/get-characters?accountName=" accName
+    headers := "Content-Type: application/json"
+    . "`n"     "Cache-Control: no-store, no-cache, must-revalidate"
+    options := "TimeOut: 7"
+    . "`n"     "Charset: UTF-8"
+
+    WinHttpRequest(url, data:="", headers, options), charsJSON := data
+    charsJSON := JSON.Load(charsJSON)
+
+    for index, nothing in charsJSON  {
+        if (charsJSON[index].lastActive = True) {
+            lastChar := charsJSON[index].name  
+            Break
+        }
+    }
+
+    if !(lastChar) {
+        trayMsg := StrReplace(PROGRAM.TRANSLATIONS.TrayNotifications.FailedToRetrieveAccountCharacters_Msg, "%account%", accName)
+        TrayNotifications.Show(PROGRAM.TRANSLATIONS.TrayNotifications.FailedToRetrieveAccountCharacters_Title, trayMsg)
+    }
+    
+    return lastChar        
+}
