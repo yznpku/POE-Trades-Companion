@@ -698,6 +698,7 @@ Class GUI_Settings {
 		Gui, Settings:Tab
 
 		Gui.Add("Settings", "Picture", "x3 y" guiHeight-27 " w35 h24 hwndhIMG_FlagUK", PROGRAM.IMAGES_FOLDER "\flag_uk.png")
+		Gui.Add("Settings", "Picture", "x+3 yp wp hp hwndhIMG_FlagFrance", PROGRAM.IMAGES_FOLDER "\flag_france.png")
 		Gui.Add("Settings", "Picture", "x+3 yp wp hp hwndhIMG_FlagChina", PROGRAM.IMAGES_FOLDER "\flag_china.png")
 		Gui.Add("Settings", "Picture", "x+3 yp wp hp hwndhIMG_FlagTaiwan", PROGRAM.IMAGES_FOLDER "\flag_taiwan.png")
 
@@ -709,6 +710,8 @@ Class GUI_Settings {
 
 		__f := GUI_Settings.OnLanguageChange.bind(GUI_Settings, "english")
 		GuiControl, Settings:+g,% GuiSettings_Controls["hIMG_FlagUK"],% __f
+		__f := GUI_Settings.OnLanguageChange.bind(GUI_Settings, "french")
+		GuiControl, Settings:+g,% GuiSettings_Controls["hIMG_FlagFrance"],% __f
 		__f := GUI_Settings.OnLanguageChange.bind(GUI_Settings, "chinese_simplified")
 		GuiControl, Settings:+g,% GuiSettings_Controls["hIMG_FlagChina"],% __f
 		__f := GUI_Settings.OnLanguageChange.bind(GUI_Settings, "chinese_traditional")

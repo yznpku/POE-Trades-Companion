@@ -729,6 +729,31 @@ if !InStr(FileExist(PROGRAM.IMAGES_FOLDER ""), "D")
 	FileCreateDir,% PROGRAM.IMAGES_FOLDER ""
 
 if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\imgs\flag_france.png")
+	FileGetSize, destFileSize, % PROGRAM.IMAGES_FOLDER "\flag_france.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\imgs\flag_france.png
+	FileGetSize, destFileSize, % PROGRAM.IMAGES_FOLDER "\flag_france.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\imgs\flag_france.png, % PROGRAM.IMAGES_FOLDER "\flag_france.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\imgs\flag_france.png"
+	.	"`nDest: " PROGRAM.IMAGES_FOLDER "\flag_france.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\imgs\flag_france.png"
+	.	"`nDest: " PROGRAM.IMAGES_FOLDER "\flag_france.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.IMAGES_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.IMAGES_FOLDER ""
+
+if (A_IsCompiled) {
 	sourceFileSize := Get_ResourceSize("resources\imgs\flag_taiwan.png")
 	FileGetSize, destFileSize, % PROGRAM.IMAGES_FOLDER "\flag_taiwan.png"
 }
@@ -4967,6 +4992,31 @@ if (ErrorLevel) {
 	errorLog .= "`n`n""Failed to extract file!"
 	.	"`nSource: resources\translations\english.json"
 	.	"`nDest: " PROGRAM.TRANSLATIONS_FOLDER "\english.json"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.TRANSLATIONS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.TRANSLATIONS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\translations\french.json")
+	FileGetSize, destFileSize, % PROGRAM.TRANSLATIONS_FOLDER "\french.json"
+}
+else {
+	FileGetSize, sourceFileSize, resources\translations\french.json
+	FileGetSize, destFileSize, % PROGRAM.TRANSLATIONS_FOLDER "\french.json"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\translations\french.json, % PROGRAM.TRANSLATIONS_FOLDER "\french.json", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\translations\french.json"
+	.	"`nDest: " PROGRAM.TRANSLATIONS_FOLDER "\french.json"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\translations\french.json"
+	.	"`nDest: " PROGRAM.TRANSLATIONS_FOLDER "\french.json"
 	.	"`nFlag: " 2
 }
 

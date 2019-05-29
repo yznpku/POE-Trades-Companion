@@ -271,6 +271,9 @@ Start_Script() {
 
 	Get_TradingLeagues() ; Getting leagues
 
+	if (PROGRAM.SETTINGS.GENERAL.AskForLanguage = "True")
+		GUI_ChooseLang.Show()
+	
 	TrayMenu()
 	EnableHotkeys()
 
@@ -332,6 +335,7 @@ Return
 #Include Class_GUI_ImportPre1dot13Settings.ahk
 #Include Class_GUI_SimpleWarn.ahk
 #Include Class_Gui_ChooseInstance.ahk
+#Include Class_GUI_ChooseLang.ahk
 #Include Class_Gui_ItemGrid.ahk
 #Include Intercom_Receiver.ahk
 #Include Class_Gui_MyStats.ahk

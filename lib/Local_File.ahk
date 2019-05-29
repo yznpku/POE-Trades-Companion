@@ -31,7 +31,8 @@ Get_LocalSettings_DefaultValues() {
 	settings.GENERAL.RemoveCopyItemInfosIfGridActionExists								:= "True"
 	settings.GENERAL.ReplaceOldTradeVariables											:= "True"
 	settings.GENERAL.UpdateKickMyselfOutOfPartyHideoutHotkey							:= "True"
-	settings.GENERAL.Language 															:= "English"
+	settings.GENERAL.AskForLanguage														:= "True"
+	settings.GENERAL.Language 															:= "english"
 
 	settings.SETTINGS_MAIN 																:= {}
 	settings.SETTINGS_MAIN.TradingWhisperSFXPath 										:= PROGRAM.SFX_FOLDER "\WW_MainMenu_Letter.wav" 
@@ -247,10 +248,10 @@ LocalSettings_IsValueValid(iniSect, iniKey, iniValue) {
 	isFirstTimeRunning := INI.Get(PROGRAM.INI_FILE, "GENERAL", "IsFirstTimeRunning")
 
 	if (iniSect = "GENERAL") {
-		if IsIn(iniKey, "IsFirstTimeRunning,AddShowGridActionToInviteButtons,HasAskedForImport,RemoveCopyItemInfosIfGridActionExists,ReplaceOldTradeVariables,UpdateKickMyselfOutOfPartyHideoutHotkey")
+		if IsIn(iniKey, "IsFirstTimeRunning,AddShowGridActionToInviteButtons,HasAskedForImport,RemoveCopyItemInfosIfGridActionExists,ReplaceOldTradeVariables,UpdateKickMyselfOutOfPartyHideoutHotkey,AskForLanguage")
 			isValueValid := IsIn(iniValue, "True,False") ? True : False	
 		if (iniKey = "Language")
-			isValueValid := IsIn(iniValue, "english,chinese_simplified,chinese_traditional") ? True : False
+			isValueValid := IsIn(iniValue, "english,french,chinese_simplified,chinese_traditional") ? True : False
 	}
 
 	if (iniSect = "SETTINGS_MAIN") {
@@ -490,7 +491,7 @@ Set_LocalSettings() {
 
 			if (!isValueValid) {
 				if (IsFirstTimeRunning != "True")
-				&& !IsIn(iniKey, "IsFirstTimeRunning,AddShowGridActionToInviteButtons,HasAskedForImport,RemoveCopyItemInfosIfGridActionExists,ReplaceOldTradeVariables,UpdateKickMyselfOutOfPartyHideoutHotkey,LastUpdateCheck")
+				&& !IsIn(iniKey, "IsFirstTimeRunning,AddShowGridActionToInviteButtons,HasAskedForImport,RemoveCopyItemInfosIfGridActionExists,ReplaceOldTradeVariables,UpdateKickMyselfOutOfPartyHideoutHotkey,LastUpdateCheck,AskForLanguage")
 					warnMsg .= "Section: " iniSect "`nKey: " iniKey "`nValue: " iniValue "`nDefault value: " defValue "`n`n"
 				Restore_LocalSettings(iniSect, iniKey)
 			}
