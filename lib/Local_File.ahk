@@ -758,8 +758,8 @@ Update_LocalSettings() {
 	if (localSettings.GENERAL.IsFirstTimeRunning = "True") {
 		AppendToLogs(A_ThisFunc "(): IsFirstTimeRunning detected as True")
 		
-		if (PROGRAM.IS_BETA = "True")
-			GUI_BetaTasks.Show()
+		; if (PROGRAM.IS_BETA = "True")
+			; GUI_BetaTasks.Show()
 
 		INI.Set(iniFile, "GENERAL", "IsFirstTimeRunning", "False")
 	}

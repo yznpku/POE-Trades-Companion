@@ -13,8 +13,8 @@
 	}
 	Menu,Tray,Add,% trans.Settings, Tray_OpenSettings ; Settings
 	Menu,Tray,Add,% trans.Stats, Tray_OpenStats ; My Stats
-	if (PROGRAM.IS_BETA = "True")
-		Menu,Tray,Add,Beta tasks, Tray_OpenBetaTasks 
+	; if (PROGRAM.IS_BETA = "True")
+		; Menu,Tray,Add,Beta tasks, Tray_OpenBetaTasks 
 	Menu,Tray,Add
 	Menu,Tray,Add,% trans.Clickthrough, Tray_ToggleClickthrough ; Clickthrough?
 	Menu,Tray,Add,% trans.LockPosition, Tray_ToggleLockPosition ; Lock position?
