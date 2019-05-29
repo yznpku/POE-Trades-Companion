@@ -236,8 +236,8 @@
 	},
 
 	"GUI_ChooseLang" : {
-		"hTEXT_TopText" : "TO_DO Thank you for using POE Trades Companion!\nBefore you can start trading,\nplease select your language below:",
-		"hBTN_AcceptLang": "TO_DO Continue with: English"
+		"hTEXT_TopText" : "感謝您選擇POE Trades Companion!\n在您開始使用前,\n請先選擇您所需要的語言:",
+		"hBTN_AcceptLang": "選擇: 繁體中文"
 	},
 	
 	"TrayNotifications" : {

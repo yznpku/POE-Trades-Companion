@@ -40,6 +40,12 @@
 		Loop 4 ; Left/Right/Top/Bot borders
 			Gui.Add("ChooseLang", "Progress", "x" bordersPositions[A_Index]["X"] " y" bordersPositions[A_Index]["Y"] " w" bordersPositions[A_Index]["W"] " h" bordersPositions[A_Index]["H"] " Background" borderColor)
 
+		fakeSelectedBordersPos := [{Position:"Top", X:0, Y:0, W:37, H:2}, {Position:"Left", X:0, Y:0, W:2, H:26} ; Top and Left
+			,{Position:"Bottom", X:0, Y:0, W:37, H:2}, {Position:"Right", X:0, Y:0, W:2, H:26}] ; Bottom and right
+		Loop 4 
+			Gui.Add("ChooseLang", "Progress", "x" fakeSelectedBordersPos[A_Index]["X"] " y" fakeSelectedBordersPos[A_Index]["Y"] " w" fakeSelectedBordersPos[A_Index]["W"] " h" fakeSelectedBordersPos[A_Index]["H"] " hwndhPROGRESS_BorderSelected" fakeSelectedBordersPos[A_index]["Position"] " Hidden Background5bcff")
+
+		; * * Title Bar
 		Gui.Add("ChooseLang", "Text", "x" leftMost " y" upMost " w" guiWidth-(borderSize*2)-30 " h25 hwndhTEXT_HeaderGhost BackgroundTrans ", "") ; Title bar, allow moving
 		Gui.Add("ChooseLang", "Progress", "xp yp wp hp Background359cfc") ; Title bar background
 		Gui.Add("ChooseLang", "Text", "xp yp wp hp Center 0x200 cWhite BackgroundTrans ", "POE Trades Companion - Language") ; Title bar text
@@ -95,8 +101,8 @@
 		Gui, ChooseLang:Destroy
 	}
 
-	OnLanguageChange(lang) {
-		global PROGRAM, GuiChooseLang
+	OnLanguageChange(lang, CtrlHwnd) {
+		global PROGRAM, GuiChooseLang, GuiChooseLang_Controls
 		static prevLang
 		prevLang := prevLang?prevLang:PROGRAM.SETTINGS.GENERAL.Language
 
@@ -107,6 +113,16 @@
 		GuiChooseLang.ChoosenLang := lang
 		GUI_ChooseLang.SetTranslation(lang)
 		PROGRAM.TRANSLATIONS := GetTranslations(lang)
+
+		imgCoords := Get_ControlCoords("ChooseLang", CtrlHwnd)
+		GuiControl, ChooseLang:Show,% GuiChooseLang_Controls["hPROGRESS_BorderSelectedTop"]
+		GuiControl, ChooseLang:Move,% GuiChooseLang_Controls["hPROGRESS_BorderSelectedTop"],% "x" imgCoords.X " y" imgCoords.Y-2
+		GuiControl, ChooseLang:Show,% GuiChooseLang_Controls["hPROGRESS_BorderSelectedLeft"]
+		GuiControl, ChooseLang:Move,% GuiChooseLang_Controls["hPROGRESS_BorderSelectedLeft"],% "x" imgCoords.X-2 " y" imgCoords.Y-2
+		GuiControl, ChooseLang:Show,% GuiChooseLang_Controls["hPROGRESS_BorderSelectedBottom"]
+		GuiControl, ChooseLang:Move,% GuiChooseLang_Controls["hPROGRESS_BorderSelectedBottom"],% "x" imgCoords.X-2 " y" imgCoords.Y+imgCoords.H
+		GuiControl, ChooseLang:Show,% GuiChooseLang_Controls["hPROGRESS_BorderSelectedRight"]
+		GuiControl, ChooseLang:Move,% GuiChooseLang_Controls["hPROGRESS_BorderSelectedRight"],% "x" imgCoords.X+imgCoords.W " y" imgCoords.Y
 
 		prevLang := lang
 	}
