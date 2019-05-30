@@ -35,15 +35,15 @@ IsUpdateAvailable() {
 			latestStable := recentRels[index], foundStableTag := True
 	}
 	stableTag := latestStable.tag_name, betaTag := latestBeta.tag_name
-	if (useBeta && IsStableBetter(stableTag, betaTag))
+	if (useBeta="True" && IsStableBetter(stableTag, betaTag))
 		isStableBetter := True
 
 	INI.Set(iniFile, "UPDATING", "LatestStable", stableTag)
 	INI.Set(iniFile, "UPDATING", "LatestBeta", betaTag)
 	Declare_LocalSettings()
 
-	updateRel := (useBeta && isStableBetter)?(latestStable)
-		: (useBeta && !isStableBetter)?(latestBeta)
+	updateRel := (useBeta="True" && isStableBetter)?(latestStable)
+		: (useBeta="True" && !isStableBetter)?(latestBeta)
 		: (latestStable)
 
 	relTag := updateRel.tag_name
