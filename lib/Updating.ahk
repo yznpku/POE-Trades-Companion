@@ -49,7 +49,7 @@
 		: False
 
 	; Determine if update is actually available
-	updateRel := (updBetterThanCurrent) ? ""
+	updateRel := (!updBetterThanCurrent) ? ""
 		: (stableBetter && updBetterThanCurrent) ? latestStable
 		: (!stableBetter && updBetterThanCurrent && useBeta) ? latestBeta
 		: ""
