@@ -13,6 +13,7 @@
 	Fixes:
 	- Could fail to update due to unable to unload fonts.
 	- Would always download the beta update, even when the beta checkbox was unchecked.
+	- The taskbar could pop on top of the game window due to a change brought by 1.14.3.
 
 = = = = = = = = = = = = =	
 1.13.BETA_8 (31 Aug 2018)
