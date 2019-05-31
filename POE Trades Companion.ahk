@@ -260,13 +260,14 @@ Start_Script() {
 		if (updChkTimer)
 			SetTimer, UpdateCheck, %updChkTimer%
 
-		if (A_IsCompiled)
-			UpdateCheck(checktype:="on_start")
-		else
-			UpdateCheck(checkType:="on_start", "box")
-	}
-	else if (DEBUG.settings.force_update_check) {
-		UpdateCheck(checkType:="forced")
+		if (DEBUG.settings.force_update_check)
+			UpdateCheck(checkType:="forced")
+		else {
+			if (A_IsCompiled)
+				UpdateCheck(checktype:="on_start")
+			else
+				UpdateCheck(checkType:="on_start", "box")
+		}
 	}
 
 	Get_TradingLeagues() ; Getting leagues
