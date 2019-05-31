@@ -1,4 +1,4 @@
-1.15.BETA_1 (29 May 2019)
+1.15.BETA_1 (31 May 2019)
 	Features:
 	- French, Traditional Chinese, Simplified Chinese translated interfaces.
 	Upon starting the tool for the first time, you will be asked to choose your language.
@@ -7,6 +7,10 @@
 	Changes:
 	- Hiding normal quad tab stash tab item location for maps, is now disabled by default.
 	Not everyone has bought the map stash tab. Having this disabled by default makes more sense.
+	
+	Fixes:
+	- Could fail to update due to unable to unload fonts.
+	- Would always download the beta update, even when the beta checkbox was unchecked.
 
 = = = = = = = = = = = = =	
 1.13.BETA_8 (31 Aug 2018)
