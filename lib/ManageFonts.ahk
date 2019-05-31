@@ -100,9 +100,8 @@ Load_Or_Unload_Fonts(whatDo) {
 
 	Loop, Files, %fontsFolder%\*.ttf
 	{
+		fontFile := A_LoopFileFullPath, fontTitle := FGP_Value(A_LoopFileFullPath, 21)	; 21 = Title
 		if ( whatDo="LOAD") {
-			fontFile := A_LoopFileFullPath, fontTitle := FGP_Value(A_LoopFileFullPath, 21)	; 21 = Title
-
 			DllCall( "GDI32.DLL\AddFontResourceEx", Str, fontFile,UInt,(FR_PRIVATE:=0x10), Int,0)
 			DllCall("gdiplus\GdipPrivateAddFontFile", "uint", hCollection, "uint", &fontFile)
 			DllCall("gdiplus\GdipCreateFontFamilyFromName", "uint", &fontTitle, "uint", hCollection, "uint*", hFamily)
