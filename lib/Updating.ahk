@@ -202,12 +202,18 @@ DownloadAndRunUpdater(dl="") {
 			return
 		}
 
+		UnloadFonts()
+		FileCopyDir,% A_ScriptDir,% A_ScriptDir "_backup", 1 ; Make backup
 		FileCopyDir,% folder,% A_ScriptDir, 1
 		if (ErrorLevel) {
 			MsgBox(4096+16, "", "Failed to copy the new files into the folder.`nPlease try updating manually.")
+			FileCopyDir,% A_ScriptDir "_backup", A_ScriptDir, 1 ; Restore backup
+			FileRemoveDir,% A_ScriptDir "_backup", 1
 			FileRemoveDir,% updateFolder, 1
+			LoadFonts()
 			return
 		}
+		FileRemoveDir,% A_ScriptDir "_backup", 1
 
 		INI.Set(PROGRAM.INI_FILE, "GENERAL", "ShowChangelog", "True")
 		FileRemoveDir,% updateFolder, 1
