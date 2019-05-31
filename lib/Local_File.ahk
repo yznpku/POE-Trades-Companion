@@ -28,15 +28,18 @@ Get_LocalSettings_DefaultValues() {
 	settings.GENERAL.IsFirstTimeRunning 												:= "True"
 	settings.GENERAL.AddShowGridActionToInviteButtons									:= "True"
 	settings.GENERAL.HasAskedForImport													:= "True"
+	settings.GENERAL.RemoveCopyItemInfosIfGridActionExists								:= "True"
+	settings.GENERAL.ReplaceOldTradeVariables											:= "True"
+	settings.GENERAL.UpdateKickMyselfOutOfPartyHideoutHotkey							:= "True"
 
 	settings.SETTINGS_MAIN 																:= {}
 	settings.SETTINGS_MAIN.TradingWhisperSFXPath 										:= PROGRAM.SFX_FOLDER "\WW_MainMenu_Letter.wav" 
 	settings.SETTINGS_MAIN.RegularWhisperSFXPath 										:= ""
 	settings.SETTINGS_MAIN.BuyerJoinedAreaSFXPath 										:= ""
-	settings.SETTINGS_MAIN.NoTabsTransparency 											:= "30"
+	settings.SETTINGS_MAIN.NoTabsTransparency 											:= "0"
 	settings.SETTINGS_MAIN.TabsOpenTransparency 										:= "100"
 	settings.SETTINGS_MAIN.HideInterfaceWhenOutOfGame 									:= "False"
-	settings.SETTINGS_MAIN.CopyItemInfosOnTabChange 									:= "True"
+	settings.SETTINGS_MAIN.CopyItemInfosOnTabChange 									:= "False"
 	settings.SETTINGS_MAIN.AutoFocusNewTabs 											:= "False"
 	settings.SETTINGS_MAIN.AutoMinimizeOnAllTabsClosed 									:= "True"
 	settings.SETTINGS_MAIN.AutoMaximizeOnFirstNewTab 									:= "False"
@@ -57,6 +60,10 @@ Get_LocalSettings_DefaultValues() {
 	settings.SETTINGS_MAIN.PushBulletOnWhisperMessage									:= "False"
 	settings.SETTINGS_MAIN.PushBulletOnlyWhenAfk										:= "True"
 	settings.SETTINGS_MAIN.PoeAccounts													:= ""
+	settings.SETTINGS_MAIN.MinimizeInterfaceToBottomLeft								:= "False"
+	settings.SETTINGS_MAIN.ItemGridHideNormalTab										:= "False"
+	settings.SETTINGS_MAIN.ItemGridHideQuadTab											:= "False"
+	settings.SETTINGS_MAIN.ItemGridHideNormalTabAndQuadTabForMaps						:= "True"
 
 
 	settings.SETTINGS_CUSTOMIZATION_SKINS 												:= {}
@@ -68,14 +75,48 @@ Get_LocalSettings_DefaultValues() {
 	settings.SETTINGS_CUSTOMIZATION_SKINS.Font 											:= "Fontin SmallCaps"
 	settings.SETTINGS_CUSTOMIZATION_SKINS.ScalingPercentage 							:= "100"
 
-	settings.SETTINGS_CUSTOMIZATION_SKINS_UserDefined 									:= {}
-	settings.SETTINGS_CUSTOMIZATION_SKINS_UserDefined.UseRecommendedFontSettings 		:= settings.SETTINGS_CUSTOMIZATION_SKINS.UseRecommendedFontSettings
-	settings.SETTINGS_CUSTOMIZATION_SKINS_UserDefined.FontSize 							:= settings.SETTINGS_CUSTOMIZATION_SKINS.FontSize
-	settings.SETTINGS_CUSTOMIZATION_SKINS_UserDefined.Preset 							:= settings.SETTINGS_CUSTOMIZATION_SKINS.Preset
-	settings.SETTINGS_CUSTOMIZATION_SKINS_UserDefined.FontQuality 						:= settings.SETTINGS_CUSTOMIZATION_SKINS.FontQuality
-	settings.SETTINGS_CUSTOMIZATION_SKINS_UserDefined.Skin 								:= settings.SETTINGS_CUSTOMIZATION_SKINS.Skin
-	settings.SETTINGS_CUSTOMIZATION_SKINS_UserDefined.Font 								:= settings.SETTINGS_CUSTOMIZATION_SKINS.Font
-	settings.SETTINGS_CUSTOMIZATION_SKINS_UserDefined.ScalingPercentage 				:= settings.SETTINGS_CUSTOMIZATION_SKINS.ScalingPercentage
+	settings.SETTINGS_CUSTOMIZATION_SKINS.Color_Border									:= "0x715d46"
+	settings.SETTINGS_CUSTOMIZATION_SKINS.Color_Title_No_Trades							:= "0xC18F55"
+	settings.SETTINGS_CUSTOMIZATION_SKINS.Color_Title_Trades							:= "0xFFFFFF"
+	settings.SETTINGS_CUSTOMIZATION_SKINS.Color_Trade_Info_1							:= "0xC18F55"
+	settings.SETTINGS_CUSTOMIZATION_SKINS.Color_Trade_Info_2							:= "0xFFFFFF"
+	settings.SETTINGS_CUSTOMIZATION_SKINS.Color_Tab_Active								:= "0xFFFFFF"
+	settings.SETTINGS_CUSTOMIZATION_SKINS.Color_Tab_Inactive							:= "0xC18F55"
+	settings.SETTINGS_CUSTOMIZATION_SKINS.Color_Tab_Hover								:= "0xFFFFFF"
+	settings.SETTINGS_CUSTOMIZATION_SKINS.Color_Tab_Press								:= "0xC18F55"
+	settings.SETTINGS_CUSTOMIZATION_SKINS.Color_Tab_Joined_Active						:= "0xFFFFFF"
+	settings.SETTINGS_CUSTOMIZATION_SKINS.Color_Tab_Joined_Inactive						:= "0xC18F55"
+	settings.SETTINGS_CUSTOMIZATION_SKINS.Color_Tab_Joined_Hover						:= "0xFFFFFF"
+	settings.SETTINGS_CUSTOMIZATION_SKINS.Color_Tab_Joined_Press						:= "0xC18F55"
+	settings.SETTINGS_CUSTOMIZATION_SKINS.Color_Tab_Whisper_Active						:= "0xFFFFFF"
+	settings.SETTINGS_CUSTOMIZATION_SKINS.Color_Tab_Whisper_Inactive					:= "0xC18F55"
+	settings.SETTINGS_CUSTOMIZATION_SKINS.Color_Tab_Whisper_Hover						:= "0xFFFFFF"
+	settings.SETTINGS_CUSTOMIZATION_SKINS.Color_Tab_Whisper_Press						:= "0xC18F55"
+	settings.SETTINGS_CUSTOMIZATION_SKINS.Color_Button_Normal							:= "0xC18F55"
+	settings.SETTINGS_CUSTOMIZATION_SKINS.Color_Button_Hover							:= "0xFFFFFF"
+	settings.SETTINGS_CUSTOMIZATION_SKINS.Color_Button_Press							:= "0xC18F55"
+
+	curPreset := INI.Get(PROGRAM.INI_FILE, "SETTINGS_CUSTOMIZATION_SKINS", "Preset")
+	if (curPreset = "User Defined")
+		curSkin := INI.Get(PROGRAM.INI_FILE, "SETTINGS_CUSTOMIZATION_SKINS_UserDefined", "Skin")
+	else 
+		curSkin := INI.Get(PROGRAM.INI_FILE, "SETTINGS_CUSTOMIZATION_SKINS_UserDefined", "Skin")
+
+	curSkin := (curSkin && curSkin != "" && curSkin != "ERROR") ? curSkin : settings.SETTINGS_CUSTOMIZATION_SKINS.Skin
+	defSkinSettings := GUI_Settings.TabCustomizationSkins_GetSkinDefaultSettings(curSkin)
+
+	for key, value in defSkinSettings {
+		if (key = "UseRecommendedFontSettings")
+			value := value = 0 ? "False" : "True"
+
+		if (value != "" && value != "ERROR")
+			settings.SETTINGS_CUSTOMIZATION_SKINS[key] := value
+	}
+
+	settings.SETTINGS_CUSTOMIZATION_SKINS_UserDefined := {}
+	for key, value in settings.SETTINGS_CUSTOMIZATION_SKINS
+		settings.SETTINGS_CUSTOMIZATION_SKINS_UserDefined[key] := value
+
 
 	settings.SETTINGS_CUSTOM_BUTTON_1 													:= {}
 	settings.SETTINGS_CUSTOM_BUTTON_1.Name												:= "Ask to wait"
@@ -100,14 +141,12 @@ Get_LocalSettings_DefaultValues() {
 	settings.SETTINGS_CUSTOM_BUTTON_3.Size												:= "Small"
 	settings.SETTINGS_CUSTOM_BUTTON_3.Slot												:= "3"
 	settings.SETTINGS_CUSTOM_BUTTON_3.Enabled											:= "True"
-	settings.SETTINGS_CUSTOM_BUTTON_3.Action_1_Type										:= "COPY_ITEM_INFOS"
-	settings.SETTINGS_CUSTOM_BUTTON_3.Action_1_Content									:= ""
-	settings.SETTINGS_CUSTOM_BUTTON_3.Action_2_Type										:= "INVITE_BUYER"
-	settings.SETTINGS_CUSTOM_BUTTON_3.Action_2_Content									:= """/invite %buyer%"""
-	settings.SETTINGS_CUSTOM_BUTTON_3.Action_3_Type										:= "SEND_TO_BUYER"
-	settings.SETTINGS_CUSTOM_BUTTON_3.Action_3_Content									:= """@%buyer% Ready to be picked up: %item% listed for %price%"""
-	settings.SETTINGS_CUSTOM_BUTTON_3.Action_4_Type										:= "SHOW_GRID"
-	settings.SETTINGS_CUSTOM_BUTTON_3.Action_4_Content									:= ""
+	settings.SETTINGS_CUSTOM_BUTTON_3.Action_1_Type										:= "INVITE_BUYER"
+	settings.SETTINGS_CUSTOM_BUTTON_3.Action_1_Content									:= """/invite %buyer%"""
+	settings.SETTINGS_CUSTOM_BUTTON_3.Action_2_Type										:= "SEND_TO_BUYER"
+	settings.SETTINGS_CUSTOM_BUTTON_3.Action_2_Content									:= """@%buyer% Ready to be picked up: %item% listed for %price%"""
+	settings.SETTINGS_CUSTOM_BUTTON_3.Action_3_Type										:= "SHOW_GRID"
+	settings.SETTINGS_CUSTOM_BUTTON_3.Action_3_Content									:= ""
 
 	settings.SETTINGS_CUSTOM_BUTTON_4 													:= {}
 	settings.SETTINGS_CUSTOM_BUTTON_4.Name												:= "Sold already"
@@ -177,13 +216,11 @@ Get_LocalSettings_DefaultValues() {
 
 	settings.SETTINGS_HOTKEY_ADV_1														:= {}
 	settings.SETTINGS_HOTKEY_ADV_1.Name 												:= "Kick myself out of party + hideout"
-	settings.SETTINGS_HOTKEY_ADV_1.Hotkey 												:= ""
-	settings.SETTINGS_HOTKEY_ADV_1.Action_1_Type 										:= "SENDINPUT"
-	settings.SETTINGS_HOTKEY_ADV_1.Action_1_Content 									:= """{Enter}/kick MyMainChar{Enter}"""
-	settings.SETTINGS_HOTKEY_ADV_1.Action_2_Type 										:= "SENDINPUT"
-	settings.SETTINGS_HOTKEY_ADV_1.Action_2_Content 									:= """{Enter}/kick MySecondChar{Enter}"""
-	settings.SETTINGS_HOTKEY_ADV_1.Action_3_Type 										:= "CMD_HIDEOUT"
-	settings.SETTINGS_HOTKEY_ADV_1.Action_3_Content 									:= """/hideout"""
+	settings.SETTINGS_HOTKEY_ADV_1.Hotkey 												:= "+F2"
+	settings.SETTINGS_HOTKEY_ADV_1.Action_1_Type 										:= "KICK_MYSELF"
+	settings.SETTINGS_HOTKEY_ADV_1.Action_1_Content 									:= """/kick %myself%"""
+	settings.SETTINGS_HOTKEY_ADV_1.Action_2_Type 										:= "CMD_HIDEOUT"
+	settings.SETTINGS_HOTKEY_ADV_1.Action_2_Content 									:= """/hideout"""
 
 	hw := A_DetectHiddenWindows
 	DetectHiddenWindows, On
@@ -209,14 +246,14 @@ LocalSettings_IsValueValid(iniSect, iniKey, iniValue) {
 	isFirstTimeRunning := INI.Get(PROGRAM.INI_FILE, "GENERAL", "IsFirstTimeRunning")
 
 	if (iniSect = "GENERAL") {
-		if IsIn(iniKey, "IsFirstTimeRunning,AddShowGridActionToInviteButtons,HasAskedForImport")
+		if IsIn(iniKey, "IsFirstTimeRunning,AddShowGridActionToInviteButtons,HasAskedForImport,RemoveCopyItemInfosIfGridActionExists,ReplaceOldTradeVariables,UpdateKickMyselfOutOfPartyHideoutHotkey")
 			isValueValid := IsIn(iniValue, "True,False") ? True : False	
 	}
 
 	if (iniSect = "SETTINGS_MAIN") {
 		if (iniKey = "TradingWhisperSFXPath") {
 			sfxToggle := INI.Get(PROGRAM.INI_FILE, iniSect, "TradingWhisperSFXToggle")
-			isValueValid := FileExist(iniValue) || (!iniValue && sfxToggle="False") || (iniValue = "") ? True : False	
+			isValueValid := FileExist(iniValue) || (!iniValue && sfxToggle="False") ? True : False	
 		}
 		else if (iniKey = "RegularWhisperSFXPath") {
 			sfxToggle := INI.Get(PROGRAM.INI_FILE, iniSect, "RegularWhisperSFXToggle")
@@ -226,6 +263,13 @@ LocalSettings_IsValueValid(iniSect, iniKey, iniValue) {
 			sfxToggle := INI.Get(PROGRAM.INI_FILE, iniSect, "BuyerJoinedAreaSFXToggle")
 			isValueValid := FileExist(iniValue) || (!iniValue && sfxToggle="False") || (iniValue = "") ? True : False	
 		}
+		else if (iniKey = "TradingWhisperSFXToggle")
+			isValueValid := IsIn(iniValue, "True,False") ? True : False	
+		else if (iniKey = "RegularWhisperSFXToggle")
+			isValueValid := IsIn(iniValue, "True,False") ? True : False	
+		else if (iniKey = "BuyerJoinedAreaSFXToggle")
+			isValueValid := IsIn(iniValue, "True,False") ? True : False	
+
 		else if (iniKey = "NoTabsTransparency")
 			isValueValid := IsBetween(iniValue, 0, 100) ? True : False	
 		else if (iniKey = "TabsOpenTransparency")
@@ -239,12 +283,6 @@ LocalSettings_IsValueValid(iniSect, iniKey, iniValue) {
 		else if (iniKey = "AutoMinimizeOnAllTabsClosed")
 			isValueValid := IsIn(iniValue, "True,False") ? True : False	
 		else if (iniKey = "AutoMaximizeOnFirstNewTab")
-			isValueValid := IsIn(iniValue, "True,False") ? True : False	
-		else if (iniKey = "TradingWhisperSFXToggle")
-			isValueValid := IsIn(iniValue, "True,False") ? True : False	
-		else if (iniKey = "RegularWhisperSFXToggle")
-			isValueValid := IsIn(iniValue, "True,False") ? True : False	
-		else if (iniKey = "BuyerJoinedAreaSFXToggle")
 			isValueValid := IsIn(iniValue, "True,False") ? True : False	
 		else if (iniKey = "SendTradingWhisperUponCopyWhenHoldingCTRL")
 			isValueValid := IsIn(iniValue, "True,False") ? True : False	
@@ -270,6 +308,10 @@ LocalSettings_IsValueValid(iniSect, iniKey, iniValue) {
 			isValueValid := True
 		else if (iniKey = "PoeAccounts")
 			isValueValid := True
+		else if (iniKey = "MinimizeInterfaceToBottomLeft")
+			isValueValid := IsIn(iniValue, "True,False") ? True : False	
+		else if IsIn(iniKey, "ItemGridHideNormalTab,ItemGridHideQuadTab,ItemGridHideNormalTabAndQuadTabForMaps")
+			isValueValid := IsIn(iniValue, "True,False") ? True : False	
 	}
 
 	else if IsIn(iniSect, "SETTINGS_CUSTOMIZATION_SKINS,SETTINGS_CUSTOMIZATION_SKINS_UserDefined") {
@@ -295,7 +337,11 @@ LocalSettings_IsValueValid(iniSect, iniKey, iniValue) {
 			isValueValid := IsIn(iniValue, fontsList) ? True : False	
 		}
 		else if (iniKey = "ScalingPercentage")
-			isValueValid := IsNum(iniValue) ? True : False	
+			isValueValid := IsNum(iniValue) ? True : False
+		
+		else if IsContaining(iniKey, "Color_") {
+			isValueValid := IsHex(iniValue) && (StrLen(iniValue) = 8) ? True : False
+		}
 	}
 
 	else if IsContaining(iniSect, "SETTINGS_CUSTOM_BUTTON_") {
@@ -434,11 +480,14 @@ Set_LocalSettings() {
 			isValueValid := LocalSettings_IsValueValid(iniSect, iniKey, iniValue)
 			if RegExMatch(iniSect, "O)SETTINGS_CUSTOM_BUTTON_(.*)", iniSectPat) && IsBetween(iniSectPat.1, 1, 5) {
 				iniSectNum := iniSectPat.1
-				isValueValid := doesCustBtn%iniSectNum%Exist=True?True:False
+				isValueValid := iniKey="Name"?isValueValid
+				: doesCustBtn%iniSectNum%Exist=True?True
+				: False
 			}
 
 			if (!isValueValid) {
-				if (IsFirstTimeRunning != "True" && !IsIn(iniKey, "IsFirstTimeRunning,AddShowGridActionToInviteButtons"))
+				if (IsFirstTimeRunning != "True")
+				&& !IsIn(iniKey, "IsFirstTimeRunning,AddShowGridActionToInviteButtons,HasAskedForImport,RemoveCopyItemInfosIfGridActionExists,ReplaceOldTradeVariables,UpdateKickMyselfOutOfPartyHideoutHotkey,LastUpdateCheck")
 					warnMsg .= "Section: " iniSect "`nKey: " iniKey "`nValue: " iniValue "`nDefault value: " defValue "`n`n"
 				Restore_LocalSettings(iniSect, iniKey)
 			}
@@ -481,8 +530,10 @@ Get_LocalSettings() {
 		}
 	}
 
+	/*	No longer used
 	PROGRAM.OS := {}
 	PROGRAM.OS.RESOLUTION_DPI := Get_DpiFactor()
+	*/
 
 	return settingsObj
 }
@@ -537,6 +588,167 @@ Update_LocalSettings() {
 		}
 		AppendToLogs(A_ThisFunc "(): Finished adding SHOW_GRID action.")
 		INI.Set(iniFile, "GENERAL", "AddShowGridActionToInviteButtons", "False")
+	}
+
+	if (localSettings.GENERAL.RemoveCopyItemInfosIfGridActionExists = "True") {
+		AppendToLogs(A_ThisFunc "(): RemoveCopyItemInfosIfGridActionExists detected as True."
+		. "`n" "Removing COPY_ITEM_INFOS action to all buttons containing the SHOW_GRID action.")
+		Loop {
+			cbIndex := A_Index
+			loopedSetting := localSettings["SETTINGS_CUSTOM_BUTTON_" cbIndex]
+			if IsObject(loopedSetting) {
+				hasCopy := False, hasGrid := False
+				Loop {
+					loopActionIndex := A_Index
+					loopedActionContent := loopedSetting["Action_" loopActionIndex "_Content"]
+					loopedActionType := loopedSetting["Action_" loopActionIndex "_Type"]
+
+					if (!loopedActionType) || (loopedActionType = "") || (loopActionIndex > 50) {
+						loopActionIndex--
+						Break
+					}
+					
+					else if (loopedActionType = "COPY_ITEM_INFOS")
+						hasCopy := True, copyActionIndex := loopActionIndex
+
+					else if (loopedActionType = "SHOW_GRID")
+						hasGrid := True, gridActionIndex:= loopActionIndex
+				}
+				if (hasCopy = True && hasGrid = True) {
+					AppendToLogs(A_ThisFunc "(): Removing COPY_ITEM_INFOS action to button with" . "`t" "ID: """ cbIndex """ - Action index: """ loopActionIndex """. Action ID: """ copyActionIndex """")
+
+					; Reduce action num by one, for every action after COPY_ITEM_INFOS
+					startReplaceIndex := copyActionIndex
+					Loop % loopActionIndex - copyActionIndex {
+						INI.Set(iniFile, "SETTINGS_CUSTOM_BUTTON_" cbIndex, "Action_" startReplaceIndex "_Content", """" loopedSetting["Action_" startReplaceIndex+1 "_Content"] """")
+						INI.Set(iniFile, "SETTINGS_CUSTOM_BUTTON_" cbIndex, "Action_" startReplaceIndex "_Type", loopedSetting["Action_" startReplaceIndex+1 "_Type"])
+						startReplaceIndex++
+
+						AppendToLogs(A_ThisFunc "(): Reducing action index by one for button with" . "`t" "ID: """ cbIndex """ - Action index: """ loopActionIndex """. Action ID: """ startReplaceIndex+1 """")
+					}
+					; Remove COPY_ITEM_INFOS action
+					INI.Remove(iniFile, "SETTINGS_CUSTOM_BUTTON_" cbIndex, "Action_" loopActionIndex "_Content")
+					INI.Remove(iniFile, "SETTINGS_CUSTOM_BUTTON_" cbIndex, "Action_" loopActionIndex "_Type")					
+				}
+			}
+			else if (cbIndex > 20)
+				Break
+			else
+				Break
+		}
+		AppendToLogs(A_ThisFunc "(): Finished removing COPY_ITEM_INFOS action to buttons with SHOW_GRID action.")
+		INI.Set(iniFile, "GENERAL", "RemoveCopyItemInfosIfGridActionExists", "False")
+	}
+
+	if (localSettings.GENERAL.ReplaceOldTradeVariables = "True") {
+		AppendToLogs(A_ThisFunc "(): ReplaceOldTradeVariables detected as True."
+		. "`n" "Replacing trade variables with new updated names.")
+		variablesToReplace := {"%buyerName%":"%buyer%", "%itemName%":"%item%", "%itemPrice%":"%price%", "%lastWhisper%":"%lwr%"
+		, "%lastWhisperReceived%":"%lwr%", "%sentWhisper%":"%lws%", "%lastWhisperSent%":"%lws%"}
+		; custom buttons
+		Loop {
+			cbIndex := A_Index
+			loopedBtn := localSettings["SETTINGS_CUSTOM_BUTTON_" cbIndex]
+			if IsObject(loopedBtn) {
+				Loop {
+					loopActionIndex := A_Index
+					loopedActionContent := loopedBtn["Action_" loopActionIndex "_Content"]
+					loopedActionType := loopedBtn["Action_" loopActionIndex "_Type"]
+
+					if (!loopedActionType) || (loopedActionType = "") || (loopActionIndex > 50) {
+						loopActionIndex--
+						Break
+					}
+
+					hasReplaced := False, replaceCount := 0
+					for key, value in variablesToReplace {
+						if IsContaining(loopedActionContent, key) {
+							loopedActionContent := StrReplace(loopedActionContent, key, value, replaceCount)
+						}
+						hasReplaced := hasReplaced=True?True : replaceCount?True : False
+					}
+
+					if (hasReplaced) {
+						AppendToLogs(A_ThisFunc "(): Replacing " key " variable to button with" . "`t" "ID: """ cbIndex """ - Action index: """ loopActionIndex """")
+						INI.Set(iniFile, "SETTINGS_CUSTOM_BUTTON_" cbIndex, "Action_" loopActionIndex "_Content", """" loopedActionContent """")
+					}
+				}
+			}
+			else if (cbIndex > 20)
+				Break
+			else
+				Break
+		}
+		; hotkeys basic
+		Loop 15 {
+			hkIndex := A_Index
+			loopedHK := localSettings["SETTINGS_HOTKEY_" hkIndex]
+
+			loopedActionContent := loopedHK["Content"]
+			loopedActionType := loopedHK["Type"]
+
+			hasReplaced := False, replaceCount := 0
+			for key, value in variablesToReplace {
+				if IsContaining(loopedActionContent, key)
+					loopedActionContent := StrReplace(loopedActionContent, key, value, replaceCount)
+				hasReplaced := hasReplaced=True?True : replaceCount?True : False
+			}
+			
+			if (hasReplaced) {
+				AppendToLogs(A_ThisFunc "(): Replacing " key " variable to hotkey with"	. "`t" "ID: """ cbIndex """")
+				INI.Set(iniFile, "SETTINGS_HOTKEY_" hkIndex, "Content", """" loopedActionContent """")
+			}
+		}
+		; hotkeys adv
+		Loop {
+			hkIndex := A_Index
+			loopedHK := localSettings["SETTINGS_HOTKEY_ADV_" hkIndex]
+			if IsObject(loopedHK) {
+				Loop {
+					loopActionIndex := A_Index
+					loopedActionContent := loopedHK["Action_" loopActionIndex "_Content"]
+					loopedActionType := loopedHK["Action_" loopActionIndex "_Type"]
+
+					if (!loopedActionType) || (loopedActionType = "") || (loopActionIndex > 50) {
+						loopActionIndex--
+						Break
+					}
+
+					hasReplaced := False, replaceCount := 0
+					for key, value in variablesToReplace {
+						if IsContaining(loopedActionContent, key) {
+							loopedActionContent := StrReplace(loopedActionContent, key, value, replaceCount)
+						}
+						hasReplaced := hasReplaced=True?True : replaceCount?True : False
+					}
+
+					if (hasReplaced) {
+						AppendToLogs(A_ThisFunc "(): Replacing " key " variable to hotkey adv with" . "`t" "ID: """ cbIndex """ - Action index: """ loopActionIndex """")	
+						INI.Set(iniFile, "SETTINGS_HOTKEY_ADV_" hkIndex, "Action_" loopActionIndex "_Content", """" loopedActionContent """")
+					}
+				}
+			}
+			else if (hkIndex > 200)
+				Break
+			else
+				Break
+		}
+
+		AppendToLogs(A_ThisFunc "(): Finished replacing trade variables with new updated names.")
+		INI.Set(iniFile, "GENERAL", "ReplaceOldTradeVariables", "False")
+	}
+
+	if (localSettings.GENERAL.UpdateKickMyselfOutOfPartyHideoutHotkey = "True") {
+		AppendToLogs(A_ThisFunc "(): UpdateKickMyselfOutOfPartyHideoutHotkey detected as True."
+		. "`n" "Replacing adv hotkey with new action.")
+
+		if (localSettings.SETTINGS_HOTKEY_ADV_1.Name = "Kick myself out of party + hideout") {
+			INI.Remove(iniFile, "SETTINGS_HOTKEY_ADV_1")
+			Restore_LocalSettings("SETTINGS_HOTKEY_ADV_1")
+		}
+
+		AppendToLogs(A_ThisFunc "(): Finished replacing adv hotkey with new action.")
+		INI.Set(iniFile, "GENERAL", "UpdateKickMyselfOutOfPartyHideoutHotkey", "False")
 	}
 	
 	if (localSettings.GENERAL.IsFirstTimeRunning = "True") {

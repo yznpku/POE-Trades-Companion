@@ -110,6 +110,7 @@ WM_LBUTTONUP() {
 	if (A_Gui = "Trades") {
 		if (GUITRADES_TOOLTIP) {
 			RemoveToolTip()
+			GUITRADES_TOOLTIP := False
 			GUI_Trades.UnSetTabStyleWhisperReceived(GUI_Trades.GetActiveTab())
 		}
 		; GUI_Trades.RemoveButtonFocus() ; Don't do this. It will prevent buttons from working.
@@ -133,7 +134,7 @@ WM_MOUSEMOVE() {
 	static _mouseX, _mouseY, _prevMouseX, _prevMouseY, _prevInfos
 	static curControl, prevControl
 
-	resDPI := PROGRAM.OS.RESOLUTION_DPI
+	resDPI := Get_DpiFactor()
 
 	MouseGetPos, _mouseX, _mouseY
 	if (_mouseX = _prevMouseX) && (_mouseY = _prevMouseY)
@@ -341,3 +342,21 @@ WM_MOUSEMOVE() {
 	_prevInfos := currentButtonInfos
 	_prevMouseX := _mouseX, _prevMouseY := _mouseY
 }
+
+AHK_NOTIFYICON(wParam, lParam) { 
+	global CANCEL_TRAY_MENU
+    if (lParam = 0x202) { ; WM_LBUTTONUP
+		dblClkTime := DllCall("user32.dll\GetDoubleClickTime")
+		dblClkTime := IsNum(dblClkTime)?dblClkTime:500
+        SetTimer, AHK_NOTIFYICON_ShowTrayMenu,% "-" dblClkTime+20
+        return 0 
+    }
+	return
+
+	AHK_NOTIFYICON_ShowTrayMenu:
+	 	if (CANCEL_TRAY_MENU = True) 
+		 	CANCEL_TRAY_MENU := False
+		else
+			Menu, Tray, Show
+	return
+} 

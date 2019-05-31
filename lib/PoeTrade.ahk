@@ -1,31 +1,39 @@
 ﻿PoeTrade_GenerateCurrencyData() {
-    returnVal := PoeTrade_GetCurrencyData(createData:=True)
-    jsonData := returnVal.1, txtData := returnVal.2
+    jsonData := PoeTrade_GetCurrencyData()
 
     if !(jsonData) {
         MsgBox(4096, "", "Function: " A_ThisFunc "`nCurrency JSON data is invalid, cancelling.")
         return
     }
-    if !(txtData) {
-        MsgBox(4096, "", "Function: " A_ThisFunc "`nCurrency TXT data is invalid, cancelling.")
+
+    nice := JSON.Beautify(jsondata)
+    for key, value in jsonData {
+        if !(jsonData[value].Abridged = key) {
+            dataTxt .= dataTxt ? "`n" key : key
+        }           
+    }
+
+    if (!nice || !dataTxt || StrLen(nice) < 100 || StrLen(dataTxt) < 100) {
+        MsgBox, 4096,% "",% "Error while retrieving currency data from poe.trade"
         return
     }
 
     fileLocation := A_ScriptDir "/data/poeTradeCurrencyData.json"
     FileDelete,% fileLocation
-    FileAppend,% jsonData,% fileLocation
+    FileAppend,% nice,% fileLocation
 
     fileLocation := A_ScriptDir "/data/CurrencyNames.txt"
     FileDelete,% fileLocation
-    FileAppend,% txtData,% fileLocation
+    FileAppend,% dataTxt,% fileLocation
 }
 
-PoeTrade_GetCurrencyData(createData=False) {
+PoeTrade_GetCurrencyData() {
     global PROGRAM
 
     Url := "http://currency.poe.trade/"
 	postData 	:= ""
-	options	:= ""
+	options	    := ""
+    options     .= "`n" "TimeOut: 25"
 
 	reqHeaders	:= []
 	reqHeaders.push("User-Agent:Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Safari/537.36")
@@ -36,7 +44,7 @@ PoeTrade_GetCurrencyData(createData=False) {
 	reqHeaders.push("Referer:http://poe.trade/")
 	reqHeaders.push("Upgrade-Insecure-Requests:1")
 
-	html := cURL_Download(url, postData, reqHeaders, options, false)
+	html := cURL_Download(url, postData, reqHeaders, options, useFallback:=false)
 
     regexPos := 1, categories := {}
     Loop {
@@ -67,8 +75,10 @@ PoeTrade_GetCurrencyData(createData=False) {
 
                 if (curTitle) {
                     currenciesObj[curTitle] := {}
-                    currenciesObj[curTitle]["Full"] := curTitle
-                    currenciesObj[curTitle]["Abridged"] := curDataTitle
+                    if (curTitle != curDataTitle) {
+                        currenciesObj[curTitle]["Abridged"] := curDataTitle
+                        ; currenciesObj[curTitle]["Full"] := curTitle
+                    }
                     currenciesObj[curTitle]["ID"] := curDataID
                 }
                 if (curDataTitle && curDataTitle != curTitle) {
@@ -87,38 +97,6 @@ PoeTrade_GetCurrencyData(createData=False) {
         AppendToLogs(A_ThisFunc "(createData=" createData "): Couldn't retrieve currency data from poe.trade, falling back to json.")
         FileRead, JSONFile,% PROGRAM.DATA_FOLDER "\poeTradeCurrencyData.json"
         currenciesObj := JSON.Load(JSONFile)
-    }
-
-    if (createData=True) {
-        if !(currenciesObj["Chaos Orb"])
-            return 0
-
-        txtData := ""
-        jsonData := "{`n"
-        for key, value in currenciesObj {
-            fName := currenciesObj[key].Full, cID := currenciesObj[key].ID, sName := currenciesObj[key].Abridged
-
-            if (sName && fName && cID) && (sName != fName) {
-                jsonData .= A_Tab """" fName """: {"
-                . "`n" A_Tab A_Tab """Abridged"": " """" sName ""","
-                . "`n" A_Tab A_Tab """ID"": " """" cID """"
-                . "`n" A_Tab "},"
-                . "`n" A_Tab """" sName """: """ fName """,`n"
-            }
-            else if (fName && cID) {
-                jsonData .= A_Tab """" fName """: {"
-                . "`n" A_Tab A_Tab """ID"": " """" cID """"
-                .  "`n" A_Tab "},`n"
-            }
-
-            if (fName)
-                txtData .= txtData?"`n" fName : fName
-            
-        }
-        StringTrimRight, jsonData, jsonData, 2
-        jsonData .= "`n}"
-
-        return [jsonData, txtData]
     }
 
     Return currenciesObj
@@ -151,7 +129,7 @@ PoETrade_GetMatchingCurrencyTradeData(dataObj, itemURL) {
                 foundObj[A_LoopField] := foundPat.1
             }
 
-            sellBuyRatio := RemoveTrailingZeroes(foundObj.sellvalue / foundObj.buyvalue)
+            sellBuyRatio := RemoveTrailingZeroes(foundObj.buyvalue / foundObj.sellvalue)
             isSameAccount := foundObj.username = dataObj.username ? True : False
             isSameRatio := sellBuyRatio = dataObj.sellBuyRatio ? True : False
 
@@ -159,14 +137,17 @@ PoETrade_GetMatchingCurrencyTradeData(dataObj, itemURL) {
                 foundMatchIndex++
                 isMatching := isSameRatio=True?True:False
                 matchingDatas[foundMatchIndex] := foundObj
-                matchingDatas[foundMatchIndex].SellBuyRatio := sellBuyRatio
+                matchingDatas[foundMatchIndex].SellBuyRatio := RemoveTrailingZeroes(sellBuyRatio)
                 matchingDatas[foundMatchIndex].IsSameRatio := isSameRatio
             }
         }
         else    
             Break
     }
-    return matchingDatas
+    if matchingDatas.Count()
+        return matchingDatas
+    else
+        return
 }
 
 PoeTrade_GetMatchingItemData(dataObj, itemURL) {
@@ -184,7 +165,7 @@ PoeTrade_GetMatchingItemData(dataObj, itemURL) {
         if (foundPos) {
             tBody := htmlPat.0, regexPos := foundPos+1
 
-            saleInfoTags := "seller,buyout,ign,league,name,tab,level,quality,x,y", foundObj := {}
+            saleInfoTags := "seller,buyout,ign,league,name,tab,level,quality,x,y,map-tier", foundObj := {}
             Loop, Parse, saleInfoTags,% ","
             {
                 RegExMatch(tBody, "iO)data-" A_LoopField "=""(.*?)""", foundPat)
@@ -193,7 +174,7 @@ PoeTrade_GetMatchingItemData(dataObj, itemURL) {
 
             ; poe.trade data-x and data-y start at 1 instead of 0 like in the whisper, so we add +1
             if (foundObj.seller = dataObj.seller) && (foundObj.league = dataObj.league)
-            && (foundObj.tab = dataObj.tab) && (foundObj.level = dataObj.level_min) && (foundObj.quality = dataObj.q_min)
+            && (foundObj.tab = dataObj.tab) && ((foundObj.level = dataObj.level) || (foundObj["map-tier"] = dataObj.level)) && (foundObj.quality = dataObj.quality)
             && (foundObj.x+1 = dataObj.x) && (foundObj.y+1 = dataObj.y) { ; Item is the same
                 return foundObj
             }
@@ -259,6 +240,18 @@ PoeTrade_CreateCurrencyPayload(obj, addDefaultParams=False) {
             payload .= (payload)?("&" payloadStr):(payloadStr)
         }
     }
+
+    if (poeTradeObj.have = "") {
+        logsLine := "Failed to get currency ID for """ obj.have """ (have)"
+        logsAppend := logsAppend ? "`n" logsLine : logsLine, payload := ""
+    }
+    if (poeTradeObj.want = "") {
+        logsLine := "Failed to get currency ID for """ obj.want """ (want)"
+        logsAppend := logsAppend ? "`n" logsLine : logsLine, payload := ""
+    }
+
+    if (logsAppend)
+        AppendToLogs(logsAppend)
 
     return payload
 }
@@ -332,6 +325,7 @@ PoeTrade_GetSource(url) {
 	payLength	:= StrLen(postData)
 	url 		:= "http://poe.trade/search"
 	options	    := ""
+    options     .= "`n" "TimeOut: 25"
 
 	reqHeaders	:= []
 	reqHeaders.push("Connection: keep-alive")
@@ -342,7 +336,7 @@ PoeTrade_GetSource(url) {
 	reqHeaders.push("Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
 	reqHeaders.push("Referer: http://poe.trade/")
 
-    html := cURL_Download(url, postData, reqHeaders, options, false)
+    html := cURL_Download(url, postData, reqHeaders, options, useFallback:=false)
 
     return html
 }
@@ -355,6 +349,7 @@ CurrencyPoeTrade_GetSource(url, skipPayload=False) {
     postData 	:= payload
 	payLength	:= StrLen(postData)
 	options	    := ""
+    options     .= "`n" "TimeOut: 25"
 
 	reqHeaders	:= []
 	reqHeaders.push("User-Agent:Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Safari/537.36")
@@ -365,7 +360,7 @@ CurrencyPoeTrade_GetSource(url, skipPayload=False) {
 	reqHeaders.push("Referer:http://currency.poe.trade")
 	reqHeaders.push("Upgrade-Insecure-Requests:1")
 
-    html := cURL_Download(url, postData, reqHeaders, options, false)
+    html := cURL_Download(url, postData, reqHeaders, options, useFallback:=false)
 
     return html
 }

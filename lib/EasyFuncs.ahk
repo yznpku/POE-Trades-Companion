@@ -1,4 +1,106 @@
-﻿GetWindowClientInfos(winName) {
+﻿IsWindowInScreenBoundaries(_win, _screen="All", _adv=False) {
+/*	Returns whether at least 1/3 of the window is within the screen or not
+*/
+	hiddenWin := A_DetectHiddenWindows
+	DetectHiddenWindows, On
+
+	WinGetPos, x, y, w, h,% _win
+	win := {x:x,y:y,h:h,w:w}
+
+	DetectHiddenWindows, %hiddenWin%
+
+	mons := {}
+	if (_screen="All") { ; get all mons wa into their own sub array
+		SysGet, monCount, MonitorCount
+		Loop %monCount% {
+			SysGet, monwa, MonitorWorkArea, %A_Index%
+			mons[A_Index] := {T:monwaTop,B:monwaBottom,L:monwaLeft,R:monwaRight}
+		}	
+	}
+	else { ; only selected monitor into its own sub array
+		SysGet, monwa, MonitorWorkArea, %_screen%
+		mons.1 := {T:monwaTop,B:monwaBottom,L:monwaLeft,R:monwaRight}
+	}
+
+	if (_adv)
+		advObj := {}
+	for monIndex, nothing in mons { ; for every subarray
+		mon := mons[monIndex]
+
+		; check if 1/3 of window is in horizontal boundaries
+		if (win.x < mon.l) ; left 
+			hor := IsBetween(win.x+win.w/1.5, mon.l, mon.r)
+		else ; right
+			hor := IsBetween(win.x+win.w/3, mon.l, mon.r)
+		; check if 1/3 of window is in vertical boundaries
+		if (win.y < mon.t) ; top
+			ver := IsBetween(win.y+win.h/1.5, mon.t, mon.b)
+		else ; bottom
+			ver := IsBetween(win.y+win.h/3, mon.t, mon.b)
+
+		if (_adv)
+			advObj[monIndex] := {"Mon_T": mon.t, "Mon_B": mon.b, "Mon_L": mon.l, "Mon_R": mon.r
+				, "Win_X": win.x, "Win_Y": win.y, "Win_W": win.w, "Win_H": win.h
+				, "IsInBoundaries_H": hor, "IsInBoundaries_V": ver}
+		
+		if (hor && ver) && (_adv = False)
+			return True
+	}
+	if (_adv)
+		return advObj
+}
+
+GetKeyStateFunc(which) {
+
+	if (which = "All") {
+		shiftState := (GetKeyState("Shift"))?("Down"):("Up")
+		shiftStateL := (GetKeyState("LShift"))?("Down"):("Up")
+		shiftStateR := (GetKeyState("RShift"))?("Down"):("Up")
+
+		ctrlState := (GetKeyState("Ctrl"))?("Down"):("Up")
+		ctrlStateL := (GetKeyState("LCtrl"))?("Down"):("Up")
+		ctrlStateR := (GetKeyState("RCtrl"))?("Down"):("Up")
+
+		altState := (GetKeyState("Alt"))?("Down"):("Up")
+		altStateL := (GetKeyState("LAlt"))?("Down"):("Up")
+		altStateR := (GetKeyState("RAlt"))?("Down"):("Up")
+
+		WinStateL := (GetKeyState("LWin"))?("Down"):("Up")
+		WinStateR := (GetKeyState("RWin"))?("Down"):("Up")
+
+		obj := {Shift: shiftState, LShift: shiftStateL, RShift: shiftStateR
+			, Ctrl: ctrlState, LCtrl: ctrlStateL, RCtrl: ctrlStateR
+			, Alt: altState, LAlt: altStateL, RAlt: altStateR
+			, LWin: WinStateL, RWin: WinStateR}
+
+		return obj
+	}
+	else {
+		obj := {}
+		Loop, Parse, which,% ","
+		{
+			key := A_LoopField, _count := A_Index
+			%key%State := (GetKeyState(key))?("Down"):("Up")
+			obj[key] := %key%State
+		}
+
+		if (_count = 1) {
+			return %key%State
+		}
+		else 
+			return obj
+	}
+}
+
+SetKeyStateFunc(which) {
+	for key, state in which
+		str .= "{" key " " state "}"
+
+	if (str)
+		Send %str%
+}
+
+GetWindowClientInfos(winName) {
 /*	Source:
 		noname: 		http://autohotkey.com/board/topic/77915-get-client-window/?p=495250
 		arcaine.net: 	http://arcaine.net/l2/AtomixMacro/Unsupported/CP&CTRL.ahk
@@ -66,44 +168,106 @@ RandomStr(l = 24, i = 48, x = 122) { ; length, lowest and highest Asc value
 	Return, s
 }
 
-Get_HotkeyString(_hotkey, simpleString=False) {
-	Loop 3 {
-		char := SubStr(_hotkey, A_Index, 1)
-		restOfString := SubStr(_hotkey, A_Index)
-		if (simpleString)
-			keyStr := (char="^")?("Ctrl"):(char="!")?("Alt"):(char="+")?("Shift"):("")
-		else 
-			keyStr := (char="^")?("{Ctrl Down}"):(char="!")?("{Alt Down}"):(char="+")?("{Shift Down}"):("")
+Transform_ReadableHotkeyString_Into_AHKHotkeyString(_hotkey, _delimiter="+") {
+	len := StrLen(_hotkey)
+    Loop 2 {
+        mainLoopIndex := A_Index
+        Loop, Parse,% _hotkey,% _delimiter
+        {
+            parseIndex := A_Index
 
-		if !(keyStr)
-			Break
+            if (mainLoopIndex = 1) 
+                parseTotal := parseIndex
+            else {
+                firstChar := SubStr(A_LoopField, 1, 1)
+                if IsIn(A_LoopField, "Ctrl,LCtrl,RCtrl") && (parseIndex < parseTotal)
+                    mod .= firstChar = "L" ? "<^" : firstChar = "R" ? ">^" : "^"
+                else if IsIn(A_LoopField, "Shift,LShift,RShift") && (parseIndex < parseTotal)
+                    mod .= firstChar = "L" ? "<+" : firstChar = "R" ? ">+" : "+"
+                else if IsIn(A_LoopField, "Alt,LAlt,RAlt") && (parseIndex < parseTotal)
+                    mod .= firstChar = "L" ? "<!" : firstChar = "R" ? ">!" : "!"
+                else if IsIn(A_LoopField, "LWin,RWin") && (parseIndex < parseTotal)
+                    mod .= "#" ; firstChar = "L" ? "<#" : firstChar = "R" ? ">#" : "#"
+                else
+                    hk := A_LoopField
+            }
+        }
+    }
 
-		if (simpleString)
-			hotkeyString .= (keyStr)?(keyStr "+"):("")
-		else 
-			hotkeyString .= (keyStr)?(keyStr):("")
-	}
+    lastChar := SubStr(_hotkey, 0, 1)
+    if (lastChar = _delimiter) && (hk = "")
+        hk := lastChar
 
-	if (simpleString) {
-		hotkeyString .= restOfString
-		Return hotkeyString
-	}
+    fullHk := mod . hk
+    return fullHk
+}
 
-	hotkeyString .= "{" restOfString " Down}"
+Transform_AHKHotkeyString_Into_InputSring(_hotkey) {
+	readable := Transform_AHKHotkeyString_Into_ReadableHotkeyString(_hotkey)
+	len := StrLen(_hotkey), inputsObj := {}
+    Loop 2 {
+        mainLoopIndex := A_Index
+        Loop, Parse,% readable,% "+"
+        {
+            parseIndex := A_Index
 
-	split := StrSplit(hotkeyString, "Down}")
-	for key, element in split {
-		if (element)
-			maxIndex++
-	}
-	splitIndex := maxIndex
-			
-	Loop, %maxIndex% {
-		hotkeyString .= split[splitIndex] "Up}"
-		splitIndex--
-	}
+            if (mainLoopIndex = 1) 
+                parseTotal := parseIndex
+            else {
+                firstChar := SubStr(A_LoopField, 1, 1)
+                if IsIn(A_LoopField, "Ctrl,LCtrl,RCtrl") && (parseIndex < parseTotal)
+                    inputsObj.Push(A_LoopField)
+                else if IsIn(A_LoopField, "Shift,LShift,RShift") && (parseIndex < parseTotal)
+                    inputsObj.Push(A_LoopField)
+                else if IsIn(A_LoopField, "Alt,LAlt,RAlt") && (parseIndex < parseTotal)
+                    inputsObj.Push(A_LoopField)
+                else if IsIn(A_LoopField, "LWin,RWin") && (parseIndex < parseTotal)
+                    inputsObj.Push(A_LoopField)
+                else
+                    inputsObj.Push(A_LoopField)
+            }
+        }
+    }
 
-	Return hotkeyString
+	for index, _input in inputsObj {
+        downInputs .= "{" _input " Down}"
+        upInputs := "{" _input " Up}" upInputs
+    }
+
+	downAndUpInputs := downInputs . upInputs
+    return downAndUpInputs
+}
+
+Transform_AHKHotkeyString_Into_ReadableHotkeyString(_hotkey, _delimiter="+") {
+	len := StrLen(_hotkey)
+
+	Loop, Parse,% _hotkey
+    {
+        parseIndex := A_Index
+        curChar := A_LoopField, nextChar := SubStr(_hotkey, parseIndex+1, 1), curAndNextChars := curChar . nextChar
+
+        if (skipNextChar) {
+            skipNextChar := False
+        }
+        else if IsIn(curAndNextChars, "<^,>^,<!,>!,<+,>+,<#,>#") {
+            mod := curChar = "<" ? "L" : curChar = ">" ? "R" : ""
+            mod .= nextChar = "^" ? "Ctrl" : nextChar = "!" ? "Alt" : nextChar = "+" ? "Shift" : nextChar = "#" ? "Win" : ""
+            modStr .= modStr ? "+" mod : mod
+            skipNextChar := True
+        }
+        else if IsIn(curChar, "^,!,+,#") && (parseIndex < len) {
+            mod := curChar = "^" ? "Ctrl" : curChar = "!" ? "Alt" : curChar = "+" ? "Shift" : curChar = "#" ? "Win" : ""
+            modStr .= modStr ? "+" mod : mod
+        }
+        else {
+            hk := SubStr(_hotkey, parseIndex)
+            StringUpper, hk, hk, T
+            Break
+        }
+    }
+
+    hkStr := modStr ? modStr "+" hk : hk
+    return hkStr
 }
 
 Get_UnderMouse_CtrlHwnd() {
@@ -245,6 +409,22 @@ Get_Windows_List(_filter, _filterType, _delimiter, _what) {
 	}
 
 	Return returnList
+}
+
+IsContaining_Parse(_string, _list, _delimiter="`n", _ignore="`r", _getMatch=False) {
+	Loop, Parse, _list,%_delimiter%,%_ignore%
+		if IsContaining(_string, A_LoopField) {
+			if (_getMatch=True)
+				return [True, A_LoopField]
+			else
+				return True
+		}
+}
+
+IsIn_Parse(_string, _list, _delimiter="`n", _ignore="`r") {
+	Loop, Parse, _list,%_delimiter%,%_ignore%
+		if (A_LoopField = _string)
+			return True
 }
 
 IsIn(_string, _list) {

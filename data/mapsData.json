@@ -1,0 +1,515 @@
+﻿{
+	"tier_1":{
+		"Alleyways":{
+			"pos":1
+		},
+		"Cursed Crypt":{
+			"pos":2
+		},
+		"Fungal Hollow":{
+			"pos":3
+		},
+		"Iceberg":{
+			"pos":4
+		}
+	},
+	"tier_10":{
+		"Arachnid Nest":{
+			"pos":1
+		},
+		"Chateau":{
+			"pos":2
+		},
+		"Factory":{
+			"pos":3
+		},
+		"Mesa":{
+			"pos":4
+		},
+		"Moon Temple":{
+			"pos":5
+		},
+		"Overgrown Ruin":{
+			"pos":6
+		},
+		"Plateau":{
+			"pos":7
+		},
+		"Relic Chambers":{
+			"pos":8
+		},
+		"Scriptorium":{
+			"pos":9
+		},
+		"Wharf":{
+			"pos":10
+		}
+	},
+	"tier_11":{
+		"Arena":{
+			"pos":1
+		},
+		"Arsenal":{
+			"pos":2
+		},
+		"Basilica":{
+			"pos":3
+		},
+		"Bog":{
+			"pos":4
+		},
+		"Coves":{
+			"pos":5
+		},
+		"Desert Spring":{
+			"pos":6
+		},
+		"Dig":{
+			"pos":7
+		},
+		"Infested Valley":{
+			"pos":8
+		},
+		"Palace":{
+			"pos":9
+		},
+		"Wasteland":{
+			"pos":10
+		}
+	},
+	"tier_12":{
+		"Acid Caverns":{
+			"pos":1
+		},
+		"Carcass":{
+			"pos":2
+		},
+		"Courthouse":{
+			"pos":3
+		},
+		"Crystal Ore":{
+			"pos":4
+		},
+		"Malformation":{
+			"pos":5
+		},
+		"Precinct":{
+			"pos":6
+		},
+		"Reef":{
+			"pos":7
+		},
+		"Sunken City":{
+			"pos":8
+		},
+		"Terrace":{
+			"pos":9
+		}
+	},
+	"tier_13":{
+		"Colonnade":{
+			"pos":1
+		},
+		"Colosseum":{
+			"pos":2
+		},
+		"Crimson Temple":{
+			"pos":3
+		},
+		"Gardens":{
+			"pos":4
+		},
+		"Park":{
+			"pos":5
+		},
+		"Shipyard":{
+			"pos":6
+		},
+		"Siege":{
+			"pos":7
+		},
+		"Summit":{
+			"pos":8
+		},
+		"Tower":{
+			"pos":9
+		}
+	},
+	"tier_14":{
+		"Belfry":{
+			"pos":1
+		},
+		"Caldera":{
+			"pos":2
+		},
+		"Ivory Temple":{
+			"pos":3
+		},
+		"Plaza":{
+			"pos":4
+		},
+		"Primordial Blocks":{
+			"pos":5
+		},
+		"Racecourse":{
+			"pos":6
+		},
+		"Shrine":{
+			"pos":7
+		}
+	},
+	"tier_15":{
+		"Core":{
+			"pos":1
+		},
+		"Dark Forest":{
+			"pos":2
+		},
+		"Defiled Cathedral":{
+			"pos":3
+		},
+		"Lava Lake":{
+			"pos":4
+		},
+		"Waste Pool":{
+			"pos":5
+		}
+	},
+	"tier_16":{
+		"Forge of the Phoenix":{
+			"pos":1
+		},
+		"Lair of the Hydra":{
+			"pos":2
+		},
+		"Maze of the Minotaur":{
+			"pos":3
+		},
+		"Pit of the Chimera":{
+			"pos":4
+		},
+		"Vaal Temple":{
+			"pos":5
+		}
+	},
+	"tier_17":{
+		"The Shaper's Realm":{
+			"pos":1
+		}
+	},
+	"tier_2":{
+		"Dungeon":{
+			"pos":1
+		},
+		"Excavation":{
+			"pos":2
+		},
+		"Haunted Mansion":{
+			"pos":3
+		},
+		"Peninsula":{
+			"pos":4
+		},
+		"Ramparts":{
+			"pos":5
+		},
+		"Strand":{
+			"pos":6
+		}
+	},
+	"tier_3":{
+		"Arid Lake":{
+			"pos":1
+		},
+		"Ashen Wood":{
+			"pos":2
+		},
+		"Atoll":{
+			"pos":3
+		},
+		"Barrows":{
+			"pos":4
+		},
+		"Channel":{
+			"pos":5
+		},
+		"Desert":{
+			"pos":6
+		},
+		"Jungle Valley":{
+			"pos":7
+		},
+		"Leyline":{
+			"pos":8
+		},
+		"Maze":{
+			"pos":9
+		},
+		"Spider Lair":{
+			"pos":10
+		}
+	},
+	"tier_4":{
+		"Arcade":{
+			"pos":1
+		},
+		"Armoury":{
+			"pos":2
+		},
+		"Beach":{
+			"pos":3
+		},
+		"City Square":{
+			"pos":4
+		},
+		"Flooded Mine":{
+			"pos":5
+		},
+		"Glacier":{
+			"pos":6
+		},
+		"Lookout":{
+			"pos":7
+		},
+		"Mausoleum":{
+			"pos":8
+		},
+		"Port":{
+			"pos":9
+		},
+		"Underground Sea":{
+			"pos":10
+		}
+	},
+	"tier_5":{
+		"Ancient City":{
+			"pos":1
+		},
+		"Cage":{
+			"pos":2
+		},
+		"Courtyard":{
+			"pos":3
+		},
+		"Crater":{
+			"pos":4
+		},
+		"Graveyard":{
+			"pos":5
+		},
+		"Grotto":{
+			"pos":6
+		},
+		"Marshes":{
+			"pos":7
+		},
+		"Pen":{
+			"pos":8
+		},
+		"Sulphur Vents":{
+			"pos":9
+		},
+		"Thicket":{
+			"pos":10
+		}
+	},
+	"tier_6":{
+		"Burial Chambers":{
+			"pos":1
+		},
+		"Geode":{
+			"pos":2
+		},
+		"Lair":{
+			"pos":3
+		},
+		"Necropolis":{
+			"pos":4
+		},
+		"Overgrown Shrine":{
+			"pos":5
+		},
+		"Pit":{
+			"pos":6
+		},
+		"Primordial Pool":{
+			"pos":7
+		},
+		"Promenade":{
+			"pos":8
+		},
+		"Residence":{
+			"pos":9
+		},
+		"Sepulchre":{
+			"pos":10
+		},
+		"Vault":{
+			"pos":11
+		}
+	},
+	"tier_7":{
+		"Academy":{
+			"pos":1
+		},
+		"Bazaar":{
+			"pos":2
+		},
+		"Bone Crypt":{
+			"pos":3
+		},
+		"Estuary":{
+			"pos":4
+		},
+		"Fields":{
+			"pos":5
+		},
+		"Ghetto":{
+			"pos":6
+		},
+		"Mineral Pools":{
+			"pos":7
+		},
+		"Mud Geyser":{
+			"pos":8
+		},
+		"Pier":{
+			"pos":9
+		},
+		"Shore":{
+			"pos":10
+		},
+		"Spider Forest":{
+			"pos":11
+		}
+	},
+	"tier_8":{
+		"Arachnid Tomb":{
+			"pos":1
+		},
+		"Cemetery":{
+			"pos":2
+		},
+		"Conservatory":{
+			"pos":3
+		},
+		"Dunes":{
+			"pos":4
+		},
+		"Lava Chamber":{
+			"pos":5
+		},
+		"Lighthouse":{
+			"pos":6
+		},
+		"Orchard":{
+			"pos":7
+		},
+		"Phantasmagoria":{
+			"pos":8
+		},
+		"Toxic Sewer":{
+			"pos":9
+		},
+		"Volcano":{
+			"pos":10
+		},
+		"Waterways":{
+			"pos":11
+		}
+	},
+	"tier_9":{
+		"Canyon":{
+			"pos":1
+		},
+		"Castle Ruins":{
+			"pos":2
+		},
+		"Cells":{
+			"pos":3
+		},
+		"Coral Ruins":{
+			"pos":4
+		},
+		"Laboratory":{
+			"pos":5
+		},
+		"Museum":{
+			"pos":6
+		},
+		"Temple":{
+			"pos":7
+		},
+		"Tropical Island":{
+			"pos":8
+		},
+		"Underground River":{
+			"pos":9
+		},
+		"Vaal Pyramid":{
+			"pos":10
+		},
+		"Villa":{
+			"pos":11
+		}
+	},
+	"tier_unique":{
+		"Acton's Nightmare Overgrown Shrine Map":{
+			"pos":1
+		},
+		"Caer Blaidd, Wolfpack's Den Underground River Map":{
+			"pos":2
+		},
+		"Death and Taxes Necropolis Map":{
+			"pos":3
+		},
+		"Doryani's Machinarium Maze Map":{
+			"pos":4
+		},
+		"Hall of Grandmasters Promenade Map":{
+			"pos":5
+		},
+		"Hallowed Ground Graveyard Map":{
+			"pos":6
+		},
+		"Maelström of Chaos Atoll Map":{
+			"pos":7
+		},
+		"Mao Kun Shore Map":{
+			"pos":8
+		},
+		"Oba's Cursed Trove Underground Sea Map":{
+			"pos":9
+		},
+		"Olmec's Sanctum Bone Crypt Map":{
+			"pos":10
+		},
+		"Pillars of Arun Dunes Map":{
+			"pos":11
+		},
+		"Poorjoy's Asylum Temple Map":{
+			"pos":12
+		},
+		"The Coward's Trial Cursed Crypt Map":{
+			"pos":13
+		},
+		"The Perandus Manor Chateau Map":{
+			"pos":14
+		},
+		"The Putrid Cloister Museum Map":{
+			"pos":15
+		},
+		"The Twilight Temple Moon Temple Map":{
+			"pos":16
+		},
+		"The Vinktar Square Courtyard Map":{
+			"pos":17
+		},
+		"Vaults of Atziri Vaal Pyramid Map":{
+			"pos":18
+		},
+		"Whakawairua Tuahu Strand Map":{
+			"pos":19
+		}
+	}
+}

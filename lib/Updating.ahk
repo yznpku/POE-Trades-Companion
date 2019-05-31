@@ -18,7 +18,10 @@ IsUpdateAvailable() {
 	recentRels := GitHubAPI_GetRecentReleases(PROGRAM.GITHUB_USER, PROGRAM.GITHUB_REPO)
 	if !(recentRels) {
 		AppendToLogs(A_ThisFunc "(): Recent releases is empty!")
-		return
+		SplashTextOn(PROGRAM.NAME " - Updating Error", "Unable to retrieve recent releases from API."
+		.											"`nIf this keeps on happening, please try updating manually."
+		.											"`nYou can find the GitHub repository link in the Settings menu.", 1, 1)
+		return "ERROR"
 	}
 	latestRel := recentRels.1
 	for index, value in recentRels {
@@ -65,12 +68,21 @@ IsUpdateAvailable() {
 		AppendToLogs(A_ThisFunc "(): Update check: No update available.")
 		return False
 	}
+	else if (relTag && !relDL) {
+		AppendToLogs(A_ThisFunc "(): Update check: Update found but missing asset download. Tag: " updateRel.tag_name ", Download (exe): " exeDL ", Download (zip): " zipDL)
+		SplashTextOn(PROGRAM.NAME " - Updating Error", "An update has been detected but cannot be downloaded yet."
+		.											"`nPlease try again in a few minutes."
+		.											"`n"
+		.											"`nIf this keeps on happening, please try updating manually."
+		.											"`nYou can find the GitHub repository link in the Settings menu.", 1, 1)
+		return "ERROR"
+	}
 	else {
 		AppendToLogs(A_ThisFunc "(): Update check: Failed to retrieve releases from GitHub API.")
 		SplashTextOn(PROGRAM.NAME " - Updating Error", "There was an issue when retrieving the latest release from GitHub API"
 		.											"`nIf this keeps on happening, please try updating manually."
 		.											"`nYou can find the GitHub repository link in the Settings menu.", 1, 1)
-		return False
+		return "ERROR"
 	}
 }
 
@@ -96,13 +108,17 @@ UpdateCheck(checkType="normal", notifOrBox="notif") {
 	if !(updateRel) {
 		TrayNotifications.Show(PROGRAM.NAME, "You are up to date!")
 		return
-	}	
+	}
+	if (updateRel = "ERROR") {
+		TrayNotifications.Show(PROGRAM.NAME, "An error occured when checking for updates`nPlease try again later or update manually.")
+		return
+	}
 
 	updTag := updateRel.tag, updDL := updateRel.download, updNotes := updateRel.notes
 	global UPDATE_TAGNAME, UPDATE_DOWNLOAD, UPDATE_NOTES
 	UPDATE_TAGNAME := updTag, UPDATE_DOWNLOAD := updDL, UPDATE_NOTES := updNotes
 
-	if (checkType="on_start") && (autoupdate = "True") && (A_IsCompiled) {
+	if (checkType="on_start") && (autoupdate = "True") {
 		DownloadAndRunUpdater()
 		return
 	}
@@ -169,17 +185,19 @@ DownloadAndRunUpdater(dl="") {
 
 		if !(folder) {
 			MsgBox(4096+16, "", "Couldn't locate the folder containing updated files.`nPlease try updating manually.")
-			FileRemoveDir, updateFolder, 1
+			FileRemoveDir,% updateFolder, 1
 			return
 		}
 
 		FileCopyDir,% folder,% A_ScriptDir, 1
 		if (ErrorLevel) {
 			MsgBox(4096+16, "", "Failed to copy the new files into the folder.`nPlease try updating manually.")
-			FileRemoveDir, updateFolder, 1
+			FileRemoveDir,% updateFolder, 1
 			return
 		}
-		
+
+		INI.Set(PROGRAM.INI_FILE, "GENERAL", "ShowChangelog", "True")
+		FileRemoveDir,% updateFolder, 1
 		Reload()
 	}
 	else {

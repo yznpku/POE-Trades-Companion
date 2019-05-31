@@ -1,4 +1,4 @@
-﻿Get_CurrencyInfos(currency) {
+﻿Get_CurrencyInfos(currency, dontWriteLogs=False) {
 /*		Compare the specified currency with poe.trade abridged currency names to retrieve the real currency name.
 		When the string is plural, check if the full list of currencies contains its non-plural counterpart.
  */
@@ -15,29 +15,36 @@
 	if (lastChar = "s") ; poeapp adds an "s" for >1 currencies
 		StringTrimRight, currencyWithoutS, currency, 1
 
-	if !IsIn(currency, PROGRAM.DATA.CURRENCY_LIST) {
-		currencyFullName := PROGRAM.DATA.POETRADE_CURRENCY_DATA[currency]
-		if (currencyFullName)
-			isCurrencyListed := True
-	}
-	else { ; Currency is in list
-		currencyFullName := currency
-		isCurrencyListed := True
-	}
-	if (!currencyFullName && currencyWithoutS) { ; Couldn't retrieve full name, and currency is possibly plural
-		if IsIn(currencyWithoutS, PROGRAM.DATA.CURRENCY_LIST) ; Currency is in list, was most likely plural
-		{
-			currencyFullName := currencyWithoutS
-			isCurrencyListed := True
-		}
-	}
-	else if !(currencyFullName) { ; Unknown currency name
-		AppendToLogs(A_ThisFunc "(currency=" currency "): Unknown currency name.")
-	}
+	if RegExMatch(currency, "O) Map$", pat) ; If ends with map
+        StringTrimRight, currencyWithoutMap, currency,% StrLen(pat.0) ; Remove it from name
 
-	currencyFullName := (currencyFullName)?(currencyFullName):(currency)
+	currencyToCheckList := []
+	currencyToCheckList.Push(currency)
+	if (currencyWithoutS)
+		currencyToCheckList.Push(currencyWithoutS)
+	if (currencyWithoutMap)
+		currencyToCheckList.Push(currencyWithoutMap)
+
+	isCurrencyListed := False, currencyFullName := ""
+	Loop % currencyToCheckList.MaxIndex() {
+		thisCurrency := currencyToCheckList[A_Index]
+		if !IsIn(thisCurrency, PROGRAM.DATA.CURRENCY_LIST) {
+			currencyFullName := PROGRAM.DATA.POETRADE_CURRENCY_DATA[thisCurrency] ? PROGRAM.DATA.POETRADE_CURRENCY_DATA[thisCurrency]
+				:	PROGRAM.DATA.POEDOTCOM_CURRENCY_DATA[thisCurrency] ? PROGRAM.DATA.POEDOTCOM_CURRENCY_DATA[thisCurrency]
+				:	""
+			isCurrencyListed := currencyFullName?True:False
+		}
+		else { ; Currency is in list
+			isCurrencyListed := True, currencyFullName := thisCurrency
+		}
+
+		if (isCurrencyListed=True)
+			Break
+	}
+	if (!currencyFullName && dontWriteLogs=False) ; Unknown currency name 
+		AppendToLogs(A_ThisFunc "(currency=" currency "): Unknown currency name.")
+
 	Return {Name:currencyFullName, Is_Listed:isCurrencyListed}
-	; return currencyFullName
 }
 
 Do_Action(actionType, actionContent="", isHotkey=False, uniqueNum="") {
@@ -48,11 +55,11 @@ Do_Action(actionType, actionContent="", isHotkey=False, uniqueNum="") {
 	tabContent := isHotkey ? "" : GUI_Trades.GetTabContent(activeTab)
 	tabPID := isHotkey ? "" : tabContent.PID
 
-	WRITE_SEND_ACTIONS := "SEND_MSG,SEND_TO_BUYER,SEND_TO_LAST_WHISPER"
-						. ",INVITE_BUYER,TRADE_BUYER,KICK_BUYER"
+	WRITE_SEND_ACTIONS := "SEND_MSG,SEND_TO_BUYER,SEND_TO_LAST_WHISPER,SEND_TO_LAST_WHISPER_SENT"
+						. ",INVITE_BUYER,TRADE_BUYER,KICK_BUYER,KICK_MYSELF"
 						. ",CMD_AFK,CMD_AUTOREPLY,CMD_DND,CMD_HIDEOUT,CMD_OOS,CMD_REMAINING"
 
-	WRITE_DONT_SEND_ACTIONS := "WRITE_MSG,WRITE_TO_BUYER,WRITE_TO_LAST_WHISPER,CMD_WHOIS"
+	WRITE_DONT_SEND_ACTIONS := "WRITE_MSG,WRITE_TO_BUYER,WRITE_TO_LAST_WHISPER,WRITE_TO_LAST_WHISPER_SENT,CMD_WHOIS"
 
 	WRITE_GO_BACK_ACTIONS := "WRITE_THEN_GO_BACK"
 
@@ -68,7 +75,16 @@ Do_Action(actionType, actionContent="", isHotkey=False, uniqueNum="") {
 	if (ACTIONS_FORCED_CONTENT[actionType]) && !(actionContent)
 		actionContent := ACTIONS_FORCED_CONTENT[actionType]
 
-	actionContent := Replace_TradeVariables(actionContent)
+	actionContentWithVariables := Replace_TradeVariables(actionContent)
+	StringSplit, contentWords, actionContentWithVariables,% A_Space
+	if ( SubStr(actionContentWithVariables, 1, 2) = "@ ") {
+		TrayNotifications.Show("Canceled message.", "Canceled from sending a message to " contentWords1 " because the variable content is empty: " actionContent)
+		return
+	}
+	else if ( SubStr(contentWords1, 2, 1) = "%" || SubStr(contentWords1, 0, 1) = "%" ) {
+		TrayNotifications.Show("Canceled message.", "Canceled from sending a message because the variable name is mistyped: " actionContent)
+		return
+	}
 
 	if IsIn(prevActionType, "COPY_ITEM_INFOS,WRITE_SEND,WRITE_DONT_SEND,WRITE_GO_BACK,SENDINPUT,SENDINPUT_RAW,SENDEVENT,SENDEVENT_RAW") {
 		; AppendToLogs(A_thisFunc "(actionType=" actionType ", actionContent=" actionContent ", isHotkey=" isHotkey ", uniqueNum=" uniqueNum "):"
@@ -85,19 +101,27 @@ Do_Action(actionType, actionContent="", isHotkey=False, uniqueNum="") {
 		; ControlClick,,% "ahk_id " GuiTrades.Handle " ahk_id " GuiTrades_Controls["hBTN_Custom" actionType_NumOnly],,,, NA
 	}
 
-	else if IsIn(actionType, WRITE_SEND_ACTIONS)
-		Send_GameMessage("WRITE_SEND", actionContent, tabPID)
+	else if IsIn(actionType, WRITE_SEND_ACTIONS) {
+		if (actionType = "KICK_MYSELF") {
+			if (!PROGRAM.SETTINGS.SETTINGS_MAIN.PoeAccounts)
+				TrayNotifications.Show("Cannot kick self from party", "No account name found.`nPlease input your account name in the settings.")
+			else
+				Send_GameMessage("WRITE_SEND", actionContentWithVariables, tabPID)
+		}
+		else
+			Send_GameMessage("WRITE_SEND", actionContentWithVariables, tabPID)
+	}
 	else if IsIn(actionType, WRITE_DONT_SEND_ACTIONS) {
-		Send_GameMessage("WRITE_DONT_SEND", actionContent, tabPID)
+		Send_GameMessage("WRITE_DONT_SEND", actionContentWithVariables, tabPID)
 		ignoreFollowingActions := True
 	}
 	else if IsIn(actionType, WRITE_GO_BACK_ACTIONS) {
-		Send_GameMessage("WRITE_GO_BACK", actionContent, tabPID)
+		Send_GameMessage("WRITE_GO_BACK", actionContentWithVariables, tabPID)
 		ignoreFollowingActions := True
 	}
 
 	else if (actionType = "COPY_ITEM_INFOS")
-		GUI_Trades.CopyItemInfos(activeTab)
+		GoSub, GUI_Trades_CopyItemInfos_CurrentTab_Timer
 	else if (actionType = "GO_TO_NEXT_TAB")
 		GUI_Trades.SelectNextTab()
 	else if (actionType = "GO_TO_PREVIOUS_TAB")
@@ -114,21 +138,23 @@ Do_Action(actionType, actionContent="", isHotkey=False, uniqueNum="") {
 		GUI_Trades.SaveStats(activeTab)
 
 	else if (actionType = "SLEEP")
-		Sleep %actionContent%
+		Sleep %actionContentWithVariables%
 	else if (actionType = "SENDINPUT")
-		SendInput,%actionContent%
+		SendInput,%actionContentWithVariables%
 	else if (actionType = "SENDINPUT_RAW")
-		SendInput,{Raw}%actionContent%
+		SendInput,{Raw}%actionContentWithVariables%
 	else if (actionType = "SENDEVENT")
-		SendEvent,%actionContent%
+		SendEvent,%actionContentWithVariables%
 	else if (actionType = "SENDEVENT_RAW")
-		SendEvent,{Raw}%actionContent%
+		SendEvent,{Raw}%actionContentWithVariables%
 	else if (actionType = "IGNORE_SIMILAR_TRADE")
 		GUI_Trades.AddActiveTrade_To_IgnoreList()
+	else if (actionType = "CLOSE_SIMILAR_TABS")
+		GUI_Trades.CloseOtherTabsForSameItem()
 	else if (actionType = "SHOW_GRID")
 		GUI_Trades.ShowActiveTabItemGrid()
 
-	prevNum := uniqueNum, prevActionType := actionType, prevActionContent := actionContent	
+	prevNum := uniqueNum, prevActionType := actionType, prevActionContent := actionContentWithVariables	
 }
 
 Get_Changelog(removeTrails=False) {
@@ -144,6 +170,13 @@ Get_Changelog(removeTrails=False) {
 		AutoTrimStr(changelog)
 	}
 
+	len := StrLen(changelog)
+	if ( len > 60000 ) {
+		trim := len - 60000
+		StringTrimRight, changelog, changelog, %trim%
+		changelog .= "`n`n`n[ Changelog file trimmed. See full changelog file GitHub ]"
+	}
+
 	return changelog
 }
 
@@ -154,13 +187,14 @@ Set_Clipboard(str) {
 	Clipboard := ""
 	Sleep 10
 	Clipboard := str
-	ClipWait, 10, 1
+	ClipWait, 2, 1
 	if (ErrorLevel) {
 		TrayNotifications.Show(PROGRAM.NAME, "Unable to clipboard the following content: " str
 			.	"`nThis may be due to an external clipboard manager creating conflict.")
 		return 1
 	}
 	SET_CLIPBOARD_CONTENT := str
+	Sleep 20
 }
 
 Reset_Clipboard() {
@@ -170,7 +204,7 @@ Reset_Clipboard() {
 }
 
 Replace_TradeVariables(string) {
-	global GuiTrades
+	global PROGRAM, GuiTrades
 	activeTab := GuiTrades.Active_Tab
 
 	tabContent := Gui_Trades.GetTabContent(activeTab)
@@ -179,10 +213,19 @@ Replace_TradeVariables(string) {
 	string := StrReplace(string, "`%buyerName`%", tabContent.Buyer)
 	string := StrReplace(string, "`%item`%", tabContent.Item)
 	string := StrReplace(string, "`%itemName`%", tabContent.Item)
-	string := StrReplace(string, "`%price`%", tabContent.Price)
-	string := StrReplace(string, "`%itemPrice`%", tabContent.Price)
+	string := StrReplace(string, "`%price`%", tabContent.Price != ""?tabContent.Price : "[unpriced]")
+	string := StrReplace(string, "`%itemPrice`%", tabContent.Price != ""?tabContent.Price : "[unpriced]")
 
 	string := StrReplace(string, "`%lastWhisper`%", GuiTrades.Last_Whisper_Name)
+	string := StrReplace(string, "`%lastWhisperReceived`%", GuiTrades.Last_Whisper_Name)
+	string := StrReplace(string, "`%lwr`%", GuiTrades.Last_Whisper_Name)
+
+	string := StrReplace(string, "`%sentWhisper`%", GuiTrades.Last_Whisper_Sent_Name)
+	string := StrReplace(string, "`%lastWhisperSent`%", GuiTrades.Last_Whisper_Sent_Name)
+	string := StrReplace(string, "`%lws`%", GuiTrades.Last_Whisper_Sent_Name)
+
+	firstAcc := StrSplit(PROGRAM.SETTINGS.SETTINGS_MAIN.PoeAccounts, ",").1
+	string := StrReplace(string, "`%myself`%", PoeDotCom_GetCurrentlyLoggedCharacter(firstAcc))
 
 	return string
 }
@@ -190,73 +233,73 @@ Replace_TradeVariables(string) {
 
 
 Get_SkinAssetsAndSettings() {
-		global PROGRAM
-		iniFile := PROGRAM.INI_FILE
+	global PROGRAM
+	iniFile := PROGRAM.INI_FILE
 
-		presetName := INI.Get(iniFile, "SETTINGS_CUSTOMIZATION_SKINS",, 1).Preset
-		skinName := INI.Get(iniFile, "SETTINGS_CUSTOMIZATION_SKINS",, 1).Skin
-		skinFolder := PROGRAM.SKINS_FOLDER "\" skinName
-		skinAssetsFile := PROGRAM.SKINS_FOLDER "\" skinName "\Assets.ini"
+	presetName := INI.Get(iniFile, "SETTINGS_CUSTOMIZATION_SKINS",, 1).Preset
+	skinName := INI.Get(iniFile, "SETTINGS_CUSTOMIZATION_SKINS",, 1).Skin
+	skinFolder := PROGRAM.SKINS_FOLDER "\" skinName
+	skinAssetsFile := PROGRAM.SKINS_FOLDER "\" skinName "\Assets.ini"
+	skinSettingsFile := PROGRAM.SKINS_FOLDER "\" skinName "\Settings.ini"
+
+	skinAssets := {}
+	iniSections := Ini.Get(skinAssetsFile)
+	Loop, Parse, iniSections, `n, `r
+	{
+		skinAssets[A_LoopField] := {}
+		keysAndValues := INI.Get(skinAssetsFile, A_LoopField,, 1)
+
+		for key, value in keysAndValues	{
+			if IsIn(key, "Normal,Hover,Press,Active,Inactive,Background,Icon,Header,HeaderMin,Tabs_Background,Tabs_Underline")
+			|| (A_LoopField = "Trade_Verify" && IsIn(key, "Grey,Orange,Green,Red"))
+				skinAssets[A_LoopField][key] := skinFolder "\" value
+			else {
+				skinAssets[A_LoopField][key] := value
+			}
+		}
+	}
+
+	skinSettings := {}
+	if (presetName = "User Defined") {
+		userSkinSettings := INI.Get(iniFile, "SETTINGS_CUSTOMIZATION_SKINS_UserDefined",, 1)
+		skinSettings.FONT := {}
+		skinSettings.COLORS := {}
+
+		skinSettings.FONT.Name := userSkinSettings.Font
+		skinSettings.FONT.Size := userSkinSettings.FontSize
+		skinSettings.FONT.Quality := userSkinSettings.FontQuality
+
+		for iniKey, iniValue in userSkinSettings {
+			iniKeySubStr := SubStr(iniKey, 1, 6)
+			if (iniKeySubStr = "Color_" ) {
+				iniKeyRestOfStr := SubStr(iniKey, 7)
+				skinSettings.COLORS[iniKeyRestOfStr] := iniValue
+			}
+		}
+	}
+	else {
 		skinSettingsFile := PROGRAM.SKINS_FOLDER "\" skinName "\Settings.ini"
-
-		skinAssets := {}
-		iniSections := Ini.Get(skinAssetsFile)
+		iniSections := INI.Get(skinSettingsFile)
 		Loop, Parse, iniSections, `n, `r
 		{
-			skinAssets[A_LoopField] := {}
-			keysAndValues := INI.Get(skinAssetsFile, A_LoopField,, 1)
+			skinSettings[A_LoopField] := {}
+			keysAndValues := INI.Get(skinSettingsFile, A_LoopField,, 1)
 
-			for key, value in keysAndValues	{
-				if IsIn(key, "Normal,Hover,Press,Active,Inactive,Background,Icon,Header,Tabs_Background,Tabs_Underline")
-				|| (A_LoopField = "Trade_Verify" && IsIn(key, "Grey,Orange,Green,Red"))
-					skinAssets[A_LoopField][key] := skinFolder "\" value
-				else {
-					skinAssets[A_LoopField][key] := value
-				}
+			for key, value in keysAndValues {
+				skinSettings[A_LoopField][key] := value
 			}
 		}
-
-		skinSettings := {}
-		if (presetName = "User Defined") {
-			userSkinSettings := INI.Get(iniFile, "SETTINGS_CUSTOMIZATION_SKINS_UserDefined",, 1)
-			skinSettings.FONT := {}
-			skinSettings.COLORS := {}
-
-			skinSettings.FONT.Name := userSkinSettings.Font
-			skinSettings.FONT.Size := userSkinSettings.FontSize
-			skinSettings.FONT.Quality := userSkinSettings.FontQuality
-
-			for iniKey, iniValue in userSkinSettings {
-				iniKeySubStr := SubStr(iniKey, 1, 6)
-				if (iniKeySubStr = "Color_" ) {
-					iniKeyRestOfStr := SubStr(iniKey, 7)
-					skinSettings.COLORS[iniKeyRestOfStr] := iniValue
-				}
-			}
-		}
-		else {
-			skinSettingsFile := PROGRAM.SKINS_FOLDER "\" skinName "\Settings.ini"
-			iniSections := INI.Get(skinSettingsFile)
-			Loop, Parse, iniSections, `n, `r
-			{
-				skinSettings[A_LoopField] := {}
-				keysAndValues := INI.Get(skinSettingsFile, A_LoopField,, 1)
-
-				for key, value in keysAndValues {
-					skinSettings[A_LoopField][key] := value
-				}
-			}
-		}
-
-		Skin := {}
-		Skin.Preset := presetName
-		Skin.Skin := skinName
-		Skin.Skin_Folder := skinFolder
-		Skin.Assets := skinAssets
-		Skin.Settings := skinSettings
-
-		return Skin
 	}
+
+	Skin := {}
+	Skin.Preset := presetName
+	Skin.Skin := skinName
+	Skin.Skin_Folder := skinFolder
+	Skin.Assets := skinAssets
+	Skin.Settings := skinSettings
+
+	return Skin
+}
 
 Declare_SkinAssetsAndSettings(_skinSettingsAll="") {
 	global SKIN

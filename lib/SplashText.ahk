@@ -1,13 +1,17 @@
 ﻿/*		Alternative to the SplashTextOn default command, with additional features
 
 		Use the following hotkey to allow closing the SplashText with space:
-		Space::
+
+		Hotkey, IfWinActive,% "ahk_pid " DllCall("GetCurrentProcessId")
+		Hotkey, ~*Space, SpaceRoutine
+
+		SpaceRoutine() {
 			global SPACEBAR_WAIT
 
-			if (SPACEBAR_WAIT) {
+			if (SPACEBAR_WAIT)
 				SplashTextOff()
-			}
-		Return
+		}
+}
 */
 
 SplashTextOn(title, msg, waitForClose=false, useSpaceToClose=false) {

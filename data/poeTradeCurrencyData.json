@@ -1,2112 +1,2423 @@
-﻿{
-	"A Mother's Parting Gift": {
-		"ID": "132"
+{
+	"A Dab of Ink":{
+		"ID":718
 	},
-	"Abandoned Wealth": {
-		"ID": "133"
+	"A Mother's Parting Gift":{
+		"ID":132
 	},
-	"Abyss": {
-		"ID": "315"
+	"Abandoned Wealth":{
+		"ID":133
 	},
-	"Academy": {
-		"ID": "316"
+	"Aberrant Fossil":{
+		"ID":687
 	},
-	"Acid Lakes": {
-		"ID": "317"
+	"Abyss":{
+		"ID":315
 	},
-	"Alleyways": {
-		"ID": "522"
+	"Academy":{
+		"ID":316
 	},
-	"Ambush": {
-		"ID": "495"
+	"Acid Caverns":{
+		"ID":722
 	},
-	"Anarchy": {
-		"ID": "496"
+	"Acid Lakes":{
+		"ID":317
 	},
-	"Anarchy's Price": {
-		"ID": "134"
+	"Aetheric Fossil":{
+		"ID":692
 	},
-	"Ancient City": {
-		"ID": "523"
+	"alchemy":"Orb of Alchemy",
+	"Alleyways":{
+		"ID":522
 	},
-	"Ancient Orb": {
-		"ID": "518"
+	"Alone in the Darkness":{
+		"ID":776
 	},
-	"Ancient Reliquary Key": {
-		"ID": "494"
+	"alteration":"Orb of Alteration",
+	"Ambush":{
+		"ID":495
 	},
-	"Annulment Shard": {
-		"ID": "519"
+	"Anarchy":{
+		"ID":496
 	},
-	"Apprentice Cartographer's Sextant": {
-		"Abridged": "apprentice sextant",
-		"ID": "45"
+	"Anarchy's Price":{
+		"ID":134
 	},
-	"apprentice sextant": "Apprentice Cartographer's Sextant",
-	"Arachnid Nest": {
-		"ID": "318"
+	"Ancient City":{
+		"ID":523
 	},
-	"Arachnid Tomb": {
-		"ID": "319"
+	"Ancient Orb":{
+		"ID":518
 	},
-	"Arcade": {
-		"ID": "320"
+	"Ancient Reliquary Key":{
+		"ID":494
 	},
-	"Arena": {
-		"ID": "321"
+	"Annulment Shard":{
+		"ID":519
 	},
-	"Arid Lake": {
-		"ID": "322"
+	"Apprentice Cartographer's Sextant":{
+		"Abridged":"apprentice sextant",
+		"ID":45
 	},
-	"Armourer's Scrap": {
-		"Abridged": "armourer's",
-		"ID": "19"
+	"apprentice sextant":"Apprentice Cartographer's Sextant",
+	"Arachnid Nest":{
+		"ID":318
 	},
-	"armourer's": "Armourer's Scrap",
-	"Armoury": {
-		"ID": "323"
+	"Arachnid Tomb":{
+		"ID":319
 	},
-	"Arsenal": {
-		"ID": "324"
+	"Arcade":{
+		"ID":320
 	},
-	"Ashen Wood": {
-		"ID": "325"
+	"Arena":{
+		"ID":321
 	},
-	"Assassin's Favour": {
-		"ID": "135"
+	"Arid Lake":{
+		"ID":322
 	},
-	"Atoll": {
-		"ID": "326"
+	"armourer's":"Armourer's Scrap",
+	"Armourer's Scrap":{
+		"Abridged":"armourer's",
+		"ID":19
 	},
-	"Atziri's Arsenal": {
-		"ID": "136"
+	"Armoury":{
+		"ID":323
 	},
-	"Audacity": {
-		"ID": "137"
+	"Arrogance of the Vaal":{
+		"ID":770
 	},
-	"Barrows": {
-		"ID": "327"
+	"Arsenal":{
+		"ID":324
 	},
-	"Basilica": {
-		"ID": "524"
+	"Ashen Wood":{
+		"ID":325
 	},
-	"Bazaar": {
-		"ID": "328"
+	"Assassin's Favour":{
+		"ID":135
 	},
-	"Beach": {
-		"ID": "329"
+	"Atoll":{
+		"ID":326
 	},
-	"Beacon": {
-		"ID": "330"
+	"Atziri's Arsenal":{
+		"ID":136
 	},
-	"Belfry": {
-		"ID": "525"
+	"Audacity":{
+		"ID":137
 	},
-	"Bestiary Orb": {
-		"ID": "630"
+	"augmentation":"Orb of Augmentation",
+	"Barrows":{
+		"ID":327
 	},
-	"Beyond": {
-		"ID": "497"
+	"Basilica":{
+		"ID":524
 	},
-	"Birth of the Three": {
-		"ID": "138"
+	"bauble":"Glassblower's Bauble",
+	"Bazaar":{
+		"ID":328
 	},
-	"Blacksmith's Whetstone": {
-		"Abridged": "whetstone",
-		"ID": "20"
+	"Beach":{
+		"ID":329
 	},
-	"whetstone": "Blacksmith's Whetstone",
-	"Blessed Orb": {
-		"Abridged": "blessed",
-		"ID": "12"
+	"Beacon":{
+		"ID":330
 	},
-	"blessed": "Blessed Orb",
-	"Blessing of Chayula": {
-		"ID": "61"
+	"Beauty Through Death":{
+		"ID":712
 	},
-	"Blessing of Esh": {
-		"ID": "59"
+	"Belfry":{
+		"ID":525
 	},
-	"Blessing of God": {
-		"ID": "628"
+	"Bestiary Orb":{
+		"ID":630
 	},
-	"Blessing of Tul": {
-		"ID": "58"
+	"Beyond":{
+		"ID":497
 	},
-	"Blessing of Uul-Netol": {
-		"ID": "60"
+	"Birth of the Three":{
+		"ID":138
 	},
-	"Blessing of Xoph": {
-		"ID": "57"
+	"Blacksmith's Whetstone":{
+		"Abridged":"whetstone",
+		"ID":20
 	},
-	"Blind Venture": {
-		"ID": "139"
+	"blessed":"Blessed Orb",
+	"Blessed Orb":{
+		"Abridged":"blessed",
+		"ID":12
 	},
-	"Bloodlines": {
-		"ID": "498"
+	"Blessing of Chayula":{
+		"ID":61
 	},
-	"Bog": {
-		"ID": "331"
+	"Blessing of Esh":{
+		"ID":59
 	},
-	"Bone Crypt": {
-		"ID": "526"
+	"Blessing of God":{
+		"ID":628
 	},
-	"Boundless Realms": {
-		"ID": "140"
+	"Blessing of Tul":{
+		"ID":58
 	},
-	"Bowyer's Dream": {
-		"ID": "141"
+	"Blessing of Uul-Netol":{
+		"ID":60
 	},
-	"Breach": {
-		"ID": "499"
+	"Blessing of Xoph":{
+		"ID":57
 	},
-	"Burial Chambers": {
-		"ID": "332"
+	"Blind Venture":{
+		"ID":139
 	},
-	"Cage": {
-		"ID": "527"
+	"Bloodlines":{
+		"ID":498
 	},
-	"Caldera": {
-		"ID": "528"
+	"Bloodstained Fossil":{
+		"ID":701
 	},
-	"Call to the First Ones": {
-		"ID": "142"
+	"Bog":{
+		"ID":331
 	},
-	"Canyon": {
-		"ID": "333"
+	"Bone Crypt":{
+		"ID":526
 	},
-	"Carcass": {
-		"ID": "529"
+	"Boon of Justice":{
+		"ID":768
 	},
-	"Cartographer's Chisel": {
-		"Abridged": "chisel",
-		"ID": "10"
+	"Boon of the First Ones":{
+		"ID":714
 	},
-	"chisel": "Cartographer's Chisel",
-	"Cartographer's Delight": {
-		"ID": "143"
+	"Bound Fossil":{
+		"ID":696
 	},
-	"Castle Ruins": {
-		"ID": "334"
+	"Boundless Realms":{
+		"ID":140
 	},
-	"Catacombs": {
-		"ID": "335"
+	"Bowyer's Dream":{
+		"ID":141
 	},
-	"Cavern": {
-		"ID": "336"
+	"Breach":{
+		"ID":499
 	},
-	"Cells": {
-		"ID": "337"
+	"Burial Chambers":{
+		"ID":332
 	},
-	"Cemetery": {
-		"ID": "338"
+	"Cage":{
+		"ID":527
 	},
-	"Channel": {
-		"ID": "339"
+	"Caldera":{
+		"ID":528
 	},
-	"Chaos Orb": {
-		"Abridged": "chaos",
-		"ID": "4"
+	"Call to the First Ones":{
+		"ID":142
 	},
-	"chaos": "Chaos Orb",
-	"Chaotic Disposition": {
-		"ID": "144"
+	"Canyon":{
+		"ID":333
 	},
-	"Chateau": {
-		"ID": "340"
+	"Carcass":{
+		"ID":529
 	},
-	"Chayula's Breachstone": {
-		"ID": "66"
+	"Cartographer's Chisel":{
+		"Abridged":"chisel",
+		"ID":10
 	},
-	"Chromatic Orb": {
-		"Abridged": "chrome",
-		"ID": "7"
+	"Cartographer's Delight":{
+		"ID":143
 	},
-	"chrome": "Chromatic Orb",
-	"City Square": {
-		"ID": "530"
+	"Castle Ruins":{
+		"ID":334
 	},
-	"Colonnade": {
-		"ID": "341"
+	"Catacombs":{
+		"ID":335
 	},
-	"Colosseum": {
-		"ID": "342"
+	"Cavern":{
+		"ID":336
 	},
-	"Conservatory": {
-		"ID": "531"
+	"Cells":{
+		"ID":337
 	},
-	"Coral Ruins": {
-		"ID": "532"
+	"Cemetery":{
+		"ID":338
 	},
-	"Core": {
-		"ID": "343"
+	"chance":"Orb of Chance",
+	"Channel":{
+		"ID":339
 	},
-	"Courthouse": {
-		"ID": "533"
+	"chaos":"Chaos Orb",
+	"Chaos Orb":{
+		"Abridged":"chaos",
+		"ID":4
 	},
-	"Courtyard": {
-		"ID": "344"
+	"Chaotic Disposition":{
+		"ID":144
 	},
-	"Coves": {
-		"ID": "345"
+	"Chateau":{
+		"ID":340
 	},
-	"Coveted Possession": {
-		"ID": "145"
+	"Chayula's Breachstone":{
+		"ID":66
 	},
-	"Crematorium": {
-		"ID": "346"
+	"chimera":"Fragment of the Chimera",
+	"chisel":"Cartographer's Chisel",
+	"Chromatic Orb":{
+		"Abridged":"chrome",
+		"ID":7
 	},
-	"Crimson Temple": {
-		"ID": "534"
+	"chrome":"Chromatic Orb",
+	"City Square":{
+		"ID":530
 	},
-	"Crypt": {
-		"ID": "347"
+	"coin":"Perandus Coin",
+	"Colonnade":{
+		"ID":341
 	},
-	"Crystal Ore": {
-		"ID": "348"
+	"Colosseum":{
+		"ID":342
 	},
-	"Cursed Crypt": {
-		"ID": "535"
+	"Conservatory":{
+		"ID":531
 	},
-	"Dark Forest": {
-		"ID": "349"
+	"Coral Ruins":{
+		"ID":532
 	},
-	"Deafening Essence of Anger": {
-		"ID": "69"
+	"Core":{
+		"ID":343
 	},
-	"Deafening Essence of Anguish": {
-		"ID": "72"
+	"Corroded Fossil":{
+		"ID":690
 	},
-	"Deafening Essence of Contempt": {
-		"ID": "75"
+	"Courthouse":{
+		"ID":533
 	},
-	"Deafening Essence of Doubt": {
-		"ID": "79"
+	"Courtyard":{
+		"ID":344
 	},
-	"Deafening Essence of Dread": {
-		"ID": "82"
+	"Coves":{
+		"ID":345
 	},
-	"Deafening Essence of Envy": {
-		"ID": "85"
+	"Coveted Possession":{
+		"ID":145
 	},
-	"Deafening Essence of Fear": {
-		"ID": "88"
+	"Crater":{
+		"ID":723
 	},
-	"Deafening Essence of Greed": {
-		"ID": "91"
+	"Crematorium":{
+		"ID":346
 	},
-	"Deafening Essence of Hatred": {
-		"ID": "94"
+	"Crimson Temple":{
+		"ID":534
 	},
-	"Deafening Essence of Loathing": {
-		"ID": "100"
+	"Crypt":{
+		"ID":347
 	},
-	"Deafening Essence of Misery": {
-		"ID": "103"
+	"Crystal Ore":{
+		"ID":348
 	},
-	"Deafening Essence of Rage": {
-		"ID": "106"
+	"Cursed Crypt":{
+		"ID":535
 	},
-	"Deafening Essence of Scorn": {
-		"ID": "109"
+	"Dark Forest":{
+		"ID":349
 	},
-	"Deafening Essence of Sorrow": {
-		"ID": "112"
+	"Dark Temptation":{
+		"ID":775
 	},
-	"Deafening Essence of Spite": {
-		"ID": "115"
+	"dawn":"Sacrifice at Dawn",
+	"Deafening Essence of Anger":{
+		"ID":69
 	},
-	"Deafening Essence of Suffering": {
-		"ID": "118"
+	"Deafening Essence of Anguish":{
+		"ID":72
 	},
-	"Deafening Essence of Torment": {
-		"ID": "121"
+	"Deafening Essence of Contempt":{
+		"ID":75
 	},
-	"Deafening Essence of Woe": {
-		"ID": "124"
+	"Deafening Essence of Doubt":{
+		"ID":79
 	},
-	"Deafening Essence of Wrath": {
-		"ID": "127"
+	"Deafening Essence of Dread":{
+		"ID":82
 	},
-	"Deafening Essence of Zeal": {
-		"ID": "130"
+	"Deafening Essence of Envy":{
+		"ID":85
 	},
-	"Death": {
-		"ID": "146"
+	"Deafening Essence of Fear":{
+		"ID":88
 	},
-	"Defiled Cathedral": {
-		"ID": "536"
+	"Deafening Essence of Greed":{
+		"ID":91
 	},
-	"Desert": {
-		"ID": "350"
+	"Deafening Essence of Hatred":{
+		"ID":94
 	},
-	"Desert Spring": {
-		"ID": "537"
+	"Deafening Essence of Loathing":{
+		"ID":100
 	},
-	"Destined to Crumble": {
-		"ID": "147"
+	"Deafening Essence of Misery":{
+		"ID":103
 	},
-	"Dialla's Subjugation": {
-		"ID": "148"
+	"Deafening Essence of Rage":{
+		"ID":106
 	},
-	"Dig": {
-		"ID": "538"
+	"Deafening Essence of Scorn":{
+		"ID":109
 	},
-	"Divine Orb": {
-		"Abridged": "divine",
-		"ID": "15"
+	"Deafening Essence of Sorrow":{
+		"ID":112
 	},
-	"divine": "Divine Orb",
-	"Divine Vessel": {
-		"ID": "512"
+	"Deafening Essence of Spite":{
+		"ID":115
 	},
-	"Doedre's Madness": {
-		"ID": "149"
+	"Deafening Essence of Suffering":{
+		"ID":118
 	},
-	"Domination": {
-		"ID": "500"
+	"Deafening Essence of Torment":{
+		"ID":121
 	},
-	"Dunes": {
-		"ID": "351"
+	"Deafening Essence of Woe":{
+		"ID":124
 	},
-	"Dungeon": {
-		"ID": "352"
+	"Deafening Essence of Wrath":{
+		"ID":127
 	},
-	"Dying Anguish": {
-		"ID": "150"
+	"Deafening Essence of Zeal":{
+		"ID":130
 	},
-	"Earth Drinker": {
-		"ID": "151"
+	"Death":{
+		"ID":146
 	},
-	"Eber's Key": {
-		"Abridged": "eber's",
-		"ID": "36"
+	"Defiled Cathedral":{
+		"ID":536
 	},
-	"eber's": "Eber's Key",
-	"Emperor of Purity": {
-		"ID": "152"
+	"Dense Fossil":{
+		"ID":689
 	},
-	"Emperor's Luck": {
-		"ID": "153"
+	"Desert":{
+		"ID":350
 	},
-	"Engineer's Orb": {
-		"ID": "517"
+	"Desert Spring":{
+		"ID":537
 	},
-	"Esh's Breachstone": {
-		"ID": "64"
+	"Destined to Crumble":{
+		"ID":147
 	},
-	"Essence": {
-		"ID": "501"
+	"Dialla's Subjugation":{
+		"ID":148
 	},
-	"Essence of Delirium": {
-		"ID": "76"
+	"Dig":{
+		"ID":538
 	},
-	"Essence of Horror": {
-		"ID": "95"
+	"divine":"Divine Orb",
+	"Divine Orb":{
+		"Abridged":"divine",
+		"ID":15
 	},
-	"Essence of Hysteria": {
-		"ID": "96"
+	"Divine Vessel":{
+		"ID":512
 	},
-	"Essence of Insanity": {
-		"ID": "97"
+	"Doedre's Madness":{
+		"ID":149
 	},
-	"Estuary": {
-		"ID": "353"
+	"Domination":{
+		"ID":500
 	},
-	"Eternal Orb": {
-		"Abridged": "eternal",
-		"ID": "25"
+	"Dunes":{
+		"ID":351
 	},
-	"eternal": "Eternal Orb",
-	"Exalted Orb": {
-		"Abridged": "exalted",
-		"ID": "6"
+	"Dungeon":{
+		"ID":352
 	},
-	"exalted": "Exalted Orb",
-	"Exalted Shard": {
-		"ID": "521"
+	"dusk":"Sacrifice at Dusk",
+	"Dying Anguish":{
+		"ID":150
 	},
-	"Excavation": {
-		"ID": "354"
+	"Earth Drinker":{
+		"ID":151
 	},
-	"Factory": {
-		"ID": "355"
+	"eber's":"Eber's Key",
+	"Eber's Key":{
+		"Abridged":"eber's",
+		"ID":36
 	},
-	"Fields": {
-		"ID": "539"
+	"Emperor of Purity":{
+		"ID":152
 	},
-	"Flooded Mine": {
-		"ID": "540"
+	"Emperor's Luck":{
+		"ID":153
 	},
-	"Forbidden Power": {
-		"ID": "623"
+	"Enchanted Fossil":{
+		"ID":698
 	},
-	"Forge of the Phoenix": {
-		"ID": "356"
+	"Encrusted Fossil":{
+		"ID":699
 	},
-	"Fragment of the Chimera": {
-		"Abridged": "chimera",
-		"ID": "44"
+	"Engineer's Orb":{
+		"ID":517
 	},
-	"chimera": "Fragment of the Chimera",
-	"Fragment of the Hydra": {
-		"Abridged": "hydra",
-		"ID": "41"
+	"Esh's Breachstone":{
+		"ID":64
 	},
-	"hydra": "Fragment of the Hydra",
-	"Fragment of the Minotaur": {
-		"Abridged": "minotaur",
-		"ID": "43"
+	"Essence":{
+		"ID":501
 	},
-	"minotaur": "Fragment of the Minotaur",
-	"Fragment of the Phoenix": {
-		"Abridged": "phoenix",
-		"ID": "42"
+	"Essence of Delirium":{
+		"ID":76
 	},
-	"phoenix": "Fragment of the Phoenix",
-	"Gardens": {
-		"ID": "541"
+	"Essence of Horror":{
+		"ID":95
 	},
-	"Gemcutter's Prism": {
-		"Abridged": "gcp",
-		"ID": "5"
+	"Essence of Hysteria":{
+		"ID":96
 	},
-	"gcp": "Gemcutter's Prism",
-	"Gemcutter's Promise": {
-		"ID": "154"
+	"Essence of Insanity":{
+		"ID":97
 	},
-	"Geode": {
-		"ID": "542"
+	"Estuary":{
+		"ID":353
 	},
-	"Ghetto": {
-		"ID": "357"
+	"eternal":"Eternal Orb",
+	"Eternal Orb":{
+		"Abridged":"eternal",
+		"ID":25
 	},
-	"Gift of the Gemling Queen": {
-		"ID": "155"
+	"exalted":"Exalted Orb",
+	"Exalted Orb":{
+		"Abridged":"exalted",
+		"ID":6
 	},
-	"Glassblower's Bauble": {
-		"Abridged": "bauble",
-		"ID": "21"
+	"Exalted Shard":{
+		"ID":521
 	},
-	"bauble": "Glassblower's Bauble",
-	"Glimmer of Hope": {
-		"ID": "156"
+	"Excavation":{
+		"ID":354
 	},
-	"Gorge": {
-		"ID": "358"
+	"Faceted Fossil":{
+		"ID":700
 	},
-	"Grave Knowledge": {
-		"ID": "157"
+	"Factory":{
+		"ID":355
 	},
-	"Graveyard": {
-		"ID": "359"
+	"Fields":{
+		"ID":539
 	},
-	"Grotto": {
-		"ID": "360"
+	"Flooded Mine":{
+		"ID":540
 	},
-	"Harbinger": {
-		"ID": "543"
+	"Forbidden Power":{
+		"ID":623
 	},
-	"Harbinger's Orb": {
-		"ID": "516"
+	"Forge of the Phoenix":{
+		"ID":356
 	},
-	"Harbinger's Shard": {
-		"ID": "643"
+	"Fractured Fossil":{
+		"ID":703
 	},
-	"Harmony of Souls": {
-		"ID": "653"
+	"Fragment of the Chimera":{
+		"Abridged":"chimera",
+		"ID":44
 	},
-	"Haunted Mansion": {
-		"ID": "544"
+	"Fragment of the Hydra":{
+		"Abridged":"hydra",
+		"ID":41
 	},
-	"Her Mask": {
-		"ID": "158"
+	"Fragment of the Minotaur":{
+		"Abridged":"minotaur",
+		"ID":43
 	},
-	"Heterochromia": {
-		"ID": "159"
+	"Fragment of the Phoenix":{
+		"Abridged":"phoenix",
+		"ID":42
 	},
-	"High Gardens": {
-		"ID": "361"
+	"Frigid Fossil":{
+		"ID":684
 	},
-	"Hope": {
-		"ID": "160"
+	"Fungal Hollow":{
+		"ID":724
 	},
-	"House of Mirrors": {
-		"ID": "161"
+	"fusing":"Orb of Fusing",
+	"Gardens":{
+		"ID":541
 	},
-	"Hubris": {
-		"ID": "162"
+	"gcp":"Gemcutter's Prism",
+	"Gemcutter's Prism":{
+		"Abridged":"gcp",
+		"ID":5
 	},
-	"Humility": {
-		"ID": "163"
+	"Gemcutter's Promise":{
+		"ID":154
 	},
-	"Hunter's Resolve": {
-		"ID": "164"
+	"Geode":{
+		"ID":542
 	},
-	"Hunter's Reward": {
-		"ID": "165"
+	"Ghetto":{
+		"ID":357
 	},
-	"Iceberg": {
-		"ID": "545"
+	"Gift of the Gemling Queen":{
+		"ID":155
 	},
-	"Immortal Resolve": {
-		"ID": "654"
+	"Gilded Ambush Scarab":{
+		"ID":728
 	},
-	"Infested Valley": {
-		"ID": "546"
+	"Gilded Bestiary Scarab":{
+		"ID":729
 	},
-	"Invasion": {
-		"ID": "502"
+	"Gilded Breach Scarab":{
+		"ID":730
 	},
-	"Inya's Key": {
-		"Abridged": "inya's",
-		"ID": "38"
+	"Gilded Cartography Scarab":{
+		"ID":731
 	},
-	"inya's": "Inya's Key",
-	"Ivory Temple": {
-		"ID": "362"
+	"Gilded Divination Scarab":{
+		"ID":732
 	},
-	"Jack in the Box": {
-		"ID": "166"
+	"Gilded Elder Scarab":{
+		"ID":733
 	},
-	"Jeweller's Orb": {
-		"Abridged": "jeweller's",
-		"ID": "8"
+	"Gilded Fossil":{
+		"ID":707
 	},
-	"jeweller's": "Jeweller's Orb",
-	"Journeyman Cartographer's Sextant": {
-		"Abridged": "journeyman sextant",
-		"ID": "46"
+	"Gilded Harbinger Scarab":{
+		"ID":734
 	},
-	"journeyman sextant": "Journeyman Cartographer's Sextant",
-	"Jungle Valley": {
-		"ID": "363"
+	"Gilded Perandus Scarab":{
+		"ID":735
 	},
-	"Laboratory": {
-		"ID": "547"
+	"Gilded Reliquary Scarab":{
+		"ID":736
 	},
-	"Lair": {
-		"ID": "364"
+	"Gilded Shaper Scarab":{
+		"ID":737
 	},
-	"Lair of the Hydra": {
-		"ID": "365"
+	"Gilded Sulphite Scarab":{
+		"ID":738
 	},
-	"Lantador's Lost Love": {
-		"ID": "167"
+	"Gilded Torment Scarab":{
+		"ID":739
 	},
-	"Last Hope": {
-		"ID": "168"
+	"Glacier":{
+		"ID":725
 	},
-	"Lava Chamber": {
-		"ID": "548"
+	"Glassblower's Bauble":{
+		"Abridged":"bauble",
+		"ID":21
 	},
-	"Lava Lake": {
-		"ID": "549"
+	"Glimmer of Hope":{
+		"ID":156
 	},
-	"Left to Fate": {
-		"ID": "570"
+	"Glyphic Fossil":{
+		"ID":704
 	},
-	"Leyline": {
-		"ID": "550"
+	"Gorge":{
+		"ID":358
 	},
-	"Light and Truth": {
-		"ID": "169"
+	"Grave Knowledge":{
+		"ID":157
 	},
-	"Lighthouse": {
-		"ID": "551"
+	"Graveyard":{
+		"ID":359
 	},
-	"Lingering Remnants": {
-		"ID": "170"
+	"grief":"Mortal Grief",
+	"Grotto":{
+		"ID":360
 	},
-	"Lookout": {
-		"ID": "552"
+	"Harbinger":{
+		"ID":543
 	},
-	"Lost Worlds": {
-		"ID": "171"
+	"Harbinger's Orb":{
+		"ID":516
 	},
-	"Loyalty": {
-		"ID": "172"
+	"Harbinger's Shard":{
+		"ID":643
 	},
-	"Lucky Connections": {
-		"ID": "173"
+	"Harmony of Souls":{
+		"ID":653
 	},
-	"Lucky Deck": {
-		"ID": "174"
+	"Haunted Mansion":{
+		"ID":544
 	},
-	"Lysah's Respite": {
-		"ID": "175"
+	"Her Mask":{
+		"ID":158
 	},
-	"Malformation": {
-		"ID": "366"
+	"Heterochromia":{
+		"ID":159
 	},
-	"Marshes": {
-		"ID": "367"
+	"High Gardens":{
+		"ID":361
 	},
-	"Master Cartographer's Sextant": {
-		"Abridged": "master sextant",
-		"ID": "47"
+	"Hollow Fossil":{
+		"ID":702
 	},
-	"master sextant": "Master Cartographer's Sextant",
-	"Mausoleum": {
-		"ID": "553"
+	"hope":{
+		"ID":160
 	},
-	"Mawr Blaidd": {
-		"ID": "176"
+	"House of Mirrors":{
+		"ID":161
 	},
-	"Maze": {
-		"ID": "368"
+	"Hubris":{
+		"ID":162
 	},
-	"Maze of the Minotaur": {
-		"ID": "369"
+	"Humility":{
+		"ID":163
 	},
-	"Merciless Armament": {
-		"ID": "177"
+	"Hunter's Resolve":{
+		"ID":164
 	},
-	"Mesa": {
-		"ID": "370"
+	"Hunter's Reward":{
+		"ID":165
 	},
-	"Might is Right": {
-		"ID": "178"
+	"hydra":"Fragment of the Hydra",
+	"Iceberg":{
+		"ID":545
 	},
-	"Mineral Pools": {
-		"ID": "371"
+	"ignorance":"Mortal Ignorance",
+	"Immortal Resolve":{
+		"ID":654
 	},
-	"Mirror of Kalandra": {
-		"Abridged": "mirror",
-		"ID": "24"
+	"Infested Valley":{
+		"ID":546
 	},
-	"mirror": "Mirror of Kalandra",
-	"Mirror Shard": {
-		"ID": "520"
+	"Invasion":{
+		"ID":502
 	},
-	"Mitts": {
-		"ID": "179"
+	"inya's":"Inya's Key",
+	"Inya's Key":{
+		"Abridged":"inya's",
+		"ID":38
 	},
-	"Moon Temple": {
-		"ID": "554"
+	"Ivory Temple":{
+		"ID":362
 	},
-	"Mortal Grief": {
-		"Abridged": "grief",
-		"ID": "31"
+	"Jack in the Box":{
+		"ID":166
 	},
-	"grief": "Mortal Grief",
-	"Mortal Hope": {
-		"Abridged": "hope",
-		"ID": "33"
+	"Jagged Fossil":{
+		"ID":686
 	},
-	"hope": "Mortal Hope",
-	"Mortal Ignorance": {
-		"Abridged": "ignorance",
-		"ID": "34"
+	"jeweller's":"Jeweller's Orb",
+	"Jeweller's Orb":{
+		"Abridged":"jeweller's",
+		"ID":8
 	},
-	"ignorance": "Mortal Ignorance",
-	"Mortal Rage": {
-		"Abridged": "rage",
-		"ID": "32"
+	"Journeyman Cartographer's Sextant":{
+		"Abridged":"journeyman sextant",
+		"ID":46
 	},
-	"rage": "Mortal Rage",
-	"Mortal set": {
-		"ID": "49"
+	"journeyman sextant":"Journeyman Cartographer's Sextant",
+	"Jungle Valley":{
+		"ID":363
 	},
-	"Mud Geyser": {
-		"ID": "372"
+	"Laboratory":{
+		"ID":547
 	},
-	"Museum": {
-		"ID": "373"
+	"Lair":{
+		"ID":364
 	},
-	"Necromancy Net": {
-		"ID": "642"
+	"Lair of the Hydra":{
+		"ID":365
 	},
-	"Necropolis": {
-		"ID": "374"
+	"Lantador's Lost Love":{
+		"ID":167
 	},
-	"Nemesis": {
-		"ID": "503"
+	"Last Hope":{
+		"ID":168
 	},
-	"No Traces": {
-		"ID": "566"
+	"Lava Chamber":{
+		"ID":548
 	},
-	"Oasis": {
-		"ID": "375"
+	"Lava Chambers":{
+		"ID":726
 	},
-	"Offering to the Goddess": {
-		"Abridged": "offering",
-		"ID": "40"
+	"Lava Lake":{
+		"ID":549
 	},
-	"offering": "Offering to the Goddess",
-	"Onslaught": {
-		"ID": "504"
+	"Left to Fate":{
+		"ID":570
 	},
-	"Orb of Alchemy": {
-		"Abridged": "alchemy",
-		"ID": "3"
+	"Leyline":{
+		"ID":550
 	},
-	"alchemy": "Orb of Alchemy",
-	"Orb of Alteration": {
-		"Abridged": "alteration",
-		"ID": "1"
+	"Light and Truth":{
+		"ID":169
 	},
-	"alteration": "Orb of Alteration",
-	"Orb of Annulment": {
-		"ID": "513"
+	"Lighthouse":{
+		"ID":551
 	},
-	"Orb of Augmentation": {
-		"Abridged": "augmentation",
-		"ID": "23"
+	"Lingering Remnants":{
+		"ID":170
 	},
-	"augmentation": "Orb of Augmentation",
-	"Orb of Binding": {
-		"ID": "514"
+	"Lookout":{
+		"ID":552
 	},
-	"Orb of Chance": {
-		"Abridged": "chance",
-		"ID": "9"
+	"Lost Worlds":{
+		"ID":171
 	},
-	"chance": "Orb of Chance",
-	"Orb of Fusing": {
-		"Abridged": "fusing",
-		"ID": "2"
+	"Loyalty":{
+		"ID":172
 	},
-	"fusing": "Orb of Fusing",
-	"Orb of Horizons": {
-		"ID": "515"
+	"Lucent Fossil":{
+		"ID":694
 	},
-	"Orb of Regret": {
-		"Abridged": "regret",
-		"ID": "13"
+	"Lucky Connections":{
+		"ID":173
 	},
-	"regret": "Orb of Regret",
-	"Orb of Scouring": {
-		"Abridged": "scouring",
-		"ID": "11"
+	"Lucky Deck":{
+		"ID":174
 	},
-	"scouring": "Orb of Scouring",
-	"Orb of Transmutation": {
-		"Abridged": "transmutation",
-		"ID": "22"
+	"Lysah's Respite":{
+		"ID":175
 	},
-	"transmutation": "Orb of Transmutation",
-	"Orchard": {
-		"ID": "376"
+	"Malformation":{
+		"ID":366
 	},
-	"Overgrown Ruin": {
-		"ID": "377"
+	"Marshes":{
+		"ID":367
 	},
-	"Overgrown Shrine": {
-		"ID": "378"
+	"Master Cartographer's Sextant":{
+		"Abridged":"master sextant",
+		"ID":47
 	},
-	"Palace": {
-		"ID": "379"
+	"master sextant":"Master Cartographer's Sextant",
+	"Mausoleum":{
+		"ID":553
 	},
-	"Pale Court set": {
-		"ID": "50"
+	"Mawr Blaidd":{
+		"ID":176
 	},
-	"Park": {
-		"ID": "555"
+	"Maze":{
+		"ID":368
 	},
-	"Pen": {
-		"ID": "556"
+	"Maze of the Minotaur":{
+		"ID":369
 	},
-	"Peninsula": {
-		"ID": "380"
+	"Merciless Armament":{
+		"ID":177
 	},
-	"Perandus": {
-		"ID": "505"
+	"Mesa":{
+		"ID":370
 	},
-	"Perandus Coin": {
-		"Abridged": "coin",
-		"ID": "26"
+	"Metallic Fossil":{
+		"ID":685
 	},
-	"coin": "Perandus Coin",
-	"Perfection": {
-		"ID": "655"
+	"midnight":"Sacrifice at Midnight",
+	"Might is Right":{
+		"ID":178
 	},
-	"Phantasmagoria": {
-		"ID": "381"
+	"Mineral Pools":{
+		"ID":371
 	},
-	"Pier": {
-		"ID": "382"
+	"minotaur":"Fragment of the Minotaur",
+	"mirror":"Mirror of Kalandra",
+	"Mirror of Kalandra":{
+		"Abridged":"mirror",
+		"ID":24
 	},
-	"Pit": {
-		"ID": "383"
+	"Mirror Shard":{
+		"ID":520
 	},
-	"Pit of the Chimera": {
-		"ID": "384"
+	"Mitts":{
+		"ID":179
 	},
-	"Plateau": {
-		"ID": "385"
+	"Monochrome":{
+		"ID":774
 	},
-	"Plaza": {
-		"ID": "386"
+	"Moon Temple":{
+		"ID":554
 	},
-	"Port": {
-		"ID": "391"
+	"Mortal Grief":{
+		"Abridged":"grief",
+		"ID":31
 	},
-	"Portal Scroll": {
-		"Abridged": "portal",
-		"ID": "18"
+	"Mortal Hope":{
+		"Abridged":"hope",
+		"ID":33
 	},
-	"portal": "Portal Scroll",
-	"Precinct": {
-		"ID": "387"
+	"Mortal Ignorance":{
+		"Abridged":"ignorance",
+		"ID":34
 	},
-	"Pride Before the Fall": {
-		"ID": "180"
+	"Mortal Rage":{
+		"Abridged":"rage",
+		"ID":32
 	},
-	"Primordial Pool": {
-		"ID": "388"
+	"Mortal set":{
+		"ID":49
 	},
-	"Promenade": {
-		"ID": "389"
+	"Mud Geyser":{
+		"ID":372
 	},
-	"Prophecy": {
-		"ID": "506"
+	"Museum":{
+		"ID":373
 	},
-	"Prosperity": {
-		"ID": "181"
+	"Necromancy Net":{
+		"ID":642
 	},
-	"Quarry": {
-		"ID": "390"
+	"Necropolis":{
+		"ID":374
 	},
-	"Racecourse": {
-		"ID": "392"
+	"Nemesis":{
+		"ID":503
 	},
-	"Rain of Chaos": {
-		"ID": "183"
+	"No Traces":{
+		"ID":566
 	},
-	"Rain Tempter": {
-		"ID": "182"
+	"noon":"Sacrifice at Noon",
+	"Oasis":{
+		"ID":375
 	},
-	"Rampage": {
-		"ID": "507"
+	"offering":"Offering to the Goddess",
+	"Offering to the Goddess":{
+		"Abridged":"offering",
+		"ID":40
 	},
-	"Ramparts": {
-		"ID": "393"
+	"Onslaught":{
+		"ID":504
 	},
-	"Rats": {
-		"ID": "184"
+	"Orb of Alchemy":{
+		"Abridged":"alchemy",
+		"ID":3
 	},
-	"Reef": {
-		"ID": "394"
+	"Orb of Alteration":{
+		"Abridged":"alteration",
+		"ID":1
 	},
-	"Regal Orb": {
-		"Abridged": "regal",
-		"ID": "14"
+	"Orb of Annulment":{
+		"ID":513
 	},
-	"regal": "Regal Orb",
-	"Reinforced Iron Net": {
-		"ID": "636"
+	"Orb of Augmentation":{
+		"Abridged":"augmentation",
+		"ID":23
 	},
-	"Reinforced Rope Net": {
-		"ID": "633"
+	"Orb of Binding":{
+		"ID":514
 	},
-	"Reinforced Steel Net": {
-		"ID": "639"
+	"Orb of Chance":{
+		"Abridged":"chance",
+		"ID":9
 	},
-	"Relic Chambers": {
-		"ID": "557"
+	"Orb of Fusing":{
+		"Abridged":"fusing",
+		"ID":2
 	},
-	"Remnant of Corruption": {
-		"ID": "131"
+	"Orb of Horizons":{
+		"ID":515
 	},
-	"Residence": {
-		"ID": "395"
+	"Orb of Regret":{
+		"Abridged":"regret",
+		"ID":13
 	},
-	"Sacrifice at Dawn": {
-		"Abridged": "dawn",
-		"ID": "29"
+	"Orb of Scouring":{
+		"Abridged":"scouring",
+		"ID":11
 	},
-	"dawn": "Sacrifice at Dawn",
-	"Sacrifice at Dusk": {
-		"Abridged": "dusk",
-		"ID": "27"
+	"Orb of Transmutation":{
+		"Abridged":"transmutation",
+		"ID":22
 	},
-	"dusk": "Sacrifice at Dusk",
-	"Sacrifice at Midnight": {
-		"Abridged": "midnight",
-		"ID": "28"
+	"Orchard":{
+		"ID":376
 	},
-	"midnight": "Sacrifice at Midnight",
-	"Sacrifice at Noon": {
-		"Abridged": "noon",
-		"ID": "30"
+	"Overgrown Ruin":{
+		"ID":377
 	},
-	"noon": "Sacrifice at Noon",
-	"Sacrifice set": {
-		"ID": "48"
+	"Overgrown Shrine":{
+		"ID":378
 	},
-	"Scholar of the Seas": {
-		"ID": "185"
+	"Palace":{
+		"ID":379
 	},
-	"Screaming Essence of Anger": {
-		"ID": "67"
+	"Pale Court set":{
+		"ID":50
 	},
-	"Screaming Essence of Anguish": {
-		"ID": "70"
+	"Park":{
+		"ID":555
 	},
-	"Screaming Essence of Contempt": {
-		"ID": "73"
+	"Pen":{
+		"ID":556
 	},
-	"Screaming Essence of Doubt": {
-		"ID": "77"
+	"Peninsula":{
+		"ID":380
 	},
-	"Screaming Essence of Dread": {
-		"ID": "80"
+	"Perandus":{
+		"ID":505
 	},
-	"Screaming Essence of Envy": {
-		"ID": "83"
+	"Perandus Coin":{
+		"Abridged":"coin",
+		"ID":26
 	},
-	"Screaming Essence of Fear": {
-		"ID": "86"
+	"Perfect Fossil":{
+		"ID":697
 	},
-	"Screaming Essence of Greed": {
-		"ID": "89"
+	"Perfection":{
+		"ID":655
 	},
-	"Screaming Essence of Hatred": {
-		"ID": "92"
+	"Phantasmagoria":{
+		"ID":381
 	},
-	"Screaming Essence of Loathing": {
-		"ID": "98"
+	"phoenix":"Fragment of the Phoenix",
+	"Pier":{
+		"ID":382
 	},
-	"Screaming Essence of Misery": {
-		"ID": "101"
+	"Pit":{
+		"ID":383
 	},
-	"Screaming Essence of Rage": {
-		"ID": "104"
+	"Pit of the Chimera":{
+		"ID":384
 	},
-	"Screaming Essence of Scorn": {
-		"ID": "107"
+	"Plateau":{
+		"ID":385
 	},
-	"Screaming Essence of Sorrow": {
-		"ID": "110"
+	"Plaza":{
+		"ID":386
 	},
-	"Screaming Essence of Spite": {
-		"ID": "113"
+	"Polished Ambush Scarab":{
+		"ID":740
 	},
-	"Screaming Essence of Suffering": {
-		"ID": "116"
+	"Polished Bestiary Scarab":{
+		"ID":741
 	},
-	"Screaming Essence of Torment": {
-		"ID": "119"
+	"Polished Breach Scarab":{
+		"ID":742
 	},
-	"Screaming Essence of Woe": {
-		"ID": "122"
+	"Polished Cartography Scarab":{
+		"ID":743
 	},
-	"Screaming Essence of Wrath": {
-		"ID": "125"
+	"Polished Divination Scarab":{
+		"ID":744
 	},
-	"Screaming Essence of Zeal": {
-		"ID": "128"
+	"Polished Elder Scarab":{
+		"ID":745
 	},
-	"Scriptorium": {
-		"ID": "396"
+	"Polished Harbinger Scarab":{
+		"ID":746
 	},
-	"Scroll of Wisdom": {
-		"Abridged": "wisdom",
-		"ID": "17"
+	"Polished Perandus Scarab":{
+		"ID":747
 	},
-	"wisdom": "Scroll of Wisdom",
-	"Sepulchre": {
-		"ID": "558"
+	"Polished Reliquary Scarab":{
+		"ID":748
 	},
-	"Sewer": {
-		"ID": "397"
+	"Polished Shaper Scarab":{
+		"ID":749
 	},
-	"Shaped Academy": {
-		"ID": "398"
+	"Polished Sulphite Scarab":{
+		"ID":750
 	},
-	"Shaped Acid Lakes": {
-		"ID": "399"
+	"Polished Torment Scarab":{
+		"ID":751
 	},
-	"Shaped Alleyways": {
-		"ID": "577"
+	"Port":{
+		"ID":391
 	},
-	"Shaped Ancient City": {
-		"ID": "595"
+	"portal":"Portal Scroll",
+	"Portal Scroll":{
+		"Abridged":"portal",
+		"ID":18
 	},
-	"Shaped Arachnid Nest": {
-		"ID": "400"
+	"Potent Alchemical Resonator":{
+		"ID":676
 	},
-	"Shaped Arachnid Tomb": {
-		"ID": "401"
+	"Potent Chaotic Resonator":{
+		"ID":680
 	},
-	"Shaped Arcade": {
-		"ID": "402"
+	"Powerful Alchemical Resonator":{
+		"ID":677
 	},
-	"Shaped Arena": {
-		"ID": "403"
+	"Powerful Chaotic Resonator":{
+		"ID":681
 	},
-	"Shaped Arid Lake": {
-		"ID": "404"
+	"Precinct":{
+		"ID":387
 	},
-	"Shaped Armoury": {
-		"ID": "405"
+	"Pride Before the Fall":{
+		"ID":180
 	},
-	"Shaped Arsenal": {
-		"ID": "406"
+	"Prime Alchemical Resonator":{
+		"ID":678
 	},
-	"Shaped Ashen Wood": {
-		"ID": "407"
+	"Prime Chaotic Resonator":{
+		"ID":682
 	},
-	"Shaped Atoll": {
-		"ID": "408"
+	"Primitive Alchemical Resonator":{
+		"ID":675
 	},
-	"Shaped Barrows": {
-		"ID": "409"
+	"Primitive Chaotic Resonator":{
+		"ID":679
 	},
-	"Shaped Bazaar": {
-		"ID": "572"
+	"Primordial Blocks":{
+		"ID":727
 	},
-	"Shaped Beach": {
-		"ID": "410"
+	"Primordial Pool":{
+		"ID":388
 	},
-	"Shaped Belfry": {
-		"ID": "616"
+	"Prismatic Fossil":{
+		"ID":691
 	},
-	"Shaped Bog": {
-		"ID": "411"
+	"Pristine Fossil":{
+		"ID":688
 	},
-	"Shaped Bone Crypt": {
-		"ID": "603"
+	"Promenade":{
+		"ID":389
 	},
-	"Shaped Burial Chambers": {
-		"ID": "412"
+	"Prophecy":{
+		"ID":506
 	},
-	"Shaped Cage": {
-		"ID": "581"
+	"Prosperity":{
+		"ID":181
 	},
-	"Shaped Canyon": {
-		"ID": "413"
+	"Quarry":{
+		"ID":390
 	},
-	"Shaped Castle Ruins": {
-		"ID": "414"
+	"Racecourse":{
+		"ID":392
 	},
-	"Shaped Catacombs": {
-		"ID": "415"
+	"rage":"Mortal Rage",
+	"Rain of Chaos":{
+		"ID":183
 	},
-	"Shaped Cavern": {
-		"ID": "416"
+	"Rain Tempter":{
+		"ID":182
 	},
-	"Shaped Cells": {
-		"ID": "417"
+	"Rampage":{
+		"ID":507
 	},
-	"Shaped Cemetery": {
-		"ID": "418"
+	"Ramparts":{
+		"ID":393
 	},
-	"Shaped Channel": {
-		"ID": "419"
+	"Rats":{
+		"ID":184
 	},
-	"Shaped Chateau": {
-		"ID": "588"
+	"Reef":{
+		"ID":394
 	},
-	"Shaped City Square": {
-		"ID": "585"
+	"regal":"Regal Orb",
+	"Regal Orb":{
+		"Abridged":"regal",
+		"ID":14
 	},
-	"Shaped Colonnade": {
-		"ID": "420"
+	"regret":"Orb of Regret",
+	"Reinforced Iron Net":{
+		"ID":636
 	},
-	"Shaped Conservatory": {
-		"ID": "592"
+	"Reinforced Rope Net":{
+		"ID":633
 	},
-	"Shaped Coral Ruins": {
-		"ID": "600"
+	"Reinforced Steel Net":{
+		"ID":639
 	},
-	"Shaped Courthouse": {
-		"ID": "587"
+	"Relic Chambers":{
+		"ID":557
 	},
-	"Shaped Courtyard": {
-		"ID": "421"
+	"Remnant of Corruption":{
+		"ID":131
 	},
-	"Shaped Coves": {
-		"ID": "422"
+	"Residence":{
+		"ID":395
 	},
-	"Shaped Crypt": {
-		"ID": "423"
+	"Rusted Ambush Scarab":{
+		"ID":752
 	},
-	"Shaped Crystal Ore": {
-		"ID": "424"
+	"Rusted Bestiary Scarab":{
+		"ID":753
 	},
-	"Shaped Cursed Crypt": {
-		"ID": "619"
+	"Rusted Breach Scarab":{
+		"ID":754
 	},
-	"Shaped Desert": {
-		"ID": "425"
+	"Rusted Cartography Scarab":{
+		"ID":755
 	},
-	"Shaped Dunes": {
-		"ID": "426"
+	"Rusted Divination Scarab":{
+		"ID":756
 	},
-	"Shaped Dungeon": {
-		"ID": "427"
+	"Rusted Elder Scarab":{
+		"ID":757
 	},
-	"Shaped Estuary": {
-		"ID": "612"
+	"Rusted Harbinger Scarab":{
+		"ID":758
 	},
-	"Shaped Excavation": {
-		"ID": "583"
+	"Rusted Perandus Scarab":{
+		"ID":759
 	},
-	"Shaped Factory": {
-		"ID": "428"
+	"Rusted Reliquary Scarab":{
+		"ID":760
 	},
-	"Shaped Fields": {
-		"ID": "597"
+	"Rusted Shaper Scarab":{
+		"ID":761
 	},
-	"Shaped Flooded Mine": {
-		"ID": "579"
+	"Rusted Sulphite Scarab":{
+		"ID":762
 	},
-	"Shaped Gardens": {
-		"ID": "604"
+	"Rusted Torment Scarab":{
+		"ID":763
 	},
-	"Shaped Geode": {
-		"ID": "607"
+	"Sacrifice at Dawn":{
+		"Abridged":"dawn",
+		"ID":29
 	},
-	"Shaped Ghetto": {
-		"ID": "429"
+	"Sacrifice at Dusk":{
+		"Abridged":"dusk",
+		"ID":27
 	},
-	"Shaped Gorge": {
-		"ID": "589"
+	"Sacrifice at Midnight":{
+		"Abridged":"midnight",
+		"ID":28
 	},
-	"Shaped Graveyard": {
-		"ID": "430"
+	"Sacrifice at Noon":{
+		"Abridged":"noon",
+		"ID":30
 	},
-	"Shaped Grotto": {
-		"ID": "431"
+	"Sacrifice set":{
+		"ID":48
 	},
-	"Shaped Haunted Mansion": {
-		"ID": "573"
+	"Sambodhi's Vow":{
+		"ID":777
 	},
-	"Shaped Iceberg": {
-		"ID": "580"
+	"Sanctified Fossil":{
+		"ID":706
 	},
-	"Shaped Infested Valley": {
-		"ID": "574"
+	"Scholar of the Seas":{
+		"ID":185
 	},
-	"Shaped Ivory Temple": {
-		"ID": "596"
+	"Scorched Fossil":{
+		"ID":683
 	},
-	"Shaped Jungle Valley": {
-		"ID": "432"
+	"scouring":"Orb of Scouring",
+	"Screaming Essence of Anger":{
+		"ID":67
 	},
-	"Shaped Laboratory": {
-		"ID": "605"
+	"Screaming Essence of Anguish":{
+		"ID":70
 	},
-	"Shaped Lava Chamber": {
-		"ID": "601"
+	"Screaming Essence of Contempt":{
+		"ID":73
 	},
-	"Shaped Leyline": {
-		"ID": "584"
+	"Screaming Essence of Doubt":{
+		"ID":77
 	},
-	"Shaped Lighthouse": {
-		"ID": "591"
+	"Screaming Essence of Dread":{
+		"ID":80
 	},
-	"Shaped Lookout": {
-		"ID": "576"
+	"Screaming Essence of Envy":{
+		"ID":83
 	},
-	"Shaped Malformation": {
-		"ID": "433"
+	"Screaming Essence of Fear":{
+		"ID":86
 	},
-	"Shaped Marshes": {
-		"ID": "434"
+	"Screaming Essence of Greed":{
+		"ID":89
 	},
-	"Shaped Mausoleum": {
-		"ID": "575"
+	"Screaming Essence of Hatred":{
+		"ID":92
 	},
-	"Shaped Mesa": {
-		"ID": "435"
+	"Screaming Essence of Loathing":{
+		"ID":98
 	},
-	"Shaped Mineral Pools": {
-		"ID": "608"
+	"Screaming Essence of Misery":{
+		"ID":101
 	},
-	"Shaped Moon Temple": {
-		"ID": "609"
+	"Screaming Essence of Rage":{
+		"ID":104
 	},
-	"Shaped Mud Geyser": {
-		"ID": "436"
+	"Screaming Essence of Scorn":{
+		"ID":107
 	},
-	"Shaped Museum": {
-		"ID": "437"
+	"Screaming Essence of Sorrow":{
+		"ID":110
 	},
-	"Shaped Oasis": {
-		"ID": "438"
+	"Screaming Essence of Spite":{
+		"ID":113
 	},
-	"Shaped Orchard": {
-		"ID": "439"
+	"Screaming Essence of Suffering":{
+		"ID":116
 	},
-	"Shaped Overgrown Ruin": {
-		"ID": "606"
+	"Screaming Essence of Torment":{
+		"ID":119
 	},
-	"Shaped Overgrown Shrine": {
-		"ID": "440"
+	"Screaming Essence of Woe":{
+		"ID":122
 	},
-	"Shaped Pen": {
-		"ID": "578"
+	"Screaming Essence of Wrath":{
+		"ID":125
 	},
-	"Shaped Peninsula": {
-		"ID": "441"
+	"Screaming Essence of Zeal":{
+		"ID":128
 	},
-	"Shaped Phantasmagoria": {
-		"ID": "442"
+	"Scriptorium":{
+		"ID":396
 	},
-	"Shaped Pier": {
-		"ID": "443"
+	"Scroll of Wisdom":{
+		"Abridged":"wisdom",
+		"ID":17
 	},
-	"Shaped Pit": {
-		"ID": "444"
+	"Sepulchre":{
+		"ID":558
 	},
-	"Shaped Plateau": {
-		"ID": "611"
+	"Serrated Fossil":{
+		"ID":693
 	},
-	"Shaped Port": {
-		"ID": "448"
+	"Seven Years Bad Luck":{
+		"ID":772
 	},
-	"Shaped Precinct": {
-		"ID": "618"
+	"Sewer":{
+		"ID":397
 	},
-	"Shaped Primordial Pool": {
-		"ID": "445"
+	"Shaped Academy":{
+		"ID":398
 	},
-	"Shaped Promenade": {
-		"ID": "446"
+	"Shaped Acid Lakes":{
+		"ID":399
 	},
-	"Shaped Quarry": {
-		"ID": "447"
+	"Shaped Alleyways":{
+		"ID":577
 	},
-	"Shaped Racecourse": {
-		"ID": "449"
+	"Shaped Ancient City":{
+		"ID":595
 	},
-	"Shaped Ramparts": {
-		"ID": "450"
+	"Shaped Arachnid Nest":{
+		"ID":400
 	},
-	"Shaped Reef": {
-		"ID": "451"
+	"Shaped Arachnid Tomb":{
+		"ID":401
 	},
-	"Shaped Relic Chambers": {
-		"ID": "586"
+	"Shaped Arcade":{
+		"ID":402
 	},
-	"Shaped Residence": {
-		"ID": "602"
+	"Shaped Arena":{
+		"ID":403
 	},
-	"Shaped Scriptorium": {
-		"ID": "613"
+	"Shaped Arid Lake":{
+		"ID":404
 	},
-	"Shaped Sepulchre": {
-		"ID": "610"
+	"Shaped Armoury":{
+		"ID":405
 	},
-	"Shaped Shipyard": {
-		"ID": "615"
+	"Shaped Arsenal":{
+		"ID":406
 	},
-	"Shaped Shore": {
-		"ID": "453"
+	"Shaped Ashen Wood":{
+		"ID":407
 	},
-	"Shaped Siege": {
-		"ID": "614"
+	"Shaped Atoll":{
+		"ID":408
 	},
-	"Shaped Spider Forest": {
-		"ID": "454"
+	"Shaped Barrows":{
+		"ID":409
 	},
-	"Shaped Spider Lair": {
-		"ID": "455"
+	"Shaped Bazaar":{
+		"ID":572
 	},
-	"Shaped Springs": {
-		"ID": "582"
+	"Shaped Beach":{
+		"ID":410
 	},
-	"Shaped Strand": {
-		"ID": "456"
+	"Shaped Belfry":{
+		"ID":616
 	},
-	"Shaped Sulphur Vents": {
-		"ID": "593"
+	"Shaped Bog":{
+		"ID":411
 	},
-	"Shaped Temple": {
-		"ID": "457"
+	"Shaped Bone Crypt":{
+		"ID":603
 	},
-	"Shaped Terrace": {
-		"ID": "458"
+	"Shaped Burial Chambers":{
+		"ID":412
 	},
-	"Shaped Thicket": {
-		"ID": "459"
+	"Shaped Cage":{
+		"ID":581
 	},
-	"Shaped Tower": {
-		"ID": "460"
+	"Shaped Canyon":{
+		"ID":413
 	},
-	"Shaped Toxic Sewer": {
-		"ID": "452"
+	"Shaped Castle Ruins":{
+		"ID":414
 	},
-	"Shaped Tribunal": {
-		"ID": "599"
+	"Shaped Catacombs":{
+		"ID":415
 	},
-	"Shaped Tropical Island": {
-		"ID": "461"
+	"Shaped Cavern":{
+		"ID":416
 	},
-	"Shaped Underground River": {
-		"ID": "462"
+	"Shaped Cells":{
+		"ID":417
 	},
-	"Shaped Underground Sea": {
-		"ID": "598"
+	"Shaped Cemetery":{
+		"ID":418
 	},
-	"Shaped Vaal City": {
-		"ID": "463"
+	"Shaped Channel":{
+		"ID":419
 	},
-	"Shaped Vaal Pyramid": {
-		"ID": "464"
+	"Shaped Chateau":{
+		"ID":588
 	},
-	"Shaped Vault": {
-		"ID": "571"
+	"Shaped City Square":{
+		"ID":585
 	},
-	"Shaped Villa": {
-		"ID": "465"
+	"Shaped Colonnade":{
+		"ID":420
 	},
-	"Shaped Volcano": {
-		"ID": "590"
+	"Shaped Conservatory":{
+		"ID":592
 	},
-	"Shaped Waste Pool": {
-		"ID": "466"
+	"Shaped Coral Ruins":{
+		"ID":600
 	},
-	"Shaped Wasteland": {
-		"ID": "617"
+	"Shaped Courthouse":{
+		"ID":587
 	},
-	"Shaped Wharf": {
-		"ID": "467"
+	"Shaped Courtyard":{
+		"ID":421
 	},
-	"Shaper set": {
-		"ID": "51"
+	"Shaped Coves":{
+		"ID":422
 	},
-	"Shard of Fate": {
-		"ID": "186"
+	"Shaped Crypt":{
+		"ID":423
 	},
-	"Shipyard": {
-		"ID": "468"
+	"Shaped Crystal Ore":{
+		"ID":424
 	},
-	"Shore": {
-		"ID": "469"
+	"Shaped Cursed Crypt":{
+		"ID":619
 	},
-	"Shrieking Essence of Anger": {
-		"ID": "68"
+	"Shaped Desert":{
+		"ID":425
 	},
-	"Shrieking Essence of Anguish": {
-		"ID": "71"
+	"Shaped Dunes":{
+		"ID":426
 	},
-	"Shrieking Essence of Contempt": {
-		"ID": "74"
+	"Shaped Dungeon":{
+		"ID":427
 	},
-	"Shrieking Essence of Doubt": {
-		"ID": "78"
+	"Shaped Estuary":{
+		"ID":612
 	},
-	"Shrieking Essence of Dread": {
-		"ID": "81"
+	"Shaped Excavation":{
+		"ID":583
 	},
-	"Shrieking Essence of Envy": {
-		"ID": "84"
+	"Shaped Factory":{
+		"ID":428
 	},
-	"Shrieking Essence of Fear": {
-		"ID": "87"
+	"Shaped Fields":{
+		"ID":597
 	},
-	"Shrieking Essence of Greed": {
-		"ID": "90"
+	"Shaped Flooded Mine":{
+		"ID":579
 	},
-	"Shrieking Essence of Hatred": {
-		"ID": "93"
+	"Shaped Gardens":{
+		"ID":604
 	},
-	"Shrieking Essence of Loathing": {
-		"ID": "99"
+	"Shaped Geode":{
+		"ID":607
 	},
-	"Shrieking Essence of Misery": {
-		"ID": "102"
+	"Shaped Ghetto":{
+		"ID":429
 	},
-	"Shrieking Essence of Rage": {
-		"ID": "105"
+	"Shaped Gorge":{
+		"ID":589
 	},
-	"Shrieking Essence of Scorn": {
-		"ID": "108"
+	"Shaped Graveyard":{
+		"ID":430
 	},
-	"Shrieking Essence of Sorrow": {
-		"ID": "111"
+	"Shaped Grotto":{
+		"ID":431
 	},
-	"Shrieking Essence of Spite": {
-		"ID": "114"
+	"Shaped Haunted Mansion":{
+		"ID":573
 	},
-	"Shrieking Essence of Suffering": {
-		"ID": "117"
+	"Shaped Iceberg":{
+		"ID":580
 	},
-	"Shrieking Essence of Torment": {
-		"ID": "120"
+	"Shaped Infested Valley":{
+		"ID":574
 	},
-	"Shrieking Essence of Woe": {
-		"ID": "123"
+	"Shaped Ivory Temple":{
+		"ID":596
 	},
-	"Shrieking Essence of Wrath": {
-		"ID": "126"
+	"Shaped Jungle Valley":{
+		"ID":432
 	},
-	"Shrieking Essence of Zeal": {
-		"ID": "129"
+	"Shaped Laboratory":{
+		"ID":605
 	},
-	"Shrine": {
-		"ID": "470"
+	"Shaped Lava Chamber":{
+		"ID":601
 	},
-	"Siege": {
-		"ID": "559"
+	"Shaped Leyline":{
+		"ID":584
 	},
-	"Silver Coin": {
-		"Abridged": "silver",
-		"ID": "35"
+	"Shaped Lighthouse":{
+		"ID":591
 	},
-	"silver": "Silver Coin",
-	"Simple Iron Net": {
-		"ID": "635"
+	"Shaped Lookout":{
+		"ID":576
 	},
-	"Simple Rope Net": {
-		"ID": "632"
+	"Shaped Malformation":{
+		"ID":433
 	},
-	"Simple Steel Net": {
-		"ID": "638"
+	"Shaped Marshes":{
+		"ID":434
 	},
-	"Spider Forest": {
-		"ID": "471"
+	"Shaped Mausoleum":{
+		"ID":575
 	},
-	"Spider Lair": {
-		"ID": "472"
+	"Shaped Maze":{
+		"ID":764
 	},
-	"Splinter of Chayula": {
-		"ID": "56"
+	"Shaped Mesa":{
+		"ID":435
 	},
-	"Splinter of Esh": {
-		"ID": "54"
+	"Shaped Mineral Pools":{
+		"ID":608
 	},
-	"Splinter of Tul": {
-		"ID": "53"
+	"Shaped Moon Temple":{
+		"ID":609
 	},
-	"Splinter of Uul-Netol": {
-		"ID": "55"
+	"Shaped Mud Geyser":{
+		"ID":436
 	},
-	"Splinter of Xoph": {
-		"ID": "52"
+	"Shaped Museum":{
+		"ID":437
 	},
-	"Springs": {
-		"ID": "473"
+	"Shaped Oasis":{
+		"ID":438
 	},
-	"Strand": {
-		"ID": "474"
+	"Shaped Orchard":{
+		"ID":439
 	},
-	"Strong Iron Net": {
-		"ID": "637"
+	"Shaped Overgrown Ruin":{
+		"ID":606
 	},
-	"Strong Rope Net": {
-		"ID": "634"
+	"Shaped Overgrown Shrine":{
+		"ID":440
 	},
-	"Strong Steel Net": {
-		"ID": "640"
+	"Shaped Pen":{
+		"ID":578
 	},
-	"Struck by Lightning": {
-		"ID": "187"
+	"Shaped Peninsula":{
+		"ID":441
 	},
-	"Sulphur Vents": {
-		"ID": "560"
+	"Shaped Phantasmagoria":{
+		"ID":442
 	},
-	"Sulphur Wastes": {
-		"ID": "475"
+	"Shaped Pier":{
+		"ID":443
 	},
-	"Summit": {
-		"ID": "561"
+	"Shaped Pit":{
+		"ID":444
 	},
-	"Sunken City": {
-		"ID": "562"
+	"Shaped Plateau":{
+		"ID":611
 	},
-	"Talisman": {
-		"ID": "508"
+	"Shaped Port":{
+		"ID":448
 	},
-	"Tempest": {
-		"ID": "509"
+	"Shaped Precinct":{
+		"ID":618
 	},
-	"Temple": {
-		"ID": "476"
+	"Shaped Primordial Pool":{
+		"ID":445
 	},
-	"Terrace": {
-		"ID": "477"
+	"Shaped Promenade":{
+		"ID":446
 	},
-	"Thaumaturgical Net": {
-		"ID": "641"
+	"Shaped Quarry":{
+		"ID":447
 	},
-	"The Admirer": {
-		"ID": "656"
+	"Shaped Racecourse":{
+		"ID":449
 	},
-	"The Aesthete": {
-		"ID": "188"
+	"Shaped Ramparts":{
+		"ID":450
 	},
-	"The Arena Champion": {
-		"ID": "189"
+	"Shaped Reef":{
+		"ID":451
 	},
-	"The Army of Blood": {
-		"ID": "657"
+	"Shaped Relic Chambers":{
+		"ID":586
 	},
-	"The Artist": {
-		"ID": "190"
+	"Shaped Residence":{
+		"ID":602
 	},
-	"The Avenger": {
-		"ID": "191"
+	"Shaped Scriptorium":{
+		"ID":613
 	},
-	"The Battle Born": {
-		"ID": "192"
+	"Shaped Sepulchre":{
+		"ID":610
 	},
-	"The Beast": {
-		"ID": "658"
+	"Shaped Shipyard":{
+		"ID":615
 	},
-	"The Betrayal": {
-		"ID": "193"
+	"Shaped Shore":{
+		"ID":453
 	},
-	"The Blazing Fire": {
-		"ID": "569"
+	"Shaped Siege":{
+		"ID":614
 	},
-	"The Body": {
-		"ID": "194"
+	"Shaped Spider Forest":{
+		"ID":454
 	},
-	"The Breach": {
-		"ID": "624"
+	"Shaped Spider Lair":{
+		"ID":455
 	},
-	"The Brittle Emperor": {
-		"ID": "195"
+	"Shaped Springs":{
+		"ID":582
 	},
-	"The Calling": {
-		"ID": "196"
+	"Shaped Strand":{
+		"ID":456
 	},
-	"The Carrion Crow": {
-		"ID": "197"
+	"Shaped Sulphur Vents":{
+		"ID":593
 	},
-	"The Cartographer": {
-		"ID": "198"
+	"Shaped Temple":{
+		"ID":457
 	},
-	"The Cataclysm": {
-		"ID": "199"
+	"Shaped Terrace":{
+		"ID":458
 	},
-	"The Catalyst": {
-		"ID": "200"
+	"Shaped Thicket":{
+		"ID":459
 	},
-	"The Celestial Justicar": {
-		"ID": "201"
+	"Shaped Tower":{
+		"ID":460
 	},
-	"The Celestial Stone": {
-		"ID": "659"
+	"Shaped Toxic Sewer":{
+		"ID":452
 	},
-	"The Chains that Bind": {
-		"ID": "202"
+	"Shaped Tribunal":{
+		"ID":599
 	},
-	"The Coming Storm": {
-		"ID": "203"
+	"Shaped Tropical Island":{
+		"ID":461
 	},
-	"The Conduit": {
-		"ID": "204"
+	"Shaped Underground River":{
+		"ID":462
 	},
-	"The Cursed King": {
-		"ID": "205"
+	"Shaped Underground Sea":{
+		"ID":598
 	},
-	"The Dapper Prodigy": {
-		"ID": "206"
+	"Shaped Vaal City":{
+		"ID":463
 	},
-	"The Dark Mage": {
-		"ID": "207"
+	"Shaped Vaal Pyramid":{
+		"ID":464
 	},
-	"The Darkest Dream": {
-		"ID": "660"
+	"Shaped Vault":{
+		"ID":571
 	},
-	"The Deceiver": {
-		"ID": "627"
+	"Shaped Villa":{
+		"ID":465
 	},
-	"The Demoness": {
-		"ID": "208"
+	"Shaped Volcano":{
+		"ID":590
 	},
-	"The Devastator": {
-		"ID": "209"
+	"Shaped Waste Pool":{
+		"ID":466
 	},
-	"The Doctor": {
-		"ID": "210"
+	"Shaped Wasteland":{
+		"ID":617
 	},
-	"The Doppelganger": {
-		"ID": "211"
+	"Shaped Wharf":{
+		"ID":467
 	},
-	"The Dragon": {
-		"ID": "212"
+	"Shaper set":{
+		"ID":51
 	},
-	"The Dragon's Heart": {
-		"ID": "213"
+	"Shard of Fate":{
+		"ID":186
 	},
-	"The Dreamer": {
-		"ID": "625"
+	"Shipyard":{
+		"ID":468
 	},
-	"The Dreamland": {
-		"ID": "661"
+	"Shore":{
+		"ID":469
 	},
-	"The Drunken Aristocrat": {
-		"ID": "214"
+	"Shrieking Essence of Anger":{
+		"ID":68
 	},
-	"The Encroaching Darkness": {
-		"ID": "215"
+	"Shrieking Essence of Anguish":{
+		"ID":71
 	},
-	"The Endurance": {
-		"ID": "216"
+	"Shrieking Essence of Contempt":{
+		"ID":74
 	},
-	"The Enlightened": {
-		"ID": "217"
+	"Shrieking Essence of Doubt":{
+		"ID":78
 	},
-	"The Ethereal": {
-		"ID": "218"
+	"Shrieking Essence of Dread":{
+		"ID":81
 	},
-	"The Explorer": {
-		"ID": "219"
+	"Shrieking Essence of Envy":{
+		"ID":84
 	},
-	"The Eye of the Dragon": {
-		"ID": "568"
+	"Shrieking Essence of Fear":{
+		"ID":87
 	},
-	"The Fathomless Depths": {
-		"ID": "662"
+	"Shrieking Essence of Greed":{
+		"ID":90
 	},
-	"The Feast": {
-		"ID": "220"
+	"Shrieking Essence of Hatred":{
+		"ID":93
 	},
-	"The Fiend": {
-		"ID": "221"
+	"Shrieking Essence of Loathing":{
+		"ID":99
 	},
-	"The Fletcher": {
-		"ID": "222"
+	"Shrieking Essence of Misery":{
+		"ID":102
 	},
-	"The Flora's Gift": {
-		"ID": "223"
+	"Shrieking Essence of Rage":{
+		"ID":105
 	},
-	"The Formless Sea": {
-		"ID": "224"
+	"Shrieking Essence of Scorn":{
+		"ID":108
 	},
-	"The Forsaken": {
-		"ID": "225"
+	"Shrieking Essence of Sorrow":{
+		"ID":111
 	},
-	"The Fox": {
-		"ID": "226"
+	"Shrieking Essence of Spite":{
+		"ID":114
 	},
-	"The Gambler": {
-		"ID": "227"
+	"Shrieking Essence of Suffering":{
+		"ID":117
 	},
-	"The Garish Power": {
-		"ID": "228"
+	"Shrieking Essence of Torment":{
+		"ID":120
 	},
-	"The Gemcutter": {
-		"ID": "229"
+	"Shrieking Essence of Woe":{
+		"ID":123
 	},
-	"The Gentleman": {
-		"ID": "230"
+	"Shrieking Essence of Wrath":{
+		"ID":126
 	},
-	"The Gladiator": {
-		"ID": "231"
+	"Shrieking Essence of Zeal":{
+		"ID":129
 	},
-	"The Hale Heart": {
-		"ID": "663"
+	"Shrine":{
+		"ID":470
 	},
-	"The Harvester": {
-		"ID": "232"
+	"Shuddering Fossil":{
+		"ID":695
 	},
-	"The Hermit": {
-		"ID": "233"
+	"Siege":{
+		"ID":559
 	},
-	"The Hoarder": {
-		"ID": "234"
+	"silver":"Silver Coin",
+	"Silver Coin":{
+		"Abridged":"silver",
+		"ID":35
 	},
-	"The Hunger": {
-		"ID": "235"
+	"Simple Iron Net":{
+		"ID":635
 	},
-	"The Immortal": {
-		"ID": "236"
+	"Simple Rope Net":{
+		"ID":632
 	},
-	"The Incantation": {
-		"ID": "237"
+	"Simple Steel Net":{
+		"ID":638
 	},
-	"The Inoculated": {
-		"ID": "238"
+	"Spider Forest":{
+		"ID":471
 	},
-	"The Insatiable": {
-		"ID": "620"
+	"Spider Lair":{
+		"ID":472
 	},
-	"The Inventor": {
-		"ID": "239"
+	"Splinter of Chayula":{
+		"ID":56
 	},
-	"The Iron Bard": {
-		"ID": "622"
+	"Splinter of Esh":{
+		"ID":54
 	},
-	"The Jester": {
-		"ID": "240"
+	"Splinter of Tul":{
+		"ID":53
 	},
-	"The Jeweller's Boon": {
-		"ID": "664"
+	"Splinter of Uul-Netol":{
+		"ID":55
 	},
-	"The King's Blade": {
-		"ID": "241"
+	"Splinter of Xoph":{
+		"ID":52
 	},
-	"The King's Heart": {
-		"ID": "242"
+	"Springs":{
+		"ID":473
 	},
-	"The Last One Standing": {
-		"ID": "243"
+	"Strand":{
+		"ID":474
 	},
-	"The Lich": {
-		"ID": "244"
+	"Strong Iron Net":{
+		"ID":637
 	},
-	"The Lion": {
-		"ID": "245"
+	"Strong Rope Net":{
+		"ID":634
 	},
-	"The Lord in Black": {
-		"ID": "246"
+	"Strong Steel Net":{
+		"ID":640
 	},
-	"The Lover": {
-		"ID": "247"
+	"Struck by Lightning":{
+		"ID":187
 	},
-	"The Lunaris Priestess": {
-		"ID": "248"
+	"Sulphur Vents":{
+		"ID":560
 	},
-	"The Master": {
-		"ID": "665"
+	"Sulphur Wastes":{
+		"ID":475
 	},
-	"The Mayor": {
-		"ID": "666"
+	"Summit":{
+		"ID":561
 	},
-	"The Mercenary": {
-		"ID": "249"
+	"Sunken City":{
+		"ID":562
 	},
-	"The Metalsmith's Gift": {
-		"ID": "250"
+	"Talisman":{
+		"ID":508
 	},
-	"The Oath": {
-		"ID": "251"
+	"Tangled Fossil":{
+		"ID":705
 	},
-	"The Obscured": {
-		"ID": "621"
+	"Tempest":{
+		"ID":509
 	},
-	"The Offering": {
-		"ID": "252"
+	"Temple":{
+		"ID":476
 	},
-	"The One With All": {
-		"ID": "253"
+	"Terrace":{
+		"ID":477
 	},
-	"The Opulent": {
-		"ID": "254"
+	"Thaumaturgical Net":{
+		"ID":641
 	},
-	"The Pack Leader": {
-		"ID": "255"
+	"The Admirer":{
+		"ID":656
 	},
-	"The Pact": {
-		"ID": "256"
+	"The Aesthete":{
+		"ID":188
 	},
-	"The Penitent": {
-		"ID": "257"
+	"The Arena Champion":{
+		"ID":189
 	},
-	"The Poet": {
-		"ID": "258"
+	"The Army of Blood":{
+		"ID":657
 	},
-	"The Polymath": {
-		"ID": "259"
+	"The Artist":{
+		"ID":190
 	},
-	"The Porcupine": {
-		"ID": "260"
+	"The Avenger":{
+		"ID":191
 	},
-	"The Professor": {
-		"ID": "667"
+	"The Battle Born":{
+		"ID":192
 	},
-	"The Puzzle": {
-		"ID": "629"
+	"The Beast":{
+		"ID":658
 	},
-	"The Queen": {
-		"ID": "261"
+	"The Betrayal":{
+		"ID":193
 	},
-	"The Rabid Rhoa": {
-		"ID": "262"
+	"The Blazing Fire":{
+		"ID":569
 	},
-	"The Realm": {
-		"ID": "567"
+	"The Body":{
+		"ID":194
 	},
-	"The Risk": {
-		"ID": "263"
+	"The Breach":{
+		"ID":624
 	},
-	"The Rite of Elements": {
-		"ID": "668"
+	"The Brittle Emperor":{
+		"ID":195
 	},
-	"The Road to Power": {
-		"ID": "264"
+	"The Cacophony":{
+		"ID":716
 	},
-	"The Ruthless Ceinture": {
-		"ID": "565"
+	"The Calling":{
+		"ID":196
 	},
-	"The Saint's Treasure": {
-		"ID": "265"
+	"The Carrion Crow":{
+		"ID":197
 	},
-	"The Samurai's Eye": {
-		"ID": "669"
+	"The Cartographer":{
+		"ID":198
 	},
-	"The Scarred Meadow": {
-		"ID": "266"
+	"The Cataclysm":{
+		"ID":199
 	},
-	"The Scavenger": {
-		"ID": "267"
+	"The Catalyst":{
+		"ID":200
 	},
-	"The Scholar": {
-		"ID": "268"
+	"The Celestial Justicar":{
+		"ID":201
 	},
-	"The Sephirot": {
-		"ID": "269"
+	"The Celestial Stone":{
+		"ID":659
 	},
-	"The Sigil": {
-		"ID": "270"
+	"The Chains that Bind":{
+		"ID":202
 	},
-	"The Siren": {
-		"ID": "271"
+	"The Coming Storm":{
+		"ID":203
 	},
-	"The Soul": {
-		"ID": "272"
+	"The Conduit":{
+		"ID":204
 	},
-	"The Spark and the Flame": {
-		"ID": "273"
+	"The Cursed King":{
+		"ID":205
 	},
-	"The Spoiled Prince": {
-		"ID": "274"
+	"The Dapper Prodigy":{
+		"ID":206
 	},
-	"The Standoff": {
-		"ID": "275"
+	"The Dark Mage":{
+		"ID":207
 	},
-	"The Stormcaller": {
-		"ID": "276"
+	"The Darkest Dream":{
+		"ID":660
 	},
-	"The Summoner": {
-		"ID": "277"
+	"The Deceiver":{
+		"ID":627
 	},
-	"The Sun": {
-		"ID": "278"
+	"The Demoness":{
+		"ID":208
 	},
-	"The Surgeon": {
-		"ID": "279"
+	"The Devastator":{
+		"ID":209
 	},
-	"The Surveyor": {
-		"ID": "280"
+	"The Doctor":{
+		"ID":210
 	},
-	"The Survivalist": {
-		"ID": "281"
+	"The Doppelganger":{
+		"ID":211
 	},
-	"The Sword King's Salute": {
-		"ID": "670"
+	"The Dragon":{
+		"ID":212
 	},
-	"The Thaumaturgist": {
-		"ID": "282"
+	"The Dragon's Heart":{
+		"ID":213
 	},
-	"The Throne": {
-		"ID": "283"
+	"The Dreamer":{
+		"ID":625
 	},
-	"The Tower": {
-		"ID": "284"
+	"The Dreamland":{
+		"ID":661
 	},
-	"The Traitor": {
-		"ID": "285"
+	"The Drunken Aristocrat":{
+		"ID":214
 	},
-	"The Trial": {
-		"ID": "286"
+	"The Encroaching Darkness":{
+		"ID":215
 	},
-	"The Twins": {
-		"ID": "287"
+	"The Endless Darkness":{
+		"ID":711
 	},
-	"The Tyrant": {
-		"ID": "288"
+	"The Endurance":{
+		"ID":216
 	},
-	"The Undaunted": {
-		"ID": "671"
+	"The Enlightened":{
+		"ID":217
 	},
-	"The Undisputed": {
-		"ID": "672"
+	"The Ethereal":{
+		"ID":218
 	},
-	"The Union": {
-		"ID": "289"
+	"The Explorer":{
+		"ID":219
 	},
-	"The Valkyrie": {
-		"ID": "290"
+	"The Eye of the Dragon":{
+		"ID":568
 	},
-	"The Valley of Steel Boxes": {
-		"ID": "291"
+	"The Fathomless Depths":{
+		"ID":662
 	},
-	"The Vast": {
-		"ID": "292"
+	"The Feast":{
+		"ID":220
 	},
-	"The Visionary": {
-		"ID": "293"
+	"The Fiend":{
+		"ID":221
 	},
-	"The Void": {
-		"ID": "294"
+	"The Fletcher":{
+		"ID":222
 	},
-	"The Warden": {
-		"ID": "295"
+	"The Flora's Gift":{
+		"ID":223
 	},
-	"The Warlord": {
-		"ID": "296"
+	"The Formless Sea":{
+		"ID":224
 	},
-	"The Watcher": {
-		"ID": "297"
+	"The Forsaken":{
+		"ID":225
 	},
-	"The Web": {
-		"ID": "298"
+	"The Fox":{
+		"ID":226
 	},
-	"The Wind": {
-		"ID": "299"
+	"The Gambler":{
+		"ID":227
 	},
-	"The Witch": {
-		"ID": "673"
+	"The Garish Power":{
+		"ID":228
 	},
-	"The Wolf": {
-		"ID": "300"
+	"The Gemcutter":{
+		"ID":229
 	},
-	"The Wolf's Shadow": {
-		"ID": "301"
+	"The Gentleman":{
+		"ID":230
 	},
-	"The Wolven King's Bite": {
-		"ID": "302"
+	"The Gladiator":{
+		"ID":231
 	},
-	"The Wolverine": {
-		"ID": "303"
+	"The Golden Era":{
+		"ID":773
 	},
-	"The World Eater": {
-		"ID": "626"
+	"The Hale Heart":{
+		"ID":663
 	},
-	"The Wrath": {
-		"ID": "304"
+	"The Harvester":{
+		"ID":232
 	},
-	"The Wretched": {
-		"ID": "305"
+	"The Hermit":{
+		"ID":233
 	},
-	"Thicket": {
-		"ID": "478"
+	"The Hoarder":{
+		"ID":234
 	},
-	"Three Faces in the Dark": {
-		"ID": "306"
+	"The Hunger":{
+		"ID":235
 	},
-	"Three Voices": {
-		"ID": "674"
+	"The Immortal":{
+		"ID":236
 	},
-	"Thunderous Skies": {
-		"ID": "307"
+	"The Incantation":{
+		"ID":237
 	},
-	"Time-Lost Relic": {
-		"ID": "308"
+	"The Innocent":{
+		"ID":709
 	},
-	"Torment": {
-		"ID": "510"
+	"The Inoculated":{
+		"ID":238
 	},
-	"Torture Chamber": {
-		"ID": "479"
+	"The Insatiable":{
+		"ID":620
 	},
-	"Tower": {
-		"ID": "480"
+	"The Inventor":{
+		"ID":239
 	},
-	"Toxic Sewer": {
-		"ID": "563"
+	"The Iron Bard":{
+		"ID":622
 	},
-	"Tranquillity": {
-		"ID": "309"
+	"The Jester":{
+		"ID":240
 	},
-	"Treasure Hunter": {
-		"ID": "310"
+	"The Jeweller's Boon":{
+		"ID":664
 	},
-	"Tribunal": {
-		"ID": "564"
+	"The Journey":{
+		"ID":769
 	},
-	"Tropical Island": {
-		"ID": "481"
+	"The King's Blade":{
+		"ID":241
 	},
-	"Tul's Breachstone": {
-		"ID": "63"
+	"The King's Heart":{
+		"ID":242
 	},
-	"Turn the Other Cheek": {
-		"ID": "311"
+	"The Landing":{
+		"ID":771
 	},
-	"Underground River": {
-		"ID": "482"
+	"The Last One Standing":{
+		"ID":243
 	},
-	"Underground Sea": {
-		"ID": "483"
+	"The Lich":{
+		"ID":244
 	},
-	"Uul-Netol's Breachstone": {
-		"ID": "65"
+	"The Life Thief":{
+		"ID":721
 	},
-	"Vaal City": {
-		"ID": "484"
+	"The Lion":{
+		"ID":245
 	},
-	"Vaal Orb": {
-		"Abridged": "vaal",
-		"ID": "16"
+	"The Lord in Black":{
+		"ID":246
 	},
-	"vaal": "Vaal Orb",
-	"Vaal Pyramid": {
-		"ID": "485"
+	"The Lord of Celebration":{
+		"ID":778
 	},
-	"Vaal Temple": {
-		"ID": "486"
+	"The Lover":{
+		"ID":247
 	},
-	"Vault": {
-		"ID": "487"
+	"The Lunaris Priestess":{
+		"ID":248
 	},
-	"Vial of Awakening": {
-		"ID": "646"
+	"The Mad King":{
+		"ID":767
 	},
-	"Vial of Consequence": {
-		"ID": "649"
+	"The Master":{
+		"ID":665
 	},
-	"Vial of Dominance": {
-		"ID": "644"
+	"The Master Artisan":{
+		"ID":720
 	},
-	"Vial of Fate": {
-		"ID": "648"
+	"The Mayor":{
+		"ID":666
 	},
-	"Vial of Sacrifice": {
-		"ID": "652"
+	"The Mercenary":{
+		"ID":249
 	},
-	"Vial of Summoning": {
-		"ID": "645"
+	"The Messenger":{
+		"ID":766
 	},
-	"Vial of the Ghost": {
-		"ID": "650"
+	"The Metalsmith's Gift":{
+		"ID":250
 	},
-	"Vial of the Ritual": {
-		"ID": "647"
+	"The Nurse":{
+		"ID":719
 	},
-	"Vial of Transcendence": {
-		"ID": "651"
+	"The Oath":{
+		"ID":251
 	},
-	"Villa": {
-		"ID": "488"
+	"The Obscured":{
+		"ID":621
 	},
-	"Vinia's Token": {
-		"ID": "312"
+	"The Offering":{
+		"ID":252
 	},
-	"Volatile Power": {
-		"ID": "313"
+	"The One With All":{
+		"ID":253
 	},
-	"Volcano": {
-		"ID": "489"
+	"The Opulent":{
+		"ID":254
 	},
-	"Volkuur's Key": {
-		"Abridged": "volkuur's",
-		"ID": "39"
+	"The Pack Leader":{
+		"ID":255
 	},
-	"volkuur's": "Volkuur's Key",
-	"Warbands": {
-		"ID": "511"
+	"The Pact":{
+		"ID":256
 	},
-	"Waste Pool": {
-		"ID": "490"
+	"The Penitent":{
+		"ID":257
 	},
-	"Wasteland": {
-		"ID": "491"
+	"The Poet":{
+		"ID":258
 	},
-	"Waterways": {
-		"ID": "492"
+	"The Polymath":{
+		"ID":259
 	},
-	"Wealth and Power": {
-		"ID": "314"
+	"The Porcupine":{
+		"ID":260
 	},
-	"Wharf": {
-		"ID": "493"
+	"The Price of Protection":{
+		"ID":713
 	},
-	"Xoph's Breachstone": {
-		"ID": "62"
+	"The Professor":{
+		"ID":667
 	},
-	"Yriel's Key": {
-		"Abridged": "yriel's",
-		"ID": "37"
+	"The Puzzle":{
+		"ID":629
 	},
-	"yriel's": "Yriel's Key"
+	"The Queen":{
+		"ID":261
+	},
+	"The Rabid Rhoa":{
+		"ID":262
+	},
+	"The Realm":{
+		"ID":567
+	},
+	"The Risk":{
+		"ID":263
+	},
+	"The Rite of Elements":{
+		"ID":668
+	},
+	"The Road to Power":{
+		"ID":264
+	},
+	"The Ruthless Ceinture":{
+		"ID":565
+	},
+	"The Sacrifice":{
+		"ID":717
+	},
+	"The Saint's Treasure":{
+		"ID":265
+	},
+	"The Samurai's Eye":{
+		"ID":669
+	},
+	"The Scarred Meadow":{
+		"ID":266
+	},
+	"The Scavenger":{
+		"ID":267
+	},
+	"The Scholar":{
+		"ID":268
+	},
+	"The Seeker":{
+		"ID":765
+	},
+	"The Sephirot":{
+		"ID":269
+	},
+	"The Sigil":{
+		"ID":270
+	},
+	"The Siren":{
+		"ID":271
+	},
+	"The Soul":{
+		"ID":272
+	},
+	"The Spark and the Flame":{
+		"ID":273
+	},
+	"The Spoiled Prince":{
+		"ID":274
+	},
+	"The Standoff":{
+		"ID":275
+	},
+	"The Stormcaller":{
+		"ID":276
+	},
+	"The Summoner":{
+		"ID":277
+	},
+	"The Sun":{
+		"ID":278
+	},
+	"The Surgeon":{
+		"ID":279
+	},
+	"The Surveyor":{
+		"ID":280
+	},
+	"The Survivalist":{
+		"ID":281
+	},
+	"The Sword King's Salute":{
+		"ID":670
+	},
+	"The Thaumaturgist":{
+		"ID":282
+	},
+	"The Throne":{
+		"ID":283
+	},
+	"The Tower":{
+		"ID":284
+	},
+	"The Traitor":{
+		"ID":285
+	},
+	"The Trial":{
+		"ID":286
+	},
+	"The Twilight Moon":{
+		"ID":715
+	},
+	"The Twins":{
+		"ID":287
+	},
+	"The Tyrant":{
+		"ID":288
+	},
+	"The Undaunted":{
+		"ID":671
+	},
+	"The Undisputed":{
+		"ID":672
+	},
+	"The Union":{
+		"ID":289
+	},
+	"The Valkyrie":{
+		"ID":290
+	},
+	"The Valley of Steel Boxes":{
+		"ID":291
+	},
+	"The Vast":{
+		"ID":292
+	},
+	"The Visionary":{
+		"ID":293
+	},
+	"The Void":{
+		"ID":294
+	},
+	"The Warden":{
+		"ID":295
+	},
+	"The Warlord":{
+		"ID":296
+	},
+	"The Watcher":{
+		"ID":297
+	},
+	"The Web":{
+		"ID":298
+	},
+	"The Wilted Rose":{
+		"ID":710
+	},
+	"The Wind":{
+		"ID":299
+	},
+	"The Witch":{
+		"ID":673
+	},
+	"The Wolf":{
+		"ID":300
+	},
+	"The Wolf's Shadow":{
+		"ID":301
+	},
+	"The Wolven King's Bite":{
+		"ID":302
+	},
+	"The Wolverine":{
+		"ID":303
+	},
+	"The World Eater":{
+		"ID":626
+	},
+	"The Wrath":{
+		"ID":304
+	},
+	"The Wretched":{
+		"ID":305
+	},
+	"Thicket":{
+		"ID":478
+	},
+	"Three Faces in the Dark":{
+		"ID":306
+	},
+	"Three Voices":{
+		"ID":674
+	},
+	"Thunderous Skies":{
+		"ID":307
+	},
+	"Time-Lost Relic":{
+		"ID":308
+	},
+	"Timeworn Reliquary Key":{
+		"ID":708
+	},
+	"Torment":{
+		"ID":510
+	},
+	"Torture Chamber":{
+		"ID":479
+	},
+	"Tower":{
+		"ID":480
+	},
+	"Toxic Sewer":{
+		"ID":563
+	},
+	"Tranquillity":{
+		"ID":309
+	},
+	"transmutation":"Orb of Transmutation",
+	"Treasure Hunter":{
+		"ID":310
+	},
+	"Tribunal":{
+		"ID":564
+	},
+	"Tropical Island":{
+		"ID":481
+	},
+	"Tul's Breachstone":{
+		"ID":63
+	},
+	"Turn the Other Cheek":{
+		"ID":311
+	},
+	"Underground River":{
+		"ID":482
+	},
+	"Underground Sea":{
+		"ID":483
+	},
+	"Uul-Netol's Breachstone":{
+		"ID":65
+	},
+	"vaal":"Vaal Orb",
+	"Vaal City":{
+		"ID":484
+	},
+	"Vaal Orb":{
+		"Abridged":"vaal",
+		"ID":16
+	},
+	"Vaal Pyramid":{
+		"ID":485
+	},
+	"Vaal Temple":{
+		"ID":486
+	},
+	"Vault":{
+		"ID":487
+	},
+	"Vial of Awakening":{
+		"ID":646
+	},
+	"Vial of Consequence":{
+		"ID":649
+	},
+	"Vial of Dominance":{
+		"ID":644
+	},
+	"Vial of Fate":{
+		"ID":648
+	},
+	"Vial of Sacrifice":{
+		"ID":652
+	},
+	"Vial of Summoning":{
+		"ID":645
+	},
+	"Vial of the Ghost":{
+		"ID":650
+	},
+	"Vial of the Ritual":{
+		"ID":647
+	},
+	"Vial of Transcendence":{
+		"ID":651
+	},
+	"Villa":{
+		"ID":488
+	},
+	"Vinia's Token":{
+		"ID":312
+	},
+	"Volatile Power":{
+		"ID":313
+	},
+	"Volcano":{
+		"ID":489
+	},
+	"volkuur's":"Volkuur's Key",
+	"Volkuur's Key":{
+		"Abridged":"volkuur's",
+		"ID":39
+	},
+	"Warbands":{
+		"ID":511
+	},
+	"Waste Pool":{
+		"ID":490
+	},
+	"Wasteland":{
+		"ID":491
+	},
+	"Waterways":{
+		"ID":492
+	},
+	"Wealth and Power":{
+		"ID":314
+	},
+	"Wharf":{
+		"ID":493
+	},
+	"whetstone":"Blacksmith's Whetstone",
+	"wisdom":"Scroll of Wisdom",
+	"Xoph's Breachstone":{
+		"ID":62
+	},
+	"yriel's":"Yriel's Key",
+	"Yriel's Key":{
+		"Abridged":"yriel's",
+		"ID":37
+	}
 }

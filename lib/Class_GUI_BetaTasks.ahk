@@ -5,7 +5,7 @@
 
         ; Initialize gui arrays
         Gui, BetaTasks:Destroy
-        Gui.New("BetaTasks", "+LabelGUI_BetaTasks_ +HwndhGuiBetaTasks", "Beta Tasks")
+        Gui.New("BetaTasks", "+LabelGUI_BetaTasks_ +HwndhGuiBetaTasks", "POE TC - Beta Tasks")
         Gui.Font("BetaTasks", "Segoe UI", "8")
 
         guiHeight := 170, guiWidth := 710

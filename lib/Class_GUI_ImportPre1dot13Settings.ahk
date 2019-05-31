@@ -7,7 +7,7 @@ Class GUI_ImportPre1dot13Settings {
         global GuiImportPre1dot13Settings, GuiImportPre1dot13Settings_Controls, GuiImportPre1dot13Settings_Submit
         
         Gui, ImportPre1dot13Settings:Destroy
-		Gui.New("ImportPre1dot13Settings", "-Caption -Border +LabelGUI_ImportPre1dot13Settings_ +HwndhGuiImportPre1dot13Settings", "Importing pre-1.13 settings")
+		Gui.New("ImportPre1dot13Settings", "-Caption -Border +LabelGUI_ImportPre1dot13Settings_ +HwndhGuiImportPre1dot13Settings", "POE TC - Importing pre-1.13 settings")
 		GuiImportPre1dot13Settings.Is_Created := False
 
 		guiCreated := False
@@ -125,30 +125,27 @@ Class GUI_ImportPre1dot13Settings {
         newHistoryFilePath := PROGRAM.TRADES_HISTORY_FILE
         oldSettingsFilePath := MyDocuments "\AutoHotkey\POE Trades Companion\Preferences.ini"
         newSettingsFilePath := PROGRAM.INI_FILE
+
+        ; Rename old prefs file, to avoid detecing again
+        if FileExist(oldSettingsFilePath) {
+            SplitPath, oldSettingsFilePath, , folder
+            FileMove,% oldSettingsFilePath,% folder "\" A_Now "_Preferences.ini", 1
+        }
         if (what="Yes") {
-            ; Rename old prefs file, to avoid detecing again
-            FileRead, fileContent,% oldSettingsFilePath
-            if (fileContent) {
-                SplitPath, oldSettingsFilePath, , folder
-                FileMove,% oldSettingsFilePath,% folder "\" A_Now "_Preferences.ini", 1
-            }
             ; Rename current prefs file, set new content
-            FileRead, fileContent,% newSettingsFilePath
-            if (fileContent) {
+            if FileExist(newSettingsFilePath) {
                 SplitPath, newSettingsFilePath, , folder
                 FileMove,% newSettingsFilePath,% folder "\" A_Now "_Preferences.ini", 1
             }
             FileAppend,% "`n" settingsAppend,% newSettingsFilePath
         }
         ; Rename old history file, to avoid detecing again
-        FileRead, fileContent,% oldHistoryFilePath
-        if (fileContent) {
+        if FileExist(oldHistoryFilePath) {
             SplitPath, oldHistoryFilePath, , folder
             FileMove,% oldHistoryFilePath,% folder "\" A_Now "_Trades_History.ini", 1
         }
         ; Rename current history file, set new content
-        FileRead, fileContent,% newHistoryFilePath
-        if (fileContent) {
+        if FileExist(newHistoryFilePath) {
             SplitPath, newHistoryFilePath, , folder
             FileMove,% newHistoryFilePath,% folder "\" A_Now "_Trades_History.ini", 1
         }

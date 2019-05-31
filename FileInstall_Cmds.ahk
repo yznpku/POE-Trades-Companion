@@ -1,5 +1,6 @@
 ﻿if (!A_IsCompiled && A_ScriptName = "FileInstall_Cmds.ahk") {
 	#Include %A_ScriptDir%/lib/Logs.ahk
+	#Include %A_ScriptDir%/lib/WindowsSettings.ahk
 	#Include %A_ScriptDir%/lib/third-party/Get_ResourceSize.ahk
 
 	if (!PROGRAM)
@@ -49,6 +50,56 @@ if (ErrorLevel) {
 }
 
 ; ----------------------------
+if !InStr(FileExist(PROGRAM.MAIN_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.MAIN_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("Wiki.url")
+	FileGetSize, destFileSize, % PROGRAM.MAIN_FOLDER "\Wiki.url"
+}
+else {
+	FileGetSize, sourceFileSize, Wiki.url
+	FileGetSize, destFileSize, % PROGRAM.MAIN_FOLDER "\Wiki.url"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, Wiki.url, % PROGRAM.MAIN_FOLDER "\Wiki.url", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: Wiki.url"
+	.	"`nDest: " PROGRAM.MAIN_FOLDER "\Wiki.url"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: Wiki.url"
+	.	"`nDest: " PROGRAM.MAIN_FOLDER "\Wiki.url"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.MAIN_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.MAIN_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("GitHub.url")
+	FileGetSize, destFileSize, % PROGRAM.MAIN_FOLDER "\GitHub.url"
+}
+else {
+	FileGetSize, sourceFileSize, GitHub.url
+	FileGetSize, destFileSize, % PROGRAM.MAIN_FOLDER "\GitHub.url"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, GitHub.url, % PROGRAM.MAIN_FOLDER "\GitHub.url", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: GitHub.url"
+	.	"`nDest: " PROGRAM.MAIN_FOLDER "\GitHub.url"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: GitHub.url"
+	.	"`nDest: " PROGRAM.MAIN_FOLDER "\GitHub.url"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
 if !InStr(FileExist(PROGRAM.DATA_FOLDER ""), "D")
 	FileCreateDir,% PROGRAM.DATA_FOLDER ""
 
@@ -78,6 +129,56 @@ if !InStr(FileExist(PROGRAM.DATA_FOLDER ""), "D")
 	FileCreateDir,% PROGRAM.DATA_FOLDER ""
 
 if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("data\mapsData.json")
+	FileGetSize, destFileSize, % PROGRAM.DATA_FOLDER "\mapsData.json"
+}
+else {
+	FileGetSize, sourceFileSize, data\mapsData.json
+	FileGetSize, destFileSize, % PROGRAM.DATA_FOLDER "\mapsData.json"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, data\mapsData.json, % PROGRAM.DATA_FOLDER "\mapsData.json", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: data\mapsData.json"
+	.	"`nDest: " PROGRAM.DATA_FOLDER "\mapsData.json"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: data\mapsData.json"
+	.	"`nDest: " PROGRAM.DATA_FOLDER "\mapsData.json"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.DATA_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.DATA_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("data\poeDotComCurrencyData.json")
+	FileGetSize, destFileSize, % PROGRAM.DATA_FOLDER "\poeDotComCurrencyData.json"
+}
+else {
+	FileGetSize, sourceFileSize, data\poeDotComCurrencyData.json
+	FileGetSize, destFileSize, % PROGRAM.DATA_FOLDER "\poeDotComCurrencyData.json"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, data\poeDotComCurrencyData.json, % PROGRAM.DATA_FOLDER "\poeDotComCurrencyData.json", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: data\poeDotComCurrencyData.json"
+	.	"`nDest: " PROGRAM.DATA_FOLDER "\poeDotComCurrencyData.json"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: data\poeDotComCurrencyData.json"
+	.	"`nDest: " PROGRAM.DATA_FOLDER "\poeDotComCurrencyData.json"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.DATA_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.DATA_FOLDER ""
+
+if (A_IsCompiled) {
 	sourceFileSize := Get_ResourceSize("data\poeTradeCurrencyData.json")
 	FileGetSize, destFileSize, % PROGRAM.DATA_FOLDER "\poeTradeCurrencyData.json"
 }
@@ -95,6 +196,31 @@ if (ErrorLevel) {
 	errorLog .= "`n`n""Failed to extract file!"
 	.	"`nSource: data\poeTradeCurrencyData.json"
 	.	"`nDest: " PROGRAM.DATA_FOLDER "\poeTradeCurrencyData.json"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.DATA_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.DATA_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("data\UniqueMaps.txt")
+	FileGetSize, destFileSize, % PROGRAM.DATA_FOLDER "\UniqueMaps.txt"
+}
+else {
+	FileGetSize, sourceFileSize, data\UniqueMaps.txt
+	FileGetSize, destFileSize, % PROGRAM.DATA_FOLDER "\UniqueMaps.txt"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, data\UniqueMaps.txt, % PROGRAM.DATA_FOLDER "\UniqueMaps.txt", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: data\UniqueMaps.txt"
+	.	"`nDest: " PROGRAM.DATA_FOLDER "\UniqueMaps.txt"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: data\UniqueMaps.txt"
+	.	"`nDest: " PROGRAM.DATA_FOLDER "\UniqueMaps.txt"
 	.	"`nFlag: " 2
 }
 
@@ -503,6 +629,56 @@ if !InStr(FileExist(PROGRAM.IMAGES_FOLDER ""), "D")
 	FileCreateDir,% PROGRAM.IMAGES_FOLDER ""
 
 if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\imgs\Discord_big.png")
+	FileGetSize, destFileSize, % PROGRAM.IMAGES_FOLDER "\Discord_big.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\imgs\Discord_big.png
+	FileGetSize, destFileSize, % PROGRAM.IMAGES_FOLDER "\Discord_big.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\imgs\Discord_big.png, % PROGRAM.IMAGES_FOLDER "\Discord_big.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\imgs\Discord_big.png"
+	.	"`nDest: " PROGRAM.IMAGES_FOLDER "\Discord_big.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\imgs\Discord_big.png"
+	.	"`nDest: " PROGRAM.IMAGES_FOLDER "\Discord_big.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.IMAGES_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.IMAGES_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\imgs\Discord_big_forums.png")
+	FileGetSize, destFileSize, % PROGRAM.IMAGES_FOLDER "\Discord_big_forums.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\imgs\Discord_big_forums.png
+	FileGetSize, destFileSize, % PROGRAM.IMAGES_FOLDER "\Discord_big_forums.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\imgs\Discord_big_forums.png, % PROGRAM.IMAGES_FOLDER "\Discord_big_forums.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\imgs\Discord_big_forums.png"
+	.	"`nDest: " PROGRAM.IMAGES_FOLDER "\Discord_big_forums.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\imgs\Discord_big_forums.png"
+	.	"`nDest: " PROGRAM.IMAGES_FOLDER "\Discord_big_forums.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.IMAGES_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.IMAGES_FOLDER ""
+
+if (A_IsCompiled) {
 	sourceFileSize := Get_ResourceSize("resources\imgs\DonatePaypal.png")
 	FileGetSize, destFileSize, % PROGRAM.IMAGES_FOLDER "\DonatePaypal.png"
 }
@@ -553,6 +729,56 @@ if !InStr(FileExist(PROGRAM.IMAGES_FOLDER ""), "D")
 	FileCreateDir,% PROGRAM.IMAGES_FOLDER ""
 
 if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\imgs\GitHub_big.png")
+	FileGetSize, destFileSize, % PROGRAM.IMAGES_FOLDER "\GitHub_big.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\imgs\GitHub_big.png
+	FileGetSize, destFileSize, % PROGRAM.IMAGES_FOLDER "\GitHub_big.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\imgs\GitHub_big.png, % PROGRAM.IMAGES_FOLDER "\GitHub_big.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\imgs\GitHub_big.png"
+	.	"`nDest: " PROGRAM.IMAGES_FOLDER "\GitHub_big.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\imgs\GitHub_big.png"
+	.	"`nDest: " PROGRAM.IMAGES_FOLDER "\GitHub_big.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.IMAGES_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.IMAGES_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\imgs\GitHub_big_forums.png")
+	FileGetSize, destFileSize, % PROGRAM.IMAGES_FOLDER "\GitHub_big_forums.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\imgs\GitHub_big_forums.png
+	FileGetSize, destFileSize, % PROGRAM.IMAGES_FOLDER "\GitHub_big_forums.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\imgs\GitHub_big_forums.png, % PROGRAM.IMAGES_FOLDER "\GitHub_big_forums.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\imgs\GitHub_big_forums.png"
+	.	"`nDest: " PROGRAM.IMAGES_FOLDER "\GitHub_big_forums.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\imgs\GitHub_big_forums.png"
+	.	"`nDest: " PROGRAM.IMAGES_FOLDER "\GitHub_big_forums.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.IMAGES_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.IMAGES_FOLDER ""
+
+if (A_IsCompiled) {
 	sourceFileSize := Get_ResourceSize("resources\imgs\POE.png")
 	FileGetSize, destFileSize, % PROGRAM.IMAGES_FOLDER "\POE.png"
 }
@@ -578,6 +804,31 @@ if !InStr(FileExist(PROGRAM.IMAGES_FOLDER ""), "D")
 	FileCreateDir,% PROGRAM.IMAGES_FOLDER ""
 
 if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\imgs\POE_big.png")
+	FileGetSize, destFileSize, % PROGRAM.IMAGES_FOLDER "\POE_big.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\imgs\POE_big.png
+	FileGetSize, destFileSize, % PROGRAM.IMAGES_FOLDER "\POE_big.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\imgs\POE_big.png, % PROGRAM.IMAGES_FOLDER "\POE_big.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\imgs\POE_big.png"
+	.	"`nDest: " PROGRAM.IMAGES_FOLDER "\POE_big.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\imgs\POE_big.png"
+	.	"`nDest: " PROGRAM.IMAGES_FOLDER "\POE_big.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.IMAGES_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.IMAGES_FOLDER ""
+
+if (A_IsCompiled) {
 	sourceFileSize := Get_ResourceSize("resources\imgs\Reddit.png")
 	FileGetSize, destFileSize, % PROGRAM.IMAGES_FOLDER "\Reddit.png"
 }
@@ -595,6 +846,31 @@ if (ErrorLevel) {
 	errorLog .= "`n`n""Failed to extract file!"
 	.	"`nSource: resources\imgs\Reddit.png"
 	.	"`nDest: " PROGRAM.IMAGES_FOLDER "\Reddit.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.IMAGES_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.IMAGES_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\imgs\Reddit_big.png")
+	FileGetSize, destFileSize, % PROGRAM.IMAGES_FOLDER "\Reddit_big.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\imgs\Reddit_big.png
+	FileGetSize, destFileSize, % PROGRAM.IMAGES_FOLDER "\Reddit_big.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\imgs\Reddit_big.png, % PROGRAM.IMAGES_FOLDER "\Reddit_big.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\imgs\Reddit_big.png"
+	.	"`nDest: " PROGRAM.IMAGES_FOLDER "\Reddit_big.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\imgs\Reddit_big.png"
+	.	"`nDest: " PROGRAM.IMAGES_FOLDER "\Reddit_big.png"
 	.	"`nFlag: " 2
 }
 
@@ -1511,6 +1787,31 @@ if (ErrorLevel) {
 	errorLog .= "`n`n""Failed to extract file!"
 	.	"`nSource: resources\skins\Dark Blue\Header.png"
 	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\Header.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Dark Blue"), "D")
+	FileCreateDir,% PROGRAM.SKINS_FOLDER "\Dark Blue"
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\skins\Dark Blue\HeaderMin.png")
+	FileGetSize, destFileSize, % PROGRAM.SKINS_FOLDER "\Dark Blue\HeaderMin.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\skins\Dark Blue\HeaderMin.png
+	FileGetSize, destFileSize, % PROGRAM.SKINS_FOLDER "\Dark Blue\HeaderMin.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\skins\Dark Blue\HeaderMin.png, % PROGRAM.SKINS_FOLDER "\Dark Blue\HeaderMin.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\HeaderMin.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\HeaderMin.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Dark Blue\HeaderMin.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Dark Blue\HeaderMin.png"
 	.	"`nFlag: " 2
 }
 
@@ -2701,6 +3002,31 @@ if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile"), "D")
 	FileCreateDir,% PROGRAM.SKINS_FOLDER "\Path of Exile"
 
 if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\skins\Path of Exile\HeaderMin.png")
+	FileGetSize, destFileSize, % PROGRAM.SKINS_FOLDER "\Path of Exile\HeaderMin.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\skins\Path of Exile\HeaderMin.png
+	FileGetSize, destFileSize, % PROGRAM.SKINS_FOLDER "\Path of Exile\HeaderMin.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\skins\Path of Exile\HeaderMin.png, % PROGRAM.SKINS_FOLDER "\Path of Exile\HeaderMin.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\HeaderMin.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\HeaderMin.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\HeaderMin.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\HeaderMin.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile"), "D")
+	FileCreateDir,% PROGRAM.SKINS_FOLDER "\Path of Exile"
+
+if (A_IsCompiled) {
 	sourceFileSize := Get_ResourceSize("resources\skins\Path of Exile\Icon.ico")
 	FileGetSize, destFileSize, % PROGRAM.SKINS_FOLDER "\Path of Exile\Icon.ico"
 }
@@ -3875,6 +4201,31 @@ if (ErrorLevel) {
 	errorLog .= "`n`n""Failed to extract file!"
 	.	"`nSource: resources\skins\White\Header.png"
 	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\Header.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\White"), "D")
+	FileCreateDir,% PROGRAM.SKINS_FOLDER "\White"
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\skins\White\HeaderMin.png")
+	FileGetSize, destFileSize, % PROGRAM.SKINS_FOLDER "\White\HeaderMin.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\skins\White\HeaderMin.png
+	FileGetSize, destFileSize, % PROGRAM.SKINS_FOLDER "\White\HeaderMin.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\skins\White\HeaderMin.png, % PROGRAM.SKINS_FOLDER "\White\HeaderMin.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\White\HeaderMin.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\HeaderMin.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\White\HeaderMin.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\White\HeaderMin.png"
 	.	"`nFlag: " 2
 }
 

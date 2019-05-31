@@ -27,15 +27,12 @@ GitHubAPI_GetReleases(user, repo, which="releases_only", latestOnly=False, pageI
 
     url := "https://api.github.com/repos/" . user . "/" . repo . "/releases"
     url .= (which="releases_only" && latestOnly)?("/latest") : ("?page=" pageIndex)
-    errorMsg := "Failed to check for updates. Please check manually on GitHub."
-    . "`nA link to the GitHub repo can be found in the Settings."
 
-	postData		:= ""
-	reqHeaders		:= []
-	reqHeaders.Push("Content-Type: text/html; charset=UTF-8")
-	options			:= ""
-	html 			:= cURL_Download(url, ioData := postData, reqHeaders, options, true, false, false, errorMsg)
-    ; FileRead, html,% A_ScriptDir "\releasejson.txt"
+    headers := "Content-Type: text/html; charset=UTF-8"
+    options := "TimeOut: 25"
+    . "`n"     "Charset: UTF-8"
+
+    WinHttpRequest(url, data:="", headers, options), html := data
     
 	if GitHubAPI_IsRateLimitExceeded(html, reqHeaders)
 		Return
