@@ -14,12 +14,8 @@
 
 		; Initialize gui arrays
 		Gui, TradesMinimized:Destroy
-		Gui.New("TradesMinimized", "+AlwaysOnTop +ToolWindow +LastFound -SysMenu -Caption -Border +LabelGUI_TradesMinimized_ +HwndhGuiTradesMinimized", "POE TC - Trades")
+		Gui.New("TradesMinimized", "+AlwaysOnTop +ToolWindow +LastFound -SysMenu -Caption -Border +E0x08000000 +LabelGUI_TradesMinimized_ +HwndhGuiTradesMinimized", "POE TC - Trades")
 		guiCreated := False
-
-		; WS_EX_NOACTIVATE, allows to keep game window activated while using the GUI
-		Gui, TradesMinimized:+LastFound
-		WinSet, ExStyle, 0x08000000
 
 		; Font name and size
 		if (PROGRAM.SETTINGS.SETTINGS_CUSTOMIZATION_SKINS.Preset = "User Defined") {
