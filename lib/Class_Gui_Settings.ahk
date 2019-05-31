@@ -3747,7 +3747,7 @@ Class GUI_Settings {
 	}
 
 	TabMiscUpdating_UpdateVersionsText() {
-		global PROGRAM, GuiSettings_Controls
+		global PROGRAM, GuiSettings_Controls, UPDATE_TAGNAME
 		thisTabSettings := PROGRAM.SETTINGS.UPDATING
 
 		; Get time diff since update check
@@ -3756,9 +3756,7 @@ Class GUI_Settings {
 		timeDiff -= lastTimeChecked, Minutes
 		timeDiff := timeDiffS < 61 ? 1 : timeDiff
 		; Set groupbox title
-		isStableBetter := IsStableBetter(thisTabSettings.LatestStable, thisTabSettings.LatestBeta)
-		updAvailable := isStableBetter ? thisTabSettings.LatestStable: thisTabSettings.LatestBeta
-		if (updAvailable != PROGRAM.VERSION && updAvailable)
+		if (UPDATE_TAGNAME != "")
 			GuiControl, Settings:,% GuiSettings_Controls.hGB_UpdateCheck,% updAvailable " is available!"
 		else GuiControl, Settings:,% GuiSettings_Controls.hGB_UpdateCheck,% "You are up to date!"
 

@@ -1,18 +1,8 @@
-﻿IsStableBetter(stable, beta) {
-	isStableBetter := False
-	
-	stableSubVers := StrSplit(stable, "."), betaSubVers := StrSplit(beta, "."), currentSubVers := StrSplit(PROGRAM.VERSION, ".")
-	if (betaSubVers.1 = stableSubVers.1 && betaSubVers.2 = stableSubVers.2) || (betaSubVers.1 = currentSubVers.1 && betaSubVers.2 = currentSubVers.2)
-		isStableBetter := True
-
-	return isStableBetter
-}
-
-IsUpdateAvailable() {
+﻿IsUpdateAvailable() {
 	global PROGRAM
 	iniFile := PROGRAM.INI_FILE
 
-	useBeta := INI.Get(iniFile, "UPDATING", "UseBeta")
+	useBeta := INI.Get(iniFile, "UPDATING", "UseBeta"), useBeta := useBeta="True"?True:False
 	INI.Set(iniFile, "UPDATING", "LastUpdateCheck", A_Now)
 
 	recentRels := GitHubAPI_GetRecentReleases(PROGRAM.GITHUB_USER, PROGRAM.GITHUB_REPO)
@@ -35,16 +25,37 @@ IsUpdateAvailable() {
 			latestStable := recentRels[index], foundStableTag := True
 	}
 	stableTag := latestStable.tag_name, betaTag := latestBeta.tag_name
-	if (useBeta="True" && IsStableBetter(stableTag, betaTag))
-		isStableBetter := True
 
 	INI.Set(iniFile, "UPDATING", "LatestStable", stableTag)
 	INI.Set(iniFile, "UPDATING", "LatestBeta", betaTag)
 	Declare_LocalSettings()
 
-	updateRel := (useBeta="True" && isStableBetter)?(latestStable)
-		: (useBeta="True" && !isStableBetter)?(latestBeta)
-		: (latestStable)
+	; Determine if stable or beta is better
+	stableSplit := StrSplit(stableTag, "."), stable_main := stableSplit.1, stable_patch := stableSplit.2, stable_fix := stableSplit.3
+    betaSplit := StrSplit(betaTag, "."), beta_main := betaSplit.1, beta_patch := betaSplit.2, beta_fix := betaSplit.3
+	
+	stableBetter := (stable_main > beta_main) ? True
+		: (stable_main = beta_main) && (stable_patch >= beta_patch) ? True
+		: False
+
+	; Determine if update is better than current ver
+	betterRelTag := stableBetter=True?stableTag:betaTag
+	currentSplit := StrSplit(PROGRAM.VERSION, "."), current_main := currentSplit.1, current_patch := currentSplit.2, current_fix := currentSplit.3
+	betterTagSplit := StrSplit(betterRelTag, "."), better_main := betterTagSplit.1, better_patch := betterTagSplit.2, better_fix := betterTagSplit.3
+	
+	updBetterThanCurrent := (better_main > current_main) ? True
+		: (better_main = current_main) && (better_patch > current_patch) ? True
+		: (better_main = current_main) && (better_patch = current_patch) && (better_fix > current_fix) ? True
+		: False
+
+	; Determine if update is actually available
+	updateRel := (updBetterThanCurrent) ? ""
+		: (stableBetter && updBetterThanCurrent) ? latestStable
+		: (!stableBetter && updBetterThanCurrent && useBeta) ? latestBeta
+		: ""
+
+	if (updateRel = "")
+		return False
 
 	relTag := updateRel.tag_name
 	relNotes := updateRel.body
