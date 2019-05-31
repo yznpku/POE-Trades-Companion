@@ -7,6 +7,8 @@
 	Changes:
 	- Hiding normal quad tab stash tab item location for maps, is now disabled by default.
 	Not everyone has bought the map stash tab. Having this disabled by default makes more sense.
+	- If the user is using a BETA version, the "Use beta" checkbox will automatically be enabled.
+	This will prevent to avoid a case where the user would have the "Use beta" setting disabled, download manually the latest beta from GitHub, then get automatically "updated" to the latest stable because the "Use beta" setting is disabled.
 	
 	Fixes:
 	- Could fail to update due to unable to unload fonts.
