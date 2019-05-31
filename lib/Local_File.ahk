@@ -763,6 +763,9 @@ Update_LocalSettings() {
 
 		INI.Set(iniFile, "GENERAL", "IsFirstTimeRunning", "False")
 	}
+
+	if (PROGRAM.IS_BETA = "True")
+		INI.Set(iniFile, "UPDATING", "UseBeta", "True")
 }
 
 Declare_LocalSettings(settingsObj="") {
