@@ -707,10 +707,10 @@ Parse_GameLogs(strToParse) {
 						cmdLineParamsObj.PB_Token := PROGRAM.SETTINGS.SETTINGS_MAIN.PushBulletToken
 						cmdLineParamsObj.PB_Title := StrReplace(PROGRAM.TRANSLATIONS.TrayNotifications.TradingWhisperReceived_Title, "%buyer%", whispName)
 
-						trayMsg := StrReplace(PROGRAM.TRANSLATIONS.TrayNotifications.TradingWhisperReceived_Msg, "%item%", A_Tab tradeItemFull)
-						trayMsg := StrReplace(trayMsg, "%price%", A_Tab tradePrice)
-						trayMsg := StrReplace(trayMsg, "%stash%", A_Tab tradeStashFull)
-						trayMsg := StrReplace(trayMsg, "%other%", A_Tab tradeOther)
+						pbTxt := StrReplace(PROGRAM.TRANSLATIONS.TrayNotifications.TradingWhisperReceived_Msg, "%item%", A_Tab tradeItemFull)
+						pbTxt := StrReplace(pbTxt, "%price%", A_Tab tradePrice)
+						pbTxt := StrReplace(pbTxt, "%stash%", A_Tab tradeStashFull)
+						pbTxt := StrReplace(pbTxt, "%other%", A_Tab tradeOther)
 
 						cmdLineParamsObj.PB_Message := pbTxt
 						
