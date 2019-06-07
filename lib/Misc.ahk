@@ -233,9 +233,7 @@ Replace_TradeVariables(string) {
 	return string
 }
 
-
-
-Get_SkinAssetsAndSettings() {
+Get_TabsSkinAssetsAndSettings() {
 	global PROGRAM
 	iniFile := PROGRAM.INI_FILE
 
@@ -253,7 +251,7 @@ Get_SkinAssetsAndSettings() {
 		keysAndValues := INI.Get(skinAssetsFile, A_LoopField,, 1)
 
 		for key, value in keysAndValues	{
-			if IsIn(key, "Normal,Hover,Press,Active,Inactive,Background,Icon,Header,HeaderMin,Tabs_Background,Tabs_Underline")
+			if IsIn(key, "Normal,Hover,Press,Active,Inactive,Background,Icon,Header,HeaderMin,Tabs_Background,Tabs_Underline") 
 			|| (A_LoopField = "Trade_Verify" && IsIn(key, "Grey,Orange,Green,Red"))
 				skinAssets[A_LoopField][key] := skinFolder "\" value
 			else {
@@ -304,13 +302,96 @@ Get_SkinAssetsAndSettings() {
 	return Skin
 }
 
+Get_CompactSkinAssetsAndSettings() {
+	; TO_DO proper function when compact is fully released, with both incoming and outgoing whispers
+	global PROGRAM
+	iniFile := PROGRAM.INI_FILE
+
+	skinName := "Path of Exile" ; TO_DO assets for other skins
+
+	presetName := INI.Get(iniFile, "SETTINGS_CUSTOMIZATION_SKINS",, 1).Preset
+	skinName := INI.Get(iniFile, "SETTINGS_CUSTOMIZATION_SKINS",, 1).Skin
+	skinFolder := PROGRAM.SKINS_FOLDER "\" skinName "\Compact"
+	skinAssetsFile := PROGRAM.SKINS_FOLDER "\" skinName "\Compact" "\Assets.ini"
+	skinSettingsFile := PROGRAM.SKINS_FOLDER "\" skinName "\Compact" "\Settings.ini"
+
+	skinAssets := {}
+	iniSections := Ini.Get(skinAssetsFile)
+	Loop, Parse, iniSections, `n, `r
+	{
+		skinAssets[A_LoopField] := {}
+		keysAndValues := INI.Get(skinAssetsFile, A_LoopField,, 1)
+
+		for key, value in keysAndValues	{
+			if IsIn(key, "Normal,Hover,Press,Active,Inactive,Background,Icon,Header,HeaderMin,Header2,Tabs_Background,Tabs_Underline,SearchBarCross") 
+			|| (A_LoopField = "Trade_Verify" && IsIn(key, "Grey,Orange,Green,Red"))
+				skinAssets[A_LoopField][key] := skinFolder "\" value
+			else {
+				skinAssets[A_LoopField][key] := value
+			}
+		}
+	}
+
+	skinSettings := {}
+	; if (presetName = "User Defined") {
+	; 	userSkinSettings := INI.Get(iniFile, "SETTINGS_CUSTOMIZATION_SKINS_UserDefined",, 1)
+	; 	skinSettings.FONT := {}
+	; 	skinSettings.COLORS := {}
+
+	; 	skinSettings.FONT.Name := userSkinSettings.Font
+	; 	skinSettings.FONT.Size := userSkinSettings.FontSize
+	; 	skinSettings.FONT.Quality := userSkinSettings.FontQuality
+
+	; 	for iniKey, iniValue in userSkinSettings {
+	; 		iniKeySubStr := SubStr(iniKey, 1, 6)
+	; 		if (iniKeySubStr = "Color_" ) {
+	; 			iniKeyRestOfStr := SubStr(iniKey, 7)
+	; 			skinSettings.COLORS[iniKeyRestOfStr] := iniValue
+	; 		}
+	; 	}
+	; }
+	; else {
+		skinSettingsFile := PROGRAM.SKINS_FOLDER "\" skinName "\Settings.ini"
+		iniSections := INI.Get(skinSettingsFile)
+		Loop, Parse, iniSections, `n, `r
+		{
+			skinSettings[A_LoopField] := {}
+			keysAndValues := INI.Get(skinSettingsFile, A_LoopField,, 1)
+
+			for key, value in keysAndValues {
+				skinSettings[A_LoopField][key] := value
+			}
+		}
+	; }
+
+	Skin := {}
+	Skin.Preset := presetName
+	Skin.Skin := skinName
+	Skin.Skin_Folder := skinFolder
+	Skin.Assets := skinAssets
+	Skin.Settings := skinSettings
+
+	return Skin
+}
+
+Get_SkinAssetsAndSettings() {
+	tabs := Get_TabsSkinAssetsAndSettings()
+	compact := Get_CompactSkinAssetsAndSettings()
+	return {Tabs:tabs,Compact:compact}
+}
+
 Declare_SkinAssetsAndSettings(_skinSettingsAll="") {
+	; TO_DO proper func when compact is fully released
 	global SKIN
 
+	/* TO_DO temporarily disabled as bandaid, forcing to get skin settings no matter if param is passed or not
 	skinSettingsAll := _skinSettingsAll
 	if !IsObject(_skinSettingsAll)
 		skinSettingsAll := Get_SkinAssetsAndSettings()
+	*/
+	skinSettings := Get_SkinAssetsAndSettings()
 
 	SKIN := {}
-	SKIN := skinSettingsAll
+	SKIN := skinSettings.Tabs
+	SKIN.Compact := skinSettings.Compact
 }

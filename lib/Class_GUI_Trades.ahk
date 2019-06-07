@@ -1452,7 +1452,6 @@
 			Return
 		}
 
-		currentTabContent := GUI_Trades.GetTabContent(tabName)
 		cTabCont := GUI_Trades.GetTabContent(tabName)
 
 		newTabBuyer := updateOnly && !tabInfos.Buyer ? cTabCont.Buyer : tabInfos.Buyer

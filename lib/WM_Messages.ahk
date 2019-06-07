@@ -66,7 +66,9 @@ WM_LBUTTONDOWN() {
 	global MOUSEDRAG_CTRL, MOUSEDRAG_ENABLED
 	global GuiTrades, GuiTrades_Controls
 	global GuiSettings_Controls, GuiSettings
+	global GuiTradesBuyCompact, GuiTradesBuyCompact_Controls
 	global GUITRADES_TOOLTIP
+	global GUITRADESBUYCOMPACT_CLICKED_SEARCH
 
 	; = = TRADES GUI = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 	if (A_Gui = "Trades") {
@@ -86,7 +88,7 @@ WM_LBUTTONDOWN() {
 	}
 
 	; = = SETTINGS GUI = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
-	if (A_Gui = "Settings") {
+	else if (A_Gui = "Settings") {
 		mouseCtrlHwnd := Get_UnderMouse_CtrlHwnd()
 
 		; If it's a CustomButton, allow dragging
@@ -101,11 +103,23 @@ WM_LBUTTONDOWN() {
 			}
 			MOUSEDRAG_ENABLED := True
 		}
-	}	
+	}
+	
+	else if (A_Gui = "TradesBuyCompactSearch") {
+		mouseCtrlHwnd := Get_UnderMouse_CtrlHwnd()
+		if (mouseCtrlHwnd = GuiTradesBuyCompact_Controls.hTEXT_SearchBarFake) {
+			GUITRADESBUYCOMPACT_CLICKED_SEARCH := True
+		}
+	}
 }
 
+ShowListLines:
+ListLines
+return
+
 WM_LBUTTONUP() {
-	global MOUSEDRAG_CTRL, MOUSEDRAG_ENABLED, GUITRADES_TOOLTIP
+	global GuiTradesBuyCompact_Controls
+	global MOUSEDRAG_CTRL, MOUSEDRAG_ENABLED, GUITRADES_TOOLTIP, GUITRADESBUYCOMPACT_CLICKED_SEARCH
 
 	if (A_Gui = "Trades") {
 		if (GUITRADES_TOOLTIP) {
@@ -122,6 +136,17 @@ WM_LBUTTONUP() {
 		MOUSEDRAG_ENABLED := False
 		MOUSEDRAG_CTRL := ""
 	}
+
+	if (A_Gui = "TradesBuyCompactSearch") {
+		mouseCtrlHwnd := Get_UnderMouse_CtrlHwnd()
+		if (GUITRADESBUYCOMPACT_CLICKED_SEARCH && mouseCtrlHwnd = GuiTradesBuyCompact_Controls.hTEXT_SearchBarFake) {
+			hw := A_DetectHiddenWindows
+			DetectHiddenWindows, On
+			WinActivate,% "ahk_id " GuiTradesBuyCompact_Controls.GuiTradesBuyCompactSearchHiddenHandle
+			DetectHiddenWindows, %hw%
+		}
+	}
+	GUITRADESBUYCOMPACT_CLICKED_SEARCH := False
 }
 
 WM_MOUSEMOVE() {
@@ -341,6 +366,18 @@ WM_MOUSEMOVE() {
 
 	_prevInfos := currentButtonInfos
 	_prevMouseX := _mouseX, _prevMouseY := _mouseY
+}
+
+WM_MOUSEWHEEL(wParam, lParam) {
+	WheelDelta := 120 << 16
+	isWheelUp := WheelDelta=wParam?True:False
+	
+	if (A_Gui="TradesBuyCompact") {
+		if (isWheelUp)
+			GUI_TradesBuyCompact.ScrollUp()
+		else
+			GUI_TradesBuyCompact.ScrollDown()
+	}
 }
 
 AHK_NOTIFYICON(wParam, lParam) { 

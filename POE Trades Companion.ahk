@@ -113,16 +113,21 @@ Start_Script() {
 	PROGRAM.IMAGES_FOLDER			:= (A_IsCompiled?PROGRAM.MAIN_FOLDER:A_ScriptDir) . (A_IsCompiled?"\Images":"\resources\imgs")
 	PROGRAM.ICONS_FOLDER			:= (A_IsCompiled?PROGRAM.MAIN_FOLDER:A_ScriptDir) . (A_IsCompiled?"\Icons":"\resources\icons")
 	PROGRAM.TRANSLATIONS_FOLDER		:= (A_IsCompiled?PROGRAM.MAIN_FOLDER:A_ScriptDir) . (A_IsCompiled?"\Translations":"\resources\translations")
+	PROGRAM.CURRENCY_IMGS_FOLDER	:= (A_IsCompiled?PROGRAM.MAIN_FOLDER:A_ScriptDir) . (A_IsCompiled?"\CurrencyImages":"\resources\currency_imgs")
+	PROGRAM.CHEATSHEETS_FOLDER		:= (A_IsCompiled?PROGRAM.MAIN_FOLDER:A_ScriptDir) . (A_IsCompiled?"\Cheatsheets":"\resources\cheatsheets")
 
 	prefsFileName 					:= (RUNTIME_PARAMETERS.InstanceName)?(RUNTIME_PARAMETERS.InstanceName "_Preferences.ini"):("Preferences.ini")
 	backupFileName 					:= (RUNTIME_PARAMETERS.InstanceName)?(RUNTIME_PARAMETERS.InstanceName "_Trades_Backup.ini"):("Trades_Backup.ini")
 	tradesHistoryFileName 			:= (RUNTIME_PARAMETERS.InstanceName)?(RUNTIME_PARAMETERS.InstanceName "_Trades_History.ini"):("Trades_History.ini")
+	tradesHistoryBuyFileName 		:= (RUNTIME_PARAMETERS.InstanceName)?(RUNTIME_PARAMETERS.InstanceName "_Buy_History.ini"):("Buy_History.ini")
 	PROGRAM.FONTS_SETTINGS_FILE		:= PROGRAM.FONTS_FOLDER "\Settings.ini"
 	PROGRAM.INI_FILE 				:= PROGRAM.MAIN_FOLDER "\" prefsFileName
 	PROGRAM.LOGS_FILE 				:= PROGRAM.LOGS_FOLDER "\" A_YYYY "-" A_MM "-" A_DD " " A_Hour "h" A_Min "m" A_Sec "s.txt"
 	PROGRAM.CHANGELOG_FILE 			:= PROGRAM.MAIN_FOLDER "\changelog.txt"
 	PROGRAM.CHANGELOG_FILE_BETA 	:= PROGRAM.MAIN_FOLDER "\changelog_beta.txt"
 	PROGRAM.TRADES_HISTORY_FILE 	:= PROGRAM.MAIN_FOLDER "\" tradesHistoryFileName
+	PROGRAM.TRADES_HISTORY_BUY_FILE	:= PROGRAM.MAIN_FOLDER "\" tradesHistoryBuyFileName
+	
 	PROGRAM.TRADES_BACKUP_FILE		:= PROGRAM.MAIN_FOLDER "\" backupFileName
 
 	PROGRAM.NEW_FILENAME			:= PROGRAM.MAIN_FOLDER "\POE-TC-NewVersion.exe"
@@ -142,7 +147,7 @@ Start_Script() {
 	GAME.INI_FILE 					:= GAME.MAIN_FOLDER "\production_Config.ini"
 	GAME.INI_FILE_COPY 		 		:= PROGRAM.MAIN_FOLDER "\production_Config.ini"
 	GAME.EXECUTABLES 				:= "PathOfExile.exe,PathOfExile_x64.exe,PathOfExileSteam.exe,PathOfExile_x64Steam.exe"
-	GAME.CHALLENGE_LEAGUE 			:= "Synthesis"
+	GAME.CHALLENGE_LEAGUE 			:= "Legion"
 
 	PROGRAM.SETTINGS.SUPPORT_MESSAGE 	:= "@%buyerName% " PROGRAM.NAME ": view-thread/1755148"
 
@@ -167,7 +172,8 @@ Start_Script() {
 
 	; Create local directories - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 	directories := PROGRAM.MAIN_FOLDER "`n" PROGRAM.SFX_FOLDER "`n" PROGRAM.LOGS_FOLDER "`n" PROGRAM.SKINS_FOLDER
-	. "`n" PROGRAM.FONTS_FOLDER "`n" PROGRAM.IMAGES_FOLDER "`n" PROGRAM.DATA_FOLDER "`n" PROGRAM.ICONS_FOLDER "`n" PROGRAM.TEMP_FOLDER "`n" PROGRAM.TRANSLATIONS_FOLDER
+	. "`n" PROGRAM.FONTS_FOLDER "`n" PROGRAM.IMAGES_FOLDER "`n" PROGRAM.DATA_FOLDER "`n" PROGRAM.ICONS_FOLDER
+	. "`n" PROGRAM.TEMP_FOLDER "`n" PROGRAM.TRANSLATIONS_FOLDER "`n" PROGRAM.CURRENCY_IMGS_FOLDER "`n" PROGRAM.CHEATSHEETS_FOLDER
 
 	Loop, Parse, directories, `n, `r
 	{
@@ -190,6 +196,14 @@ Start_Script() {
 
 	if !(DEBUG.settings.skip_assets_extracting)
 		AssetsExtract()
+
+	if !FileExist(PROGRAM.TRANSLATIONS_FOLDER "\english.json") {
+		MsgBox(4096+48,"ERROR","/!\ PLEASE READ CAREFULLY /!\"
+		. "`n`nUnable to find translation files. Please re-download the tool."
+		. "`nThe GitHub releases page will open upon closing this box."
+		. "`nDetails are included on the post.")
+		Run,% "https://github.com/lemasato/POE-Trades-Companion/releases"
+	}
 
 	; Currency names for stats gui - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	PROGRAM.DATA := {}
@@ -283,6 +297,8 @@ Start_Script() {
 	GUI_TradesMinimized.Create()
 	Gui_Trades.Create()
 	GUI_Trades.LoadBackup()
+	GUI_TradesBuyCompact.Create()
+	GUI_TradesBuyCompact.Show()
 
 	; Parse debug msgs
 	if (DEBUG.settings.use_chat_logs) {
@@ -331,6 +347,7 @@ Return
 ; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 #Include %A_ScriptDir%\lib\
+
 #Include Class_GUI.ahk
 #Include Class_GUI_BetaTasks.ahk
 #Include Class_GUI_ImportPre1dot13Settings.ahk
@@ -343,6 +360,7 @@ Return
 #Include Class_Gui_Settings.ahk
 #Include Class_Gui_Trades.ahk
 #Include Class_Gui_TradesMinimized.ahk
+#Include Class_GUI_TradesBuyCompact.ahk
 #Include WM_Messages.ahk
 
 #Include AssetsExtract.ahk

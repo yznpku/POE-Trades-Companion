@@ -151,6 +151,28 @@
 			appendToFile .= FileInstall("""" filePath """", "PROGRAM.TRANSLATIONS_FOLDER """ "\" path.1 """", 2)
 	}
 
+	; - - - - CURRENCY IMGS
+	allowedExtensions := "png"
+	Loop,% A_ScriptDir "\resources\currency_imgs\*"
+	{
+		RegExMatch(A_LoopFileFullPath, "O)\\resources\\currency_imgs\\(.*)", path)
+		filePath := "resources\currency_imgs\" path.1
+
+		if (IsIn(A_LoopFileExt, allowedExtensions))
+			appendToFile .= FileInstall("""" filePath """", "PROGRAM.CURRENCY_IMGS_FOLDER """ "\" path.1 """", 2)
+	}
+
+	; - - - - CHEAT SHEETS
+	allowedExtensions := "png"
+	Loop,% A_ScriptDir "\resources\cheatsheets\*"
+	{
+		RegExMatch(A_LoopFileFullPath, "O)\\resources\\cheatsheets\\(.*)", path)
+		filePath := "resources\cheatsheets\" path.1
+
+		if (IsIn(A_LoopFileExt, allowedExtensions))
+			appendToFile .= FileInstall("""" filePath """", "PROGRAM.cheatsheets """ "\" path.1 """", 2)
+	}
+
 	; - - - - 
 	appendToFile .= ""
 	. "`n"	

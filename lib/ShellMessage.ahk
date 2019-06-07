@@ -20,9 +20,9 @@ ShellMessage(wParam,lParam) {
 /*			Triggered upon activating a window
  *			Is used to correctly position the Trades GUI while in Overlay mode
 */
-	global PROGRAM, GuiTrades, GuiTradesMinimized, GuiSettings, POEGameList
-
-	if ( wParam=4 || wParam=32772 ||wParam=5 ) { ; 4=HSHELL_WINDOWACTIVATED | 32772=HSHELL_RUDEAPPACTIVATED | 5=HSHELL_GETMINRECT
+	global PROGRAM, GuiTrades, GuiTradesMinimized, GuiSettings, POEGameList, GuiTradesBuyCompact_Controls
+	
+	if ( wParam=4 || wParam=32772 || wParam=5 ) { ; 4=HSHELL_WINDOWACTIVATED | 32772=HSHELL_RUDEAPPACTIVATED | 5=HSHELL_GETMINRECT 
 		if WinActive("ahk_id" GuiTrades.Handle) {
 ;		Prevent these keyboard presses from interacting with the Trades GUI
 			Hotkey, IfWinActive,% "ahk_id " GuiTrades.Handle
@@ -44,6 +44,10 @@ ShellMessage(wParam,lParam) {
 				if (lParam) {
 					WinGet, activeWinExe, ProcessName, ahk_id %lParam%
 					WinGet, activeWinHwnd, ID, ahk_id %lParam%
+					if (activeWinExe="" || activeWinHwnd="") {
+						WinGet, activeWinExe, ProcessName, A
+						WinGet, activeWinHwnd, ID, A	
+					}
 				}
 				else {
 					WinGet, activeWinExe, ProcessName, A
@@ -55,20 +59,35 @@ ShellMessage(wParam,lParam) {
 				}
 				else if (activeWinExe && IsIn(activeWinExe, POEGameList)) || (activeWinHwnd && GuiSettings.Handle && activeWinHwnd = GuiSettings.Handle) {
 					Gui_Trades.SetTransparency_Automatic()
-					if (GuiTrades.Is_Minimized)
+					if (GuiTrades.Is_Minimized) {
 						Gui, TradesMinimized:Show, NoActivate
-					else Gui, Trades:Show, NoActivate
+						Gui, TradesBuyCompact:Show, NoActivate
+					}
+					else {
+						Gui, Trades:Show, NoActivate
+						Gui, TradesBuyCompact:Show, NoActivate
+					}
 				}
 				else {
-					if (GuiTrades.Is_Minimized)
+					if (GuiTrades.Is_Minimized) {
 						Gui, TradesMinimized:Hide
-					else Gui, Trades:Hide
+						Gui, TradesBuyCompact:Hide
+					}
+					else {
+						Gui, Trades:Hide
+						Gui, TradesBuyCompact:Hide
+					}
 				}
 			}
 			else {
-				if (GuiTrades.Is_Minimized)
+				if (GuiTrades.Is_Minimized) {
 					Gui, TradesMinimized:Show, NoActivate
-				else Gui, Trades:Show, NoActivate
+					Gui, TradesBuyCompact:Show, NoActivate
+				}
+				else {
+					Gui, Trades:Show, NoActivate
+					Gui, TradesBuyCompact:Show, NoActivate
+				}
 			}
 
 			if ( PROGRAM.SETTINGS.SETTINGS_MAIN.TradesGUI_Mode = "Dock")
@@ -88,8 +107,13 @@ ShellMessage(wParam,lParam) {
 			WinSet, AlwaysOnTop, On
 		}
 
+		if WinActive("ahk_id" GuiTradesBuyCompact_Controls.GuiTradesBuyCompactSearchHiddenHandle) {
+			GUI_TradesBuyCompact.SetFakeSearch(makeEmpty:=True)
+		}
+
 		WinGet, winPName, ProcessName, ahk_id %lParam%
 		if IsIn(winPName, POEGameList)
 			WinGet, LASTACTIVATED_GAMEPID, PID, ahk_id %lParam%
 	}
+	return
 }

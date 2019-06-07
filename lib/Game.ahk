@@ -531,18 +531,22 @@ Parse_GameLogs(strToParse) {
 		}
 
 		; Check if whisper sent
-		if RegExMatch(A_LoopField, "SO)^(?:[^ ]+ ){6}(\d+)\] (?=[^#$&%]).*@(?:To|À|An|Para|Кому|ถึง) (.*?): .*", whisperPat) {
-			instancePID := whisperPat.1, whispNameFull := whisperPat.2
+		if RegExMatch(A_LoopField, "SO)^(?:[^ ]+ ){6}(\d+)\] (?=[^#$&%]).*@(?:To|À|An|Para|Кому|ถึง) (.*?): (.*)", whisperPat) {
+			isWhisperSent := True, isWhisper := True
+			instancePID := whisperPat.1, whispNameFull := whisperPat.2, whispMsg := whisperPat.3
 			nameAndGuild := SplitNameAndGuild(whispNameFull), whispName := nameAndGuild.Name, whispGuild := nameAndGuild.Guild
 			GuiTrades.Last_Whisper_Sent_Name := whispName
 		}
 		; Check if whisper received
 		else if RegExMatch(A_LoopField, "SO)^(?:[^ ]+ ){6}(\d+)\] (?=[^#$&%]).*@(?:From|De|От кого|จาก|Von|Desde) (.*?): (.*)", whisperPat ) {
+			isWhisperReceived := True, isWhisper := True
 			instancePID := whisperPat.1, whispNameFull := whisperPat.2, whispMsg := whisperPat.3
 			nameAndGuild := SplitNameAndGuild(whispNameFull), whispName := nameAndGuild.Name, whispGuild := nameAndGuild.Guild
 			GuiTrades.Last_Whisper_Name := whispName
+		}
 
-			; Retrieve the regEx pattern specific to the whisper type
+		; Retrieve the regEx pattern specific to the whisper type
+		if (isWhisper=True) {
 			for subRegEx, nothing in allTradingRegex {
 				if RegExMatch(whispMsg, "iS)" allTradingRegex[subRegEx]["String"]) { ; Match found
 					matchingRegEx := allTradingRegex[subRegEx]
@@ -551,129 +555,131 @@ Parse_GameLogs(strToParse) {
 					Break
 				}
 			}
+		}
 
-			if (matchingRegEx) { ; Trade whisper match
-				RegExMatch(whispMsg, "iSO)" tradeRegExStr, tradePat)
+		if (matchingRegEx) { ; Trade whisper match
+			RegExMatch(whispMsg, "iSO)" tradeRegExStr, tradePat)
 
-				isPoeTrade := IsIn(tradeRegExName, "poeTrade,poeTrade_Unpriced,currencyPoeTrade")
-				isPoeApp := IsIn(tradeRegExName, "poeApp,poeApp_Currency,poeApp_Unpriced")
-				isGGGRus := IsContaining(tradeRegExName, "ggg_rus")
-				isGGGPor := IsContaining(tradeRegExName, "ggg_por")
-				isGGGTha := IsContaining(tradeRegExName, "ggg_tha")
-				isGGGGer := IsContaining(tradeRegExName, "ggg_ger")
-				isGGGFre := IsContaining(tradeRegExName, "ggg_fre")
-				isGGGSpa := IsContaining(tradeRegExName, "ggg_spa")
-				
-				qualRegEx := isPoeTrade ? poeTradeQualityRegEx
-					: isPoeApp ? poeAppQualityRegEx
-					: isGGGRus ? RUS_gggQualityRegEx
-					: isGGGPor ? POR_gggQualityRegEx
-					: isGGGTha ? THA_gggQualityRegEx
-					: isGGGGer ? GER_gggQualityRegEx
-					: isGGGFre ? FRE_gggQualityRegEx
-					: isGGGSpa ? SPA_gggQualityRegEx
-					: ""
-				stashRegEx := isPoeTrade ? poeTradeStashRegex
-					: isPoeApp ? poeAppStashRegex
-					: isGGGRus ? RUS_gggStashRegEx
-					: isGGGPor ? POR_gggStashRegEx
-					: isGGGTha ? THA_gggStashRegEx
-					: isGGGGer ? GER_gggStashRegEx
-					: isGGGFre ? FRE_gggStashRegEx
-					: isGGGSpa ? SPA_gggStashRegEx
-					: ""
+			isPoeTrade := IsIn(tradeRegExName, "poeTrade,poeTrade_Unpriced,currencyPoeTrade")
+			isPoeApp := IsIn(tradeRegExName, "poeApp,poeApp_Currency,poeApp_Unpriced")
+			isGGGRus := IsContaining(tradeRegExName, "ggg_rus")
+			isGGGPor := IsContaining(tradeRegExName, "ggg_por")
+			isGGGTha := IsContaining(tradeRegExName, "ggg_tha")
+			isGGGGer := IsContaining(tradeRegExName, "ggg_ger")
+			isGGGFre := IsContaining(tradeRegExName, "ggg_fre")
+			isGGGSpa := IsContaining(tradeRegExName, "ggg_spa")
+			
+			qualRegEx := isPoeTrade ? poeTradeQualityRegEx
+				: isPoeApp ? poeAppQualityRegEx
+				: isGGGRus ? RUS_gggQualityRegEx
+				: isGGGPor ? POR_gggQualityRegEx
+				: isGGGTha ? THA_gggQualityRegEx
+				: isGGGGer ? GER_gggQualityRegEx
+				: isGGGFre ? FRE_gggQualityRegEx
+				: isGGGSpa ? SPA_gggQualityRegEx
+				: ""
+			stashRegEx := isPoeTrade ? poeTradeStashRegex
+				: isPoeApp ? poeAppStashRegex
+				: isGGGRus ? RUS_gggStashRegEx
+				: isGGGPor ? POR_gggStashRegEx
+				: isGGGTha ? THA_gggStashRegEx
+				: isGGGGer ? GER_gggStashRegEx
+				: isGGGFre ? FRE_gggStashRegEx
+				: isGGGSpa ? SPA_gggStashRegEx
+				: ""
 
-				whisperLang := isPoeTrade ? "ENG"
-					: isPoeApp ? "ENG"
-					: isGGGRus ? "RUS"
-					: isGGGPor ? "POR"
-					: isGGGTha ? "THA"
-					: isGGGGer ? "GER"
-					: isGGGFre ? "FRE"
-					: isGGGSpa ? "SPA"
-					: ""
+			whisperLang := isPoeTrade ? "ENG"
+				: isPoeApp ? "ENG"
+				: isGGGRus ? "RUS"
+				: isGGGPor ? "POR"
+				: isGGGTha ? "THA"
+				: isGGGGer ? "GER"
+				: isGGGFre ? "FRE"
+				: isGGGSpa ? "SPA"
+				: ""
 
-				tradeBuyerName := whispName, tradeBuyerGuild := whispGuild
-				tradeOtherStart := tradePat[matchingRegEx["Other"]]
-				tradeItem := tradePat[matchingRegEx["Item"]]
-				tradePrice := tradePat[matchingRegEx["Price"]]
-				tradeLeagueAndMore := tradePat[matchingRegEx["League"]]
-				tradeLeagueAndMore .= tradePat[matchingRegEx["Other2"]]
+			tradeBuyerName := whispName, tradeBuyerGuild := whispGuild
+			tradeOtherStart := tradePat[matchingRegEx["Other"]]
+			tradeItem := tradePat[matchingRegEx["Item"]]
+			tradePrice := tradePat[matchingRegEx["Price"]]
+			tradeLeagueAndMore := tradePat[matchingRegEx["League"]]
+			tradeLeagueAndMore .= tradePat[matchingRegEx["Other2"]]
 
-				; German priced whisper is the same as currency whisper. Except that currency whisper has '' between price name
-				; while the normal whisper doesn't have them. Fix: Remove '' in price if detected
-				if (whisperLang = "GER") && ( SubStr(tradePrice, 1, 1) = "'" ) && ( SubStr(tradePrice, 0, 1) = "'") {
-					StringTrimLeft, tradePrice, tradePrice, 1
-					StringTrimRight, tradePrice, tradePrice, 1
+			; German priced whisper is the same as currency whisper. Except that currency whisper has '' between price name
+			; while the normal whisper doesn't have them. Fix: Remove '' in price if detected
+			if (whisperLang = "GER") && ( SubStr(tradePrice, 1, 1) = "'" ) && ( SubStr(tradePrice, 0, 1) = "'") {
+				StringTrimLeft, tradePrice, tradePrice, 1
+				StringTrimRight, tradePrice, tradePrice, 1
+			}
+
+			AutoTrimStr(tradeBuyerName, tradeItem, tradePrice, tradeOtherStart)
+
+			leagueMatches := [], leagueMatchesIndex := 0
+			Loop, Parse, LEAGUES,% ","
+			{
+				parsedLeague := A_LoopField
+				parsedLeague := StrReplace(parsedLeague, "(", "\(")
+				parsedLeague := StrReplace(parsedLeague, ")", "\)")
+				if RegExMatch(tradeLeagueAndMore, "iSO)" parsedLeague "(.*)", leagueAndMorePat) {
+					leagueMatchesIndex++
+					tradeLeague := A_LoopField
+					restOfWhisper := leagueAndMorePat.1
+					AutoTrimStr(tradeLeague, restOfWhisper)
+
+					leagueMatches[leagueMatchesIndex] := {Len:StrLen(A_LoopField), Str:A_LoopField}
 				}
-
-				AutoTrimStr(tradeBuyerName, tradeItem, tradePrice, tradeOtherStart)
-
-				leagueMatches := [], leagueMatchesIndex := 0
-				Loop, Parse, LEAGUES,% ","
-				{
-					parsedLeague := A_LoopField
-					parsedLeague := StrReplace(parsedLeague, "(", "\(")
-					parsedLeague := StrReplace(parsedLeague, ")", "\)")
-					if RegExMatch(tradeLeagueAndMore, "iSO)" parsedLeague "(.*)", leagueAndMorePat) {
-						leagueMatchesIndex++
-						tradeLeague := A_LoopField
-						restOfWhisper := leagueAndMorePat.1
-						AutoTrimStr(tradeLeague, restOfWhisper)
-
-						leagueMatches[leagueMatchesIndex] := {Len:StrLen(A_LoopField), Str:A_LoopField}
-					}
+			}
+			Loop % leagueMatches.MaxIndex() {
+				if (leagueMatches[A_Index].Len > biggestLen) {
+					biggestLen := leagueMatches[A_Index].Len, tradeLeague := leagueMatches[A_Index].Str
 				}
-				Loop % leagueMatches.MaxIndex() {
-					if (leagueMatches[A_Index].Len > biggestLen) {
-						biggestLen := leagueMatches[A_Index].Len, tradeLeague := leagueMatches[A_Index].Str
-					}
-				}
+			}
 
-				if (!tradeLeague)
-					restOfWhisper := tradeLeagueAndMore
+			if (!tradeLeague)
+				restOfWhisper := tradeLeagueAndMore
 
-				if RegExMatch(tradeItem, "iSO)" qualRegEx.String, qualPat) && (qualRegEx.String) {
-					tradeItem := qualPat[qualRegEx["Item"]]
-					tradeItemLevel := qualPat[qualRegEx["Level"]]
-					tradeItemQual := qualPat[qualregEx["Quality"]]
-					AutoTrimStr(tradeItem, tradeItemLevel, tradeItemQual)
+			if RegExMatch(tradeItem, "iSO)" qualRegEx.String, qualPat) && (qualRegEx.String) {
+				tradeItem := qualPat[qualRegEx["Item"]]
+				tradeItemLevel := qualPat[qualRegEx["Level"]]
+				tradeItemQual := qualPat[qualregEx["Quality"]]
+				AutoTrimStr(tradeItem, tradeItemLevel, tradeItemQual)
 
-					tradeItemFull := tradeItem " (Lvl:" tradeItemLevel " / Qual:" tradeItemQual "%)"
-				}
-				else {
-					tradeItemFull := tradeItem
-					AutoTrimStr(tradeItemFull)
-				}
-				if RegExMatch(restOfWhisper, "iSO)" stashRegEx.String, stashPat) && (stashRegEx.String) {
-					tradeStashTab := stashPat[stashRegEx["Tab"]]
-					tradeStashLeft := stashPat[stashRegEx["Left"]]
-					tradeStashTop := stashPat[stashRegEx["Top"]]
-					tradeOtherEnd := stashPat[stashRegEx["Other"]]
-					AutoTrimStr(tradeStashTab, tradeStashLeft, tradeStashTop, tradeOtherEnd)
+				tradeItemFull := tradeItem " (Lvl:" tradeItemLevel " / Qual:" tradeItemQual "%)"
+			}
+			else {
+				tradeItemFull := tradeItem
+				AutoTrimStr(tradeItemFull)
+			}
+			if RegExMatch(restOfWhisper, "iSO)" stashRegEx.String, stashPat) && (stashRegEx.String) {
+				tradeStashTab := stashPat[stashRegEx["Tab"]]
+				tradeStashLeft := stashPat[stashRegEx["Left"]]
+				tradeStashTop := stashPat[stashRegEx["Top"]]
+				tradeOtherEnd := stashPat[stashRegEx["Other"]]
+				AutoTrimStr(tradeStashTab, tradeStashLeft, tradeStashTop, tradeOtherEnd)
 
-					tradeStashLeftAndTop := tradeStashLeft ";" tradeStashTop
-				}
-				else {
-					tradeOtherEnd := restOfWhisper
-					AutoTrimStr(tradeOtherEnd)
-				}
+				tradeStashLeftAndTop := tradeStashLeft ";" tradeStashTop
+			}
+			else {
+				tradeOtherEnd := restOfWhisper
+				AutoTrimStr(tradeOtherEnd)
+			}
 
-				if ( SubStr(tradeOtherEnd, 1, 1) = "." ) ; Remove dot from end at some whispers
-					StringTrimLeft, tradeOtherEnd, tradeOtherEnd, 1
-				tradeOther := (tradeOtherStart && tradeOtherEnd)?(tradeOtherStart "`n" tradeOtherEnd)
-				: (tradeOtherStart && !tradeOtherEnd)?(tradeOtherStart)
-				: (tradeOtherEnd && !tradeOtherStart)?(tradeOtherEnd)
-				: ("")
+			if ( SubStr(tradeOtherEnd, 1, 1) = "." ) ; Remove dot from end at some whispers
+				StringTrimLeft, tradeOtherEnd, tradeOtherEnd, 1
+			tradeOther := (tradeOtherStart && tradeOtherEnd)?(tradeOtherStart "`n" tradeOtherEnd)
+			: (tradeOtherStart && !tradeOtherEnd)?(tradeOtherStart)
+			: (tradeOtherEnd && !tradeOtherStart)?(tradeOtherEnd)
+			: ("")
 
-				tradeStashFull := (tradeLeague && !tradeStashTab)?(tradeLeague)
-				: (tradeLeague && tradeStashTab)?(tradeLeague " (Tab:" tradeStashTab " / Pos:" tradeStashLeftAndTop ")")
-				: (!tradeLeague && tradeStashTab) ? ("??? (Tab:" tradeStashTab " / Pos:" tradeStashLeftAndTop ")")
-				: (!tradeLeague) ? ("???")
-				: ("ERROR")
+			tradeStashFull := (tradeLeague && !tradeStashTab)?(tradeLeague)
+			: (tradeLeague && tradeStashTab)?(tradeLeague " (Tab:" tradeStashTab " / Pos:" tradeStashLeftAndTop ")")
+			: (!tradeLeague && tradeStashTab) ? ("??? (Tab:" tradeStashTab " / Pos:" tradeStashLeftAndTop ")")
+			: (!tradeLeague) ? ("???")
+			: ("ERROR")
 
-				timeStamp := A_YYYY "/" A_MM "/" A_DD " " A_Hour ":" A_Min ":" A_Sec
+			timeStamp := A_YYYY "/" A_MM "/" A_DD " " A_Hour ":" A_Min ":" A_Sec
 
+			if (isWhisperReceived=True) {
 				tradeInfos := {Buyer:tradeBuyerName, Item:tradeItemFull, Price:tradePrice, Stash:tradeStashFull, Other:tradeOther
 					,BuyerGuild:tradeBuyerGuild, TimeStamp:timeStamp,PID:instancePID, IsInArea:False, HasNewMessage:False, WithdrawTally:0, Time: A_Hour ":" A_Min
 					,WhisperSite:tradeRegExName, UniqueID:GUI_Trades.GenerateUniqueID(), TradeVerify:"Grey", WhisperLang:whisperLang}
@@ -718,41 +724,51 @@ Parse_GameLogs(strToParse) {
 					}
 				}
 			}
-			else { ; No trading whisper match
-				; Add whisper to buyer's tab if existing
-				Loop % GuiTrades.Tabs_Count {
-					tabInfos := Gui_Trades.GetTabContent(A_Index)
-					if (tabInfos.Buyer = whispName) {
-						Gui_Trades.UpdateSlotContent(A_Index, "Other", "[" A_Hour ":" A_Min "] " whispMsg)
-						GUI_Trades.SetTabStyleWhisperReceived(whispName)
-					}
+			else if (isWhisperSent=True) {
+				currencyInfos := Get_CurrencyInfos(tradePrice, dontWriteLogs:=False)
+				currencyName := currencyInfos.Is_Listed?currencyInfos.Name : "Unknown"
+				currencyCount := RegExReplace(tradePrice, "\D")
+				
+				tradeInfos := {Seller:tradeBuyerName, Item:tradeItemFull, Price:currencyCount, Currency:currencyName, Stash:tradeStashFull, AdditionalMsg:tradeOther
+					,TimeStamp:timeStamp, PID:instancePID, TimeSent: A_Hour ":" A_Min
+					,WhisperSite:tradeRegExName, UniqueID:GUI_TradesBuyCompact.GenerateUniqueID(), WhisperLang:whisperLang}
+				err := GUI_TradesBuyCompact.PushNewTab(tradeInfos)
+			}
+		}
+		else if (!matchingRegEx && isWhisper=True) { ; No trading whisper match
+			; Add whisper to buyer's tab if existing
+			Loop % GuiTrades.Tabs_Count {
+				tabInfos := Gui_Trades.GetTabContent(A_Index)
+				if (tabInfos.Buyer = whispName) {
+					Gui_Trades.UpdateSlotContent(A_Index, "Other", "[" A_Hour ":" A_Min "] " whispMsg)
+					GUI_Trades.SetTabStyleWhisperReceived(whispName)
 				}
-				if (PROGRAM.SETTINGS.SETTINGS_MAIN.RegularWhisperSFXToggle = "True") && FileExist(PROGRAM.SETTINGS.SETTINGS_MAIN.RegularWhisperSFXPath)
-					SoundPlay,% PROGRAM.SETTINGS.SETTINGS_MAIN.RegularWhisperSFXPath
+			}
+			if (PROGRAM.SETTINGS.SETTINGS_MAIN.RegularWhisperSFXToggle = "True") && FileExist(PROGRAM.SETTINGS.SETTINGS_MAIN.RegularWhisperSFXPath)
+				SoundPlay,% PROGRAM.SETTINGS.SETTINGS_MAIN.RegularWhisperSFXPath
 
-				if !WinActive("ahk_pid " instancePID) { ; If the instance is not active
-					if ( PROGRAM.SETTINGS.SETTINGS_MAIN.ShowTabbedTrayNotificationOnWhisper = "True" ) {
-						trayTitle := StrReplace(PROGRAM.TRANSLATIONS.TrayNotifications.RegularWhisperReceived_Title, "%name%", whispName)
-						TrayNotifications.Show(trayTitle, whispMsg)
-					}
+			if !WinActive("ahk_pid " instancePID) { ; If the instance is not active
+				if ( PROGRAM.SETTINGS.SETTINGS_MAIN.ShowTabbedTrayNotificationOnWhisper = "True" ) {
+					trayTitle := StrReplace(PROGRAM.TRANSLATIONS.TrayNotifications.RegularWhisperReceived_Title, "%name%", whispName)
+					TrayNotifications.Show(trayTitle, whispMsg)
 				}
+			}
 
-				pbNoteOnRegularWhisper := PROGRAM.SETTINGS.SETTINGS_MAIN.PushBulletOnWhisperMessage
-				if (pbNoteOnRegularWhisper = "True") {
-					if (PROGRAM.SETTINGS.SETTINGS_MAIN.PushBulletOnlyWhenAFK = "True" && GuiTrades[instancePID "_AfkState"] = True)
-						doPBNote := True
-					else if (PROGRAM.SETTINGS.SETTINGS_MAIN.PushBulletOnlyWhenAFK = "False")
-						doPBNote := True
-				}
+			pbNoteOnRegularWhisper := PROGRAM.SETTINGS.SETTINGS_MAIN.PushBulletOnWhisperMessage
+			if (pbNoteOnRegularWhisper = "True") {
+				if (PROGRAM.SETTINGS.SETTINGS_MAIN.PushBulletOnlyWhenAFK = "True" && GuiTrades[instancePID "_AfkState"] = True)
+					doPBNote := True
+				else if (PROGRAM.SETTINGS.SETTINGS_MAIN.PushBulletOnlyWhenAFK = "False")
+					doPBNote := True
+			}
 
-				if (doPBNote = True) && StrLen(PROGRAM.SETTINGS.SETTINGS_MAIN.PushBulletToken) > 5 {
-					cmdLineParamsObj := {}
-					cmdLineParamsObj.PB_Token := PROGRAM.SETTINGS.SETTINGS_MAIN.PushBulletToken
-					cmdLineParamsObj.PB_Title := StrReplace(PROGRAM.TRANSLATIONS.TrayNotifications.RegularWhisperReceived_Title, "%name%", whispName)
-					cmdLineParamsObj.PB_Message := whispMsg
-					
-					GoSub, Parse_GameLogs_PushBulletNotifications_SA
-				}
+			if (doPBNote = True) && StrLen(PROGRAM.SETTINGS.SETTINGS_MAIN.PushBulletToken) > 5 {
+				cmdLineParamsObj := {}
+				cmdLineParamsObj.PB_Token := PROGRAM.SETTINGS.SETTINGS_MAIN.PushBulletToken
+				cmdLineParamsObj.PB_Title := StrReplace(PROGRAM.TRANSLATIONS.TrayNotifications.RegularWhisperReceived_Title, "%name%", whispName)
+				cmdLineParamsObj.PB_Message := whispMsg
+				
+				GoSub, Parse_GameLogs_PushBulletNotifications_SA
 			}
 		}
 	}

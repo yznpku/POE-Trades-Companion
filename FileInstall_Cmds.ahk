@@ -3714,6 +3714,938 @@ if (ErrorLevel) {
 }
 
 ; ----------------------------
+if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile\Compact"), "D")
+	FileCreateDir,% PROGRAM.SKINS_FOLDER "\Path of Exile\Compact"
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\skins\Path of Exile\Compact\ArrowLeft.png")
+	FileGetSize, destFileSize, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ArrowLeft.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\skins\Path of Exile\Compact\ArrowLeft.png
+	FileGetSize, destFileSize, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ArrowLeft.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\skins\Path of Exile\Compact\ArrowLeft.png, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ArrowLeft.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Compact\ArrowLeft.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ArrowLeft.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Compact\ArrowLeft.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ArrowLeft.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile\Compact"), "D")
+	FileCreateDir,% PROGRAM.SKINS_FOLDER "\Path of Exile\Compact"
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\skins\Path of Exile\Compact\ArrowLeftHover.png")
+	FileGetSize, destFileSize, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ArrowLeftHover.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\skins\Path of Exile\Compact\ArrowLeftHover.png
+	FileGetSize, destFileSize, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ArrowLeftHover.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\skins\Path of Exile\Compact\ArrowLeftHover.png, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ArrowLeftHover.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Compact\ArrowLeftHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ArrowLeftHover.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Compact\ArrowLeftHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ArrowLeftHover.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile\Compact"), "D")
+	FileCreateDir,% PROGRAM.SKINS_FOLDER "\Path of Exile\Compact"
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\skins\Path of Exile\Compact\ArrowLeftPress.png")
+	FileGetSize, destFileSize, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ArrowLeftPress.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\skins\Path of Exile\Compact\ArrowLeftPress.png
+	FileGetSize, destFileSize, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ArrowLeftPress.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\skins\Path of Exile\Compact\ArrowLeftPress.png, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ArrowLeftPress.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Compact\ArrowLeftPress.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ArrowLeftPress.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Compact\ArrowLeftPress.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ArrowLeftPress.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile\Compact"), "D")
+	FileCreateDir,% PROGRAM.SKINS_FOLDER "\Path of Exile\Compact"
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\skins\Path of Exile\Compact\ArrowRight.png")
+	FileGetSize, destFileSize, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ArrowRight.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\skins\Path of Exile\Compact\ArrowRight.png
+	FileGetSize, destFileSize, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ArrowRight.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\skins\Path of Exile\Compact\ArrowRight.png, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ArrowRight.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Compact\ArrowRight.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ArrowRight.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Compact\ArrowRight.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ArrowRight.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile\Compact"), "D")
+	FileCreateDir,% PROGRAM.SKINS_FOLDER "\Path of Exile\Compact"
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\skins\Path of Exile\Compact\ArrowRightHover.png")
+	FileGetSize, destFileSize, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ArrowRightHover.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\skins\Path of Exile\Compact\ArrowRightHover.png
+	FileGetSize, destFileSize, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ArrowRightHover.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\skins\Path of Exile\Compact\ArrowRightHover.png, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ArrowRightHover.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Compact\ArrowRightHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ArrowRightHover.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Compact\ArrowRightHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ArrowRightHover.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile\Compact"), "D")
+	FileCreateDir,% PROGRAM.SKINS_FOLDER "\Path of Exile\Compact"
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\skins\Path of Exile\Compact\ArrowRightPress.png")
+	FileGetSize, destFileSize, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ArrowRightPress.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\skins\Path of Exile\Compact\ArrowRightPress.png
+	FileGetSize, destFileSize, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ArrowRightPress.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\skins\Path of Exile\Compact\ArrowRightPress.png, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ArrowRightPress.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Compact\ArrowRightPress.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ArrowRightPress.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Compact\ArrowRightPress.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ArrowRightPress.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile\Compact"), "D")
+	FileCreateDir,% PROGRAM.SKINS_FOLDER "\Path of Exile\Compact"
+
+FileInstall, resources\skins\Path of Exile\Compact\Assets.ini, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\Assets.ini", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Compact\Assets.ini"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\Assets.ini"
+	.	"`nFlag: " 1)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Compact\Assets.ini"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\Assets.ini"
+	.	"`nFlag: " 1
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile\Compact"), "D")
+	FileCreateDir,% PROGRAM.SKINS_FOLDER "\Path of Exile\Compact"
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\skins\Path of Exile\Compact\Background.png")
+	FileGetSize, destFileSize, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\Background.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\skins\Path of Exile\Compact\Background.png
+	FileGetSize, destFileSize, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\Background.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\skins\Path of Exile\Compact\Background.png, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\Background.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Compact\Background.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\Background.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Compact\Background.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\Background.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile\Compact"), "D")
+	FileCreateDir,% PROGRAM.SKINS_FOLDER "\Path of Exile\Compact"
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\skins\Path of Exile\Compact\ButtonHideout.png")
+	FileGetSize, destFileSize, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ButtonHideout.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\skins\Path of Exile\Compact\ButtonHideout.png
+	FileGetSize, destFileSize, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ButtonHideout.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\skins\Path of Exile\Compact\ButtonHideout.png, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ButtonHideout.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Compact\ButtonHideout.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ButtonHideout.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Compact\ButtonHideout.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ButtonHideout.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile\Compact"), "D")
+	FileCreateDir,% PROGRAM.SKINS_FOLDER "\Path of Exile\Compact"
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\skins\Path of Exile\Compact\ButtonHideoutHover.png")
+	FileGetSize, destFileSize, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ButtonHideoutHover.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\skins\Path of Exile\Compact\ButtonHideoutHover.png
+	FileGetSize, destFileSize, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ButtonHideoutHover.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\skins\Path of Exile\Compact\ButtonHideoutHover.png, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ButtonHideoutHover.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Compact\ButtonHideoutHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ButtonHideoutHover.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Compact\ButtonHideoutHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ButtonHideoutHover.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile\Compact"), "D")
+	FileCreateDir,% PROGRAM.SKINS_FOLDER "\Path of Exile\Compact"
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\skins\Path of Exile\Compact\ButtonHideoutPress.png")
+	FileGetSize, destFileSize, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ButtonHideoutPress.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\skins\Path of Exile\Compact\ButtonHideoutPress.png
+	FileGetSize, destFileSize, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ButtonHideoutPress.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\skins\Path of Exile\Compact\ButtonHideoutPress.png, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ButtonHideoutPress.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Compact\ButtonHideoutPress.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ButtonHideoutPress.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Compact\ButtonHideoutPress.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ButtonHideoutPress.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile\Compact"), "D")
+	FileCreateDir,% PROGRAM.SKINS_FOLDER "\Path of Exile\Compact"
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\skins\Path of Exile\Compact\ButtonKick.png")
+	FileGetSize, destFileSize, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ButtonKick.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\skins\Path of Exile\Compact\ButtonKick.png
+	FileGetSize, destFileSize, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ButtonKick.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\skins\Path of Exile\Compact\ButtonKick.png, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ButtonKick.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Compact\ButtonKick.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ButtonKick.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Compact\ButtonKick.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ButtonKick.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile\Compact"), "D")
+	FileCreateDir,% PROGRAM.SKINS_FOLDER "\Path of Exile\Compact"
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\skins\Path of Exile\Compact\ButtonKickHover.png")
+	FileGetSize, destFileSize, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ButtonKickHover.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\skins\Path of Exile\Compact\ButtonKickHover.png
+	FileGetSize, destFileSize, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ButtonKickHover.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\skins\Path of Exile\Compact\ButtonKickHover.png, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ButtonKickHover.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Compact\ButtonKickHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ButtonKickHover.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Compact\ButtonKickHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ButtonKickHover.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile\Compact"), "D")
+	FileCreateDir,% PROGRAM.SKINS_FOLDER "\Path of Exile\Compact"
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\skins\Path of Exile\Compact\ButtonKickPress.png")
+	FileGetSize, destFileSize, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ButtonKickPress.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\skins\Path of Exile\Compact\ButtonKickPress.png
+	FileGetSize, destFileSize, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ButtonKickPress.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\skins\Path of Exile\Compact\ButtonKickPress.png, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ButtonKickPress.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Compact\ButtonKickPress.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ButtonKickPress.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Compact\ButtonKickPress.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ButtonKickPress.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile\Compact"), "D")
+	FileCreateDir,% PROGRAM.SKINS_FOLDER "\Path of Exile\Compact"
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\skins\Path of Exile\Compact\ButtonSpecial.png")
+	FileGetSize, destFileSize, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ButtonSpecial.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\skins\Path of Exile\Compact\ButtonSpecial.png
+	FileGetSize, destFileSize, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ButtonSpecial.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\skins\Path of Exile\Compact\ButtonSpecial.png, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ButtonSpecial.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Compact\ButtonSpecial.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ButtonSpecial.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Compact\ButtonSpecial.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ButtonSpecial.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile\Compact"), "D")
+	FileCreateDir,% PROGRAM.SKINS_FOLDER "\Path of Exile\Compact"
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\skins\Path of Exile\Compact\ButtonSpecialHover.png")
+	FileGetSize, destFileSize, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ButtonSpecialHover.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\skins\Path of Exile\Compact\ButtonSpecialHover.png
+	FileGetSize, destFileSize, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ButtonSpecialHover.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\skins\Path of Exile\Compact\ButtonSpecialHover.png, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ButtonSpecialHover.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Compact\ButtonSpecialHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ButtonSpecialHover.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Compact\ButtonSpecialHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ButtonSpecialHover.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile\Compact"), "D")
+	FileCreateDir,% PROGRAM.SKINS_FOLDER "\Path of Exile\Compact"
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\skins\Path of Exile\Compact\ButtonSpecialPress.png")
+	FileGetSize, destFileSize, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ButtonSpecialPress.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\skins\Path of Exile\Compact\ButtonSpecialPress.png
+	FileGetSize, destFileSize, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ButtonSpecialPress.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\skins\Path of Exile\Compact\ButtonSpecialPress.png, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ButtonSpecialPress.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Compact\ButtonSpecialPress.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ButtonSpecialPress.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Compact\ButtonSpecialPress.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ButtonSpecialPress.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile\Compact"), "D")
+	FileCreateDir,% PROGRAM.SKINS_FOLDER "\Path of Exile\Compact"
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\skins\Path of Exile\Compact\ButtonThanks.png")
+	FileGetSize, destFileSize, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ButtonThanks.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\skins\Path of Exile\Compact\ButtonThanks.png
+	FileGetSize, destFileSize, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ButtonThanks.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\skins\Path of Exile\Compact\ButtonThanks.png, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ButtonThanks.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Compact\ButtonThanks.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ButtonThanks.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Compact\ButtonThanks.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ButtonThanks.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile\Compact"), "D")
+	FileCreateDir,% PROGRAM.SKINS_FOLDER "\Path of Exile\Compact"
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\skins\Path of Exile\Compact\ButtonThanksHover.png")
+	FileGetSize, destFileSize, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ButtonThanksHover.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\skins\Path of Exile\Compact\ButtonThanksHover.png
+	FileGetSize, destFileSize, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ButtonThanksHover.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\skins\Path of Exile\Compact\ButtonThanksHover.png, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ButtonThanksHover.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Compact\ButtonThanksHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ButtonThanksHover.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Compact\ButtonThanksHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ButtonThanksHover.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile\Compact"), "D")
+	FileCreateDir,% PROGRAM.SKINS_FOLDER "\Path of Exile\Compact"
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\skins\Path of Exile\Compact\ButtonThanksPress.png")
+	FileGetSize, destFileSize, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ButtonThanksPress.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\skins\Path of Exile\Compact\ButtonThanksPress.png
+	FileGetSize, destFileSize, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ButtonThanksPress.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\skins\Path of Exile\Compact\ButtonThanksPress.png, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ButtonThanksPress.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Compact\ButtonThanksPress.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ButtonThanksPress.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Compact\ButtonThanksPress.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ButtonThanksPress.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile\Compact"), "D")
+	FileCreateDir,% PROGRAM.SKINS_FOLDER "\Path of Exile\Compact"
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\skins\Path of Exile\Compact\ButtonWhisper.png")
+	FileGetSize, destFileSize, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ButtonWhisper.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\skins\Path of Exile\Compact\ButtonWhisper.png
+	FileGetSize, destFileSize, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ButtonWhisper.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\skins\Path of Exile\Compact\ButtonWhisper.png, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ButtonWhisper.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Compact\ButtonWhisper.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ButtonWhisper.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Compact\ButtonWhisper.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ButtonWhisper.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile\Compact"), "D")
+	FileCreateDir,% PROGRAM.SKINS_FOLDER "\Path of Exile\Compact"
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\skins\Path of Exile\Compact\ButtonWhisperHover.png")
+	FileGetSize, destFileSize, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ButtonWhisperHover.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\skins\Path of Exile\Compact\ButtonWhisperHover.png
+	FileGetSize, destFileSize, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ButtonWhisperHover.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\skins\Path of Exile\Compact\ButtonWhisperHover.png, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ButtonWhisperHover.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Compact\ButtonWhisperHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ButtonWhisperHover.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Compact\ButtonWhisperHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ButtonWhisperHover.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile\Compact"), "D")
+	FileCreateDir,% PROGRAM.SKINS_FOLDER "\Path of Exile\Compact"
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\skins\Path of Exile\Compact\ButtonWhisperPress.png")
+	FileGetSize, destFileSize, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ButtonWhisperPress.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\skins\Path of Exile\Compact\ButtonWhisperPress.png
+	FileGetSize, destFileSize, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ButtonWhisperPress.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\skins\Path of Exile\Compact\ButtonWhisperPress.png, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ButtonWhisperPress.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Compact\ButtonWhisperPress.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ButtonWhisperPress.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Compact\ButtonWhisperPress.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\ButtonWhisperPress.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile\Compact"), "D")
+	FileCreateDir,% PROGRAM.SKINS_FOLDER "\Path of Exile\Compact"
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\skins\Path of Exile\Compact\CloseTab.png")
+	FileGetSize, destFileSize, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\CloseTab.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\skins\Path of Exile\Compact\CloseTab.png
+	FileGetSize, destFileSize, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\CloseTab.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\skins\Path of Exile\Compact\CloseTab.png, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\CloseTab.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Compact\CloseTab.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\CloseTab.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Compact\CloseTab.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\CloseTab.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile\Compact"), "D")
+	FileCreateDir,% PROGRAM.SKINS_FOLDER "\Path of Exile\Compact"
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\skins\Path of Exile\Compact\CloseTabHover.png")
+	FileGetSize, destFileSize, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\CloseTabHover.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\skins\Path of Exile\Compact\CloseTabHover.png
+	FileGetSize, destFileSize, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\CloseTabHover.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\skins\Path of Exile\Compact\CloseTabHover.png, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\CloseTabHover.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Compact\CloseTabHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\CloseTabHover.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Compact\CloseTabHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\CloseTabHover.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile\Compact"), "D")
+	FileCreateDir,% PROGRAM.SKINS_FOLDER "\Path of Exile\Compact"
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\skins\Path of Exile\Compact\CloseTabPress.png")
+	FileGetSize, destFileSize, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\CloseTabPress.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\skins\Path of Exile\Compact\CloseTabPress.png
+	FileGetSize, destFileSize, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\CloseTabPress.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\skins\Path of Exile\Compact\CloseTabPress.png, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\CloseTabPress.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Compact\CloseTabPress.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\CloseTabPress.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Compact\CloseTabPress.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\CloseTabPress.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile\Compact"), "D")
+	FileCreateDir,% PROGRAM.SKINS_FOLDER "\Path of Exile\Compact"
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\skins\Path of Exile\Compact\Header.png")
+	FileGetSize, destFileSize, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\Header.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\skins\Path of Exile\Compact\Header.png
+	FileGetSize, destFileSize, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\Header.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\skins\Path of Exile\Compact\Header.png, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\Header.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Compact\Header.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\Header.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Compact\Header.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\Header.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile\Compact"), "D")
+	FileCreateDir,% PROGRAM.SKINS_FOLDER "\Path of Exile\Compact"
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\skins\Path of Exile\Compact\Header2.png")
+	FileGetSize, destFileSize, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\Header2.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\skins\Path of Exile\Compact\Header2.png
+	FileGetSize, destFileSize, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\Header2.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\skins\Path of Exile\Compact\Header2.png, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\Header2.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Compact\Header2.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\Header2.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Compact\Header2.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\Header2.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile\Compact"), "D")
+	FileCreateDir,% PROGRAM.SKINS_FOLDER "\Path of Exile\Compact"
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\skins\Path of Exile\Compact\Maximize.png")
+	FileGetSize, destFileSize, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\Maximize.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\skins\Path of Exile\Compact\Maximize.png
+	FileGetSize, destFileSize, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\Maximize.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\skins\Path of Exile\Compact\Maximize.png, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\Maximize.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Compact\Maximize.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\Maximize.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Compact\Maximize.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\Maximize.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile\Compact"), "D")
+	FileCreateDir,% PROGRAM.SKINS_FOLDER "\Path of Exile\Compact"
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\skins\Path of Exile\Compact\MaximizeHover.png")
+	FileGetSize, destFileSize, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\MaximizeHover.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\skins\Path of Exile\Compact\MaximizeHover.png
+	FileGetSize, destFileSize, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\MaximizeHover.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\skins\Path of Exile\Compact\MaximizeHover.png, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\MaximizeHover.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Compact\MaximizeHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\MaximizeHover.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Compact\MaximizeHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\MaximizeHover.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile\Compact"), "D")
+	FileCreateDir,% PROGRAM.SKINS_FOLDER "\Path of Exile\Compact"
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\skins\Path of Exile\Compact\MaximizePress.png")
+	FileGetSize, destFileSize, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\MaximizePress.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\skins\Path of Exile\Compact\MaximizePress.png
+	FileGetSize, destFileSize, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\MaximizePress.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\skins\Path of Exile\Compact\MaximizePress.png, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\MaximizePress.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Compact\MaximizePress.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\MaximizePress.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Compact\MaximizePress.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\MaximizePress.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile\Compact"), "D")
+	FileCreateDir,% PROGRAM.SKINS_FOLDER "\Path of Exile\Compact"
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\skins\Path of Exile\Compact\Minimize.png")
+	FileGetSize, destFileSize, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\Minimize.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\skins\Path of Exile\Compact\Minimize.png
+	FileGetSize, destFileSize, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\Minimize.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\skins\Path of Exile\Compact\Minimize.png, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\Minimize.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Compact\Minimize.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\Minimize.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Compact\Minimize.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\Minimize.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile\Compact"), "D")
+	FileCreateDir,% PROGRAM.SKINS_FOLDER "\Path of Exile\Compact"
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\skins\Path of Exile\Compact\MinimizeHover.png")
+	FileGetSize, destFileSize, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\MinimizeHover.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\skins\Path of Exile\Compact\MinimizeHover.png
+	FileGetSize, destFileSize, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\MinimizeHover.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\skins\Path of Exile\Compact\MinimizeHover.png, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\MinimizeHover.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Compact\MinimizeHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\MinimizeHover.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Compact\MinimizeHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\MinimizeHover.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile\Compact"), "D")
+	FileCreateDir,% PROGRAM.SKINS_FOLDER "\Path of Exile\Compact"
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\skins\Path of Exile\Compact\MinimizePress.png")
+	FileGetSize, destFileSize, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\MinimizePress.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\skins\Path of Exile\Compact\MinimizePress.png
+	FileGetSize, destFileSize, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\MinimizePress.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\skins\Path of Exile\Compact\MinimizePress.png, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\MinimizePress.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Compact\MinimizePress.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\MinimizePress.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Compact\MinimizePress.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\MinimizePress.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile\Compact"), "D")
+	FileCreateDir,% PROGRAM.SKINS_FOLDER "\Path of Exile\Compact"
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\skins\Path of Exile\Compact\SearchBarCross.png")
+	FileGetSize, destFileSize, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\SearchBarCross.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\skins\Path of Exile\Compact\SearchBarCross.png
+	FileGetSize, destFileSize, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\SearchBarCross.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\skins\Path of Exile\Compact\SearchBarCross.png, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\SearchBarCross.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Compact\SearchBarCross.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\SearchBarCross.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Compact\SearchBarCross.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\SearchBarCross.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile\Compact"), "D")
+	FileCreateDir,% PROGRAM.SKINS_FOLDER "\Path of Exile\Compact"
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\skins\Path of Exile\Compact\SearchBarCrossHover.png")
+	FileGetSize, destFileSize, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\SearchBarCrossHover.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\skins\Path of Exile\Compact\SearchBarCrossHover.png
+	FileGetSize, destFileSize, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\SearchBarCrossHover.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\skins\Path of Exile\Compact\SearchBarCrossHover.png, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\SearchBarCrossHover.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Compact\SearchBarCrossHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\SearchBarCrossHover.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Compact\SearchBarCrossHover.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\SearchBarCrossHover.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile\Compact"), "D")
+	FileCreateDir,% PROGRAM.SKINS_FOLDER "\Path of Exile\Compact"
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\skins\Path of Exile\Compact\SearchBarCrossPress.png")
+	FileGetSize, destFileSize, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\SearchBarCrossPress.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\skins\Path of Exile\Compact\SearchBarCrossPress.png
+	FileGetSize, destFileSize, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\SearchBarCrossPress.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\skins\Path of Exile\Compact\SearchBarCrossPress.png, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\SearchBarCrossPress.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Compact\SearchBarCrossPress.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\SearchBarCrossPress.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Compact\SearchBarCrossPress.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\SearchBarCrossPress.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile\Compact"), "D")
+	FileCreateDir,% PROGRAM.SKINS_FOLDER "\Path of Exile\Compact"
+
+FileInstall, resources\skins\Path of Exile\Compact\Settings.ini, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\Settings.ini", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Compact\Settings.ini"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\Settings.ini"
+	.	"`nFlag: " 1)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Compact\Settings.ini"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\Settings.ini"
+	.	"`nFlag: " 1
+}
+
+; ----------------------------
 if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\White"), "D")
 	FileCreateDir,% PROGRAM.SKINS_FOLDER "\White"
 
@@ -5017,6 +5949,2556 @@ if (ErrorLevel) {
 	errorLog .= "`n`n""Failed to extract file!"
 	.	"`nSource: resources\translations\french.json"
 	.	"`nDest: " PROGRAM.TRANSLATIONS_FOLDER "\french.json"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Ancient Orb.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Ancient Orb.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Ancient Orb.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Ancient Orb.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Ancient Orb.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Ancient Orb.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Ancient Orb.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Ancient Orb.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Ancient Orb.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Ancient Orb.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Ancient Reliquary Key.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Ancient Reliquary Key.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Ancient Reliquary Key.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Ancient Reliquary Key.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Ancient Reliquary Key.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Ancient Reliquary Key.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Ancient Reliquary Key.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Ancient Reliquary Key.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Ancient Reliquary Key.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Ancient Reliquary Key.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Annulment Shard.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Annulment Shard.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Annulment Shard.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Annulment Shard.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Annulment Shard.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Annulment Shard.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Annulment Shard.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Annulment Shard.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Annulment Shard.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Annulment Shard.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Apprentice Cartographer's Seal.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Apprentice Cartographer's Seal.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Apprentice Cartographer's Seal.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Apprentice Cartographer's Seal.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Apprentice Cartographer's Seal.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Apprentice Cartographer's Seal.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Apprentice Cartographer's Seal.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Apprentice Cartographer's Seal.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Apprentice Cartographer's Seal.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Apprentice Cartographer's Seal.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Apprentice Cartographer's Sextant.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Apprentice Cartographer's Sextant.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Apprentice Cartographer's Sextant.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Apprentice Cartographer's Sextant.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Apprentice Cartographer's Sextant.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Apprentice Cartographer's Sextant.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Apprentice Cartographer's Sextant.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Apprentice Cartographer's Sextant.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Apprentice Cartographer's Sextant.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Apprentice Cartographer's Sextant.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Armourer's Scrap.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Armourer's Scrap.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Armourer's Scrap.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Armourer's Scrap.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Armourer's Scrap.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Armourer's Scrap.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Armourer's Scrap.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Armourer's Scrap.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Armourer's Scrap.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Armourer's Scrap.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Blacksmith's Whetstone.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Blacksmith's Whetstone.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Blacksmith's Whetstone.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Blacksmith's Whetstone.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Blacksmith's Whetstone.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Blacksmith's Whetstone.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Blacksmith's Whetstone.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Blacksmith's Whetstone.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Blacksmith's Whetstone.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Blacksmith's Whetstone.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Blessed Orb.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Blessed Orb.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Blessed Orb.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Blessed Orb.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Blessed Orb.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Blessed Orb.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Blessed Orb.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Blessed Orb.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Blessed Orb.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Blessed Orb.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Blessing of Chayula.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Blessing of Chayula.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Blessing of Chayula.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Blessing of Chayula.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Blessing of Chayula.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Blessing of Chayula.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Blessing of Chayula.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Blessing of Chayula.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Blessing of Chayula.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Blessing of Chayula.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Blessing of Esh.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Blessing of Esh.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Blessing of Esh.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Blessing of Esh.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Blessing of Esh.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Blessing of Esh.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Blessing of Esh.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Blessing of Esh.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Blessing of Esh.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Blessing of Esh.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Blessing of Tul.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Blessing of Tul.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Blessing of Tul.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Blessing of Tul.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Blessing of Tul.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Blessing of Tul.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Blessing of Tul.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Blessing of Tul.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Blessing of Tul.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Blessing of Tul.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Blessing of Uul-Netol.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Blessing of Uul-Netol.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Blessing of Uul-Netol.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Blessing of Uul-Netol.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Blessing of Uul-Netol.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Blessing of Uul-Netol.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Blessing of Uul-Netol.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Blessing of Uul-Netol.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Blessing of Uul-Netol.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Blessing of Uul-Netol.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Blessing of Xoph.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Blessing of Xoph.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Blessing of Xoph.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Blessing of Xoph.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Blessing of Xoph.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Blessing of Xoph.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Blessing of Xoph.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Blessing of Xoph.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Blessing of Xoph.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Blessing of Xoph.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Cartographer's Chisel.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Cartographer's Chisel.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Cartographer's Chisel.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Cartographer's Chisel.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Cartographer's Chisel.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Cartographer's Chisel.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Cartographer's Chisel.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Cartographer's Chisel.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Cartographer's Chisel.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Cartographer's Chisel.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Chaos Orb.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Chaos Orb.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Chaos Orb.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Chaos Orb.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Chaos Orb.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Chaos Orb.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Chaos Orb.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Chaos Orb.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Chaos Orb.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Chaos Orb.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Chayula's Breachstone.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Chayula's Breachstone.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Chayula's Breachstone.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Chayula's Breachstone.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Chayula's Breachstone.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Chayula's Breachstone.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Chayula's Breachstone.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Chayula's Breachstone.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Chayula's Breachstone.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Chayula's Breachstone.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Chayula's Charged Breachstone.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Chayula's Charged Breachstone.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Chayula's Charged Breachstone.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Chayula's Charged Breachstone.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Chayula's Charged Breachstone.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Chayula's Charged Breachstone.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Chayula's Charged Breachstone.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Chayula's Charged Breachstone.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Chayula's Charged Breachstone.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Chayula's Charged Breachstone.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Chayula's Enriched Breachstone.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Chayula's Enriched Breachstone.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Chayula's Enriched Breachstone.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Chayula's Enriched Breachstone.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Chayula's Enriched Breachstone.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Chayula's Enriched Breachstone.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Chayula's Enriched Breachstone.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Chayula's Enriched Breachstone.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Chayula's Enriched Breachstone.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Chayula's Enriched Breachstone.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Chayula's Pure Breachstone.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Chayula's Pure Breachstone.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Chayula's Pure Breachstone.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Chayula's Pure Breachstone.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Chayula's Pure Breachstone.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Chayula's Pure Breachstone.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Chayula's Pure Breachstone.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Chayula's Pure Breachstone.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Chayula's Pure Breachstone.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Chayula's Pure Breachstone.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Chromatic Orb.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Chromatic Orb.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Chromatic Orb.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Chromatic Orb.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Chromatic Orb.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Chromatic Orb.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Chromatic Orb.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Chromatic Orb.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Chromatic Orb.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Chromatic Orb.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Divine Orb.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Divine Orb.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Divine Orb.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Divine Orb.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Divine Orb.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Divine Orb.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Divine Orb.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Divine Orb.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Divine Orb.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Divine Orb.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Divine Vessel.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Divine Vessel.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Divine Vessel.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Divine Vessel.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Divine Vessel.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Divine Vessel.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Divine Vessel.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Divine Vessel.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Divine Vessel.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Divine Vessel.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Eber's Key.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Eber's Key.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Eber's Key.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Eber's Key.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Eber's Key.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Eber's Key.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Eber's Key.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Eber's Key.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Eber's Key.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Eber's Key.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Engineer's Orb.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Engineer's Orb.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Engineer's Orb.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Engineer's Orb.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Engineer's Orb.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Engineer's Orb.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Engineer's Orb.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Engineer's Orb.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Engineer's Orb.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Engineer's Orb.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Esh's Breachstone.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Esh's Breachstone.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Esh's Breachstone.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Esh's Breachstone.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Esh's Breachstone.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Esh's Breachstone.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Esh's Breachstone.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Esh's Breachstone.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Esh's Breachstone.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Esh's Breachstone.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Esh's Charged Breachstone.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Esh's Charged Breachstone.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Esh's Charged Breachstone.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Esh's Charged Breachstone.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Esh's Charged Breachstone.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Esh's Charged Breachstone.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Esh's Charged Breachstone.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Esh's Charged Breachstone.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Esh's Charged Breachstone.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Esh's Charged Breachstone.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Esh's Enriched Breachstone.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Esh's Enriched Breachstone.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Esh's Enriched Breachstone.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Esh's Enriched Breachstone.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Esh's Enriched Breachstone.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Esh's Enriched Breachstone.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Esh's Enriched Breachstone.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Esh's Enriched Breachstone.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Esh's Enriched Breachstone.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Esh's Enriched Breachstone.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Esh's Pure Breachstone.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Esh's Pure Breachstone.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Esh's Pure Breachstone.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Esh's Pure Breachstone.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Esh's Pure Breachstone.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Esh's Pure Breachstone.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Esh's Pure Breachstone.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Esh's Pure Breachstone.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Esh's Pure Breachstone.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Esh's Pure Breachstone.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Eternal Orb.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Eternal Orb.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Eternal Orb.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Eternal Orb.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Eternal Orb.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Eternal Orb.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Eternal Orb.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Eternal Orb.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Eternal Orb.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Eternal Orb.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Exalted Orb.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Exalted Orb.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Exalted Orb.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Exalted Orb.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Exalted Orb.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Exalted Orb.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Exalted Orb.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Exalted Orb.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Exalted Orb.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Exalted Orb.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Exalted Shard.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Exalted Shard.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Exalted Shard.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Exalted Shard.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Exalted Shard.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Exalted Shard.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Exalted Shard.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Exalted Shard.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Exalted Shard.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Exalted Shard.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Fragment of the Chimera.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Fragment of the Chimera.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Fragment of the Chimera.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Fragment of the Chimera.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Fragment of the Chimera.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Fragment of the Chimera.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Fragment of the Chimera.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Fragment of the Chimera.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Fragment of the Chimera.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Fragment of the Chimera.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Fragment of the Hydra.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Fragment of the Hydra.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Fragment of the Hydra.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Fragment of the Hydra.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Fragment of the Hydra.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Fragment of the Hydra.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Fragment of the Hydra.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Fragment of the Hydra.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Fragment of the Hydra.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Fragment of the Hydra.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Fragment of the Minotaur.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Fragment of the Minotaur.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Fragment of the Minotaur.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Fragment of the Minotaur.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Fragment of the Minotaur.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Fragment of the Minotaur.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Fragment of the Minotaur.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Fragment of the Minotaur.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Fragment of the Minotaur.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Fragment of the Minotaur.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Fragment of the Phoenix.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Fragment of the Phoenix.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Fragment of the Phoenix.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Fragment of the Phoenix.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Fragment of the Phoenix.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Fragment of the Phoenix.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Fragment of the Phoenix.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Fragment of the Phoenix.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Fragment of the Phoenix.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Fragment of the Phoenix.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Gemcutter's Prism.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Gemcutter's Prism.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Gemcutter's Prism.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Gemcutter's Prism.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Gemcutter's Prism.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Gemcutter's Prism.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Gemcutter's Prism.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Gemcutter's Prism.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Gemcutter's Prism.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Gemcutter's Prism.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Glassblower's Bauble.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Glassblower's Bauble.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Glassblower's Bauble.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Glassblower's Bauble.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Glassblower's Bauble.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Glassblower's Bauble.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Glassblower's Bauble.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Glassblower's Bauble.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Glassblower's Bauble.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Glassblower's Bauble.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Harbinger's Orb.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Harbinger's Orb.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Harbinger's Orb.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Harbinger's Orb.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Harbinger's Orb.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Harbinger's Orb.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Harbinger's Orb.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Harbinger's Orb.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Harbinger's Orb.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Harbinger's Orb.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Inya's Key.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Inya's Key.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Inya's Key.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Inya's Key.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Inya's Key.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Inya's Key.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Inya's Key.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Inya's Key.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Inya's Key.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Inya's Key.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Jeweller's Orb.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Jeweller's Orb.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Jeweller's Orb.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Jeweller's Orb.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Jeweller's Orb.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Jeweller's Orb.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Jeweller's Orb.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Jeweller's Orb.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Jeweller's Orb.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Jeweller's Orb.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Journeyman Cartographer's Seal.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Journeyman Cartographer's Seal.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Journeyman Cartographer's Seal.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Journeyman Cartographer's Seal.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Journeyman Cartographer's Seal.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Journeyman Cartographer's Seal.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Journeyman Cartographer's Seal.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Journeyman Cartographer's Seal.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Journeyman Cartographer's Seal.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Journeyman Cartographer's Seal.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Journeyman Cartographer's Sextant.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Journeyman Cartographer's Sextant.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Journeyman Cartographer's Sextant.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Journeyman Cartographer's Sextant.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Journeyman Cartographer's Sextant.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Journeyman Cartographer's Sextant.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Journeyman Cartographer's Sextant.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Journeyman Cartographer's Sextant.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Journeyman Cartographer's Sextant.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Journeyman Cartographer's Sextant.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Master Cartographer's Seal.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Master Cartographer's Seal.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Master Cartographer's Seal.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Master Cartographer's Seal.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Master Cartographer's Seal.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Master Cartographer's Seal.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Master Cartographer's Seal.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Master Cartographer's Seal.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Master Cartographer's Seal.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Master Cartographer's Seal.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Master Cartographer's Sextant.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Master Cartographer's Sextant.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Master Cartographer's Sextant.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Master Cartographer's Sextant.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Master Cartographer's Sextant.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Master Cartographer's Sextant.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Master Cartographer's Sextant.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Master Cartographer's Sextant.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Master Cartographer's Sextant.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Master Cartographer's Sextant.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Mirror of Kalandra.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Mirror of Kalandra.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Mirror of Kalandra.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Mirror of Kalandra.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Mirror of Kalandra.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Mirror of Kalandra.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Mirror of Kalandra.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Mirror of Kalandra.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Mirror of Kalandra.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Mirror of Kalandra.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Mirror Shard.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Mirror Shard.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Mirror Shard.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Mirror Shard.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Mirror Shard.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Mirror Shard.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Mirror Shard.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Mirror Shard.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Mirror Shard.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Mirror Shard.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Mortal Grief.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Mortal Grief.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Mortal Grief.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Mortal Grief.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Mortal Grief.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Mortal Grief.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Mortal Grief.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Mortal Grief.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Mortal Grief.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Mortal Grief.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Mortal Hope.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Mortal Hope.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Mortal Hope.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Mortal Hope.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Mortal Hope.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Mortal Hope.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Mortal Hope.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Mortal Hope.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Mortal Hope.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Mortal Hope.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Mortal Ignorance.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Mortal Ignorance.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Mortal Ignorance.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Mortal Ignorance.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Mortal Ignorance.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Mortal Ignorance.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Mortal Ignorance.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Mortal Ignorance.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Mortal Ignorance.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Mortal Ignorance.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Mortal Rage.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Mortal Rage.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Mortal Rage.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Mortal Rage.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Mortal Rage.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Mortal Rage.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Mortal Rage.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Mortal Rage.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Mortal Rage.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Mortal Rage.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Mortal Set.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Mortal Set.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Mortal Set.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Mortal Set.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Mortal Set.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Mortal Set.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Mortal Set.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Mortal Set.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Mortal Set.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Mortal Set.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Offering to the Goddess.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Offering to the Goddess.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Offering to the Goddess.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Offering to the Goddess.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Offering to the Goddess.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Offering to the Goddess.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Offering to the Goddess.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Offering to the Goddess.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Offering to the Goddess.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Offering to the Goddess.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Orb of Alchemy.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Orb of Alchemy.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Orb of Alchemy.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Orb of Alchemy.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Orb of Alchemy.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Orb of Alchemy.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Orb of Alchemy.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Orb of Alchemy.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Orb of Alchemy.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Orb of Alchemy.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Orb of Alteration.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Orb of Alteration.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Orb of Alteration.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Orb of Alteration.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Orb of Alteration.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Orb of Alteration.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Orb of Alteration.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Orb of Alteration.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Orb of Alteration.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Orb of Alteration.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Orb of Annulment.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Orb of Annulment.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Orb of Annulment.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Orb of Annulment.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Orb of Annulment.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Orb of Annulment.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Orb of Annulment.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Orb of Annulment.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Orb of Annulment.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Orb of Annulment.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Orb of Augmentation.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Orb of Augmentation.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Orb of Augmentation.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Orb of Augmentation.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Orb of Augmentation.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Orb of Augmentation.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Orb of Augmentation.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Orb of Augmentation.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Orb of Augmentation.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Orb of Augmentation.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Orb of Binding.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Orb of Binding.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Orb of Binding.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Orb of Binding.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Orb of Binding.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Orb of Binding.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Orb of Binding.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Orb of Binding.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Orb of Binding.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Orb of Binding.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Orb of Chance.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Orb of Chance.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Orb of Chance.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Orb of Chance.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Orb of Chance.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Orb of Chance.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Orb of Chance.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Orb of Chance.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Orb of Chance.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Orb of Chance.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Orb of Fusing.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Orb of Fusing.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Orb of Fusing.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Orb of Fusing.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Orb of Fusing.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Orb of Fusing.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Orb of Fusing.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Orb of Fusing.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Orb of Fusing.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Orb of Fusing.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Orb of Horizons.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Orb of Horizons.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Orb of Horizons.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Orb of Horizons.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Orb of Horizons.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Orb of Horizons.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Orb of Horizons.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Orb of Horizons.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Orb of Horizons.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Orb of Horizons.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Orb of Regret.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Orb of Regret.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Orb of Regret.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Orb of Regret.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Orb of Regret.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Orb of Regret.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Orb of Regret.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Orb of Regret.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Orb of Regret.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Orb of Regret.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Orb of Scouring.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Orb of Scouring.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Orb of Scouring.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Orb of Scouring.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Orb of Scouring.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Orb of Scouring.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Orb of Scouring.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Orb of Scouring.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Orb of Scouring.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Orb of Scouring.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Orb of Transmutation.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Orb of Transmutation.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Orb of Transmutation.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Orb of Transmutation.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Orb of Transmutation.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Orb of Transmutation.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Orb of Transmutation.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Orb of Transmutation.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Orb of Transmutation.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Orb of Transmutation.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Pale Court Set.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Pale Court Set.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Pale Court Set.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Pale Court Set.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Pale Court Set.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Pale Court Set.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Pale Court Set.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Pale Court Set.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Pale Court Set.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Pale Court Set.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Perandus Coin.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Perandus Coin.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Perandus Coin.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Perandus Coin.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Perandus Coin.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Perandus Coin.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Perandus Coin.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Perandus Coin.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Perandus Coin.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Perandus Coin.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Portal Scroll.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Portal Scroll.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Portal Scroll.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Portal Scroll.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Portal Scroll.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Portal Scroll.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Portal Scroll.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Portal Scroll.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Portal Scroll.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Portal Scroll.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Regal Orb.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Regal Orb.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Regal Orb.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Regal Orb.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Regal Orb.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Regal Orb.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Regal Orb.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Regal Orb.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Regal Orb.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Regal Orb.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Sacrifice at Dawn.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Sacrifice at Dawn.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Sacrifice at Dawn.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Sacrifice at Dawn.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Sacrifice at Dawn.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Sacrifice at Dawn.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Sacrifice at Dawn.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Sacrifice at Dawn.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Sacrifice at Dawn.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Sacrifice at Dawn.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Sacrifice at Dusk.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Sacrifice at Dusk.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Sacrifice at Dusk.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Sacrifice at Dusk.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Sacrifice at Dusk.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Sacrifice at Dusk.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Sacrifice at Dusk.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Sacrifice at Dusk.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Sacrifice at Dusk.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Sacrifice at Dusk.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Sacrifice at Midnight.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Sacrifice at Midnight.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Sacrifice at Midnight.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Sacrifice at Midnight.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Sacrifice at Midnight.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Sacrifice at Midnight.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Sacrifice at Midnight.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Sacrifice at Midnight.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Sacrifice at Midnight.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Sacrifice at Midnight.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Sacrifice at Noon.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Sacrifice at Noon.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Sacrifice at Noon.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Sacrifice at Noon.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Sacrifice at Noon.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Sacrifice at Noon.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Sacrifice at Noon.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Sacrifice at Noon.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Sacrifice at Noon.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Sacrifice at Noon.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Sacrifice Set.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Sacrifice Set.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Sacrifice Set.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Sacrifice Set.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Sacrifice Set.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Sacrifice Set.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Sacrifice Set.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Sacrifice Set.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Sacrifice Set.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Sacrifice Set.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Scroll of Wisdom.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Scroll of Wisdom.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Scroll of Wisdom.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Scroll of Wisdom.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Scroll of Wisdom.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Scroll of Wisdom.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Scroll of Wisdom.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Scroll of Wisdom.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Scroll of Wisdom.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Scroll of Wisdom.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Shaper Set.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Shaper Set.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Shaper Set.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Shaper Set.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Shaper Set.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Shaper Set.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Shaper Set.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Shaper Set.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Shaper Set.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Shaper Set.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Silver Coin.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Silver Coin.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Silver Coin.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Silver Coin.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Silver Coin.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Silver Coin.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Silver Coin.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Silver Coin.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Silver Coin.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Silver Coin.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Splinter of Chayula.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Splinter of Chayula.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Splinter of Chayula.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Splinter of Chayula.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Splinter of Chayula.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Splinter of Chayula.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Splinter of Chayula.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Splinter of Chayula.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Splinter of Chayula.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Splinter of Chayula.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Splinter of Esh.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Splinter of Esh.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Splinter of Esh.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Splinter of Esh.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Splinter of Esh.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Splinter of Esh.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Splinter of Esh.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Splinter of Esh.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Splinter of Esh.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Splinter of Esh.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Splinter of Tul.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Splinter of Tul.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Splinter of Tul.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Splinter of Tul.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Splinter of Tul.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Splinter of Tul.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Splinter of Tul.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Splinter of Tul.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Splinter of Tul.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Splinter of Tul.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Splinter of Uul-Netol.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Splinter of Uul-Netol.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Splinter of Uul-Netol.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Splinter of Uul-Netol.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Splinter of Uul-Netol.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Splinter of Uul-Netol.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Splinter of Uul-Netol.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Splinter of Uul-Netol.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Splinter of Uul-Netol.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Splinter of Uul-Netol.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Splinter of Xoph.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Splinter of Xoph.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Splinter of Xoph.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Splinter of Xoph.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Splinter of Xoph.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Splinter of Xoph.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Splinter of Xoph.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Splinter of Xoph.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Splinter of Xoph.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Splinter of Xoph.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Stacked Deck.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Stacked Deck.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Stacked Deck.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Stacked Deck.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Stacked Deck.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Stacked Deck.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Stacked Deck.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Stacked Deck.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Stacked Deck.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Stacked Deck.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Timeworn Reliquary Key.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Timeworn Reliquary Key.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Timeworn Reliquary Key.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Timeworn Reliquary Key.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Timeworn Reliquary Key.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Timeworn Reliquary Key.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Timeworn Reliquary Key.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Timeworn Reliquary Key.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Timeworn Reliquary Key.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Timeworn Reliquary Key.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Tul's Breachstone.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Tul's Breachstone.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Tul's Breachstone.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Tul's Breachstone.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Tul's Breachstone.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Tul's Breachstone.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Tul's Breachstone.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Tul's Breachstone.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Tul's Breachstone.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Tul's Breachstone.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Tul's Charged Breachstone.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Tul's Charged Breachstone.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Tul's Charged Breachstone.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Tul's Charged Breachstone.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Tul's Charged Breachstone.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Tul's Charged Breachstone.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Tul's Charged Breachstone.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Tul's Charged Breachstone.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Tul's Charged Breachstone.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Tul's Charged Breachstone.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Tul's Enriched Breachstone.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Tul's Enriched Breachstone.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Tul's Enriched Breachstone.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Tul's Enriched Breachstone.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Tul's Enriched Breachstone.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Tul's Enriched Breachstone.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Tul's Enriched Breachstone.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Tul's Enriched Breachstone.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Tul's Enriched Breachstone.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Tul's Enriched Breachstone.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Tul's Pure Breachstone.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Tul's Pure Breachstone.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Tul's Pure Breachstone.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Tul's Pure Breachstone.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Tul's Pure Breachstone.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Tul's Pure Breachstone.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Tul's Pure Breachstone.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Tul's Pure Breachstone.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Tul's Pure Breachstone.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Tul's Pure Breachstone.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Unknown.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Unknown.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Unknown.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Unknown.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Unknown.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Unknown.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Unknown.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Unknown.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Unknown.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Unknown.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Uul-Netol's Breachstone.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Uul-Netol's Breachstone.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Uul-Netol's Breachstone.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Uul-Netol's Breachstone.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Uul-Netol's Breachstone.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Uul-Netol's Breachstone.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Uul-Netol's Breachstone.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Uul-Netol's Breachstone.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Uul-Netol's Breachstone.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Uul-Netol's Breachstone.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Uul-Netol's Charged Breachstone.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Uul-Netol's Charged Breachstone.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Uul-Netol's Charged Breachstone.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Uul-Netol's Charged Breachstone.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Uul-Netol's Charged Breachstone.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Uul-Netol's Charged Breachstone.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Uul-Netol's Charged Breachstone.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Uul-Netol's Charged Breachstone.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Uul-Netol's Charged Breachstone.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Uul-Netol's Charged Breachstone.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Uul-Netol's Enriched Breachstone.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Uul-Netol's Enriched Breachstone.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Uul-Netol's Enriched Breachstone.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Uul-Netol's Enriched Breachstone.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Uul-Netol's Enriched Breachstone.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Uul-Netol's Enriched Breachstone.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Uul-Netol's Enriched Breachstone.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Uul-Netol's Enriched Breachstone.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Uul-Netol's Enriched Breachstone.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Uul-Netol's Enriched Breachstone.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Uul-Netol's Pure Breachstone.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Uul-Netol's Pure Breachstone.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Uul-Netol's Pure Breachstone.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Uul-Netol's Pure Breachstone.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Uul-Netol's Pure Breachstone.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Uul-Netol's Pure Breachstone.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Uul-Netol's Pure Breachstone.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Uul-Netol's Pure Breachstone.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Uul-Netol's Pure Breachstone.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Uul-Netol's Pure Breachstone.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Vaal Orb.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Vaal Orb.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Vaal Orb.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Vaal Orb.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Vaal Orb.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Vaal Orb.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Vaal Orb.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Vaal Orb.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Vaal Orb.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Vaal Orb.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Volkuur's Key.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Volkuur's Key.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Volkuur's Key.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Volkuur's Key.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Volkuur's Key.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Volkuur's Key.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Volkuur's Key.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Volkuur's Key.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Volkuur's Key.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Volkuur's Key.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Xoph's Breachstone.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Xoph's Breachstone.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Xoph's Breachstone.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Xoph's Breachstone.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Xoph's Breachstone.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Xoph's Breachstone.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Xoph's Breachstone.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Xoph's Breachstone.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Xoph's Breachstone.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Xoph's Breachstone.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Xoph's Charged Breachstone.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Xoph's Charged Breachstone.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Xoph's Charged Breachstone.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Xoph's Charged Breachstone.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Xoph's Charged Breachstone.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Xoph's Charged Breachstone.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Xoph's Charged Breachstone.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Xoph's Charged Breachstone.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Xoph's Charged Breachstone.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Xoph's Charged Breachstone.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Xoph's Enriched Breachstone.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Xoph's Enriched Breachstone.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Xoph's Enriched Breachstone.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Xoph's Enriched Breachstone.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Xoph's Enriched Breachstone.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Xoph's Enriched Breachstone.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Xoph's Enriched Breachstone.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Xoph's Enriched Breachstone.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Xoph's Enriched Breachstone.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Xoph's Enriched Breachstone.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Xoph's Pure Breachstone.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Xoph's Pure Breachstone.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Xoph's Pure Breachstone.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Xoph's Pure Breachstone.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Xoph's Pure Breachstone.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Xoph's Pure Breachstone.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Xoph's Pure Breachstone.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Xoph's Pure Breachstone.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Xoph's Pure Breachstone.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Xoph's Pure Breachstone.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Yriel's Key.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Yriel's Key.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Yriel's Key.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Yriel's Key.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Yriel's Key.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Yriel's Key.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Yriel's Key.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Yriel's Key.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Yriel's Key.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Yriel's Key.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.cheatsheets ""), "D")
+	FileCreateDir,% PROGRAM.cheatsheets ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\cheatsheets\Betrayal.png")
+	FileGetSize, destFileSize, % PROGRAM.cheatsheets "\Betrayal.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\cheatsheets\Betrayal.png
+	FileGetSize, destFileSize, % PROGRAM.cheatsheets "\Betrayal.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\cheatsheets\Betrayal.png, % PROGRAM.cheatsheets "\Betrayal.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\cheatsheets\Betrayal.png"
+	.	"`nDest: " PROGRAM.cheatsheets "\Betrayal.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\cheatsheets\Betrayal.png"
+	.	"`nDest: " PROGRAM.cheatsheets "\Betrayal.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.cheatsheets ""), "D")
+	FileCreateDir,% PROGRAM.cheatsheets ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\cheatsheets\Delve.png")
+	FileGetSize, destFileSize, % PROGRAM.cheatsheets "\Delve.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\cheatsheets\Delve.png
+	FileGetSize, destFileSize, % PROGRAM.cheatsheets "\Delve.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\cheatsheets\Delve.png, % PROGRAM.cheatsheets "\Delve.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\cheatsheets\Delve.png"
+	.	"`nDest: " PROGRAM.cheatsheets "\Delve.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\cheatsheets\Delve.png"
+	.	"`nDest: " PROGRAM.cheatsheets "\Delve.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.cheatsheets ""), "D")
+	FileCreateDir,% PROGRAM.cheatsheets ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\cheatsheets\Essence.png")
+	FileGetSize, destFileSize, % PROGRAM.cheatsheets "\Essence.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\cheatsheets\Essence.png
+	FileGetSize, destFileSize, % PROGRAM.cheatsheets "\Essence.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\cheatsheets\Essence.png, % PROGRAM.cheatsheets "\Essence.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\cheatsheets\Essence.png"
+	.	"`nDest: " PROGRAM.cheatsheets "\Essence.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\cheatsheets\Essence.png"
+	.	"`nDest: " PROGRAM.cheatsheets "\Essence.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.cheatsheets ""), "D")
+	FileCreateDir,% PROGRAM.cheatsheets ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\cheatsheets\Incursion.png")
+	FileGetSize, destFileSize, % PROGRAM.cheatsheets "\Incursion.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\cheatsheets\Incursion.png
+	FileGetSize, destFileSize, % PROGRAM.cheatsheets "\Incursion.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\cheatsheets\Incursion.png, % PROGRAM.cheatsheets "\Incursion.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\cheatsheets\Incursion.png"
+	.	"`nDest: " PROGRAM.cheatsheets "\Incursion.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\cheatsheets\Incursion.png"
+	.	"`nDest: " PROGRAM.cheatsheets "\Incursion.png"
 	.	"`nFlag: " 2
 }
 

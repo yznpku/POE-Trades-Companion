@@ -53,6 +53,8 @@ Get_LocalSettings_DefaultValues() {
 	settings.SETTINGS_MAIN.TradesGUI_Mode 												:= "Window"
 	settings.SETTINGS_MAIN.Pos_X 														:= "0"
 	settings.SETTINGS_MAIN.Pos_Y 														:= "0"
+	settings.SETTINGS_MAIN.Compact_Pos_X 												:= "0"
+	settings.SETTINGS_MAIN.Compact_Pos_Y 												:= "0"
 	settings.SETTINGS_MAIN.TradesGUI_Locked 											:= "False"
 	settings.SETTINGS_MAIN.AllowClicksToPassThroughWhileInactive 						:= "True"
 	settings.SETTINGS_MAIN.SendMsgMode 													:= "Clipboard"
@@ -292,9 +294,7 @@ LocalSettings_IsValueValid(iniSect, iniKey, iniValue) {
 			isValueValid := IsIn(iniValue, "True,False") ? True : False	
 		else if (iniKey = "TradesGUI_Mode")
 			isValueValid := IsIn(iniValue, "Window,Dock") ? True : False	
-		else if (iniKey = "Pos_X")
-			isValueValid := IsNum(iniValue) ? True : False	
-		else if (iniKey = "Pos_Y")
+		else if IsIn(iniKey,"Pos_X,Pos_Y,Compact_Pos_X,Compact_Pos_Y")
 			isValueValid := IsNum(iniValue) ? True : False	
 		else if (iniKey = "TradesGUI_Locked")
 			isValueValid := IsIn(iniValue, "True,False") ? True : False	
