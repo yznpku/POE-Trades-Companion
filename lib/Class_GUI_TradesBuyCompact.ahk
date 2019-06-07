@@ -35,14 +35,14 @@
 			settings_fontQual := SKIN.Compact.Settings.FONT.Quality
 		}
 
-		twoTextLineSize := Get_TextCtrlSize("SomeText", settings_fontName, settings_fontSize, "", "R1").H*2, twoTextLineSize += 10+12 ; 10+12, based on ctrl pacing
+		twoTextLineSize := Get_TextCtrlSize("SomeText", settings_fontName, settings_fontSize, "", "R1").H*2, twoTextLineSize += ((10+12)*scaleMult) ; 10+12, based on ctrl pacing
 
 		; Gui size and positions
 		borderSize := Floor(1*scaleMult)
-		GuiTradesBuyCompact.Height_NoRow 		:= guiHeight_NoRow := 1+30+1 ; 1 border, 33 header, 1 border
-		GuiTradesBuyCompact.Height_OneRow	 	:= guiHeight_OneRow := guiHeight_NoRow + 22 + twoTextLineSize + (borderSize*1) ; 22 header2
+		GuiTradesBuyCompact.Height_NoRow 		:= guiHeight_NoRow := borderSize+(30*scaleMult)+borderSize ; 1 border, 33 header, 1 border
+		GuiTradesBuyCompact.Height_OneRow	 	:= guiHeight_OneRow := guiHeight_NoRow + (22*scaleMult) + twoTextLineSize + (borderSize*1) ; 22 header2
 		GuiTradesBuyCompact.Height_TwoRow	 	:= guiHeight_TwoRow := guiHeight_OneRow + twoTextLineSize + (borderSize*2)
-		GuiTradesBuyCompact.Height_ThreeRow 		:= guiHeight_ThreeRow := guiHeight_TwoRow + twoTextLineSize + (borderSize*2)
+		GuiTradesBuyCompact.Height_ThreeRow 	:= guiHeight_ThreeRow := guiHeight_TwoRow + twoTextLineSize + (borderSize*2)
 		GuiTradesBuyCompact.Height_FourRow 		:= guiHeight_FourRow := guiHeight_ThreeRow + twoTextLineSize + (borderSize*2)
 
 		guiFullHeight := guiHeight_FourRow, guiFullWidth := scaleMult*(398+(2*borderSize))
@@ -59,15 +59,15 @@
 		; Header pos
 		Header_X := leftMost, Header_Y := upMost, Header_W := guiWidth, Header_H := scaleMult*30
 		Icon_X := Header_X+(3*scaleMult), Icon_Y := Header_Y+(3*scaleMult), Icon_W := scaleMult*24, Icon_H := scaleMult*24
-		MinMax_X := rightMost-((scaleMult*22)+3), MinMax_Y := Header_Y+(4*scaleMult), MinMax_W := scaleMult*22, MinMax_H := scaleMult*22
-		HideoutBtn_X := 15, HideoutBtn_Y := 5, HideoutBtn_W := 30, HideoutBtn_H := 22, SpaceBetweenBtns := 8
+		MinMax_X := rightMost-((scaleMult*22)+(3*scaleMult)), MinMax_Y := Header_Y+(4*scaleMult), MinMax_W := scaleMult*22, MinMax_H := scaleMult*22
+		HideoutBtn_X := 15*scaleMult, HideoutBtn_Y := 5*scaleMult, HideoutBtn_W := 30*scaleMult, HideoutBtn_H := 22*scaleMult, SpaceBetweenBtns := 8*scaleMult
 		Title_X := "_CUSTOM_", Title_Y := Header_Y, Title_W := "_CUSTOM_", Title_H := Header_H
 		
 		Header2_X := leftMost, Header2_Y := Header_Y+Header_H, Header2_H := scaleMult*22
 		LeftArrow_W := scaleMult*25, LeftArrow_H := Header2_H, RightArrow_W := LeftArrow_W, RightArrow_H := LeftArrow_H
 		Header2_W := Header_W-LeftArrow_W-RightArrow_W
 		LeftArrow_X := rightMost-LeftArrow_W-RightArrow_W, LeftArrow_Y := Header2_Y, RightArrow_X := LeftArrow_X+LeftArrow_W, RightArrow_Y := Header2_Y
-		SearchBox_X := leftMost+10, SearchBox_Y := Header2_Y, SearchBox_W := 120, SearchBox_H := Header2_H
+		SearchBox_X := leftMost+(10*scaleMult), SearchBox_Y := Header2_Y, SearchBox_W := (120*scaleMult), SearchBox_H := Header2_H
 		; CloseTab_Y := RightArrow_Y, CloseTab_W := scaleMult*27, CloseTab_H := RightArrow_H
 
 		 ; 1=dont stick to border
@@ -214,7 +214,7 @@
 
 		lastBtnCoords := Get_ControlCoords("TradesBuyCompact", GuiTradesBuyCompact_Controls.hBTN_What3)
 		minBtnCoords := Get_ControlCoords("TradesBuyCompact", GuiTradesBuyCompact_Controls.hBTN_Minimize)
-		Gui.Add("TradesBuyCompact", "Text", "x" lastBtnCoords.X+lastBtnCoords.W+3 " y" Title_Y " w" Header_W-(lastBtnCoords.X+lastBtnCoords.W+3)-(Header_W-(minBtnCoords.X-minBtnCoords.W)) " h" Title_H " hwndhTEXT_Title Center BackgroundTrans +0x200 c" SKIN.Compact.Settings.COLORS.Title_No_Trades, PROGRAM.NAME)
+		Gui.Add("TradesBuyCompact", "Text", "x" lastBtnCoords.X+lastBtnCoords.W+(3*scaleMult) " y" Title_Y " w" Header_W-(lastBtnCoords.X+lastBtnCoords.W+(3*scaleMult))-(Header_W-(minBtnCoords.X-minBtnCoords.W)) " h" Title_H " hwndhTEXT_Title Center BackgroundTrans +0x200 c" SKIN.Compact.Settings.COLORS.Title_No_Trades, PROGRAM.NAME)
 		; titleCoords := Get_ControlCoords("TradesBuyCompact", GuiTradesBuyCompact_Controls.hTEXT_Title) ; Get coords to center on Y
 		; GuiControl, Trades:Move,% GuiTradesBuyCompact_Controls.hTEXT_Title,% "y" Ceil( titleCoords.Y+(titleCoords.H/2) ) ; Center on Y based on text H
 
@@ -271,9 +271,11 @@
 		Gui.Add("TradesBuyCompact", "Picture", "x" Header2_X " y" Header2_Y " w" Header2_W " h" Header2_H " hwndhIMG_Header2 BackgroundTrans", SKIN.Compact.Assets.Misc.Header) ; Title bar
 		Gui.Add("TradesBuyCompact", "Picture", "x" Header2_X " y" Header2_Y " w" Header2_W " h" Header2_H " hwndhIMG_Header2 BackgroundTrans", SKIN.Compact.Assets.Misc.Header2) ; Title bar
 		Gui.Add("TradesBuyCompact", "Text", "x" SearchBox_X+( (two-one)/2 ) " y" SearchBox_Y " w" SearchBox_W-( (two-one)/2 ) " h" SearchBox_H " FontQuality5 BackgroundTrans +0x200 cfeeac5 hwndhTEXT_SearchBarFake", "Search Bar")
+
+		SearchBarCross_X := "_CUSTOM_", SearchBarCross_Y := SearchBox_Y, SearchBarCross_W := 21*scaleMult, SearchBarCross_H := 21*scaleMult
 		
 		; imageBtnLog .= Gui.Add("TradesBuyCompact", "ImageButton", "xp+" (SearchBox_W-( (two-one)/2 )) " yp w" 21 " h" 21 " hwndhBTN_SearchBarCross BackgroundTrans", "", styles.SearchBarCross, PROGRAM.FONTS[settings_fontName], settings_fontSize) ; Left Arrow
-		imageBtnLog .= Gui.Add("TradesBuyCompact", "Picture", "xp+" (SearchBox_W-( (two-one)/2 )) " yp w" 21 " h" 21 " hwndhIMG_SearchBarCross BackgroundTrans", SKIN.Compact.Assets.Misc.SearchBarCross)
+		imageBtnLog .= Gui.Add("TradesBuyCompact", "Picture", "xp+" (SearchBox_W-( (two-one)/2 )) " y" SearchBarCross_Y " w" SearchBarCross_W " h" SearchBarCross_H " hwndhIMG_SearchBarCross BackgroundTrans", SKIN.Compact.Assets.Misc.SearchBarCross)
 
 		imageBtnLog .= Gui.Add("TradesBuyCompact", "ImageButton", "x" LeftArrow_X " y" LeftArrow_Y " w" LeftArrow_W " h" LeftArrow_H " hwndhBTN_LeftArrow", styles.Arrow_Left_Use_Character = "True"?"<" : "", styles.Arrow_Left, PROGRAM.FONTS[settings_fontName], settings_fontSize) ; Left Arrow
 		imageBtnLog .= Gui.Add("TradesBuyCompact", "ImageButton", "x" RightArrow_X " y" RightArrow_Y " w" RightArrow_W " h" RightArrow_H " hwndhBTN_RightArrow", styles.Arrow_Right_Use_Character = "True"?">" : "", styles.Arrow_Right, PROGRAM.FONTS[settings_fontName], settings_fontSize) ; Right Arrow
@@ -316,16 +318,16 @@
 		Gui.Add("TradesBuyCompact", "ImageButton", "x+0 yp wp hp hwndhBTN_ScrollDown", ">", Style_SystemButton, PROGRAM.FONTS[settings_fontName], settings_fontSize)
 		*/
 
-		SmallButton_W := 35, SmallButton_H := 25, SmallButton_Space := 5, SmallButton_Count := 4
-		CloseBtn_W := 15, CloseBtn_H := twoTextLineSize, CloseBtn_X := rightMost-CloseBtn_W, CloseBtn_Y := 0
-		ItemName_X := leftMost+5, ItemName_Y := 5, ItemName_W := CloseBtn_X-(SmallButton_W*SmallButton_Count)-(SmallButton_Space*SmallButton_Count)-20
+		SmallButton_W := 35*scaleMult, SmallButton_H := 25*scaleMult, SmallButton_Space := 5*scaleMult, SmallButton_Count := 4
+		CloseBtn_W := 15*scaleMult, CloseBtn_H := twoTextLineSize, CloseBtn_X := rightMost-CloseBtn_W, CloseBtn_Y := 0
+		ItemName_X := leftMost+(5*scaleMult), ItemName_Y := (5*scaleMult), ItemName_W := CloseBtn_X-(SmallButton_W*SmallButton_Count)-(SmallButton_Space*SmallButton_Count)-(20*scaleMult)
 		SellerName_X := ItemName_X+ItemName_W, SellerName_Y := ItemName_Y, SellerName_W := SmallButton_W*SmallButton_Count
-		CurrencyImg_X := " x" leftMost+5, CurrencyImg_Y := " y+8", CurrencyImg_W := " w" 20, CurrencyImg_H := " h" 20
-		PriceTxt_X := "_CUSTOM_", PriceTxt_Y := "_CUSTOM_", PriceTxt_W := 35
+		CurrencyImg_X := " x" leftMost+(5*scaleMult), CurrencyImg_Y := " y+8", CurrencyImg_W := " w" 20*scaleMult, CurrencyImg_H := " h" 20*scaleMult
+		PriceTxt_X := "_CUSTOM_", PriceTxt_Y := "_CUSTOM_", PriceTxt_W := 35*scaleMult
 		AdditionalMsg_X := "_CUSTOM_", AdditionalMsg_Y := "_CUSTOM_", AdditionalMsg_W := "_CUSTOM_"
-		TimeSent_X := " x" CloseBtn_X-timeSlotWidth-2, TimeSent_Y := " y" 0, TimeSent_W := " w" timeSlotWidth
-		SmallButton_X := CloseBtn_X-(SmallButton_Count* (SmallButton_W+SmallButton_Space))-15, SmallButton_Y := CloseBtn_Y+CloseBtn_H-SmallButton_H-1
-		Separation_X := leftMost, Separation_Y := SmallButton_Y+SmallButton_H+2, Separation_W := guiWidth, Separation_H := 1
+		TimeSent_X := " x" CloseBtn_X-timeSlotWidth-(2*scaleMult), TimeSent_Y := " y" 0, TimeSent_W := " w" timeSlotWidth
+		SmallButton_X := CloseBtn_X-(SmallButton_Count* (SmallButton_W+SmallButton_Space))-(15*scaleMult), SmallButton_Y := CloseBtn_Y+CloseBtn_H-SmallButton_H-borderSize
+		Separation_X := leftMost, Separation_Y := SmallButton_Y+SmallButton_H+(2*scaleMult), Separation_W := guiWidth, Separation_H := borderSize
 		BackgroundImg_X := leftMost, BackgroundImg_Y := 0
 		BackgroundImg_W := Ceil( (guiWidth*resDPI) ), BackgroundImg_H := Separation_Y
 		CloseBtn_H := Separation_Y
@@ -360,9 +362,9 @@
 			
 			priceImgPos := Get_ControlCoords("TradesBuyCompact_Slot" A_Index, GuiTradesBuyCompact_Slot%A_Index%_Controls.hIMG_CurrencyIMG)
 			priceTxtPos := Get_ControlCoords("TradesBuyCompact_Slot" A_Index, GuiTradesBuyCompact_Slot%A_Index%_Controls.hTEXT_PriceCount)
-			GuiControl, TradesBuyCompact_Slot%A_Index%:Move,% GuiTradesBuyCompact_Slot%A_Index%_Controls.hTEXT_PriceCount,% " x" priceImgPos.X+priceImgPos.W+2 " y" (priceImgPos.Y+priceImgPos.H/2) - (priceTxtPos.H/2)		
+			GuiControl, TradesBuyCompact_Slot%A_Index%:Move,% GuiTradesBuyCompact_Slot%A_Index%_Controls.hTEXT_PriceCount,% " x" priceImgPos.X+priceImgPos.W+(2*scaleMult) " y" (priceImgPos.Y+priceImgPos.H/2) - (priceTxtPos.H/2)		
 			priceTxtPos := Get_ControlCoords("TradesBuyCompact_Slot" A_Index, GuiTradesBuyCompact_Slot%A_Index%_Controls.hTEXT_PriceCount)
-			GuiControl, TradesBuyCompact_Slot%A_Index%:Move,% GuiTradesBuyCompact_Slot%A_Index%_Controls.hTEXT_AdditionalMsg,% "x" priceTxtPos.X+priceTxtPos.W+10 " y" priceTxtPos.Y
+			GuiControl, TradesBuyCompact_Slot%A_Index%:Move,% GuiTradesBuyCompact_Slot%A_Index%_Controls.hTEXT_AdditionalMsg,% "x" priceTxtPos.X+priceTxtPos.W+(10*scaleMult) " y" priceTxtPos.Y
 			
 			GuiTradesBuyCompact["Slot" A_Index] := GuiTradesBuyCompact_Slot%A_Index% ; adding gui array to our main gui array as a sub array
 			GuiTradesBuyCompact["Slot" A_Index "_Controls"] := GuiTradesBuyCompact_Slot%A_Index%_Controls
