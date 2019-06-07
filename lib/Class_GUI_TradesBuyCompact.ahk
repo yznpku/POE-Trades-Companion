@@ -1,6 +1,6 @@
 ﻿Class GUI_TradesBuyCompact {
 	
-	Create(_maxTabsToRender="") {
+	Create(_maxTabsToRender=50) {
 		global PROGRAM, GAME, SKIN
 		global GuiTradesBuyCompact, GuiTradesBuyCompact_Controls, GuiTradesBuyCompact_Submit
 		static guiCreated, maxTabsToRender, borderSize
@@ -332,7 +332,7 @@
 
 		GuiTradesBuyCompact.PriceTxt_MaxW := SmallButton_X-3
 
-		Loop 10 { ; Creating a child GUI for each
+		Loop % maxTabsToRender { ; Creating a child GUI for each
 			Gui.New("TradesBuyCompact_Slot" A_Index, "-Caption -Border +AlwaysOnTop +ParentTradesBuyCompact +LabelGUI_TradesBuyCompact_Slot_ +HwndhGuiTradesBuyCompact_Slot" A_Index, "POE TC - Buy Item Slot " A_Index)
 			Gui.Margin("TradesBuyCompact_Slot" A_Index, 0, 0)
 			Gui.Color("TradesBuyCompact_Slot" A_Index, "White")
@@ -522,6 +522,45 @@
 			slotToDelete := A_LoopField-(A_Index-1)
 			Gui_TradesBuyCompact.RemoveTab(slotToDelete)
 		}
+	}
+
+	RecreateGUI(tabsLimit="") {
+		global GuiTradesBuyCompact
+		tabsCount := GuiTradesBuyCompact.Tabs_Count
+		maxTabsPerRow := GuiTradesBuyCompact.Max_Tabs_Per_Row
+		tabRange := GUI_TradesBuyCompact.GetTabsRange()
+
+		if (tabsLimit = "")
+			tabsLimit := GuiTradesBuyCompact.Tabs_Limit
+
+		firstRangeTab := tabRange.1
+		Loop % tabsCount { ; Get all tabs content
+			tabInfos%A_Index% := GUI_TradesBuyCompact.GetSlotContent(A_Index)
+		}
+		
+		if (tabsLimit)
+			Gui_TradesBuyCompact.Create(tabsLimit) ; Recreate GUI with more tabs
+		else
+			Gui_TradesBuyCompact.Create() ; No limit specific, just use default limit
+		Loop % tabsCount { ; Set tabs content
+			GUI_TradesBuyCompact.PushNewTab(tabInfos%A_Index%)
+		}
+
+		Loop % tabRange.2-maxTabsPerRow
+			GUI_TradesBuyCompact.ScrollDown()
+	}
+
+	IncreaseTabsLimit() {
+		global GuiTradesBuyCompact
+		tabsLimit := GuiTradesBuyCompact.Tabs_Limit
+
+		nextTabsLimit := (tabsLimit=50)?(100):(tabsLimit=100)?(150):(tabsLimit=150)?(251):("ERROR") ; Set next limit
+		if (nextTabsLimit = "ERROR") {
+			MsgBox(4096, "", "Error when deciding the tabs limit. Current limit: """ tabsLimit """")
+			Return
+		}
+		
+		GUI_TradesBuyCompact.RecreateGUI(nextTabsLimit)
 	}
 
 	HotBarButton(btnType) {
@@ -859,6 +898,7 @@
 		global PROGRAM, SKIN
 		global GuiTradesBuyCompact, GuiTradesBuyCompact_Controls
 		static doOnlyOnce
+		tabsLimit := GuiTradesBuyCompact.Tabs_Limit
 		tabsCount := GuiTradesBuyCompact.Tabs_Count
 
 		hadNoTab := tabsCount = 0 ? True : False
@@ -867,6 +907,11 @@
 		if (existingTabID) {
 			; Gui_Trades.UpdateSlotContent(existingTabID, "Other", contentInfos.Other) ; Disabled. Useless?
 			Return "TabAlreadyExists"
+		}
+		
+		; Need to allocate more tabs
+		if (tabsCount+1 >= tabsLimit) {
+			GUI_TradesBuyCompact.IncreaseTabsLimit()
 		}
 
 		GUI_TradesBuyCompact.SetSlotContent(tabsCount+1, infos)
@@ -1096,7 +1141,7 @@
 
 		; Move AdditionalMsg msg based on price count pos
 		ControlGetPos, x, y, w, h,,% "ahk_id " GuiTradesBuyCompact["Slot" slotNum "_Controls"].hTEXT_PriceCount
-		ControlGetPos, x2, y2, w2, h2,,% "ahk_id " GuiTradesBuyCompact["Slot" slotNum "_Controls"].hBTN_QuickBtn1
+		ControlGetPos, x2, y2, w2, h2,,% "ahk_id " GuiTradesBuyCompact["Slot" slotNum "_Controls"].hBTN_WhisperSeller
 		GuiControl, Move,% GuiTradesBuyCompact["Slot" slotNum "_Controls"].hTEXT_AdditionalMsg,% "x" x+w+10 " w" x+x2+w-5
 
 		; Set currency IMG

@@ -44,20 +44,23 @@ ShellMessage(wParam,lParam) {
 				if (lParam) {
 					WinGet, activeWinExe, ProcessName, ahk_id %lParam%
 					WinGet, activeWinHwnd, ID, ahk_id %lParam%
+					WinGet, activeWinPID, PID, ahk_id %lParam%
 					if (activeWinExe="" || activeWinHwnd="") {
 						WinGet, activeWinExe, ProcessName, A
 						WinGet, activeWinHwnd, ID, A	
+						WinGet, activeWinPID, PID, A
 					}
 				}
 				else {
 					WinGet, activeWinExe, ProcessName, A
 					WinGet, activeWinHwnd, ID, A	
+					WinGet, activeWinPID, PID, A
 				}
 
-				if (activeWinHwnd = GuiTrades.Handle) || (activeWinHwnd = GuiTradesMinimized.Handle) { ; Fix unable to min/max while HideInterfaceWhenOutOfGame=True
+				if (activeWinHwnd = GuiTrades.Handle) || (activeWinHwnd = GuiTradesMinimized.Handle) || (activeWinPID = PROGRAM.PID) { ; Fix unable to min/max while HideInterfaceWhenOutOfGame=True
 					Gui_Trades.SetTransparency_Automatic()
 				}
-				else if (activeWinExe && IsIn(activeWinExe, POEGameList)) || (activeWinHwnd && GuiSettings.Handle && activeWinHwnd = GuiSettings.Handle) {
+				else if (activeWinExe && IsIn(activeWinExe, POEGameList)) || (activeWinHwnd && GuiSettings.Handle && activeWinHwnd = GuiSettings.Handle) || (activeWinPID = PROGRAM.PID) {
 					Gui_Trades.SetTransparency_Automatic()
 					if (GuiTrades.Is_Minimized) {
 						Gui, TradesMinimized:Show, NoActivate
