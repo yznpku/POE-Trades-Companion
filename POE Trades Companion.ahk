@@ -216,7 +216,8 @@ Start_Script() {
 	StringTrimRight, currencyList, currencyList, 1 ; Remove last comma
 	PROGRAM.DATA.CURRENCY_LIST := currencyList
 
-	PROGRAM["DATA"]["POETRADE_CURRENCY_DATA"] := PoeTrade_GetCurrencyData()
+	FileRead, JSONFile,% PROGRAM.DATA_FOLDER "\poeTradeCurrencyData.json"
+    PROGRAM["DATA"]["POETRADE_CURRENCY_DATA"] := JSON.Load(JSONFile)
 
 	FileRead, gggCurrency,% PROGRAM.DATA_FOLDER "\poeDotComCurrencyData.json"
 	PROGRAM["DATA"]["POEDOTCOM_CURRENCY_DATA"] := JSON.Load(gggCurrency)
