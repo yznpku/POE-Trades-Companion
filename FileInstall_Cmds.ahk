@@ -4559,6 +4559,31 @@ if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile\Compact"), "D")
 	FileCreateDir,% PROGRAM.SKINS_FOLDER "\Path of Exile\Compact"
 
 if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\skins\Path of Exile\Compact\Preview.png")
+	FileGetSize, destFileSize, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\Preview.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\skins\Path of Exile\Compact\Preview.png
+	FileGetSize, destFileSize, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\Preview.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\skins\Path of Exile\Compact\Preview.png, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\Preview.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Compact\Preview.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\Preview.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\skins\Path of Exile\Compact\Preview.png"
+	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\Preview.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile\Compact"), "D")
+	FileCreateDir,% PROGRAM.SKINS_FOLDER "\Path of Exile\Compact"
+
+if (A_IsCompiled) {
 	sourceFileSize := Get_ResourceSize("resources\skins\Path of Exile\Compact\SearchBarCross.png")
 	FileGetSize, destFileSize, % PROGRAM.SKINS_FOLDER "\Path of Exile\Compact\SearchBarCross.png"
 }
