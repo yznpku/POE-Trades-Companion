@@ -364,7 +364,7 @@
 			priceTxtPos := Get_ControlCoords("TradesBuyCompact_Slot" A_Index, GuiTradesBuyCompact_Slot%A_Index%_Controls.hTEXT_PriceCount)
 			GuiControl, TradesBuyCompact_Slot%A_Index%:Move,% GuiTradesBuyCompact_Slot%A_Index%_Controls.hTEXT_PriceCount,% " x" priceImgPos.X+priceImgPos.W+(2*scaleMult) " y" (priceImgPos.Y+priceImgPos.H/2) - (priceTxtPos.H/2)		
 			priceTxtPos := Get_ControlCoords("TradesBuyCompact_Slot" A_Index, GuiTradesBuyCompact_Slot%A_Index%_Controls.hTEXT_PriceCount)
-			GuiControl, TradesBuyCompact_Slot%A_Index%:Move,% GuiTradesBuyCompact_Slot%A_Index%_Controls.hTEXT_AdditionalMsg,% "x" priceTxtPos.X+priceTxtPos.W+(10*scaleMult) " y" priceTxtPos.Y
+			GuiControl, TradesBuyCompact_Slot%A_Index%:Move,% GuiTradesBuyCompact_Slot%A_Index%_Controls.hTEXT_AdditionalMsg,% "x" priceTxtPos.X+priceTxtPos.W+(10*scaleMult) " y" priceTxtPos.Y " w" SmallButton_X-( priceTxtPos.X+priceTxtPos.W+(10*scaleMult) )
 			
 			GuiTradesBuyCompact["Slot" A_Index] := GuiTradesBuyCompact_Slot%A_Index% ; adding gui array to our main gui array as a sub array
 			GuiTradesBuyCompact["Slot" A_Index "_Controls"] := GuiTradesBuyCompact_Slot%A_Index%_Controls
@@ -707,11 +707,8 @@
 		; }
 		INI.Set(iniFile, "GENERAL", "Index", index)
 
-		for key, value in slotContent {
-			if (key="AdditionalMsg")
-				value := StrReplace(value, "`n", "\n"), value := StrReplace(value, "`r", "\r")
-			INI.Set(iniFile, index, key, value)
-		}
+		value := StrReplace(value, "`n", "\n"), value := StrReplace(value, "`r", "\n")
+		INI.Set(iniFile, index, key, value)
 	}
 
 	GenerateUniqueID() {
@@ -974,6 +971,10 @@
 				hiddenInfosArr.Stash := stashPat.1
 			else if RegExMatch(A_LoopField, "O)TimeSent:" A_Tab "(.*)", timeSentPat)
 				hiddenInfosArr.TimeSent := timeSentPat.1
+			else if RegExMatch(A_LoopField, "O)ItemIsCut:" A_Tab "(.*)", itemIsCutPat)
+				hiddenInfosArr.ItemIsCut := itemIsCutPat.1
+			else if RegExMatch(A_LoopField, "O)SellerIsCut:" A_Tab "(.*)", sellerIsCutPat)
+				hiddenInfosArr.SellerIsCut := sellerIsCutPat.1
 			else if RegExMatch(A_LoopField, "O)TimeStamp:" A_Tab "(.*)", timeStampPat)
 				hiddenInfosArr.TimeStamp := timeStampPat.1
 			else if RegExMatch(A_LoopField, "O)PID:" A_Tab "(.*)", pidPat)
@@ -1008,9 +1009,11 @@
 				hiddenInfosArr.WhisperSite := whisperSitePat.1
 			else if RegExMatch(A_LoopField, "O)WhisperLang:" A_Tab "(.*)", whisperLangPat)
 				hiddenInfosArr.WhisperLang := whisperLangPat.1
-			else if RegExMatch(A_LoopField, "O)AdditionalMsg:" A_Tab "(.*)", addMsgPat) {
-				hiddenInfosArr.AdditionalMsg := StrReplace(addMsgPat.1, "`n", "\n")
-				hiddenInfosArr.AdditionalMsg := StrReplace(hiddenInfosArr.AdditionalMsg, "`r", "\r")
+			else if RegExMatch(A_LoopField, "O)AdditionalMsg:" A_Tab "(.*)", addMsgPat)
+				hiddenInfosArr.AdditionalMsg := addMsgPat.1
+			else if RegExMatch(A_LoopField, "O)AdditionalMsgFull:" A_Tab "(.*)", addMsgFullPat) {
+				hiddenInfosArr.AdditionalMsgFull := StrReplace(addMsgFullPat.1, "`n", "\n")
+				hiddenInfosArr.AdditionalMsgFull := StrReplace(hiddenInfosArr.AdditionalMsgFull, "`r", "\n")
 			}
 		}
 
@@ -1026,14 +1029,16 @@
 		global PROGRAM
 		global GuiTradesBuyCompact, GuiTradesBuyCompact_Controls
 
-		cSlotCont := GUI_TradesBuyCompact.GetSlotContent(tabName)
+		cSlotCont := GUI_TradesBuyCompact.GetSlotContent(slotNum)
 
 		; Parsing infos
 		newTabSeller 		:= updateOnly && !contentInfos.Seller ? cSlotCont.Seller : contentInfos.Seller
 		newTabItem 			:= updateOnly && !contentInfos.Item ? cSlotCont.Item : contentInfos.Item
 		newTabPrice 		:= updateOnly && !contentInfos.Price ? cSlotCont.Price : contentInfos.Price
 		newTabStash 		:= updateOnly && !contentInfos.Stash ? cSlotCont.Stash : contentInfos.Stash
-		newTabAddMsg 		:= updateOnly && !contentInfos.AdditionalMsg ? cSlotCont.AdditionalMsg : contentInfos.AdditionalMsg
+		newTabAddMsgFull	:= updateOnly && !contentInfos.AdditionalMsgFull ? cSlotCont.AdditionalMsgFull : contentInfos.AdditionalMsgFull
+		newTabAddMsgFull	:= StrReplace(newTabAddMsgFull, "`n", "\n"), newTabAddMsgFull := StrReplace(newTabAddMsgFull, "`r", "\n")
+		newTabAddMsg 		:= RegExMatch( StrSplit(newTabAddMsgFull, "\n").1 , "O)\[\d+\:\d+\] \@(?:To|From)\: (.*)", outPat), newTabAddMsg := outPat.1
 		newTabTimeStamp 	:= updateOnly && !contentInfos.TimeStamp ? cSlotCont.TimeStamp : contentInfos.TimeStamp
 		newTabTimeSent 		:= updateOnly && !contentInfos.TimeSent ? cSlotCont.TimeSent : contentInfos.TimeSent
 		newTabCurrency		:= updateOnly && !contentInfos.Currency ? cSlotCont.Currency : contentInfos.Currency
@@ -1054,7 +1059,7 @@
 			timeYear := timeStampPat.1, timeMonth := timeStampPat.2, timeDay := timeStampPat.3
 			timeHour := timeStampPat.4, timeMin := timeStampPat.5, timeSec := timeStampPat.6
 		}
-		
+
 		newTabItemName := updateOnly && !contentInfos.ItemName ? cSlotCont.ItemName : itemName
 		newTabItemLevel := updateOnly && !contentInfos.ItemLevel ? cSlotCont.ItemLevel : itemLevel
 		newTabItemQuality := updateOnly && !contentInfos.ItemQuality ? cSlotCont.ItemQuality : itemQuality
@@ -1068,7 +1073,7 @@
 
 		AutoTrimStr(newTabSeller, newTabItem, newTabPrice, newTabStash, newTabAddMsg, newTabTimeStamp, newTabPID)
 		AutoTrimStr(newTabItemName, newTabItemLevel, newTabItemQuality, newTabStashLeague, newTabStashTab, newTabStashPosition)
-		AutoTrimStr(newTabUniqueID, newWhisperSite, newWhisperLang, newTabTimeSent, newTabCurrency)
+		AutoTrimStr(newTabUniqueID, newWhisperSite, newWhisperLang, newTabTimeSent, newTabCurrency, newTabAddMsgFull)
 
 		; Setting invisible wall of infos
 		hiddenInfosWall := ""
@@ -1078,6 +1083,7 @@
 		. "`n"	"Currency:"			A_Tab newTabCurrency
 		. "`n"	"Stash:"			A_Tab newTabStash
 		. "`n"	"AdditionalMsg:"	A_Tab newTabAddMsg
+		. "`n"	"AdditionalMsgFull:" A_Tab newTabAddMsgFull
 		. "`n"	"TimeSent:"			A_Tab newTabTimeSent
 		. "`n" 	"TimeStamp:"		A_Tab newTabTimeStamp
 		. "`n" 	"PID:"				A_Tab newTabPID
@@ -1098,7 +1104,7 @@
 		. "`n" 	"WhisperLang:"		A_Tab newWhisperLang
 
 		; Making sure price count isn't too long
-		priceW := Get_TextCtrlSize(contentInfos.price, GuiTradesBuyCompact.Font, GuiTradesBuyCompact.FontSize, "", "R1").W
+		priceW := Get_TextCtrlSize(newTabPrice, GuiTradesBuyCompact.Font, GuiTradesBuyCompact.FontSize, "", "R1").W
 		if (priceW >= GuiTradesBuyCompact.PriceTxt_MaxW)
 			priceW := GuiTradesBuyCompact.PriceTxt_MaxW
 
@@ -1117,7 +1123,10 @@
 					Break
 			}
 			newTabItem := cutStr "..."
+			hiddenInfosWall .= "`n" "ItemIsCut:"		A_Tab True
 		}
+		else
+			hiddenInfosWall .= "`n" "ItemIsCut:"		A_Tab False
 
 		if (newBuyerTxtSize >= buyerSlotSizeMax) {	
 			cutStr := newTabSeller
@@ -1128,14 +1137,16 @@
 					Break
 			}
 			newTabSeller := cutStr "..."
+			hiddenInfosWall .= "`n" "SellerIsCut:"		A_Tab True
 		}
+		else
+			hiddenInfosWall .= "`n" "SellerIsCut:"		A_Tab False
 
 		; Setting content
 		GuiControl, ,% GuiTradesBuyCompact["Slot" slotNum "_Controls"].hTEXT_HiddenInfos,% hiddenInfosWall
 		GuiControl, ,% GuiTradesBuyCompact["Slot" slotNum "_Controls"].hTEXT_ItemName,% newTabItem
 		GuiControl, ,% GuiTradesBuyCompact["Slot" slotNum "_Controls"].hTEXT_SellerName,% newTabSeller
 		GuiControl, ,% GuiTradesBuyCompact["Slot" slotNum "_Controls"].hTEXT_PriceCount,% newTabPrice
-		GuiControl, ,% GuiTradesBuyCompact["Slot" slotNum "_Controls"].hTEXT_AdditionalMsg,% newTabAddMsg
 		GuiControl, ,% GuiTradesBuyCompact["Slot" slotNum "_Controls"].hTEXT_TimeSent,% newTabTimeSent
 		
 		; Set price count width
@@ -1144,13 +1155,44 @@
 		; Move AdditionalMsg msg based on price count pos
 		ControlGetPos, x, y, w, h,,% "ahk_id " GuiTradesBuyCompact["Slot" slotNum "_Controls"].hTEXT_PriceCount
 		ControlGetPos, x2, y2, w2, h2,,% "ahk_id " GuiTradesBuyCompact["Slot" slotNum "_Controls"].hBTN_WhisperSeller
-		GuiControl, Move,% GuiTradesBuyCompact["Slot" slotNum "_Controls"].hTEXT_AdditionalMsg,% "x" x+w+10 " w" x+x2+w-5
+		GuiControl, Move,% GuiTradesBuyCompact["Slot" slotNum "_Controls"].hTEXT_AdditionalMsg,% "x" x+w+10 " w" x2-( x+w+10 )-10
+
+		addMsgSlotSizeMax := Get_ControlCoords("TradesBuyCompact_Slot" slotNum, GuiTradesBuyCompact["Slot" slotNum "_Controls"].hTEXT_AdditionalMsg).W
+		newAddMsgTxtSize := Get_TextCtrlSize(txt:=newTabAddMsg, fontName:=GuiTradesBuyCompact.Font, fontSize:=GuiTradesBuyCompact.Font_Size).W
+		if (newAddMsgTxtSize >= addMsgSlotSizeMax) {	
+			cutStr := newTabAddMsg
+			Loop % Ceil( StrLen(newTabAddMsg)/3 ) {
+				StringTrimRight, cutStr, cutStr, 3
+				newSize := Get_TextCtrlSize(txt:=cutStr "...", fontName:=GuiTradesBuyCompact.Font, fontSize:=GuiTradesBuyCompact.Font_Size).W
+				if !(newSize >= addMsgSlotSizeMax)
+					Break
+			}
+			newTabAddMsg := cutStr "..."
+		}
+		GuiControl, ,% GuiTradesBuyCompact["Slot" slotNum "_Controls"].hTEXT_AdditionalMsg,% newTabAddMsg
 
 		; Set currency IMG
-		coords := Get_ControlCoords("TradesBuyCompact_Slot" slotNum, GuiTradesBuyCompact["Slot" slotNum "_Controls"].hIMG_CurrencyIMG)
-		imgSlot_W := coords.W, imgSlot_H := coords.H	
-		hBitMap := Gdip_CreateResizedHBITMAP_FromFile(PROGRAM.CURRENCY_IMGS_FOLDER "\" newTabCurrency ".png", imgSlot_W, imgSlot_H, PreserveAspectRatio:=False)
-		SetImage(GuiTradesBuyCompact["Slot" slotNum "_Controls"].hIMG_CurrencyIMG, hBitmap)
+		if (newTabCurrency != cSlotCont.Currency) {
+			coords := Get_ControlCoords("TradesBuyCompact_Slot" slotNum, GuiTradesBuyCompact["Slot" slotNum "_Controls"].hIMG_CurrencyIMG)
+			imgSlot_W := coords.W, imgSlot_H := coords.H	
+			hBitMap := Gdip_CreateResizedHBITMAP_FromFile(PROGRAM.CURRENCY_IMGS_FOLDER "\" newTabCurrency ".png", imgSlot_W, imgSlot_H, PreserveAspectRatio:=False)
+			SetImage(GuiTradesBuyCompact["Slot" slotNum "_Controls"].hIMG_CurrencyIMG, hBitmap)
+		}
+	}
+
+	UpdateSlotContent(slotNum, slotName, newContent) {
+		global GuiTrades_Controls
+
+		if !IsNum(slotNum) {
+			AppendToLogs(A_ThisFunc "(slotNum=" tabID ")): tabID is not a number.")
+			return
+		}
+
+		slotContent := GUI_TradesBuyCompact.GetSlotContent(slotNum)
+		if (slotName = "AdditionalMsgFull") {
+			mergedCurrendAndNew := slotContent.AdditionalMsgFull?slotContent.AdditionalMsgFull "\n" newContent : newContent
+			GUI_TradesBuyCompact.SetSlotContent(slotNum, {AdditionalMsgFull:mergedCurrendAndNew}, isNewlyPushed:=False, updateOnly:=True)
+		}
 	}
 
 	SetSlotPosition(slotNum, slotPos) {

@@ -334,7 +334,7 @@ Monitor_GameLogs() {
 }
 
 Parse_GameLogs(strToParse) {
-	global PROGRAM, GuiTrades, LEAGUES
+	global PROGRAM, GuiTrades, LEAGUES, GuiTradesBuyCompact
 
 	; poe.trade
 	static poeTradeRegex 			:= {String:"(.*)Hi, I would like to buy your (.*) listed for (.*) in (.*)"
@@ -494,9 +494,11 @@ Parse_GameLogs(strToParse) {
 
 	Loop, Parse,% strToParse,`n,`r ; For each line
 	{
+		parsedLogsMsg := A_LoopField
+		
 		; Check if area joined
 		for index, regexStr in allAreaJoinedRegEx {
-			if RegExMatch(A_LoopField, "SO)" regexStr, joinedPat) {
+			if RegExMatch(parsedLogsMsg, "SO)" regexStr, joinedPat) {
 				instancePID := joinedPat.1, playerName := joinedPat.2
 				GUI_Trades.SetTabStyleJoinedArea(playerName)
 				if (PROGRAM.SETTINGS.SETTINGS_MAIN.BuyerJoinedAreaSFXToggle = "True") && FileExist(PROGRAM.SETTINGS.SETTINGS_MAIN.BuyerJoinedAreaSFXPath)
@@ -505,7 +507,7 @@ Parse_GameLogs(strToParse) {
 			}
 		}
 		for index, regexStr in allAreaLeftRegEx {
-			if RegExMatch(A_LoopField, "SO)" regexStr, leftPat) {
+			if RegExMatch(parsedLogsMsg, "SO)" regexStr, leftPat) {
 				instancePID := leftPat.1, playerName := leftPat.2
 				GUI_Trades.UnSetTabStyleJoinedArea(playerName)
 				break
@@ -514,7 +516,7 @@ Parse_GameLogs(strToParse) {
 
 		; Check if afk mode
 		for index, regexStr in allAfkOnRegEx {
-			if RegExMatch(A_LoopField, "iSO)" regexStr, afkOnPat) {
+			if RegExMatch(parsedLogsMsg, "iSO)" regexStr, afkOnPat) {
 				instancePID := afkOnPat.1
 				GuiTrades[instancePID "_AfkState"] := True
 				AppendToLogs("AFK mode for instance PID """ instancePID """ set to ON.")
@@ -522,7 +524,7 @@ Parse_GameLogs(strToParse) {
 			}
 		}
 		for index, regexStr in allAfkOffRegEx {
-			if RegExMatch(A_LoopField, "iSO)" regexStr, afkOffPat) {
+			if RegExMatch(parsedLogsMsg, "iSO)" regexStr, afkOffPat) {
 				instancePID := afkOffPat.1
 				GuiTrades[instancePID "_AfkState"] := False
 				AppendToLogs("AFK mode for instance PID """ instancePID """ set to OFF.")
@@ -531,14 +533,15 @@ Parse_GameLogs(strToParse) {
 		}
 
 		; Check if whisper sent
-		if RegExMatch(A_LoopField, "SO)^(?:[^ ]+ ){6}(\d+)\] (?=[^#$&%]).*@(?:To|À|An|Para|Кому|ถึง) (.*?): (.*)", whisperPat) {
+		isWhisperSent := isWhisper := isWhisperReceived := False
+		if RegExMatch(parsedLogsMsg, "SO)^(?:[^ ]+ ){6}(\d+)\] (?=[^#$&%]).*@(?:To|À|An|Para|Кому|ถึง) (.*?): (.*)", whisperPat) {
 			isWhisperSent := True, isWhisper := True
 			instancePID := whisperPat.1, whispNameFull := whisperPat.2, whispMsg := whisperPat.3
 			nameAndGuild := SplitNameAndGuild(whispNameFull), whispName := nameAndGuild.Name, whispGuild := nameAndGuild.Guild
 			GuiTrades.Last_Whisper_Sent_Name := whispName
 		}
 		; Check if whisper received
-		else if RegExMatch(A_LoopField, "SO)^(?:[^ ]+ ){6}(\d+)\] (?=[^#$&%]).*@(?:From|De|От кого|จาก|Von|Desde) (.*?): (.*)", whisperPat ) {
+		else if RegExMatch(parsedLogsMsg, "SO)^(?:[^ ]+ ){6}(\d+)\] (?=[^#$&%]).*@(?:From|De|От кого|จาก|Von|Desde) (.*?): (.*)", whisperPat ) {
 			isWhisperReceived := True, isWhisper := True
 			instancePID := whisperPat.1, whispNameFull := whisperPat.2, whispMsg := whisperPat.3
 			nameAndGuild := SplitNameAndGuild(whispNameFull), whispName := nameAndGuild.Name, whispGuild := nameAndGuild.Guild
@@ -729,46 +732,63 @@ Parse_GameLogs(strToParse) {
 				currencyName := currencyInfos.Is_Listed?currencyInfos.Name : "Unknown"
 				currencyCount := RegExReplace(tradePrice, "\D")
 				
-				tradeInfos := {Seller:tradeBuyerName, Item:tradeItemFull, Price:currencyCount, Currency:currencyName, Stash:tradeStashFull, AdditionalMsg:tradeOther
+				tradeOther := tradeOther?"[" A_Hour ":" A_Min "] @To: " tradeOther : ""
+				tradeInfos := {Seller:tradeBuyerName, Item:tradeItemFull, Price:currencyCount, Currency:currencyName, Stash:tradeStashFull, AdditionalMsgFull:tradeOther
 					,TimeStamp:timeStamp, PID:instancePID, TimeSent: A_Hour ":" A_Min
 					,WhisperSite:tradeRegExName, UniqueID:GUI_TradesBuyCompact.GenerateUniqueID(), WhisperLang:whisperLang}
 				err := GUI_TradesBuyCompact.PushNewTab(tradeInfos)
 			}
 		}
-		else if (!matchingRegEx && isWhisper=True) { ; No trading whisper match
+		else if (parsedLogsMsg && !matchingRegEx && isWhisper=True) { ; No trading whisper match
 			; Add whisper to buyer's tab if existing
-			Loop % GuiTrades.Tabs_Count {
-				tabInfos := Gui_Trades.GetTabContent(A_Index)
-				if (tabInfos.Buyer = whispName) {
-					Gui_Trades.UpdateSlotContent(A_Index, "Other", "[" A_Hour ":" A_Min "] " whispMsg)
-					GUI_Trades.SetTabStyleWhisperReceived(whispName)
+			if (isWhisperReceived) {
+				Loop % GuiTrades.Tabs_Count {
+					tabInfos := Gui_Trades.GetTabContent(A_Index)
+					if (tabInfos.Buyer = whispName) {
+						Gui_Trades.UpdateSlotContent(A_Index, "Other", "[" A_Hour ":" A_Min "] " whispMsg)
+						GUI_Trades.SetTabStyleWhisperReceived(whispName)
+					}
+				}
+				Loop % GuiTradesBuyCompact.Tabs_Count {
+					tabInfos := GUI_TradesBuyCompact.GetSlotContent(A_Index)
+					if (tabInfos.Seller = whispName) {
+						GUI_TradesBuyCompact.UpdateSlotContent(A_Index, "AdditionalMsgFull", "[" A_Hour ":" A_Min "] @From: " whispMsg)
+					}
+				}
+				if (PROGRAM.SETTINGS.SETTINGS_MAIN.RegularWhisperSFXToggle = "True") && FileExist(PROGRAM.SETTINGS.SETTINGS_MAIN.RegularWhisperSFXPath)
+					SoundPlay,% PROGRAM.SETTINGS.SETTINGS_MAIN.RegularWhisperSFXPath
+
+				if !WinActive("ahk_pid " instancePID) { ; If the instance is not active
+					if ( PROGRAM.SETTINGS.SETTINGS_MAIN.ShowTabbedTrayNotificationOnWhisper = "True" ) {
+						trayTitle := StrReplace(PROGRAM.TRANSLATIONS.TrayNotifications.RegularWhisperReceived_Title, "%name%", whispName)
+						TrayNotifications.Show(trayTitle, whispMsg)
+					}
+				}
+
+				pbNoteOnRegularWhisper := PROGRAM.SETTINGS.SETTINGS_MAIN.PushBulletOnWhisperMessage
+				if (pbNoteOnRegularWhisper = "True") {
+					if (PROGRAM.SETTINGS.SETTINGS_MAIN.PushBulletOnlyWhenAFK = "True" && GuiTrades[instancePID "_AfkState"] = True)
+						doPBNote := True
+					else if (PROGRAM.SETTINGS.SETTINGS_MAIN.PushBulletOnlyWhenAFK = "False")
+						doPBNote := True
+				}
+
+				if (doPBNote = True) && StrLen(PROGRAM.SETTINGS.SETTINGS_MAIN.PushBulletToken) > 5 {
+					cmdLineParamsObj := {}
+					cmdLineParamsObj.PB_Token := PROGRAM.SETTINGS.SETTINGS_MAIN.PushBulletToken
+					cmdLineParamsObj.PB_Title := StrReplace(PROGRAM.TRANSLATIONS.TrayNotifications.RegularWhisperReceived_Title, "%name%", whispName)
+					cmdLineParamsObj.PB_Message := whispMsg
+					
+					GoSub, Parse_GameLogs_PushBulletNotifications_SA
 				}
 			}
-			if (PROGRAM.SETTINGS.SETTINGS_MAIN.RegularWhisperSFXToggle = "True") && FileExist(PROGRAM.SETTINGS.SETTINGS_MAIN.RegularWhisperSFXPath)
-				SoundPlay,% PROGRAM.SETTINGS.SETTINGS_MAIN.RegularWhisperSFXPath
-
-			if !WinActive("ahk_pid " instancePID) { ; If the instance is not active
-				if ( PROGRAM.SETTINGS.SETTINGS_MAIN.ShowTabbedTrayNotificationOnWhisper = "True" ) {
-					trayTitle := StrReplace(PROGRAM.TRANSLATIONS.TrayNotifications.RegularWhisperReceived_Title, "%name%", whispName)
-					TrayNotifications.Show(trayTitle, whispMsg)
+			else if (isWhisperSent) {
+				Loop % GuiTradesBuyCompact.Tabs_Count {
+					tabInfos := GUI_TradesBuyCompact.GetSlotContent(A_Index)
+					if (tabInfos.Seller = whispName) {
+						GUI_TradesBuyCompact.UpdateSlotContent(A_Index, "AdditionalMsgFull", "[" A_Hour ":" A_Min "] @To: " whispMsg)
+					}
 				}
-			}
-
-			pbNoteOnRegularWhisper := PROGRAM.SETTINGS.SETTINGS_MAIN.PushBulletOnWhisperMessage
-			if (pbNoteOnRegularWhisper = "True") {
-				if (PROGRAM.SETTINGS.SETTINGS_MAIN.PushBulletOnlyWhenAFK = "True" && GuiTrades[instancePID "_AfkState"] = True)
-					doPBNote := True
-				else if (PROGRAM.SETTINGS.SETTINGS_MAIN.PushBulletOnlyWhenAFK = "False")
-					doPBNote := True
-			}
-
-			if (doPBNote = True) && StrLen(PROGRAM.SETTINGS.SETTINGS_MAIN.PushBulletToken) > 5 {
-				cmdLineParamsObj := {}
-				cmdLineParamsObj.PB_Token := PROGRAM.SETTINGS.SETTINGS_MAIN.PushBulletToken
-				cmdLineParamsObj.PB_Title := StrReplace(PROGRAM.TRANSLATIONS.TrayNotifications.RegularWhisperReceived_Title, "%name%", whispName)
-				cmdLineParamsObj.PB_Message := whispMsg
-				
-				GoSub, Parse_GameLogs_PushBulletNotifications_SA
 			}
 		}
 	}

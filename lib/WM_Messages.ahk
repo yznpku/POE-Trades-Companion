@@ -362,7 +362,31 @@ WM_MOUSEMOVE() {
 		return
 	}
 
-	; tooltip % GuiSettings.CustomButtons_IsSlotTaken[7] "`n" GuiSettings.CustomButtons_IsSlotTaken[8] "`n" GuiSettings.CustomButtons_IsSlotTaken[9] 
+	else if IsContaining(A_Gui, "TradesBuyCompact_Slot") {
+		global GuiTradesBuyCompact
+		slotNum := RegExReplace(A_Gui, "\D")
+		underMouseCtrl := Get_UnderMouse_CtrlHwnd()
+
+		if (underMouseCtrl = GuiTradesBuyCompact["Slot" slotNum "_Controls"].hIMG_CurrencyIMG) {
+			; GUI_TradesBuyCompact.GttSlotContent(slotNum).Currency
+			ShowToolTip(GUI_TradesBuyCompact.GetSlotContent(slotNum).Currency, ,,radiusX:=5, radiusY:=5)
+		}
+		else if (underMouseCtrl = GuiTradesBuyCompact["Slot" slotNum "_Controls"].hTEXT_ItemName) {
+			slotInfos := GUI_TradesBuyCompact.GetSlotContent(slotNum)
+			if (slotInfos.ItemIsCut)
+				ShowToolTip(slotInfos.Item, ,,radiusX:=5, radiusY:=5)
+		}
+		else if (underMouseCtrl = GuiTradesBuyCompact["Slot" slotNum "_Controls"].hTEXT_SellerName) {
+			slotInfos := GUI_TradesBuyCompact.GetSlotContent(slotNum)
+			if (slotInfos.SellerIsCut)
+				ShowToolTip(slotInfos.Seller, ,,radiusX:=5, radiusY:=5)
+		}
+		else if (underMouseCtrl = GuiTradesBuyCompact["Slot" slotNum "_Controls"].hTEXT_AdditionalMsg) {
+			slotInfos := GUI_TradesBuyCompact.GetSlotContent(slotNum)
+			if (slotInfos.AdditionalMsg != slotInfos.AdditionalMsgFull)
+				ShowToolTip( StrReplace(slotInfos.AdditionalMsgFull, "\n", "`n") , ,,radiusX:=5, radiusY:=5)
+		}
+	}
 
 	_prevInfos := currentButtonInfos
 	_prevMouseX := _mouseX, _prevMouseY := _mouseY
