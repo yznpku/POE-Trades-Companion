@@ -3,6 +3,7 @@ A Mother's Parting Gift
 Abandoned Wealth
 Aberrant Fossil
 Abyss
+Abyssal Incubator
 Academy
 Acid Caverns
 Acid Lakes
@@ -68,9 +69,13 @@ Canyon
 Carcass
 Cartographer's Chisel
 Cartographer's Delight
+Cartographer's Incubator
 Castle Ruins
 Catacombs
 Cavern
+Celestial Armoursmith's Incubator
+Celestial Blacksmith's Incubator
+Celestial Jeweller's Incubator
 Cells
 Cemetery
 Channel
@@ -119,6 +124,7 @@ Deafening Essence of Woe
 Deafening Essence of Wrath
 Deafening Essence of Zeal
 Death
+Decadent Incubator
 Defiled Cathedral
 Dense Fossil
 Desert
@@ -128,6 +134,7 @@ Dialla's Subjugation
 Dig
 Divine Orb
 Divine Vessel
+Diviner's Incubator
 Doedre's Madness
 Domination
 Dunes
@@ -135,9 +142,11 @@ Dungeon
 Dying Anguish
 Earth Drinker
 Eber's Key
+Eldritch Incubator
 Emperor of Purity
 Emperor's Luck
 Enchanted Fossil
+Enchanted Incubator
 Encrusted Fossil
 Engineer's Orb
 Esh's Breachstone
@@ -154,20 +163,26 @@ Excavation
 Faceted Fossil
 Factory
 Fields
+Fine Incubator
 Flooded Mine
 Forbidden Power
+Foreboding Incubator
 Forge of the Phoenix
+Fossilised Incubator
 Fractured Fossil
 Fragment of the Chimera
 Fragment of the Hydra
 Fragment of the Minotaur
 Fragment of the Phoenix
+Fragmented Incubator
 Frigid Fossil
 Fungal Hollow
 Gardens
+Gemcutter's Incubator
 Gemcutter's Prism
 Gemcutter's Promise
 Geode
+Geomancer's Incubator
 Ghetto
 Gift of the Gemling Queen
 Gilded Ambush Scarab
@@ -209,6 +224,7 @@ Hunter's Reward
 Iceberg
 Immortal Resolve
 Infested Valley
+Infused Incubator
 Invasion
 Inya's Key
 Ivory Temple
@@ -261,11 +277,13 @@ Mortal Rage
 Mortal set
 Mud Geyser
 Museum
+Mysterious Incubator
 Necromancy Net
 Necropolis
 Nemesis
 No Traces
 Oasis
+Obscured Incubator
 Offering to the Goddess
 Onslaught
 Orb of Alchemy
@@ -280,6 +298,8 @@ Orb of Regret
 Orb of Scouring
 Orb of Transmutation
 Orchard
+Ornate Incubator
+Otherworldly Incubator
 Overgrown Ruin
 Overgrown Shrine
 Palace
@@ -317,6 +337,7 @@ Powerful Alchemical Resonator
 Powerful Chaotic Resonator
 Precinct
 Pride Before the Fall
+Primal Incubator
 Prime Alchemical Resonator
 Prime Chaotic Resonator
 Primitive Alchemical Resonator
@@ -540,6 +561,8 @@ Silver Coin
 Simple Iron Net
 Simple Rope Net
 Simple Steel Net
+Singular Incubator
+Skittering Incubator
 Spider Forest
 Spider Lair
 Splinter of Chayula
@@ -562,6 +585,7 @@ Tangled Fossil
 Tempest
 Temple
 Terrace
+Thaumaturge's Incubator
 Thaumaturgical Net
 The Admirer
 The Aesthete
@@ -732,7 +756,18 @@ Thicket
 Three Faces in the Dark
 Three Voices
 Thunderous Skies
+Time-Lost Incubator
 Time-Lost Relic
+Timeless Eternal Empire Emblem
+Timeless Eternal Empire Splinter
+Timeless Karui Emblem
+Timeless Karui Splinter
+Timeless Maraketh Emblem
+Timeless Maraketh Splinter
+Timeless Templar Emblem
+Timeless Templar Splinter
+Timeless Vaal Emblem
+Timeless Vaal Splinter
 Timeworn Reliquary Key
 Torment
 Torture Chamber
@@ -772,5 +807,6 @@ Wasteland
 Waterways
 Wealth and Power
 Wharf
+Whispering Incubator
 Xoph's Breachstone
 Yriel's Key

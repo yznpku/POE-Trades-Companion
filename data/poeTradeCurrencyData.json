@@ -14,6 +14,9 @@
 	"Abyss":{
 		"ID":315
 	},
+	"Abyssal Incubator":{
+		"ID":784
+	},
 	"Academy":{
 		"ID":316
 	},
@@ -221,6 +224,9 @@
 	"Cartographer's Delight":{
 		"ID":143
 	},
+	"Cartographer's Incubator":{
+		"ID":782
+	},
 	"Castle Ruins":{
 		"ID":334
 	},
@@ -229,6 +235,15 @@
 	},
 	"Cavern":{
 		"ID":336
+	},
+	"Celestial Armoursmith's Incubator":{
+		"ID":796
+	},
+	"Celestial Blacksmith's Incubator":{
+		"ID":797
+	},
+	"Celestial Jeweller's Incubator":{
+		"ID":798
 	},
 	"Cells":{
 		"ID":337
@@ -383,6 +398,9 @@
 	"Death":{
 		"ID":146
 	},
+	"Decadent Incubator":{
+		"ID":789
+	},
 	"Defiled Cathedral":{
 		"ID":536
 	},
@@ -412,6 +430,9 @@
 	"Divine Vessel":{
 		"ID":512
 	},
+	"Diviner's Incubator":{
+		"ID":790
+	},
 	"Doedre's Madness":{
 		"ID":149
 	},
@@ -436,6 +457,9 @@
 		"Abridged":"eber's",
 		"ID":36
 	},
+	"Eldritch Incubator":{
+		"ID":799
+	},
 	"Emperor of Purity":{
 		"ID":152
 	},
@@ -444,6 +468,9 @@
 	},
 	"Enchanted Fossil":{
 		"ID":698
+	},
+	"Enchanted Incubator":{
+		"ID":792
 	},
 	"Encrusted Fossil":{
 		"ID":699
@@ -497,14 +524,23 @@
 	"Fields":{
 		"ID":539
 	},
+	"Fine Incubator":{
+		"ID":780
+	},
 	"Flooded Mine":{
 		"ID":540
 	},
 	"Forbidden Power":{
 		"ID":623
 	},
+	"Foreboding Incubator":{
+		"ID":801
+	},
 	"Forge of the Phoenix":{
 		"ID":356
+	},
+	"Fossilised Incubator":{
+		"ID":788
 	},
 	"Fractured Fossil":{
 		"ID":703
@@ -525,6 +561,9 @@
 		"Abridged":"phoenix",
 		"ID":42
 	},
+	"Fragmented Incubator":{
+		"ID":785
+	},
 	"Frigid Fossil":{
 		"ID":684
 	},
@@ -536,6 +575,9 @@
 		"ID":541
 	},
 	"gcp":"Gemcutter's Prism",
+	"Gemcutter's Incubator":{
+		"ID":804
+	},
 	"Gemcutter's Prism":{
 		"Abridged":"gcp",
 		"ID":5
@@ -545,6 +587,9 @@
 	},
 	"Geode":{
 		"ID":542
+	},
+	"Geomancer's Incubator":{
+		"ID":793
 	},
 	"Ghetto":{
 		"ID":357
@@ -672,6 +717,9 @@
 	},
 	"Infested Valley":{
 		"ID":546
+	},
+	"Infused Incubator":{
+		"ID":787
 	},
 	"Invasion":{
 		"ID":502
@@ -845,6 +893,9 @@
 	"Museum":{
 		"ID":373
 	},
+	"Mysterious Incubator":{
+		"ID":803
+	},
 	"Necromancy Net":{
 		"ID":642
 	},
@@ -860,6 +911,9 @@
 	"noon":"Sacrifice at Noon",
 	"Oasis":{
 		"ID":375
+	},
+	"Obscured Incubator":{
+		"ID":800
 	},
 	"offering":"Offering to the Goddess",
 	"Offering to the Goddess":{
@@ -912,6 +966,12 @@
 	},
 	"Orchard":{
 		"ID":376
+	},
+	"Ornate Incubator":{
+		"ID":794
+	},
+	"Otherworldly Incubator":{
+		"ID":783
 	},
 	"Overgrown Ruin":{
 		"ID":377
@@ -1027,6 +1087,9 @@
 	},
 	"Pride Before the Fall":{
 		"ID":180
+	},
+	"Primal Incubator":{
+		"ID":791
 	},
 	"Prime Alchemical Resonator":{
 		"ID":678
@@ -1709,6 +1772,12 @@
 	"Simple Steel Net":{
 		"ID":638
 	},
+	"Singular Incubator":{
+		"ID":781
+	},
+	"Skittering Incubator":{
+		"ID":786
+	},
 	"Spider Forest":{
 		"ID":471
 	},
@@ -1774,6 +1843,9 @@
 	},
 	"Terrace":{
 		"ID":477
+	},
+	"Thaumaturge's Incubator":{
+		"ID":802
 	},
 	"Thaumaturgical Net":{
 		"ID":641
@@ -2285,8 +2357,41 @@
 	"Thunderous Skies":{
 		"ID":307
 	},
+	"Time-Lost Incubator":{
+		"ID":795
+	},
 	"Time-Lost Relic":{
 		"ID":308
+	},
+	"Timeless Eternal Empire Emblem":{
+		"ID":807
+	},
+	"Timeless Eternal Empire Splinter":{
+		"ID":812
+	},
+	"Timeless Karui Emblem":{
+		"ID":805
+	},
+	"Timeless Karui Splinter":{
+		"ID":810
+	},
+	"Timeless Maraketh Emblem":{
+		"ID":806
+	},
+	"Timeless Maraketh Splinter":{
+		"ID":811
+	},
+	"Timeless Templar Emblem":{
+		"ID":808
+	},
+	"Timeless Templar Splinter":{
+		"ID":813
+	},
+	"Timeless Vaal Emblem":{
+		"ID":809
+	},
+	"Timeless Vaal Splinter":{
+		"ID":814
 	},
 	"Timeworn Reliquary Key":{
 		"ID":708
@@ -2411,6 +2516,9 @@
 		"ID":493
 	},
 	"whetstone":"Blacksmith's Whetstone",
+	"Whispering Incubator":{
+		"ID":779
+	},
 	"wisdom":"Scroll of Wisdom",
 	"Xoph's Breachstone":{
 		"ID":62
