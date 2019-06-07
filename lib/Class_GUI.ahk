@@ -97,11 +97,18 @@ Class GUI {
 		Gui, %name%:Margin, %xMargin%, %yMargin%
 	}
 
-	Color(name, _color) {
+	Color(name, _winColor="", _ctrlColor="") {
 		global
 
-		Gui, %name%:Color, %_color%
-		Gui%name%["Background_Color"] := _color
+		if (_winColor != "" && _ctrlColor="")
+			Gui, %name%:Color, %_winColor%
+		else if (_winColor = "" && _ctrlColor != "")
+			Gui, %name%:Color, , %_ctrlColor%
+		else if (_winColor != "" && _ctrlColor != "")
+			Gui, %name%:Color, %_winColor%, %_ctrlColor%
+
+		Gui%name%["Background_Color"] := _winColor!=""?_winColor : Gui%name%["Background_Color"]
+		Gui%name%["Controls_Color"] := _ctrlColor!=""?_ctrlColor : Gui%name%["Controls_Color"]
 	}
 
 	Add(name, type, opts="", content="", imageBtnStyle="", imageBtnFontHandle="", imageBtnFontSize="") {
