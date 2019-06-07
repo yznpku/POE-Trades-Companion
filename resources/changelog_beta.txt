@@ -1,3 +1,29 @@
+1.15.BETA_2 (07 June 2019)
+
+	Finally, an interface to buy items, just in time before the new league.
+	I originally wasn't planning to work on it until 1.16, but the changelogs for 1.15 were just underwhelming.
+	So here it is, after about a week of hard work.
+
+	I may make this new interface compatible with incoming whispers in the future, and give the option to switch between the original tabs interface and this new compact one. There are two buttons on the toolbar that don't have any use for now. One of them will most likely be a DND sort-of thing, that would prevent the interface from being triggered on whispers. Also maybe an autoreply button? But it would have to be pressed on every new area, and it would be a bad idea to automate it due to the "Terms of Use".
+	
+
+	Features:
+	- A brand new compact interface for buying items.
+	It consists of:
+		A toolbar with handy buttons such as going to your hideout or opening a league info cheat sheets.
+		A search bar that allows you to filter the sellers (after being party invited for example) or items.
+		Two arrows to scroll up or down. Additionally, you can use the mouse wheel.
+		An interface with multiple convenient buttons to interact with your seller (Whisper them / Go to their hideout / Leave the party / Thank them)
+		
+	Sending a trading whisper will update this interface to make the trade easier when you'll get invited.
+	Up to four slots can be shown at once. Use the arrow buttons or the mouse wheel to scroll between your other slots.
+	
+	Right clicking allows you to close all tabs at once, or close only the other tabs with the same item from the slot you right clicked on.
+	
+	Fixes:
+	- PushBullet notifications would only show the seller name, and not the trade informations.
+	
+
 1.15.BETA_1 (31 May 2019)
 	Features:
 	- French, Traditional Chinese, Simplified Chinese translated interfaces.
