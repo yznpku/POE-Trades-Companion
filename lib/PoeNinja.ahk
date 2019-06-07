@@ -25,6 +25,33 @@ PoeNinja_GetUniqueMapOverview(league) {
     return uniqueMapsJSON
 }
 
+PoeNinja_GetCurrencyOverview(league) {
+    url := "https://poe.ninja/api/Data/GetCurrencyOverview?league=" league
+	headers := "Content-Type: text/html; charset=UTF-8"
+    options := "TimeOut: 25"
+
+    WinHttpRequest(url, data:="", headers, options), html := data
+
+    currencyJSON := JSON.Load(html)
+    return currencyJSON
+}
+
+PoeNinja_CreateCurrencyPngFiles(league) {
+    global PROGRAM
+    currencyJSON := PoeNinja_GetCurrencyOverview(league)
+    currency := {}
+
+    ; get only needed infos
+    for index, nothing in currencyJSON.currencyDetails {
+        currencyName := currencyJSON.currencyDetails[index].name
+        currencyImgLink := currencyJSON.currencyDetails[index].icon
+
+        if (currencyImgLink) {
+            Download(currencyImgLink, PROGRAM.CURRENCY_IMGS_FOLDER "\" currencyName ".png")
+        }
+    }
+}
+
 PoeNinja_CreateMapDataFile(league) {
     /*  Create our map data file from map infos of poe.ninja
     */
