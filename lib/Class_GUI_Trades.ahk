@@ -1055,7 +1055,7 @@
 		else  {
 			Gui_Trades.SetTransparency_Inactive()
 			if (PROGRAM.SETTINGS.SETTINGS_MAIN.AllowClicksToPassThroughWhileInactive = "True")
-			Gui_Trades.Enable_ClickThrough()
+				Gui_Trades.Enable_ClickThrough()
 		}
 	}
 
