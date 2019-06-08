@@ -1,3 +1,14 @@
+1.15.BETA_3 (08 June 2019)
+
+	Changes:
+	- Per request, made the transparency and clickthrough settings to work with the new interface.
+	Since you won't be able to use the toolbar, until I can get to work on a better solution, you can access the League Sheet menu from the tray icon menu (right click on the tray icon).
+	
+	Fixes:
+	- Moving the transparency sliders in the Settings interface allows to preview the change.
+	This preview wasn't working with the Trades interface while it was minimized.
+	
+
 1.15.BETA_2 (07 June 2019)
 
 	Finally, an interface to buy items, just in time before the new league.
