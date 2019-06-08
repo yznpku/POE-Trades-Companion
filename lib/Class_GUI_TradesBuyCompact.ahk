@@ -417,6 +417,15 @@
 		OnMessage(0x20A, "WM_MOUSEWHEEL")
 		OnMessage(0x201, "WM_LBUTTONDOWN")
 		OnMessage(0x202, "WM_LBUTTONUP")
+
+		GUI_TradesBuyCompact.SetTransparency_Inactive()
+		; if (PROGRAM.SETTINGS.SETTINGS_MAIN.AutoMinimizeOnAllTabsClosed = "True")
+			; GUI_TradesBuyCompact.Minimize()
+		if (PROGRAM.SETTINGS.SETTINGS_MAIN.AllowClicksToPassThroughWhileInactive = "True")
+			GUI_TradesBuyCompact.Enable_ClickThrough()
+
+		Gui_TradesBuyCompact.ResetPositionIfOutOfBounds()
+
 		Return
 	
 		GUI_TradesBuyCompact_Slot_Size:
@@ -490,6 +499,60 @@
 		return
 	}
 
+	Enable_ClickThrough() {
+		global PROGRAM, GuiTradesBuyCompact
+		Gui, TradesBuyCompact: +LastFound
+		WinSet, ExStyle, +0x20
+		; Gui, TradesMinimized: +LastFound
+		; WinSet, ExStyle, +0x20
+	}
+
+	Disable_ClickThrough() {
+		global GuiTradesBuyCompact
+		Gui, TradesBuyCompact: +LastFound
+		WinSet, ExStyle, -0x20
+		; Gui, TradesMinimized: +LastFound
+		; WinSet, ExStyle, -0x20
+	}
+
+	SetTransparencyPercent(transPercent) {
+		global GuiTradesBuyCompact
+
+		if !IsNum(transPercent) {
+			AppendToLogs(A_ThisFunc "(transPercent=" transPercent "): Not a number. Setting transparency to max.")
+			transValue := 255
+		}
+		else
+			transValue := (255/100)*transPercent
+
+		Gui, TradesBuyCompact:+LastFound
+		WinSet, Transparent,% transValue
+		; Gui, TradesMinimized:+LastFound
+		; WinSet, Transparent,% transValue
+	}
+
+	SetTransparency_Automatic() {
+		global GuiTradesBuyCompact
+		if (GuiTradesBuyCompact.Tabs_Count = 0)
+			GUI_TradesBuyCompact.SetTransparency_Inactive()
+		else
+			GUI_TradesBuyCompact.SetTransparency_Active()
+	}
+
+	SetTransparency_Inactive() {
+		global PROGRAM, GuiTradesBuyCompact
+		transPercent := PROGRAM.SETTINGS.SETTINGS_MAIN.NoTabsTransparency
+		Gui_TradesBuyCompact.SetTransparencyPercent(transPercent)
+		if (transPercent = 0)
+			GUI_TradesBuyCompact.Enable_ClickThrough()
+	}
+
+	SetTransparency_Active() {
+		global PROGRAM, GuiTradesBuyCompact
+		transPercent := PROGRAM.SETTINGS.SETTINGS_MAIN.TabsOpenTransparency
+		Gui_TradesBuyCompact.SetTransparencyPercent(transPercent)
+	}
+
 	CloseAllTabs() {
 		global GuiTradesBuyCompact
 
@@ -527,7 +590,7 @@
 	}
 
 	RecreateGUI(tabsLimit="") {
-		global GuiTradesBuyCompact
+		global PROGRAM, GuiTradesBuyCompact
 		tabsCount := GuiTradesBuyCompact.Tabs_Count
 		maxTabsPerRow := GuiTradesBuyCompact.Max_Tabs_Per_Row
 		tabRange := GUI_TradesBuyCompact.GetTabsRange()
@@ -550,6 +613,16 @@
 
 		Loop % tabRange.2-maxTabsPerRow
 			GUI_TradesBuyCompact.ScrollDown()
+
+		if (tabsCount) {
+			Gui_TradesBuyCompact.SetTransparency_Active()
+			Gui_TradesBuyCompact.Disable_ClickThrough()
+		}
+		else  {
+			Gui_TradesBuyCompact.SetTransparency_Inactive()
+			if (PROGRAM.SETTINGS.SETTINGS_MAIN.AllowClicksToPassThroughWhileInactive = "True")
+				Gui_TradesBuyCompact.Enable_ClickThrough()
+		}
 	}
 
 	IncreaseTabsLimit() {
@@ -865,11 +938,11 @@
 			; GuiControl,TradesMinimized:,% GuiTradesMinimized_Controls["hTEXT_Title"],% "(0)"
 			GuiControl,% "TradesBuyCompact: +c" SKIN.Compact.Settings.COLORS.Title_No_Trades,% GuiTradesBuyCompact_Controls["hTEXT_Title"]
 			; GuiControl,% "TradesMinimized: +c" SKIN.Compact.Settings.COLORS.Title_No_Trades,% GuiTradesMinimized_Controls["hTEXT_Title"]
-			; if (PROGRAM.SETTINGS.SETTINGS_MAIN.AllowClicksToPassThroughWhileInactive = "True")
-				; Gui_Trades.Enable_ClickThrough()
+			if (PROGRAM.SETTINGS.SETTINGS_MAIN.AllowClicksToPassThroughWhileInactive = "True")
+				Gui_TradesBuyCompact.Enable_ClickThrough()
 			; if (PROGRAM.SETTINGS.SETTINGS_MAIN.AutoMinimizeOnAllTabsClosed = "True")
 				; Gui_Trades.Minimize("True")
-			; GUI_Trades.SetTransparency_Inactive()
+			Gui_TradesBuyCompact.SetTransparency_Inactive()
 			Gui_TradesBuyCompact.Redraw()
 		}
 		else {
@@ -934,8 +1007,9 @@
 			; GuiControl,TradesMinimized:,% GuiTradesMinimized_Controls["hTEXT_Title"],% "(" GuiTrades.Tabs_Count ")"
 			GuiControl,% "TradesBuyCompact: +c" SKIN.Compact.Settings.COLORS.Title_Trades,% GuiTradesBuyCompact_Controls["hTEXT_Title"]
 			; GuiControl,% "TradesMinimized: +c" SKIN.Compact.Settings.COLORS.Title_Trades,% GuiTradesMinimized_Controls["hTEXT_Title"]
-			; Gui_Trades.Disable_ClickThrough()
-			Gui_TradesBuyCompact.Tabs_Count.Redraw()
+			Gui_TradesBuyCompact.SetTransparency_Active()
+			Gui_TradesBuyCompact.Disable_ClickThrough()
+			Gui_TradesBuyCompact.Redraw()
 		}
 
 		GuiTradesBuyCompact.Height_Maximized := guiHeight := GuiTradesBuyCompact.Tabs_Count = 0 ? GuiTradesBuyCompact.Height_NoRow
