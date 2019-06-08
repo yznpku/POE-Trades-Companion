@@ -981,10 +981,12 @@ Class GUI_Settings {
 
 		if (CtrlName = "hCB_AllowClicksToPassThroughWhileInactive") {
 			if (trueFalse = "True") {
+				GUI_TradesBuyCompact.Enable_ClickThrough()
 				GUI_Trades.Enable_ClickThrough()
 				Menu, Tray, Check,% PROGRAM.TRANSLATIONS.TrayMenu.Clickthrough
 			}
 			else {
+				GUI_TradesBuyCompact.Disable_ClickThrough()
 				GUI_Trades.Disable_ClickThrough()
 				Menu, Tray, UnCheck,% PROGRAM.TRANSLATIONS.TrayMenu.Clickthrough
 			}
@@ -1022,7 +1024,7 @@ Class GUI_Settings {
 	}
 
 	TabSettingsMain_OnTransparencySliderMove(CtrlName) {
-		global PROGRAM, GuiTrades
+		global PROGRAM, GuiTrades, GuiTradesBuyCompact
 		iniFile := PROGRAM.INI_FILE
 		transValue := GUI_Settings.Submit(CtrlName)
 
@@ -1039,16 +1041,21 @@ Class GUI_Settings {
 
 		Gui, Trades:+LastFound
 		WinSet, Transparent,% (255/100)*transValue
+		Gui, TradesMinimized:+LastFound
+		WinSet, Transparent,% (255/100)*transValue
+		Gui, TradesBuyCompact:+LastFound
+		WinSet, Transparent,% (255/100)*transValue
 
 		if IsIn(A_GuiControlEvent,"Normal,4") {
-			if (GuiTrades.Tabs_Count > 0)
-				transRevert := PROGRAM.SETTINGS.SETTINGS_MAIN.TabsOpenTransparency
-			else if (GuiTrades.Tabs_Count = 0)
-				transRevert := PROGRAM.SETTINGS.SETTINGS_MAIN.NoTabsTransparency
-			else transRevert := 255
+			transRevertTabs := GuiTrades.Tabs_Count > 0 ? PROGRAM.SETTINGS.SETTINGS_MAIN.TabsOpenTransparency : GuiTrades.Tabs_Count = 0 ? PROGRAM.SETTINGS.SETTINGS_MAIN.NoTabsTransparency : 255
+			transRevertCompact := GuiTradesBuyCompact.Tabs_Count > 0 ? PROGRAM.SETTINGS.SETTINGS_MAIN.TabsOpenTransparency : GuiTradesBuyCompact.Tabs_Count = 0 ? PROGRAM.SETTINGS.SETTINGS_MAIN.NoTabsTransparency : 255
 
 			Gui, Trades:+LastFound
-			Winset, Transparent,% (255/100)*transRevert
+			Winset, Transparent,% (255/100)*transRevertTabs
+			Gui, TradesMinimized:+LastFound
+			Winset, Transparent,% (255/100)*transRevertTabs
+			Gui, TradesBuyCompact:+LastFound
+			Winset, Transparent,% (255/100)*transRevertCompact
 		}
 	}
 
