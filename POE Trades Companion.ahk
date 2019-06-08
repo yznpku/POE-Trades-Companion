@@ -351,6 +351,7 @@ Return
 
 #Include Class_GUI.ahk
 #Include Class_GUI_BetaTasks.ahk
+#Include Class_GUI_CheatSheet.ahk
 #Include Class_GUI_ImportPre1dot13Settings.ahk
 #Include Class_GUI_SimpleWarn.ahk
 #Include Class_Gui_ChooseInstance.ahk

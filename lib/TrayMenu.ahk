@@ -16,6 +16,12 @@
 	; if (PROGRAM.IS_BETA = "True")
 		; Menu,Tray,Add,Beta tasks, Tray_OpenBetaTasks 
 	Menu,Tray,Add
+	Menu,TraySheetSub,Add,Betrayal, Tray_OpenSheet
+	Menu,TraySheetSub,Add,Delve, Tray_OpenSheet
+	Menu,TraySheetSub,Add,Essence, Tray_OpenSheet
+	Menu,TraySheetSub,Add,Incursion, Tray_OpenSheet
+	Menu,Tray,Add,Leagues Sheets, :TraySheetSub
+	Menu,Tray,Add
 	Menu,Tray,Add,% trans.Clickthrough, Tray_ToggleClickthrough ; Clickthrough?
 	Menu,Tray,Add,% trans.LockPosition, Tray_ToggleLockPosition ; Lock position?
 	Menu,Tray,Add
@@ -53,6 +59,18 @@
 	Menu, Tray, Icon,% trans.Stats,% PROGRAM.ICONS_FOLDER "\chart.ico"
 	Menu, Tray, Icon,% trans.Reload,% PROGRAM.ICONS_FOLDER "\refresh.ico"
 	Menu, Tray, Icon,% trans.Close,% PROGRAM.ICONS_FOLDER "\x.ico"
+}
+
+Tray_OpenSheet() {
+	which := A_ThisMenuItem="Betrayal"?"Betrayal"
+		: A_ThisMenuItem="Delve"?"Delve"
+		: A_ThisMenuItem="Essence"?"Essence"
+		: A_ThisMenuItem="Incursion"?"Incursion"
+		: ""
+	if (!which)
+		return
+
+	GUI_CheatSheet.Show(which)
 }
 
 Tray_OpenBetaTasks() {
