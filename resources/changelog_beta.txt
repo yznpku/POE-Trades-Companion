@@ -1,3 +1,9 @@
+1.15.BETA_4 (09 June 2019)
+	
+	Fixes:
+	- The script would hang when using a skin other than the Path of Exile one.
+	The new interface is only available with the PoE skin right now, and it wasn't being forced correctly.
+
 1.15.BETA_3 (08 June 2019)
 
 	Changes:
