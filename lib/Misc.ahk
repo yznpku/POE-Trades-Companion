@@ -307,10 +307,9 @@ Get_CompactSkinAssetsAndSettings() {
 	global PROGRAM
 	iniFile := PROGRAM.INI_FILE
 
-	skinName := "Path of Exile" ; TO_DO assets for other skins
-
 	presetName := INI.Get(iniFile, "SETTINGS_CUSTOMIZATION_SKINS",, 1).Preset
-	skinName := INI.Get(iniFile, "SETTINGS_CUSTOMIZATION_SKINS",, 1).Skin
+	; skinName := INI.Get(iniFile, "SETTINGS_CUSTOMIZATION_SKINS",, 1).Skin
+	skinName := "Path of Exile" ; TO_DO assets for other skins
 	skinFolder := PROGRAM.SKINS_FOLDER "\" skinName "\Compact"
 	skinAssetsFile := PROGRAM.SKINS_FOLDER "\" skinName "\Compact" "\Assets.ini"
 	skinSettingsFile := PROGRAM.SKINS_FOLDER "\" skinName "\Compact" "\Settings.ini"
