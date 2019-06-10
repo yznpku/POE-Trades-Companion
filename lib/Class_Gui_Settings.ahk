@@ -380,7 +380,6 @@ Class GUI_Settings {
 		. ",hEDIT_PushBulletToken,hCB_PushBulletOnTradingWhisper,hCB_PushBulletOnPartyMessage,hCB_PushBulletOnWhisperMessage,hCB_PushBulletOnlyWhenAfk"
 		. ",hEDIT_PoeAccounts"
 		GUI_Settings.TabsSettingsMain_SetUserSettings()
-		GUI_Settings.TabSettingsMain_EnableSubroutines()
 
 		/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
 		*	TAB CUSTOMIZATION SKINS
@@ -427,7 +426,6 @@ Class GUI_Settings {
 		GuiSettings.TabCustomizationSkins_Controls := "hDDL_SkinPreset,hLB_SkinBase,hEDIT_SkinScalingPercentage,hLB_SkinFont,hCB_UseRecommendedFontSettings,"
 		. "hTEXT_FontSize,hEDIT_SkinFontSize,hEDIT_SkinFontQuality,hDDL_ChangeableFontColorTypes,hPROGRESS_ColorSquarePreview,hBTN_ShowColorPicker,hBTN_RecreateTradesGUI"
 		GUI_Settings.TabCustomizationSkins_SetUserSettings()
-		GUI_Settings.TabCustomizationSkins_EnableSubroutines()
 
 		/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
 		*	TAB CUSTOMIZATION BUTTONS
@@ -533,7 +531,6 @@ Class GUI_Settings {
 		GuiSettings.TabCustomizationButtons_Controls := thisTabCtrlsList
 		GUI_Settings.TabCustomizationButtons_SetAvailableActions()
 		GUI_Settings.TabCustomizationButtons_SetUserSettings()
-		GUI_Settings.TabCustomizationButtons_EnableSubroutines()
 
 		/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
 		*	TAB HOTKEYS BASIC
@@ -592,7 +589,6 @@ Class GUI_Settings {
 		GUI_Settings.TabHotkeysBasic_UpdateActionsList()
 		GUI_Settings.TabHotkeysBasic_SetTabSettings()
 		GuiSettings.Hotkeys_Basic_TabControls := thisTabCtrlsList
-		GUI_Settings.TabHotkeysBasic_EnableSubroutines()
 
 		/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
 		*	TAB HOTKEYS ADVANCED
@@ -638,7 +634,6 @@ Class GUI_Settings {
 		GuiSettings.Hotkeys_Advanced_TabControls := "hDDL_HotkeyAdvExistingList,hEDIT_HotkeyAdvName,hHK_HotkeyAdvHotkey,hDDL_HotkeyAdvActionType"
 			. ",hEDIT_HotkeyAdvActionContent,hBTN_HotkeyAdvSaveChangesToAction,hBTN_HotkeyAdvAddAsNewAction,hLV_HotkeyAdvActionsList"
 			. ",hBTN_HotkeyAdvAddNewProfile,hBTN_HotkeyAdvDeleteCurrentProfile,hEDIT_HotkeyAdvHotkey,hBTN_ChangeHKType"
-		GUI_Settings.TabHotkeysAdvanced_EnableSubroutines()
 
 		/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
 		*	TAB MISC UPDATING
@@ -674,7 +669,6 @@ Class GUI_Settings {
 		GuiSettings.TabMiscUpdating_Controls := "hGB_UpdateCheck,hTEXT_LatestBetaVer,hTEXT_LatestStableVer,hTEXT_YourVersion,hBTN_CheckForUpdates,hTEXT_MinsAgo"
 			. ",hDDL_CheckForUpdate,hCB_UseBeta,hBTN_CheckForUpdates,hCB_DownloadUpdatesAutomatically"
 		GUI_Settings.TabMiscUpdating_SetUserSettings()
-		GUI_Settings.TabMiscUpdating_EnableSubroutines()
 
 		/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
 		*	TAB MISC ABOUT
@@ -732,7 +726,15 @@ Class GUI_Settings {
 		*	SHOW
 		*/
 
+		GUI_Settings.TabSettingsMain_EnableSubroutines()
+		GUI_Settings.TabCustomizationSkins_EnableSubroutines()
+		GUI_Settings.TabCustomizationButtons_EnableSubroutines()
+		GUI_Settings.TabHotkeysBasic_EnableSubroutines()
+		GUI_Settings.TabHotkeysAdvanced_EnableSubroutines()
+		GUI_Settings.TabMiscUpdating_EnableSubroutines()
+
 		Gui.Show("Settings", "h" guiHeight " w" guiWidth " NoActivate Hide")
+		
 		; Gui.Show("Settings", "h" guiHeight " w" guiWidth " x-" guiWidth+10 " y" 1010-guiHeight " NoActivate " param)
 		detectHiddenWin := A_DetectHiddenWindows
 		DetectHiddenWindows, On
@@ -1604,10 +1606,13 @@ Class GUI_Settings {
 		if (GuiSettings.Is_Changing_Preset)
 			Return
 
-		scalePercent := GUI_Settings.Submit("hEDIT_SkinScalingPercentage")
-		GuiControl, Settings:ChooseString,% GuiSettings_Controls.hDDL_SkinPreset,% "User Defined"
+		KeyWait, LButton, U
+		SetTimer, GUI_Settings_TabCustomizationSkins_OnScalePercentageChange_Sub, -500
 
-		GUI_Settings.TabCustomizationSkins_SaveSettings()
+		; scalePercent := GUI_Settings.Submit("hEDIT_SkinScalingPercentage")
+		; GuiControl, Settings:ChooseString,% GuiSettings_Controls.hDDL_SkinPreset,% "User Defined"
+
+		; GUI_Settings.TabCustomizationSkins_SaveSettings()
 	}
 
 	TabCustomizationSkins_OnFontQualityChange() {
@@ -4192,3 +4197,8 @@ Class GUI_Settings {
 		GUI_Settings.Redraw()
 	}
 }
+
+GUI_Settings_TabCustomizationSkins_OnScalePercentageChange_Sub:
+	GuiControl, Settings:ChooseString,% GuiSettings_Controls.hDDL_SkinPreset,% "User Defined"
+	GUI_Settings.TabCustomizationSkins_SaveSettings()
+return
