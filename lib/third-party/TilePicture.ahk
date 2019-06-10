@@ -6,6 +6,9 @@
 		Gui, Example:Add, Picture,x0 y0 hWndhTile,% pathToYourPicture
 		TilePicture("Example", hTile, 500, 300)
 */
+	if (guiName = "" || TileHwnd = "")
+		Return
+
 	picturePos := Get_ControlCoords(guiName, TileHwnd) ; Get size of the picture
 	w := picturePos.W, h := picturePos.H
 
@@ -31,6 +34,9 @@
 			}
 		}
 		DllCall("BitBlt",uint,hCDC2,int,x,int,y,int,w,int,h,uint,hCDC,int,0,int,0,uint,0xcc0020) ; Build the tiled image in the compatible heretofore empty bitmap
+
+		if (w = 0 || h = 0) && (A_Index > 10)
+			break
 	}
 
 	; Cleanup
