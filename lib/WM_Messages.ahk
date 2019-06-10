@@ -155,6 +155,7 @@ WM_MOUSEMOVE() {
 	global PROGRAM, DEBUG
 	global GuiTrades, GuiTrades_Controls
 	global GuiSettings, GuiSettings_Controls
+	global GuiTradesBuyCompact, GuiTradesBuyCompact_Controls
 	global MOUSEDRAG_CTRL
 	static _mouseX, _mouseY, _prevMouseX, _prevMouseY, _prevInfos
 	static curControl, prevControl
@@ -327,7 +328,7 @@ WM_MOUSEMOVE() {
 			Set_Format("Float")
 		}
 
-		timer := (DEBUG.SETTINGS.instant_settings_tooltips)?(-100):(-1000)
+		timer := (DEBUG.SETTINGS.instant_settings_tooltips)?(-10):(-1000)
 		curControl := "", curControlHwnd := Get_UnderMouse_CtrlHwnd()
 		for key, value in GuiSettings_Controls {
 			if (curControlHwnd = GuiSettings_Controls[key]) {
@@ -338,58 +339,76 @@ WM_MOUSEMOVE() {
 		If ( curControl != prevControl ) {
 			controlTip := GUI_Settings.GetControlToolTip(curControl)
 			if ( controlTip )
-				SetTimer, WM_MOUSEMOVE_DisplayToolTip,% timer
+				SetTimer, WM_MOUSEMOVE_GuiSettings_DisplayToolTip,% timer
 			Else
 				Gosub, WM_MOUSEMOVE_RemoveToolTip
 			prevControl := curControl
 		}
 		return
-		
-		WM_MOUSEMOVE_DisplayToolTip:
-			controlTip := GUI_Settings.GetControlToolTip(curControl)
-			if ( controlTip ) {
-				try
-					ShowToolTip(controlTip)
-				SetTimer, WM_MOUSEMOVE_RemoveToolTip, -20000
-			}
-			else {
-				RemoveToolTip()
-			}
-		return
-		
-		WM_MOUSEMOVE_RemoveToolTip:
-			RemoveToolTip()
-		return
-	}
+}
 
-	else if IsContaining(A_Gui, "TradesBuyCompact_Slot") {
-		global GuiTradesBuyCompact
+	else if IsIn(A_Gui, "TradesBuyCompact,TradesBuyCompactSearch") ||IsContaining(A_Gui, "TradesBuyCompact_Slot") {
 		slotNum := RegExReplace(A_Gui, "\D")
+		if (slotNum)
+			slotInfos := GUI_TradesBuyCompact.GetSlotContent(slotNum)
 		underMouseCtrl := Get_UnderMouse_CtrlHwnd()
 
-		if (underMouseCtrl = GuiTradesBuyCompact["Slot" slotNum "_Controls"].hIMG_CurrencyIMG) {
-			; GUI_TradesBuyCompact.GttSlotContent(slotNum).Currency
-			ShowToolTip(GUI_TradesBuyCompact.GetSlotContent(slotNum).Currency, ,,radiusX:=5, radiusY:=5)
-		}
-		else if (underMouseCtrl = GuiTradesBuyCompact["Slot" slotNum "_Controls"].hTEXT_ItemName) {
-			slotInfos := GUI_TradesBuyCompact.GetSlotContent(slotNum)
-			if (slotInfos.ItemIsCut)
-				ShowToolTip(slotInfos.Item, ,,radiusX:=5, radiusY:=5)
-		}
-		else if (underMouseCtrl = GuiTradesBuyCompact["Slot" slotNum "_Controls"].hTEXT_SellerName) {
-			slotInfos := GUI_TradesBuyCompact.GetSlotContent(slotNum)
-			if (slotInfos.SellerIsCut)
-				ShowToolTip(slotInfos.Seller, ,,radiusX:=5, radiusY:=5)
-		}
-		else if (underMouseCtrl = GuiTradesBuyCompact["Slot" slotNum "_Controls"].hTEXT_AdditionalMsg) {
-			slotInfos := GUI_TradesBuyCompact.GetSlotContent(slotNum)
-			if (slotInfos.AdditionalMsg != slotInfos.AdditionalMsgFull)
-				ShowToolTip( StrReplace(slotInfos.AdditionalMsgFull, "\n", "`n") , ,,radiusX:=5, radiusY:=5)
+		static ctrlToolTip
+		ctrlToolTip := (underMouseCtrl = GuiTradesBuyCompact["Slot" slotNum "_Controls"].hIMG_CurrencyIMG) ? GUI_TradesBuyCompact.GetSlotContent(slotNum).Currency
+			: (underMouseCtrl = GuiTradesBuyCompact["Slot" slotNum "_Controls"].hTEXT_ItemName) && (slotInfos.ItemIsCut) ? slotInfos.Item
+			: (underMouseCtrl = GuiTradesBuyCompact["Slot" slotNum "_Controls"].hTEXT_SellerName) && (slotInfos.SellerIsCut) ? slotInfos.Seller
+			: (underMouseCtrl = GuiTradesBuyCompact["Slot" slotNum "_Controls"].hTEXT_AdditionalMsg) && (slotInfos.AdditionalMsg != slotInfos.AdditionalMsgFull) ? StrReplace(slotInfos.AdditionalMsgFull, "\n", "`n")
+			: (underMouseCtrl = GuiTradesBuyCompact["Slot" slotNum "_Controls"].hBTN_Close) ? "Close this trade window"
+			: (underMouseCtrl = GuiTradesBuyCompact["Slot" slotNum "_Controls"].hBTN_WhisperSeller) ? "Whisper this seller"
+			: (underMouseCtrl = GuiTradesBuyCompact["Slot" slotNum "_Controls"].hBTN_HideoutSeller) ? "Go to seller's hideout"
+			: (underMouseCtrl = GuiTradesBuyCompact["Slot" slotNum "_Controls"].hBTN_KickSelfSeller) ? "Kick yourself from party"
+			: (underMouseCtrl = GuiTradesBuyCompact["Slot" slotNum "_Controls"].hBTN_ThankSeller) ? "Thank the seller"
+			: (underMouseCtrl = GuiTradesBuyCompact_Controls.hBTN_Minimize) ? "Minimize this interface"
+			: (underMouseCtrl = GuiTradesBuyCompact_Controls.hBTN_Maximize) ? "Maximize this interface"
+			: (underMouseCtrl = GuiTradesBuyCompact_Controls.hBTN_Hideout) ? "Go to your hideout"
+			: (underMouseCtrl = GuiTradesBuyCompact_Controls.hBTN_LeagueHelp) ? "See league informative sheets"
+			: (underMouseCtrl = GuiTradesBuyCompact_Controls.hEDIT_HiddenSearchBar || underMouseCtrl = GuiTradesBuyCompact_Controls.hTEXT_SearchBarFake) ? "Search by seller or item"
+			: (underMouseCtrl = GuiTradesBuyCompact_Controls.hIMG_SearchBarCross) ? "Clear the searchbox"
+			: (underMouseCtrl = GuiTradesBuyCompact_Controls.hBTN_LeftArrow) ? "Scroll upwards"
+			: (underMouseCtrl = GuiTradesBuyCompact_Controls.hBTN_RightArrow) ? "Scroll downwards"		
+			: ""
+		
+		If (underMouseCtrl != prevControl) {
+			if (ctrlToolTip) {
+				timer := (DEBUG.SETTINGS.instant_settings_tooltips)?(-10)
+					: IsIn(underMouseCtrl, GuiTradesBuyCompact["Slot" slotNum "_Controls"].hTEXT_SellerName "," GuiTradesBuyCompact["Slot" slotNum "_Controls"].hTEXT_AdditionalMsg "," GuiTradesBuyCompact["Slot" slotNum "_Controls"].hTEXT_ItemName "," GuiTradesBuyCompact["Slot" slotNum "_Controls"].hIMG_CurrencyIMG) ? -10
+					: (-1000)
+				SetTimer, WM_MOUSEMOVE_GuiTradesBuyCompact_DisplayToolTip,% timer
+			}
+
+			prevControl := underMouseCtrl
 		}
 	}
 
 	_prevInfos := currentButtonInfos
 	_prevMouseX := _mouseX, _prevMouseY := _mouseY
+	return
+
+	WM_MOUSEMOVE_GuiTradesBuyCompact_DisplayToolTip:
+		try ShowToolTip(ctrlToolTip)
+		SetTimer, WM_MOUSEMOVE_RemoveToolTip, -5000
+	return
+
+	WM_MOUSEMOVE_GuiSettings_DisplayToolTip:
+		controlTip := GUI_Settings.GetControlToolTip(curControl)
+		if ( controlTip ) {
+			try
+				ShowToolTip(controlTip)
+			SetTimer, WM_MOUSEMOVE_RemoveToolTip, -20000
+		}
+		else {
+			RemoveToolTip()
+		}
+	return
+
+	WM_MOUSEMOVE_RemoveToolTip:
+		RemoveToolTip()
+	return
 }
 
 WM_MOUSEWHEEL(wParam, lParam) {
