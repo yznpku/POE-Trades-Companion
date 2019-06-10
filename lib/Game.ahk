@@ -729,7 +729,7 @@ Parse_GameLogs(strToParse) {
 			}
 			else if (isWhisperSent=True) {
 				currencyInfos := Get_CurrencyInfos(tradePrice, dontWriteLogs:=False)
-				currencyName := currencyInfos.Is_Listed?currencyInfos.Name : "Unknown"
+				currencyName := currencyInfos.Is_Listed?currencyInfos.Name : tradePrice
 				currencyCount := RegExReplace(tradePrice, "\D")
 				
 				tradeOther := tradeOther?"[" A_Hour ":" A_Min "] @To: " tradeOther : ""
