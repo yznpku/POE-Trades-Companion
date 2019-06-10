@@ -1,3 +1,18 @@
+1.15.BETA_5 (10 June 2019)
+
+	Changes:
+	- Per request, added a tray option to disable the new compact buy interface.
+	- Unimplemented buttons of the new compact buy interface have been hidden until they are given a function.
+	- Added various tooltips when hovering buttons on the new compact buy interface.
+	
+	Fixes:
+	- Would always try to retrieve the currently logged character name on every command, slowing down actions.
+	Your character name will now only be retrieved once. If you switch character and wish to benefit of the %myself% variable, you will have to reload the tool.
+	- Updated maps location data with the more accurate data from poe.ninja.
+	- Compact buy interface: Would show "Unknown" instead of the currency name from the whisper, when the currency is unknown.
+	- Wouldn't re-create the new compact buy interface when clicking on the "Preview" button from the Settings, and when closing the Settings interface.
+	
+
 1.15.BETA_4 (09 June 2019)
 	
 	Fixes:
