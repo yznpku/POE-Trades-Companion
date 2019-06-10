@@ -209,8 +209,8 @@
 		imageBtnLog .= Gui.Add("TradesBuyCompact", "ImageButton", "x" MinMax_X " y" MinMax_Y " w" MinMax_W " h" MinMax_H " BackgroundTrans hwndhBTN_Maximize Hidden", "", styles.Maximize, PROGRAM.FONTS[settings_fontName], settings_fontSize) ; Max
 		imageBtnLog .= Gui.Add("TradesBuyCompact", "ImageButton", "x" HideoutBtn_X " y" HideoutBtn_Y " w" HideoutBtn_W " h" HideoutBtn_H " BackgroundTrans hwndhBTN_Hideout", "", Styles.Button_Hideout, PROGRAM.FONTS[settings_fontName], settings_fontSize)
 		imageBtnLog .= Gui.Add("TradesBuyCompact", "ImageButton", "x+" SpaceBetweenBtns " yp wp hp BackgroundTrans hwndhBTN_LeagueHelp", "L", styles.Button_Special, PROGRAM.FONTS[settings_fontName], settings_fontSize)
-		imageBtnLog .= Gui.Add("TradesBuyCompact", "ImageButton", "x+" SpaceBetweenBtns " yp wp hp BackgroundTrans hwndhBTN_What2", "?", styles.Button_Special, PROGRAM.FONTS[settings_fontName], settings_fontSize)
-		imageBtnLog .= Gui.Add("TradesBuyCompact", "ImageButton", "x+" SpaceBetweenBtns " yp wp hp BackgroundTrans hwndhBTN_What3", "?", styles.Button_Special, PROGRAM.FONTS[settings_fontName], settings_fontSize)
+		imageBtnLog .= Gui.Add("TradesBuyCompact", "ImageButton", "x+" SpaceBetweenBtns " yp wp hp BackgroundTrans hwndhBTN_What2 Hidden", "?", styles.Button_Special, PROGRAM.FONTS[settings_fontName], settings_fontSize)
+		imageBtnLog .= Gui.Add("TradesBuyCompact", "ImageButton", "x+" SpaceBetweenBtns " yp wp hp BackgroundTrans hwndhBTN_What3 Hidden", "?", styles.Button_Special, PROGRAM.FONTS[settings_fontName], settings_fontSize)
 
 		lastBtnCoords := Get_ControlCoords("TradesBuyCompact", GuiTradesBuyCompact_Controls.hBTN_What3)
 		minBtnCoords := Get_ControlCoords("TradesBuyCompact", GuiTradesBuyCompact_Controls.hBTN_Minimize)
