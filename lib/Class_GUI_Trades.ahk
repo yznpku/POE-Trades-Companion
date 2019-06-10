@@ -65,7 +65,7 @@
 		tradeInfoBox := Get_TextCtrlSize("Buyer:`nItem:`nPrice:`nLocation:`nOther:", settings_fontName, settings_fontSize, "", "R5")
 
 		; Gui size and positions
-		borderSize := Floor(1*scaleMult)
+		borderSize := Floor(1*scaleMult), borderSize := borderSize >= 1 ? borderSize : 1
 		guiHeightNoRow_NoSpecial := (30+25)*scaleMult + 2 + 5 + tradeInfoBox.H + 5 ; (header+tabs bar) + undertab line + 5 off + info + 5 off
 		guiHeightNoRow := guiHeightNoRow_NoSpecial+(scaleMult*25)+5 ; 25 = SpecialButton_H
 
@@ -174,7 +174,7 @@
 		*/
 
 		Gui.Margin("Trades", 0, 0)
-		Gui.Color("Trades", "White")
+		Gui.Color("Trades", SKIN.Assets.Misc.Transparency_Color)
 		Gui.Font("Trades", settings_fontName, settings_fontSize, settings_fontQual)	
 
 		; = = TAB CTRL = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =

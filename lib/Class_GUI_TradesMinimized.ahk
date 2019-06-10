@@ -68,7 +68,7 @@
 		*/
 
 		Gui.Margin("TradesMinimized", 0, 0)
-		Gui.Color("TradesMinimized", "White")
+		Gui.Color("TradesMinimized", SKIN.Assets.Misc.Transparency_Color)
 		Gui.Font("TradesMinimized", settings_fontName, settings_fontSize, settings_fontQual)
 
 		; = = BORDERS = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =

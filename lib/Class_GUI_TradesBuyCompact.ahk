@@ -1,6 +1,6 @@
 ﻿Class GUI_TradesBuyCompact {
 	
-	Create(_maxTabsToRender=50) {
+	Create(_maxTabsToRender=3) {
 		global PROGRAM, GAME, SKIN
 		global GuiTradesBuyCompact, GuiTradesBuyCompact_Controls, GuiTradesBuyCompact_Submit
 		static guiCreated, maxTabsToRender, borderSize
@@ -38,7 +38,7 @@
 		twoTextLineSize := Get_TextCtrlSize("SomeText", settings_fontName, settings_fontSize, "", "R1").H*2, twoTextLineSize += ((10+12)*scaleMult) ; 10+12, based on ctrl pacing
 
 		; Gui size and positions
-		borderSize := Floor(1*scaleMult)
+		borderSize := Floor(1*scaleMult), borderSize := borderSize >= 1 ? borderSize : 1
 		GuiTradesBuyCompact.Height_NoRow 		:= guiHeight_NoRow := borderSize+(30*scaleMult)+borderSize ; 1 border, 33 header, 1 border
 		GuiTradesBuyCompact.Height_OneRow	 	:= guiHeight_OneRow := guiHeight_NoRow + (22*scaleMult) + twoTextLineSize + (borderSize*1) ; 22 header2
 		GuiTradesBuyCompact.Height_TwoRow	 	:= guiHeight_TwoRow := guiHeight_OneRow + twoTextLineSize + (borderSize*2)
@@ -50,7 +50,7 @@
 		guiHeight := guiFullHeight-(2*borderSize), guiWidth := guiFullWidth-(2*borderSize)
 		guiMinimizedHeight := (30*scaleMult)+(2*borderSize) ; 30 = Header_H
 		leftMost := borderSize, rightMost := guiWidth+borderSize
-		upMost := borderSize, downMost := guiHeight-borderSize
+		upMost := borderSize, downMost := guiHeight+borderSize
 
 		; Tabs count
 		maxTabsPerRow := 4
@@ -183,7 +183,7 @@
 		*/
 
 		Gui.Margin("TradesBuyCompact", 0, 0)
-		Gui.Color("TradesBuyCompact", "White")
+		Gui.Color("TradesBuyCompact", SKIN.Compact.Assets.Misc.Transparency_Color)
 		Gui.Font("TradesBuyCompact", settings_fontName, settings_fontSize, settings_fontQual)
 		Gui, TradesBuyCompact:Default
 
@@ -191,14 +191,14 @@
 		bordersPositions := [{Name:"Top", X:0, Y:0, W:guiFullWidth, H:borderSize}
 							,{Name:"Left", X:0, Y:0, W:borderSize, H:guiFullHeight}
 							,{Name:"Right", X:guiFullWidth-borderSize, Y:0, W:borderSize, H:guiFullHeight}
-							,{Name:"Bottom_1", X:0, Y:Header_Y-borderSize, W:guiFullWidth, H:borderSize}
+							,{Name:"Bottom_1", X:0, Y:Header_Y+Header_H, W:guiFullWidth, H:borderSize}
 							,{Name:"Bottom_2", X:0, Y:guiHeight_OneRow-borderSize, W:guiFullWidth, H:borderSize}
 							,{Name:"Bottom_3", X:0, Y:guiHeight_TwoRow-borderSize, W:guiFullWidth, H:borderSize}
 							,{Name:"Bottom_4", X:0, Y:guiHeight_ThreeRow-borderSize, W:guiFullWidth, H:borderSize}
 							,{Name:"Bottom_5", X:0, Y:guiHeight_FourRow-borderSize, W:guiFullWidth, H:borderSize}]
 
 		Loop % bordersPositions.Count() {
-			Gui.Add("TradesBuyCompact", "Progress", "x" bordersPositions[A_Index]["X"] " y" bordersPositions[A_Index]["Y"] " w" bordersPositions[A_Index]["W"] " h" bordersPositions[A_Index]["H"] " Background" SKIN.Compact.Settings.COLORS.Border " hwndhPROGRESS_Border" bordersPositions[A_Index].Name)
+			Gui.Add("TradesBuyCompact", "Progress", "x" bordersPositions[A_Index]["X"] " y" bordersPositions[A_Index]["Y"] " w" bordersPositions[A_Index]["W"] " h" bordersPositions[A_Index]["H"] " Background" SKIN.Compact.Settings.COLORS.Border " c" SKIN.Compact.Settings.COLORS.Border " hwndhPROGRESS_Border" bordersPositions[A_Index].Name, 100)
 		}
 
 		; = = HEADER BAR = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
@@ -337,7 +337,7 @@
 		Loop % maxTabsToRender { ; Creating a child GUI for each
 			Gui.New("TradesBuyCompact_Slot" A_Index, "-Caption -Border +AlwaysOnTop +ParentTradesBuyCompact +LabelGUI_TradesBuyCompact_Slot_ +HwndhGuiTradesBuyCompact_Slot" A_Index, "POE TC - Buy Item Slot " A_Index)
 			Gui.Margin("TradesBuyCompact_Slot" A_Index, 0, 0)
-			Gui.Color("TradesBuyCompact_Slot" A_Index, "White")
+			Gui.Color("TradesBuyCompact_Slot" A_Index, SKIN.Compact.Assets.Misc.Transparency_Color)
 			Gui.Font("TradesBuyCompact_Slot" A_Index, settings_fontName, settings_fontSize, settings_fontQual)
 
 			Gui.Add("TradesBuyCompact_Slot" A_Index, "Text", "x0 y0 w0 h0 BackgroundTrans Hidden hwndhTEXT_HiddenInfos", "")
@@ -786,8 +786,8 @@
 		GuiControl, TradesBuyCompact:Show,% GuiTradesBuyCompact_Controls.hBTN_Maximize
 		GuiControl, TradesBuyCompact:Hide,% GuiTradesBuyCompact_Controls.hBTN_Minimize
 
-		GuiControl, TradesBuyCompact:Show,% GuiTradesBuyCompact_Controls.hPROGRESS_BorderBottomMinimized
-		GuiControl, TradesBuyCompact:Hide,% GuiTradesBuyCompact_Controls.hPROGRESS_BorderBottom
+		GuiControl, TradesBuyCompact:Show,% GuiTradesBuyCompact_Controls.hPROGRESS_BorderBottom_1
+		; GuiControl, TradesBuyCompact:Hide,% GuiTradesBuyCompact_Controls.hPROGRESS_BorderBottom
 
 		GuiTradesBuyCompact.Is_Maximized := False
 		GuiTradesBuyCompact.Is_Minimized := True
@@ -811,8 +811,8 @@
 		GuiControl, TradesBuyCompact:Show,% GuiTradesBuyCompact_Controls.hBTN_Minimize
 		GuiControl, TradesBuyCompact:Hide,% GuiTradesBuyCompact_Controls.hBTN_Maximize
 
-		GuiControl, TradesBuyCompact:Show,% GuiTradesBuyCompact_Controls.hPROGRESS_BorderBottom
-		GuiControl, TradesBuyCompact:Hide,% GuiTradesBuyCompact_Controls.hPROGRESS_BorderBottomMinimized
+		; GuiControl, TradesBuyCompact:Show,% GuiTradesBuyCompact_Controls.hPROGRESS_BorderBottom
+		GuiControl, TradesBuyCompact:Hide,% GuiTradesBuyCompact_Controls.hPROGRESS_BorderBottom_1
 
 		GuiTradesBuyCompact.Is_Maximized := True
 		GuiTradesBuyCompact.Is_Minimized := False
