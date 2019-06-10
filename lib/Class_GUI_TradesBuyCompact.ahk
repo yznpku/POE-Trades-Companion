@@ -945,6 +945,7 @@
 			if (contentInfos.Seller = loopedcontentInfos.Seller)
 			&& (contentInfos.Item = loopedcontentInfos.Item)
 			&& (contentInfos.Price = loopedcontentInfos.Price)
+			&& (contentInfos.Currency = loopedcontentInfos.Currency)
 			&& (contentInfos.Stash = loopedcontentInfos.Stash)
 				Return A_Index
 		}
