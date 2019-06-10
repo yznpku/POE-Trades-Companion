@@ -785,6 +785,7 @@ Class GUI_Settings {
 
 		Gui_TradesMinimized.Create()
 		Gui_Trades.RecreateGUI()
+		GUI_TradesBuyCompact.RecreateGUI()
 	}
 
 	OnPictureLinkClick(picName) {
@@ -1548,6 +1549,7 @@ Class GUI_Settings {
 		Declare_SkinAssetsAndSettings()
 		Gui_TradesMinimized.Create()
 		Gui_Trades.RecreateGUI()
+		GUI_TradesBuyCompact.RecreateGUI()
 	}
 
 	/* * On Change
