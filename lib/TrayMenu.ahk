@@ -16,6 +16,7 @@
 	; if (PROGRAM.IS_BETA = "True")
 		; Menu,Tray,Add,Beta tasks, Tray_OpenBetaTasks 
 	Menu,Tray,Add
+	Menu,Tray,Add,Disable buy interface?, Tray_ToggleDisableBuyInterface
 	Menu,TraySheetSub,Add,Betrayal, Tray_OpenSheet
 	Menu,TraySheetSub,Add,Delve, Tray_OpenSheet
 	Menu,TraySheetSub,Add,Essence, Tray_OpenSheet
@@ -34,6 +35,11 @@
 	Menu,Tray,Add,% trans.Close, Tray_Exit ; Close
 	Menu,Tray,Icon
 	Menu,Tray,Default,% trans.Settings ; On Double click
+
+	if (PROGRAM.SETTINGS.SETTINGS_MAIN.DisableBuyInterface = "True")
+		Menu, Tray, Check, Disable buy interface?
+	else
+		Menu, Tray, Uncheck, Disable buy interface?
 
 	; Pos lock check
 	if (PROGRAM.SETTINGS.SETTINGS_MAIN.TradesGUI_Locked = "True")
@@ -61,6 +67,22 @@
 	Menu, Tray, Icon,% trans.Close,% PROGRAM.ICONS_FOLDER "\x.ico"
 }
 
+Tray_ToggleDisableBuyInterface() {
+	global PROGRAM
+	iniFile := PROGRAM.INI_FILE
+
+	isTrue := PROGRAM.SETTINGS.SETTINGS_MAIN.DisableBuyInterface="True"?True:False
+	newToggle := isTrue?"False":"True"
+	Menu, Tray,% newToggle="True"?"Check":"Uncheck", Disable buy interface?
+
+	INI.Set(iniFile, "SETTINGS_MAIN", "DisableBuyInterface", newToggle)
+	PROGRAM.SETTINGS.SETTINGS_MAIN.DisableBuyInterface := newToggle
+
+	if (newToggle="True")
+		Gui.Destroy("TradesBuyCompact")
+	else
+		GUI_TradesBuyCompact.RecreateGUI()
+}
 Tray_OpenSheet() {
 	which := A_ThisMenuItem="Betrayal"?"Betrayal"
 		: A_ThisMenuItem="Delve"?"Delve"

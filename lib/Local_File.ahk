@@ -68,6 +68,7 @@ Get_LocalSettings_DefaultValues() {
 	settings.SETTINGS_MAIN.ItemGridHideNormalTab										:= "False"
 	settings.SETTINGS_MAIN.ItemGridHideQuadTab											:= "False"
 	settings.SETTINGS_MAIN.ItemGridHideNormalTabAndQuadTabForMaps						:= "False"
+	settings.SETTINGS_MAIN.DisableBuyInterface											:= "False"
 
 
 	settings.SETTINGS_CUSTOMIZATION_SKINS 												:= {}
@@ -315,6 +316,8 @@ LocalSettings_IsValueValid(iniSect, iniKey, iniValue) {
 		else if (iniKey = "MinimizeInterfaceToBottomLeft")
 			isValueValid := IsIn(iniValue, "True,False") ? True : False	
 		else if IsIn(iniKey, "ItemGridHideNormalTab,ItemGridHideQuadTab,ItemGridHideNormalTabAndQuadTabForMaps")
+			isValueValid := IsIn(iniValue, "True,False") ? True : False	
+		else if (iniKey = "DisableBuyInterface")
 			isValueValid := IsIn(iniValue, "True,False") ? True : False	
 	}
 

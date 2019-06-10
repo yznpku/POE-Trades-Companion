@@ -5,6 +5,9 @@
 		global GuiTradesBuyCompact, GuiTradesBuyCompact_Controls, GuiTradesBuyCompact_Submit
 		static guiCreated, maxTabsToRender, borderSize
 
+		if (PROGRAM.SETTINGS.SETTINGS_MAIN.DisableBuyInterface="True")
+			return
+
 		; GUI_TradesBuyCompact.DisableHotkeys()
 
 		scaleMult := PROGRAM.SETTINGS.SETTINGS_CUSTOMIZATION_SKINS.ScalingPercentage / 100
@@ -955,6 +958,10 @@
 		global PROGRAM, SKIN
 		global GuiTradesBuyCompact, GuiTradesBuyCompact_Controls
 		static doOnlyOnce
+
+		if (PROGRAM.SETTINGS.SETTINGS_MAIN.DisableBuyInterface="True")
+			return
+			
 		tabsLimit := GuiTradesBuyCompact.Tabs_Limit
 		tabsCount := GuiTradesBuyCompact.Tabs_Count
 
