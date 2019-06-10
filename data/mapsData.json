@@ -35,17 +35,14 @@
 		"Plateau Map":{
 			"pos":7
 		},
-		"Poorjoy's Asylum":{
+		"Sepulchre Map":{
 			"pos":8
 		},
-		"Sepulchre Map":{
+		"Temple Map":{
 			"pos":9
 		},
-		"Temple Map":{
-			"pos":10
-		},
 		"Volcano Map":{
-			"pos":11
+			"pos":10
 		}
 	},
 	"tier_11":{
@@ -78,9 +75,6 @@
 		},
 		"Siege Map":{
 			"pos":10
-		},
-		"The Putrid Cloister":{
-			"pos":11
 		}
 	},
 	"tier_12":{
@@ -99,23 +93,17 @@
 		"Core Map":{
 			"pos":5
 		},
-		"Hallowed Ground":{
+		"Lava Lake Map":{
 			"pos":6
 		},
-		"Lava Lake Map":{
+		"Park Map":{
 			"pos":7
 		},
-		"Park Map":{
+		"Shipyard Map":{
 			"pos":8
 		},
-		"Shipyard Map":{
-			"pos":9
-		},
 		"Vaal Pyramid Map":{
-			"pos":10
-		},
-		"Vaults of Atziri":{
-			"pos":11
+			"pos":9
 		}
 	},
 	"tier_13":{
@@ -177,7 +165,7 @@
 		"Caldera Map":{
 			"pos":2
 		},
-		"Desert Springs Map":{
+		"Desert Spring Map":{
 			"pos":3
 		},
 		"Palace Map":{
@@ -286,12 +274,6 @@
 		},
 		"Strand Map":{
 			"pos":10
-		},
-		"The Coward's Trial":{
-			"pos":11
-		},
-		"Whakawairua Tuahu":{
-			"pos":12
 		}
 	},
 	"tier_5":{
@@ -339,76 +321,61 @@
 		"Courtyard Map":{
 			"pos":4
 		},
-		"Doryani's Machinarium":{
+		"Maze Map":{
 			"pos":5
 		},
-		"Maelström of Chaos":{
+		"Mud Geyser Map":{
 			"pos":6
 		},
-		"Maze Map":{
+		"Overgrown Ruin Map":{
 			"pos":7
 		},
-		"Mud Geyser Map":{
+		"Phantasmagoria Map":{
 			"pos":8
 		},
-		"Overgrown Ruin Map":{
+		"Primordial Pool Map":{
 			"pos":9
 		},
-		"Phantasmagoria Map":{
+		"Promenade Map":{
 			"pos":10
 		},
-		"Primordial Pool Map":{
-			"pos":11
-		},
-		"Promenade Map":{
-			"pos":12
-		},
-		"The Hall of Grandmasters":{
-			"pos":13
-		},
-		"The Vinktar Square":{
-			"pos":14
-		},
 		"Waste Pool Map":{
-			"pos":15
+			"pos":11
 		}
 	},
 	"tier_7":{
-		"Acton's Nightmare":{
+		"Arena Map":{
 			"pos":1
 		},
-		"Arena Map":{
+		"Conservatory Map":{
 			"pos":2
 		},
-		"Conservatory Map":{
+		"Dungeon Map":{
 			"pos":3
 		},
-		"Dungeon Map":{
+		"Graveyard Map":{
 			"pos":4
 		},
-		"Graveyard Map":{
+		"Laboratory Map":{
 			"pos":5
 		},
-		"Laboratory Map":{
+		"Overgrown Shrine Map":{
 			"pos":6
 		},
-		"Overgrown Shrine Map":{
+		"Racecourse Map":{
 			"pos":7
 		},
-		"Racecourse Map":{
+		"Residence Map":{
 			"pos":8
 		},
-		"Residence Map":{
+		"Spider Forest Map":{
 			"pos":9
 		},
-		"Spider Forest Map":{
+		"Vault Map":{
 			"pos":10
 		},
-		"Vault Map":{
-			"pos":11
-		},
 		"Waterways Map":{
-			"pos":12
+			"pos":11
 		}
 	},
 	"tier_8":{
@@ -418,44 +385,32 @@
 		"Chateau Map":{
 			"pos":2
 		},
-		"Death and Taxes":{
+		"Dunes Map":{
 			"pos":3
 		},
-		"Dunes Map":{
+		"Estuary Map":{
 			"pos":4
 		},
-		"Estuary Map":{
+		"Factory Map":{
 			"pos":5
 		},
-		"Factory Map":{
+		"Ghetto Map":{
 			"pos":6
 		},
-		"Ghetto Map":{
+		"Iceberg Map":{
 			"pos":7
 		},
-		"Iceberg Map":{
+		"Necropolis Map":{
 			"pos":8
 		},
-		"Necropolis Map":{
+		"Pit Map":{
 			"pos":9
 		},
-		"Olmec's Sanctum":{
+		"Scriptorium Map":{
 			"pos":10
 		},
-		"Perandus Manor":{
-			"pos":11
-		},
-		"Pillars of Arun":{
-			"pos":12
-		},
-		"Pit Map":{
-			"pos":13
-		},
-		"Scriptorium Map":{
-			"pos":14
-		},
 		"Toxic Sewer Map":{
-			"pos":15
+			"pos":11
 		}
 	},
 	"tier_9":{
@@ -465,44 +420,91 @@
 		"Arsenal Map":{
 			"pos":2
 		},
-		"Caer Blaidd, Wolfpack's Den":{
+		"Castle Ruins Map":{
 			"pos":3
 		},
-		"Castle Ruins Map":{
+		"Lighthouse Map":{
 			"pos":4
 		},
-		"Lighthouse Map":{
+		"Mineral Pools Map":{
 			"pos":5
 		},
-		"Mao Kun":{
+		"Moon Temple Map":{
 			"pos":6
 		},
-		"Mineral Pools Map":{
+		"Port Map":{
 			"pos":7
 		},
-		"Moon Temple Map":{
+		"Shore Map":{
 			"pos":8
 		},
-		"Oba's Cursed Trove":{
+		"Underground River Map":{
 			"pos":9
 		},
-		"Port Map":{
+		"Underground Sea Map":{
 			"pos":10
 		},
-		"Shore Map":{
+		"Villa Map":{
+			"pos":11
+		}
+	},
+	"tier_unique":{
+		"Acton's Nightmare Overgrown Shrine Map":{
+			"pos":1
+		},
+		"Caer Blaidd, Wolfpack's Den Underground River Map":{
+			"pos":2
+		},
+		"Death and Taxes Necropolis Map":{
+			"pos":3
+		},
+		"Doryani's Machinarium Maze Map":{
+			"pos":4
+		},
+		"Hall of Grandmasters Promenade Map":{
+			"pos":5
+		},
+		"Hallowed Ground Cemetery Map":{
+			"pos":6
+		},
+		"Maelström of Chaos Atoll Map":{
+			"pos":7
+		},
+		"Mao Kun Reef Map":{
+			"pos":8
+		},
+		"Oba's Cursed Trove Underground Sea Map":{
+			"pos":9
+		},
+		"Olmec's Sanctum Bone Crypt Map":{
+			"pos":10
+		},
+		"Pillars of Arun Dunes Map":{
 			"pos":11
 		},
-		"The Twilight Temple":{
+		"Poorjoy's Asylum Temple Map":{
 			"pos":12
 		},
-		"Underground River Map":{
+		"The Coward's Trial Cursed Crypt Map":{
 			"pos":13
 		},
-		"Underground Sea Map":{
+		"The Perandus Manor Chateau Map":{
 			"pos":14
 		},
-		"Villa Map":{
+		"The Putrid Cloister Museum Map":{
 			"pos":15
+		},
+		"The Twilight Temple Moon Temple Map":{
+			"pos":16
+		},
+		"The Vinktar Square Courtyard Map":{
+			"pos":17
+		},
+		"Vaults of Atziri Vaal Pyramid Map":{
+			"pos":18
+		},
+		"Whakawairua Tuahu Strand Map":{
+			"pos":19
 		}
 	}
 }
