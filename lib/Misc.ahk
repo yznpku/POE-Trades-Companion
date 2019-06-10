@@ -208,27 +208,40 @@ Reset_Clipboard() {
 
 Replace_TradeVariables(string) {
 	global PROGRAM, GuiTrades
+	static lastCharacterLogged, timeSinceRetrievedChar
 	activeTab := GuiTrades.Active_Tab
 
 	tabContent := Gui_Trades.GetTabContent(activeTab)
 
-	string := StrReplace(string, "`%buyer`%", tabContent.Buyer)
-	string := StrReplace(string, "`%buyerName`%", tabContent.Buyer)
-	string := StrReplace(string, "`%item`%", tabContent.Item)
-	string := StrReplace(string, "`%itemName`%", tabContent.Item)
-	string := StrReplace(string, "`%price`%", tabContent.Price != ""?tabContent.Price : "[unpriced]")
-	string := StrReplace(string, "`%itemPrice`%", tabContent.Price != ""?tabContent.Price : "[unpriced]")
+	string := StrReplace(string, "%buyer%", tabContent.Buyer)
+	string := StrReplace(string, "%buyerName%", tabContent.Buyer)
+	string := StrReplace(string, "%item%", tabContent.Item)
+	string := StrReplace(string, "%itemName%", tabContent.Item)
+	string := StrReplace(string, "%price%", tabContent.Price != ""?tabContent.Price : "[unpriced]")
+	string := StrReplace(string, "%itemPrice%", tabContent.Price != ""?tabContent.Price : "[unpriced]")
 
-	string := StrReplace(string, "`%lastWhisper`%", GuiTrades.Last_Whisper_Name)
-	string := StrReplace(string, "`%lastWhisperReceived`%", GuiTrades.Last_Whisper_Name)
-	string := StrReplace(string, "`%lwr`%", GuiTrades.Last_Whisper_Name)
+	string := StrReplace(string, "%lastWhisper%", GuiTrades.Last_Whisper_Name)
+	string := StrReplace(string, "%lastWhisperReceived%", GuiTrades.Last_Whisper_Name)
+	string := StrReplace(string, "%lwr%", GuiTrades.Last_Whisper_Name)
 
-	string := StrReplace(string, "`%sentWhisper`%", GuiTrades.Last_Whisper_Sent_Name)
-	string := StrReplace(string, "`%lastWhisperSent`%", GuiTrades.Last_Whisper_Sent_Name)
-	string := StrReplace(string, "`%lws`%", GuiTrades.Last_Whisper_Sent_Name)
+	string := StrReplace(string, "%sentWhisper%", GuiTrades.Last_Whisper_Sent_Name)
+	string := StrReplace(string, "%lastWhisperSent%", GuiTrades.Last_Whisper_Sent_Name)
+	string := StrReplace(string, "%lws%", GuiTrades.Last_Whisper_Sent_Name)
 
 	firstAcc := StrSplit(PROGRAM.SETTINGS.SETTINGS_MAIN.PoeAccounts, ",").1
-	string := StrReplace(string, "`%myself`%", PoeDotCom_GetCurrentlyLoggedCharacter(firstAcc))
+	if IsContaining(string, "%myself%") {
+		timeSinceRetrievedChar := timeSinceRetrievedChar?timeSinceRetrievedChar:A_Now
+		timeDif := A_Now
+		timeDif -= timeSinceRetrievedChar, Minutes
+
+		if (timeDif > 30) || (!lastCharacterLogged) { ; every 30mins, get char from poe website
+			timeSinceRetrievedChar := A_Now
+			poeLoggedChar := PoeDotCom_GetCurrentlyLoggedCharacter(firstAcc)
+		}
+		lastCharacterLogged := poeLoggedChar?poeLoggedChar:lastCharacterLogged
+
+		string := StrReplace(string, "%myself%", lastCharacterLogged)
+	}
 
 	return string
 }
