@@ -230,12 +230,7 @@ Replace_TradeVariables(string) {
 
 	firstAcc := StrSplit(PROGRAM.SETTINGS.SETTINGS_MAIN.PoeAccounts, ",").1
 	if IsContaining(string, "%myself%") {
-		timeSinceRetrievedChar := timeSinceRetrievedChar?timeSinceRetrievedChar:A_Now
-		timeDif := A_Now
-		timeDif -= timeSinceRetrievedChar, Minutes
-
-		if (timeDif > 30) || (!lastCharacterLogged) { ; every 30mins, get char from poe website
-			timeSinceRetrievedChar := A_Now
+		if (!lastCharacterLogged) {
 			poeLoggedChar := PoeDotCom_GetCurrentlyLoggedCharacter(firstAcc)
 		}
 		lastCharacterLogged := poeLoggedChar?poeLoggedChar:lastCharacterLogged
