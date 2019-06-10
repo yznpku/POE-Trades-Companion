@@ -1,6 +1,6 @@
 ﻿Class GUI_TradesBuyCompact {
 	
-	Create(_maxTabsToRender=3) {
+	Create(_maxTabsToRender=50) {
 		global PROGRAM, GAME, SKIN
 		global GuiTradesBuyCompact, GuiTradesBuyCompact_Controls, GuiTradesBuyCompact_Submit
 		static guiCreated, maxTabsToRender, borderSize
