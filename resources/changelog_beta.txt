@@ -1,9 +1,10 @@
-1.15.BETA_7 (11 June 2019)
+1.15.BETA_6/7/8 (11 June 2019)
 
-	Fixes:
-	- An invisible window would appear on the taskbar when having the Compact buying interface disabled.
+	1.15.BETA_8:
+		Fix: The invisible window would still appear when having the "Hide interface when tabbed out of game?" setting enabled and tab out/in game.
 
-1.15.BETA_6 (11 June 2019)
+	1.15.BETA_7:
+		Fix: An invisible window would appear on the taskbar when having the Compact buying interface disabled.
 
 	Features:
 	- Added support for detection of Korean whispers, trading whisper, afk mode, join/leave the area.
