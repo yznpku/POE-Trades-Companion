@@ -1,3 +1,8 @@
+1.15.BETA_7 (11 June 2019)
+
+	Fixes:
+	- An invisible window would appear on the taskbar when having the Compact buying interface disabled.
+
 1.15.BETA_6 (11 June 2019)
 
 	Features:
