@@ -1592,7 +1592,10 @@
 	}
 
     Show() {
-		global GuiTradesBuyCompact
+		global GuiTradesBuyCompact, PROGRAM
+		
+		if (PROGRAM.SETTINGS.SETTINGS_MAIN.DisableBuyInterface="True")
+			return
 
 		hiddenWin := A_DetectHiddenWindows
 		DetectHiddenWindows, On
