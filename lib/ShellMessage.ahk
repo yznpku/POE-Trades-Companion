@@ -20,7 +20,10 @@ ShellMessage(wParam,lParam) {
 /*			Triggered upon activating a window
  *			Is used to correctly position the Trades GUI while in Overlay mode
 */
-	global PROGRAM, GuiTrades, GuiTradesMinimized, GuiSettings, POEGameList, GuiTradesBuyCompact_Controls
+	global PROGRAM
+	global GuiTrades, GuiTradesMinimized
+	global GuiTradesBuyCompact, GuiTradesBuyCompact_Controls
+	global GuiSettings, POEGameList
 	
 	if ( wParam=4 || wParam=32772 || wParam=5 ) { ; 4=HSHELL_WINDOWACTIVATED | 32772=HSHELL_RUDEAPPACTIVATED | 5=HSHELL_GETMINRECT 
 		if WinActive("ahk_id" GuiTrades.Handle) {
@@ -40,6 +43,10 @@ ShellMessage(wParam,lParam) {
 		}
 
 		if (GuiTrades.Is_Created) {
+			tradesWinExists := GUI_Trades.Exists()
+			tradesMinWinExists := Gui_TradesMinimized.Exists()
+			tradesBuyCompactWinExists := GUI_TradesBuyCompact.Exists()
+
 			if (PROGRAM.SETTINGS.SETTINGS_MAIN.HideInterfaceWhenOutOfGame = "True") {
 				if (lParam) {
 					WinGet, activeWinExe, ProcessName, ahk_id %lParam%
@@ -63,34 +70,43 @@ ShellMessage(wParam,lParam) {
 				else if (activeWinExe && IsIn(activeWinExe, POEGameList)) || (activeWinHwnd && GuiSettings.Handle && activeWinHwnd = GuiSettings.Handle) || (activeWinPID = PROGRAM.PID) {
 					Gui_Trades.SetTransparency_Automatic()
 					if (GuiTrades.Is_Minimized) {
-						Gui, TradesMinimized:Show, NoActivate
-						Gui, TradesBuyCompact:Show, NoActivate
+						if (tradesMinWinExists)
+							Gui, TradesMinimized:Show, NoActivate
 					}
 					else {
-						Gui, Trades:Show, NoActivate
-						Gui, TradesBuyCompact:Show, NoActivate
+						if (tradesWinExists)
+							Gui, Trades:Show, NoActivate						
 					}
+
+					if (tradesBuyCompactWinExists)
+						Gui, TradesBuyCompact:Show, NoActivate
 				}
 				else {
 					if (GuiTrades.Is_Minimized) {
-						Gui, TradesMinimized:Hide
-						Gui, TradesBuyCompact:Hide
+						if (tradesMinWinExists)
+							Gui, TradesMinimized:Hide
 					}
 					else {
-						Gui, Trades:Hide
-						Gui, TradesBuyCompact:Hide
+						if (tradesWinExists)
+							Gui, Trades:Hide
 					}
+
+					if (tradesBuyCompactWinExists)
+						Gui, TradesBuyCompact:Hide
 				}
 			}
 			else {
 				if (GuiTrades.Is_Minimized) {
-					Gui, TradesMinimized:Show, NoActivate
-					Gui, TradesBuyCompact:Show, NoActivate
+					if (tradesMinWinExists)
+						Gui, TradesMinimized:Show, NoActivate
 				}
 				else {
-					Gui, Trades:Show, NoActivate
-					Gui, TradesBuyCompact:Show, NoActivate
+					if (tradesWinExists)
+						Gui, Trades:Show, NoActivate
 				}
+
+				if (tradesBuyCompactWinExists)
+					Gui, TradesBuyCompact:Show, NoActivate
 			}
 
 			if ( PROGRAM.SETTINGS.SETTINGS_MAIN.TradesGUI_Mode = "Dock")
@@ -104,10 +120,18 @@ ShellMessage(wParam,lParam) {
 				GUI_ItemGrid.Hide()
 			}
 
-			Gui, Trades:+LastFound
-			WinSet, AlwaysOnTop, On
-			Gui, TradesMinimized:+LastFound
-			WinSet, AlwaysOnTop, On
+			if (tradesWinExists) {
+				Gui, Trades:+LastFound
+				WinSet, AlwaysOnTop, On
+			}
+			if (tradesMinWinExists) {
+				Gui, TradesMinimized:+LastFound
+				WinSet, AlwaysOnTop, On
+			}
+			if (tradesBuyCompactWinExists) {
+				Gui, TradesBuyCompact:+LastFound
+				WinSet, AlwaysOnTop, On
+			}
 		}
 
 		if WinActive("ahk_id" GuiTradesBuyCompact_Controls.GuiTradesBuyCompactSearchHiddenHandle) {
