@@ -720,6 +720,7 @@ Parse_GameLogs(strToParse) {
 						pbTxt := StrReplace(pbTxt, "%price%", A_Tab tradePrice)
 						pbTxt := StrReplace(pbTxt, "%stash%", A_Tab tradeStashFull)
 						pbTxt := StrReplace(pbTxt, "%other%", A_Tab tradeOther)
+						pbTxt := StrReplace(pbTxt, "`n", "\n"), pbTxt := StrReplace(pbTxt, "`r", "\r"), pbTxt := StrReplace(pbTxt, "`t", "\t"), pbTxt := StrReplace(pbTxt, A_Tab, "\t")
 
 						cmdLineParamsObj.PB_Message := pbTxt
 						
@@ -777,7 +778,10 @@ Parse_GameLogs(strToParse) {
 					cmdLineParamsObj := {}
 					cmdLineParamsObj.PB_Token := PROGRAM.SETTINGS.SETTINGS_MAIN.PushBulletToken
 					cmdLineParamsObj.PB_Title := StrReplace(PROGRAM.TRANSLATIONS.TrayNotifications.RegularWhisperReceived_Title, "%name%", whispName)
-					cmdLineParamsObj.PB_Message := whispMsg
+					
+					pbTxt := whispMsg
+					pbTxt := StrReplace(pbTxt, "`n", "\n"), pbTxt := StrReplace(pbTxt, "`r", "\r"), pbTxt := StrReplace(pbTxt, "`t", "\t"), pbTxt := StrReplace(pbTxt, A_Tab, "\t")
+					cmdLineParamsObj.PB_Message := pbTxt
 					
 					GoSub, Parse_GameLogs_PushBulletNotifications_SA
 				}

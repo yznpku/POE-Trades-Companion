@@ -11,7 +11,9 @@
 
 PB_PushNote(_token, _title, _msg) {
 
-    data := "{""type"": ""note"", ""title"": """ _title """, ""body"": """ _msg """}"
+    pbMsg := StrReplace(_msg, "`n", "\n"), pbMsg := StrReplace(pbMsg, "`r", "\r"), pbMsg := StrReplace(pbMsg, "`t", "\t"), pbMsg := StrReplace(pbMsg, A_Tab, "\t")
+
+    data := "{""type"": ""note"", ""title"": """ _title """, ""body"": """ pbMsg """}"
     headers := "Access-Token: " _token
     . "`n" "Content-Type: application/json"
 
