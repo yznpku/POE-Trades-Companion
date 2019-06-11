@@ -407,6 +407,16 @@
 		Return
 	}
 
+	Exists() {
+		global GuiTrades
+		hw := A_DetectHiddenWindows
+		DetectHiddenWindows, On
+		hwnd := WinExist("ahk_id " GuiTrades.Handle)
+		DetectHiddenWindows, %hw%
+
+		return hwnd
+	}
+
 	ResetPositionIfOutOfBounds() {
 		global PROGRAM, GuiTrades, GuiTradesMinimized
 

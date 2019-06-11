@@ -502,6 +502,16 @@
 		return
 	}
 
+	Exists() {
+		global GuiTradesBuyCompact
+		hw := A_DetectHiddenWindows
+		DetectHiddenWindows, On
+		hwnd := WinExist("ahk_id " GuiTradesBuyCompact.Handle)
+		DetectHiddenWindows, %hw%
+
+		return hwnd
+	}
+
 	Enable_ClickThrough() {
 		global PROGRAM, GuiTradesBuyCompact
 		Gui, TradesBuyCompact: +LastFound
