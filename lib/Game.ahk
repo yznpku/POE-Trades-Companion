@@ -334,7 +334,7 @@ Monitor_GameLogs() {
 }
 
 Parse_GameLogs(strToParse) {
-	global PROGRAM, GuiTrades, LEAGUES, GuiTradesBuyCompact
+	global PROGRAM, GuiTrades, LEAGUES, GuiTradesBuyCompact, GAME
 
 	; poe.trade
 	static poeTradeRegex 			:= {String:"(.*)Hi, I would like to buy your (.*) listed for (.*) in (.*)"
@@ -347,7 +347,6 @@ Parse_GameLogs(strToParse) {
 										, Tab:1, Left:2, Top:3, Other:4}
 	static poeTradeQualityRegEx 		:= {String:"level (\d+) (\d+)% (.*)"
 										, Level:1, Quality:2, Item:3}
-
 	; poeapp.com
 	static poeAppRegEx 				:= {String:"(.*)wtb (.*) listed for (.*) in (.*)"
 										, Other:1, Item:2, Price:3, League:4}
@@ -359,7 +358,6 @@ Parse_GameLogs(strToParse) {
 										, Tab:1, Left:2, Top:3, Other:4}
 	static poeAppQualityRegEx 		:= {String:"(.*) \((\d+)/(\d+)%\)"
 										, Item:1, Level:2, Quality:3}
-
 	; pathofexile.com/trade
 	; doesn't need ENG str as its same than poe.trade
 	static RUS_gggRegEx				:= {String:"(.*)Здравствуйте, хочу купить у вас (.*) за (.*) в лиге (.*)"
@@ -373,7 +371,6 @@ Parse_GameLogs(strToParse) {
 	static RUS_gggQualityRegEx 		 := {String:"уровень (\d+) (\d+)% (.*)"
 										, Level:1, Quality:2, Item:3}
 
-
 	static POR_gggRegEx 			:= {String:"(.*)Olá, eu gostaria de comprar o seu item (.*) listado por (.*) na (.*)"
 										, Other:1, Item:2, Price:3, League:4}
 	static POR_gggUnpricedRegEx 	:= {String:"(.*)Olá, eu gostaria de comprar o seu item (.*) na (.*)"
@@ -384,7 +381,6 @@ Parse_GameLogs(strToParse) {
 										, Tab:1, Left:2, Top:3, Other:4}
 	static POR_gggQualityRegEx 		:= {String:"nível (\d+) (\d+)% (.*)"
 										, Level:1, Quality:2, Item:3}
-
 
 	static THA_gggRegEx				:= {String:"(.*)สวัสดี, เราต้องการจะชื้อของคุณ (.*) ใน ราคา (.*) ใน (.*)"
 										, Other:1, Item:2, Price:3, League:4}
@@ -408,7 +404,6 @@ Parse_GameLogs(strToParse) {
 	static GER_gggQualityRegEx		:= {String:"Stufe (\d+) (\d+)% (.*)"
 										, Level:1, Quality:2, Item:3} 
 
-
 	static FRE_gggRegEx				:= {String:"(.*)Bonjour, je souhaiterais t'acheter (.*) pour (.*) dans la ligue (.*)"
 										, Other:1, Item:2, Price:3, League:4}
 	static FRE_gggUnpricedRegEx		:= {String:"(.*)Bonjour, je souhaiterais t'acheter (.*) dans la ligue (.*)"
@@ -419,7 +414,6 @@ Parse_GameLogs(strToParse) {
 										, Tab:1, Left:2, Top:3, Other:4}
 	static FRE_gggQualityRegEx		:= {String:"(.*) de niveau (\d+) à (\d+)% de qualité"
 										, Item:1, Level:2, Quality:3}
-
 
 	static SPA_gggRegEx				:= {String:"(.*)Hola, quisiera comprar tu (.*) listado por (.*) en (.*)"
 										, Other:1, Item:2, Price:3, League:4}
@@ -432,6 +426,16 @@ Parse_GameLogs(strToParse) {
 	static SPA_gggQualityRegEx		:= {String:"(.*) nivel (\d+) (\d+)%"
 										, Item:1, Level:2, Quality:3}
 
+	static KOR_gggRegEx				:= {String:"(.*)안녕하세요, (.*)에 (.*)\(으\)로 올려놓은 (.*)을\(를\) 구매하고 싶습니다(.*)"
+										, Other:1, League:2, Price:3, Item:4, Other2:5}
+	static KOR_gggUnpricedRegEx 	:= {String:"(.*)안녕하세요, (.*)에 올려놓은 (.*)을\(를\) 구매하고 싶습니다(.*)"
+										, Other:1, League:2, Item:3, Other2:4}
+	static KOR_gggCurrencyRegEx		:= {String:"(.*)안녕하세요, (.*)에 올려놓은(.*)을\(를\) 제 (.*)\(으\)로 구매하고 싶습니다(.*)"
+										, Other:1, League:2, Item:3, Price:4, Other2:5}
+	static KOR_gggStashRegEx		:= {String:"\(보관함 탭 ""(.*)"", 위치: 왼쪽 (\d+), 상단 (\d+)\)"
+										, Tab:1, Left:2, Top:3}
+	static KOR_gggQualityRegEx		:= {String:"(\d+) (\d+)% (.*)"
+										, Level:1, Quality:2, Item:3}
 
 	static allTradingRegex := {"poeTrade":poeTradeRegex
 		,"poeTrade_Unpriced":poeTradeUnpricedRegex
@@ -440,7 +444,7 @@ Parse_GameLogs(strToParse) {
 		,"poeApp_Unpriced":poeAppUnpricedRegex
 		,"poeApp_Currency":poeAppCurrencyRegex}
 
-	langs := "RUS,POR,THA,GER,FRE,SPA"
+	langs := "RUS,POR,THA,GER,FRE,SPA,KOR"
 	Loop, Parse, langs,% "," ; Adding ggg trans regex to allTradingRegEx
 	{
 		allTradingRegex["ggg_" A_LoopField] := %A_LoopField%_gggRegEx
@@ -483,14 +487,19 @@ Parse_GameLogs(strToParse) {
 	static SPA_afkOnRegexStr := ("^(?:[^ ]+ ){6}(\d+)\] : El modo Ausente está habilitado.*") 
 	static SPA_afkOffRegexStr := ("^(?:[^ ]+ ){6}(\d+)\] : El modo Ausente está deshabilitado.*")
 
+	static KOR_areaJoinedRegexStr := ("^(?:[^ ]+ ){6}(\d+)\] : (.*?)(이)가 구역에 들어왔습니다.*") 
+	static KOR_areaLeftRegexStr := ("^(?:[^ ]+ ){6}(\d+)\] : (.*?)(이)가 구역에서 나갔습니다.*") 
+	static KOR_afkOnRegexStr := ("^(?:[^ ]+ ){6}(\d+)\] : 자리 비움 모드를 설정했습니다.*") 
+	static KOR_afkOffRegexStr := ("^(?:[^ ]+ ){6}(\d+)\] : 자리 비움 모드를 해제했습니다.*")
+
 	allAreaJoinedRegEx := [ENG_areaJoinedRegexStr, FRE_areaJoinedRegexStr, GER_areaJoinedRegexStr, POR_areaJoinedRegexStr
-		, RUS_areaJoinedRegexStr, THA_areaJoinedRegexStr, SPA_areaJoinedRegexStr]
+		, RUS_areaJoinedRegexStr, THA_areaJoinedRegexStr, SPA_areaJoinedRegexStr, KOR_areaJoinedRegexStr]
 	allAreaLeftRegEx := [ENG_areaLeftRegexStr, FRE_areaLeftRegexStr, GER_areaLeftRegexStr, POR_areaLeftRegexStr
-		, RUS_areaLeftRegexStr, THA_areaLeftRegexStr, SPA_areaLeftRegexStr]
+		, RUS_areaLeftRegexStr, THA_areaLeftRegexStr, SPA_areaLeftRegexStr, KOR_areaLeftRegexStr]
 	allAfkOnRegEx := [ENG_afkOnRegexStr, FRE_afkOnRegexStr, GER_afkOnRegexStr, POR_afkOnRegexStr
-		, RUS_afkOnRegexStr, THA_afkOnRegexStr, SPA_afkOnRegexStr]
+		, RUS_afkOnRegexStr, THA_afkOnRegexStr, SPA_afkOnRegexStr, KOR_afkOnRegexStr]
 	allAfkOffRegEx := [ENG_afkOffRegexStr, FRE_afkOffRegexStr, GER_afkOffRegexStr, POR_afkOffRegexStr
-		, RUS_afkOffRegexStr, THA_afkOffRegexStr, SPA_afkOffRegexStr]
+		, RUS_afkOffRegexStr, THA_afkOffRegexStr, SPA_afkOffRegexStr, KOR_afkOffRegexStr]
 
 	Loop, Parse,% strToParse,`n,`r ; For each line
 	{
@@ -534,14 +543,14 @@ Parse_GameLogs(strToParse) {
 
 		; Check if whisper sent
 		isWhisperSent := isWhisper := isWhisperReceived := False
-		if RegExMatch(parsedLogsMsg, "SO)^(?:[^ ]+ ){6}(\d+)\] (?=[^#$&%]).*@(?:To|À|An|Para|Кому|ถึง) (.*?): (.*)", whisperPat) {
+		if RegExMatch(parsedLogsMsg, "SO)^(?:[^ ]+ ){6}(\d+)\] (?=[^#$&%]).*@(?:To|À|An|Para|Кому|ถึง|발신) (.*?): (.*)", whisperPat) {
 			isWhisperSent := True, isWhisper := True
 			instancePID := whisperPat.1, whispNameFull := whisperPat.2, whispMsg := whisperPat.3
 			nameAndGuild := SplitNameAndGuild(whispNameFull), whispName := nameAndGuild.Name, whispGuild := nameAndGuild.Guild
 			GuiTrades.Last_Whisper_Sent_Name := whispName
 		}
 		; Check if whisper received
-		else if RegExMatch(parsedLogsMsg, "SO)^(?:[^ ]+ ){6}(\d+)\] (?=[^#$&%]).*@(?:From|De|От кого|จาก|Von|Desde) (.*?): (.*)", whisperPat ) {
+		else if RegExMatch(parsedLogsMsg, "SO)^(?:[^ ]+ ){6}(\d+)\] (?=[^#$&%]).*@(?:From|De|От кого|จาก|Von|Desde|수신) (.*?): (.*)", whisperPat ) {
 			isWhisperReceived := True, isWhisper := True
 			instancePID := whisperPat.1, whispNameFull := whisperPat.2, whispMsg := whisperPat.3
 			nameAndGuild := SplitNameAndGuild(whispNameFull), whispName := nameAndGuild.Name, whispGuild := nameAndGuild.Guild
@@ -571,6 +580,7 @@ Parse_GameLogs(strToParse) {
 			isGGGGer := IsContaining(tradeRegExName, "ggg_ger")
 			isGGGFre := IsContaining(tradeRegExName, "ggg_fre")
 			isGGGSpa := IsContaining(tradeRegExName, "ggg_spa")
+			isGGGKor := Iscontaining(tradeRegExName, "ggg_kor")
 			
 			qualRegEx := isPoeTrade ? poeTradeQualityRegEx
 				: isPoeApp ? poeAppQualityRegEx
@@ -580,6 +590,7 @@ Parse_GameLogs(strToParse) {
 				: isGGGGer ? GER_gggQualityRegEx
 				: isGGGFre ? FRE_gggQualityRegEx
 				: isGGGSpa ? SPA_gggQualityRegEx
+				: isGGGKor ? KOR_gggQualityRegEx
 				: ""
 			stashRegEx := isPoeTrade ? poeTradeStashRegex
 				: isPoeApp ? poeAppStashRegex
@@ -589,6 +600,7 @@ Parse_GameLogs(strToParse) {
 				: isGGGGer ? GER_gggStashRegEx
 				: isGGGFre ? FRE_gggStashRegEx
 				: isGGGSpa ? SPA_gggStashRegEx
+				: isGGGKor ? KOR_gggStashRegEx
 				: ""
 
 			whisperLang := isPoeTrade ? "ENG"
@@ -599,6 +611,7 @@ Parse_GameLogs(strToParse) {
 				: isGGGGer ? "GER"
 				: isGGGFre ? "FRE"
 				: isGGGSpa ? "SPA"
+				: isGGGKor ? "KOR"
 				: ""
 
 			tradeBuyerName := whispName, tradeBuyerGuild := whispGuild
@@ -618,7 +631,10 @@ Parse_GameLogs(strToParse) {
 			AutoTrimStr(tradeBuyerName, tradeItem, tradePrice, tradeOtherStart)
 
 			leagueMatches := [], leagueMatchesIndex := 0
-			Loop, Parse, LEAGUES,% ","
+			leaguesList := LEAGUES
+			if (GAME.CHALLENGE_LEAGUE_TRANS[whisperLang])
+				leaguesList .= "," GAME.CHALLENGE_LEAGUE_TRANS[whisperLang]
+			Loop, Parse, leaguesList,% ","
 			{
 				parsedLeague := A_LoopField
 				parsedLeague := StrReplace(parsedLeague, "(", "\(")
@@ -900,6 +916,10 @@ IsTradingWhisper(str) {
 	SPA_gggUnpricedRegEx 	:= "@.* Hola, quisiera comprar tu .* en.*"
 	SPA_gggCurrencyRegEx	:= "@.* Hola, me gustaría comprar tu\(s\) .* por mi .* en.*"
 
+	KOR_gggRexEx			:= "@.* 안녕하세요, .*에 .*\(으\)로 올려놓은 .*을\(를\) 구매하고 싶습니다.*"
+	KOR_gggUnpricedRegEx 	:= "@.* 안녕하세요, .*에 올려놓은 .*을\(를\) 구매하고 싶습니다.*"
+	KOR_gggCurrencyRegEx	:= "@.* 안녕하세요, .*에 올려놓은.* 을\(를\) 제 .*\(으\)로 구매하고 싶습니다.*"
+
 	allRegexes := []
 	allRegexes.Push(poeTradeRegex, poeTradeUnpricedRegex, currencyPoeTradeRegex
 		, poeAppRegex, poeAppUnpricedRegex, poeAppCurrencyRegex
@@ -908,7 +928,8 @@ IsTradingWhisper(str) {
 		, THA_gggRegEx, THA_gggUnpricedRegEx, THA_gggCurrencyRegEx
 		, GER_gggRegEx, GER_gggUnpricedRegEx, GER_gggCurrencyRegEx
 		, FRE_gggRegEx, FRE_gggUnpricedRegEx, FRE_gggCurrencyRegEx
-		, SPA_gggRegEx, SPA_gggUnpricedRegEx, SPA_gggCurrencyRegEx)
+		, SPA_gggRegEx, SPA_gggUnpricedRegEx, SPA_gggCurrencyRegEx
+		, KOR_gggRegEx, KOR_gggUnpricedRegEx, KOR_gggCurrencyRegEx)
 
 	; Make sure it starts with @ and doesnt contain line break
 	if InStr(str, "`n") || (firstChar != "@")  {

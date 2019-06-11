@@ -148,6 +148,7 @@ Start_Script() {
 	GAME.INI_FILE_COPY 		 		:= PROGRAM.MAIN_FOLDER "\production_Config.ini"
 	GAME.EXECUTABLES 				:= "PathOfExile.exe,PathOfExile_x64.exe,PathOfExileSteam.exe,PathOfExile_x64Steam.exe"
 	GAME.CHALLENGE_LEAGUE 			:= "Legion"
+	GAME.CHALLENGE_LEAGUE_TRANS		:= {"RUS":"Легион","KOR":"군단"} ; Rest doesn't have translations. Translated whispers suck and are inconsistent
 
 	PROGRAM.SETTINGS.SUPPORT_MESSAGE 	:= "@%buyerName% " PROGRAM.NAME ": view-thread/1755148"
 
