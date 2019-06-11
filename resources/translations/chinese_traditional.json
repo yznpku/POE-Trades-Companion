@@ -407,12 +407,12 @@
 			"CMD_REMAINING" : "輸入 /remaining 到聊天框中.",
 			"CMD_WHOIS" : "輸入 /whois 到聊天框中. 您可以在後面輸入任意名稱 (或當前買家).",
 
-			"SENDINPUT" : "Uses AutoHotKey SendInput command instead of directly sending the messages into chat.",
-			"SENDINPUT_RAW" : "Uses AutoHotKey SendInput command with the {Raw} parameter instead of directly sending the messages into chat.",
-			"SENDEVENT" : "Uses AutoHotKey SendEvent command instead of directly sending the messages into chat.",
-			"SENDEVENT_RAW" : "Uses AutoHotKey SendEvent command with the {Raw} parameter instead of directly sending the messages into chat.",
+			"SENDINPUT" : "使用AHK的"SendInput"命令, 而不直接在遊戲聊天框內輸入.",
+			"SENDINPUT_RAW" : "使用AHK模擬鍵盤進行"SendInput", 而不直接在遊戲聊天框內輸入.",
+			"SENDEVENT" : "使用AHK的"SendEvent"命令, 而不直接在遊戲聊天框內輸入.",
+			"SENDEVENT_RAW" : "使用AHK模擬鍵盤進行"SendEvent"命令, 而不直接在遊戲聊天框內輸入.",
 
-			"SLEEP" : "Uses AutoHotkey Sleep command to add a delay before the next action."
+			"SLEEP" : "使用AHK的"Sleep"命令在兩個動作之間加上一個延遲."
         }
     }
 }
