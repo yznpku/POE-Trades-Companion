@@ -49,6 +49,13 @@ Hotkey, ~*Space, SpaceRoutine
 
 Hotkey, IfWinActive,% "ahk_pid " DllCall("GetCurrentProcessId")
 
+if (!A_IsUnicode) {
+	MsgBox(4096+48, "POE Trades Companion", "This tool does not support ANSI versions of AutoHotKey."
+	. "`nPlease download and install AutoHotKey Unicode 32/64 or use the compiled executable."
+	. "`nAutoHotKey's official website will open upon closing this box.")
+	Run,% "https://www.autohotkey.com/"
+	ExitApp
+}
 
 ; try {
 	Start_Script()
