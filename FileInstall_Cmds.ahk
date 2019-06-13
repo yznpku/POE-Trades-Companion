@@ -8428,102 +8428,102 @@ if (ErrorLevel) {
 }
 
 ; ----------------------------
-if !InStr(FileExist(PROGRAM.cheatsheets ""), "D")
-	FileCreateDir,% PROGRAM.cheatsheets ""
+if !InStr(FileExist(PROGRAM.CHEATSHEETS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CHEATSHEETS_FOLDER ""
 
 if (A_IsCompiled) {
 	sourceFileSize := Get_ResourceSize("resources\cheatsheets\Betrayal.png")
-	FileGetSize, destFileSize, % PROGRAM.cheatsheets "\Betrayal.png"
+	FileGetSize, destFileSize, % PROGRAM.CHEATSHEETS_FOLDER "\Betrayal.png"
 }
 else {
 	FileGetSize, sourceFileSize, resources\cheatsheets\Betrayal.png
-	FileGetSize, destFileSize, % PROGRAM.cheatsheets "\Betrayal.png"
+	FileGetSize, destFileSize, % PROGRAM.CHEATSHEETS_FOLDER "\Betrayal.png"
 }
 if (sourceFileSize != destFileSize)
-	FileInstall, resources\cheatsheets\Betrayal.png, % PROGRAM.cheatsheets "\Betrayal.png", 1
+	FileInstall, resources\cheatsheets\Betrayal.png, % PROGRAM.CHEATSHEETS_FOLDER "\Betrayal.png", 1
 if (ErrorLevel) {
 	AppendToLogs("Failed to extract file!"
 	.	"`nSource: resources\cheatsheets\Betrayal.png"
-	.	"`nDest: " PROGRAM.cheatsheets "\Betrayal.png"
+	.	"`nDest: " PROGRAM.CHEATSHEETS_FOLDER "\Betrayal.png"
 	.	"`nFlag: " 2)
 	errorLog .= "`n`n""Failed to extract file!"
 	.	"`nSource: resources\cheatsheets\Betrayal.png"
-	.	"`nDest: " PROGRAM.cheatsheets "\Betrayal.png"
+	.	"`nDest: " PROGRAM.CHEATSHEETS_FOLDER "\Betrayal.png"
 	.	"`nFlag: " 2
 }
 
 ; ----------------------------
-if !InStr(FileExist(PROGRAM.cheatsheets ""), "D")
-	FileCreateDir,% PROGRAM.cheatsheets ""
+if !InStr(FileExist(PROGRAM.CHEATSHEETS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CHEATSHEETS_FOLDER ""
 
 if (A_IsCompiled) {
 	sourceFileSize := Get_ResourceSize("resources\cheatsheets\Delve.png")
-	FileGetSize, destFileSize, % PROGRAM.cheatsheets "\Delve.png"
+	FileGetSize, destFileSize, % PROGRAM.CHEATSHEETS_FOLDER "\Delve.png"
 }
 else {
 	FileGetSize, sourceFileSize, resources\cheatsheets\Delve.png
-	FileGetSize, destFileSize, % PROGRAM.cheatsheets "\Delve.png"
+	FileGetSize, destFileSize, % PROGRAM.CHEATSHEETS_FOLDER "\Delve.png"
 }
 if (sourceFileSize != destFileSize)
-	FileInstall, resources\cheatsheets\Delve.png, % PROGRAM.cheatsheets "\Delve.png", 1
+	FileInstall, resources\cheatsheets\Delve.png, % PROGRAM.CHEATSHEETS_FOLDER "\Delve.png", 1
 if (ErrorLevel) {
 	AppendToLogs("Failed to extract file!"
 	.	"`nSource: resources\cheatsheets\Delve.png"
-	.	"`nDest: " PROGRAM.cheatsheets "\Delve.png"
+	.	"`nDest: " PROGRAM.CHEATSHEETS_FOLDER "\Delve.png"
 	.	"`nFlag: " 2)
 	errorLog .= "`n`n""Failed to extract file!"
 	.	"`nSource: resources\cheatsheets\Delve.png"
-	.	"`nDest: " PROGRAM.cheatsheets "\Delve.png"
+	.	"`nDest: " PROGRAM.CHEATSHEETS_FOLDER "\Delve.png"
 	.	"`nFlag: " 2
 }
 
 ; ----------------------------
-if !InStr(FileExist(PROGRAM.cheatsheets ""), "D")
-	FileCreateDir,% PROGRAM.cheatsheets ""
+if !InStr(FileExist(PROGRAM.CHEATSHEETS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CHEATSHEETS_FOLDER ""
 
 if (A_IsCompiled) {
 	sourceFileSize := Get_ResourceSize("resources\cheatsheets\Essence.png")
-	FileGetSize, destFileSize, % PROGRAM.cheatsheets "\Essence.png"
+	FileGetSize, destFileSize, % PROGRAM.CHEATSHEETS_FOLDER "\Essence.png"
 }
 else {
 	FileGetSize, sourceFileSize, resources\cheatsheets\Essence.png
-	FileGetSize, destFileSize, % PROGRAM.cheatsheets "\Essence.png"
+	FileGetSize, destFileSize, % PROGRAM.CHEATSHEETS_FOLDER "\Essence.png"
 }
 if (sourceFileSize != destFileSize)
-	FileInstall, resources\cheatsheets\Essence.png, % PROGRAM.cheatsheets "\Essence.png", 1
+	FileInstall, resources\cheatsheets\Essence.png, % PROGRAM.CHEATSHEETS_FOLDER "\Essence.png", 1
 if (ErrorLevel) {
 	AppendToLogs("Failed to extract file!"
 	.	"`nSource: resources\cheatsheets\Essence.png"
-	.	"`nDest: " PROGRAM.cheatsheets "\Essence.png"
+	.	"`nDest: " PROGRAM.CHEATSHEETS_FOLDER "\Essence.png"
 	.	"`nFlag: " 2)
 	errorLog .= "`n`n""Failed to extract file!"
 	.	"`nSource: resources\cheatsheets\Essence.png"
-	.	"`nDest: " PROGRAM.cheatsheets "\Essence.png"
+	.	"`nDest: " PROGRAM.CHEATSHEETS_FOLDER "\Essence.png"
 	.	"`nFlag: " 2
 }
 
 ; ----------------------------
-if !InStr(FileExist(PROGRAM.cheatsheets ""), "D")
-	FileCreateDir,% PROGRAM.cheatsheets ""
+if !InStr(FileExist(PROGRAM.CHEATSHEETS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CHEATSHEETS_FOLDER ""
 
 if (A_IsCompiled) {
 	sourceFileSize := Get_ResourceSize("resources\cheatsheets\Incursion.png")
-	FileGetSize, destFileSize, % PROGRAM.cheatsheets "\Incursion.png"
+	FileGetSize, destFileSize, % PROGRAM.CHEATSHEETS_FOLDER "\Incursion.png"
 }
 else {
 	FileGetSize, sourceFileSize, resources\cheatsheets\Incursion.png
-	FileGetSize, destFileSize, % PROGRAM.cheatsheets "\Incursion.png"
+	FileGetSize, destFileSize, % PROGRAM.CHEATSHEETS_FOLDER "\Incursion.png"
 }
 if (sourceFileSize != destFileSize)
-	FileInstall, resources\cheatsheets\Incursion.png, % PROGRAM.cheatsheets "\Incursion.png", 1
+	FileInstall, resources\cheatsheets\Incursion.png, % PROGRAM.CHEATSHEETS_FOLDER "\Incursion.png", 1
 if (ErrorLevel) {
 	AppendToLogs("Failed to extract file!"
 	.	"`nSource: resources\cheatsheets\Incursion.png"
-	.	"`nDest: " PROGRAM.cheatsheets "\Incursion.png"
+	.	"`nDest: " PROGRAM.CHEATSHEETS_FOLDER "\Incursion.png"
 	.	"`nFlag: " 2)
 	errorLog .= "`n`n""Failed to extract file!"
 	.	"`nSource: resources\cheatsheets\Incursion.png"
-	.	"`nDest: " PROGRAM.cheatsheets "\Incursion.png"
+	.	"`nDest: " PROGRAM.CHEATSHEETS_FOLDER "\Incursion.png"
 	.	"`nFlag: " 2
 }
 

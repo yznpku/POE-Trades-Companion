@@ -170,7 +170,7 @@
 		filePath := "resources\cheatsheets\" path.1
 
 		if (IsIn(A_LoopFileExt, allowedExtensions))
-			appendToFile .= FileInstall("""" filePath """", "PROGRAM.cheatsheets """ "\" path.1 """", 2)
+			appendToFile .= FileInstall("""" filePath """", "PROGRAM.CHEATSHEETS_FOLDER """ "\" path.1 """", 2)
 	}
 
 	; - - - - 
