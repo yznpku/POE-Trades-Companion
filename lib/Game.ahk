@@ -699,6 +699,11 @@ Parse_GameLogs(strToParse) {
 			timeStamp := A_YYYY "/" A_MM "/" A_DD " " A_Hour ":" A_Min ":" A_Sec
 
 			if (isWhisperReceived=True) {
+				currencyInfos := Get_CurrencyInfos(tradePrice, dontWriteLogs:=False)
+				currencyName := currencyInfos.Is_Listed?currencyInfos.Name : tradePrice
+				currencyCount := RegExReplace(tradePrice, "\D")
+				tradePrice := currencyInfos.Is_Listed ? currencyCount " " currencyName : tradePrice
+				
 				tradeInfos := {Buyer:tradeBuyerName, Item:tradeItemFull, Price:tradePrice, Stash:tradeStashFull, Other:tradeOther
 					,BuyerGuild:tradeBuyerGuild, TimeStamp:timeStamp,PID:instancePID, IsInArea:False, HasNewMessage:False, WithdrawTally:0, Time: A_Hour ":" A_Min
 					,WhisperSite:tradeRegExName, UniqueID:GUI_Trades.GenerateUniqueID(), TradeVerify:"Grey", WhisperLang:whisperLang}
