@@ -212,6 +212,11 @@ Start_Script() {
 		. "`nDetails are included on the post.")
 		Run,% "https://github.com/lemasato/POE-Trades-Companion/releases"
 	}
+	if (A_AhkVersion = "1.1.30.00") {
+		Run,% "https://www.autohotkey.com/"
+		Msgbox,% 4096+16, POE Trades Companion, You are using AHK v%A_AhkVersion% which contains a bug making the application crash. Please update your AHK to the latest version.	
+		ExitApp
+	}
 
 	; Currency names for stats gui - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	PROGRAM.DATA := {}
