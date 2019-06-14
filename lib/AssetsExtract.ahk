@@ -186,6 +186,7 @@
 	FileAppend,% appendToFile "`n",% installFile
 	Sleep 10
 
+/*	No longer required. Was only ran if the script is uncompiled. But assets are now being loaded from the AHK folder itself, instead of being extracted into the "main folder"
 	; https://autohotkey.com/board/topic/6717-how-to-find-autohotkey-directory/
 	cl := DllCall( "GetCommandLine", "str" )
 	StringMid, path_AHk, cl, 2, InStr( cl, """", true, 2 )-2
@@ -196,13 +197,15 @@
 	.		" /LOGS_FOLDER=" 			"""" PROGRAM.LOGS_FOLDER """"
 	.		" /SKINS_FOLDER=" 			"""" PROGRAM.SKINS_FOLDER """"
 	.		" /FONTS_FOLDER=" 			"""" PROGRAM.FONTS_FOLDER """"
-	.		" /DATA_FOLDER=" 			"""" PROGRAM.DATA_FOLDER """"
 	.		" /IMAGES_FOLDER=" 			"""" PROGRAM.IMAGES_FOLDER """"
+	.		" /DATA_FOLDER=" 			"""" PROGRAM.DATA_FOLDER """"
 	.		" /ICONS_FOLDER=" 			"""" PROGRAM.ICONS_FOLDER """"
-	. 		" /TRANSLATIONS_FOLDER="	"""" TRANSLATIONS_FOLDER """"
+	. 		" /TEMP_FOLDER="			"""" PROGRAM.TEMP_FOLDER """"
+	. 		" /TRANSLATIONS_FOLDER="	"""" PROGRAM.TRANSLATIONS_FOLDER """"
+	. 		" /CURRENCY_IMGS_FOLDER="	"""" PROGRAM.CURRENCY_IMGS_FOLDER """"
+	. 		" /CHEATSHEETS_FOLDER="		"""" PROGRAM.CHEATSHEETS_FOLDER """"
 	.		" /LOGS_FILE="				"""" PROGRAM.LOGS_FILE """"
 
-	/*	No longer required. Was only ran if the script is uncompiled. But assets are now being loaded from the AHK folder itself, instead of being extracted into the "main folder"
 	RunWait,% installFile_run_cmd,% A_ScriptDir
 	*/
 }
