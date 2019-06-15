@@ -328,8 +328,10 @@ Monitor_GameLogs() {
 	}
 	else {
 		newFileContent := Read_GameLogs(logsFile)
-		if (newFileContent)
-			Parse_GameLogs(newFileContent)
+		if (newFileContent) {
+			Loop, Parse,% newFileContent,`n,`r
+				Parse_GameLogs(A_LoopField)
+		}
 	}
 }
 
