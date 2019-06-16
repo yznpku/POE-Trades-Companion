@@ -35,7 +35,6 @@
 		GUI_Trades.DisableHotkeys()
 
 		scaleMult := PROGRAM.SETTINGS.SETTINGS_CUSTOMIZATION_SKINS.ScalingPercentage / 100
-		resDPI := Get_DpiFactor() 
 
 		AppendToLogs("Trades GUI: Creating with max tabs """ _maxTabsToRender """.")
 
@@ -48,6 +47,7 @@
 		; Initialize gui arrays
 		Gui, Trades:Destroy
 		Gui.New("Trades", "+AlwaysOnTop +ToolWindow +LastFound -SysMenu -Caption -Border +E0x08000000 +LabelGUI_Trades_ +HwndhGuiTrades", "POE TC - Trades")
+		windowsDPI := GuiTrades.Windows_DPI := Get_DpiFactor()
 		guiCreated := False
 
 		; Font name and size
@@ -128,7 +128,7 @@
 
 		; Background img
 		BackgroundImg_X := leftMost, BackgroundImg_Y := Header_Y+Header_H
-		BackgroundImg_W := Ceil( (guiWidth*reSDPI) ), BackgroundImg_H := (guiHeight-Header_H)*resDPI
+		BackgroundImg_W := Ceil( (guiWidth*windowsDPI) ), BackgroundImg_H := (guiHeight-Header_H)*windowsDPI
 
 		; Trade infos text pos + time slot auto size
 		TradeInfos_X := leftMost+5, TradeInfos_Y := TabUnderline_Y+TabUnderline_H+5, TradeInfos_W := guiWidth-TradeInfos_X-5
@@ -329,7 +329,7 @@
 
 		isModeWindowed := PROGRAM.SETTINGS.SETTINGS_MAIN.TradesGUI_Mode = "Window" ? True : False
 		savedXPos := PROGRAM.SETTINGS.SETTINGS_MAIN.Pos_X, savedYPos := PROGRAM.SETTINGS.SETTINGS_MAIN.Pos_Y
-		winXPos := IsNum(savedXPos) && isModeWindowed ? savedXPos : (A_ScreenWidth-guiFullWidth)*resDPI
+		winXPos := IsNum(savedXPos) && isModeWindowed ? savedXPos : (A_ScreenWidth-guiFullWidth)*windowsDPI
 		winYPos := IsNum(savedYPos) && isModeWindowed ? savedYPos : 0
 
 		if (imageBtnLog) {
@@ -420,13 +420,16 @@
 	ResetPositionIfOutOfBounds() {
 		global PROGRAM, GuiTrades, GuiTradesMinimized
 
+		if ( !GUI_Trades.Exists() || !GUI_TradesMinimized.Exists() )
+			return
+
 		winHandle := GuiTrades.Is_Minimized ? GuiTradesMinimized.Handle : GuiTrades.Handle
 		
 		if !IsWindowInScreenBoundaries(_win:="ahk_id " winHandle, _screen:="All", _adv:=False) {
 			bounds := IsWindowInScreenBoundaries(_win:="ahk_id " winHandle, _screen:="All", _adv:=True)
+			appendTxtFinal := "Win_X: " bounds[index].Win_X " | Win_Y: " bounds[index].Win_Y " - Win_W: " bounds[index].Win_W " | Win_H: " bounds[index].Win_H
 			for index, nothing in bounds {
 				appendTxt := "Monitor ID: " index
-				. "`nWin_X: " bounds[index].Win_X " | Win_Y: " bounds[index].Win_Y " - Win_W: " bounds[index].Win_W " | Win_H: " bounds[index].Win_H
 				. "`nMon_L: " bounds[index].Mon_L " | Mon_T: " bounds[index].Mon_T " | Mon_R: " bounds[index].Mon_R " | Mon_B: " bounds[index].Mon_B
 				. "`nIsInBoundaries_H: " bounds[index].IsInBoundaries_H " | IsInBoundaries_V: " bounds[index].IsInBoundaries_V
 				appendTxtFinal := appendTxtFinal ? appendTxtFinal "`n" appendTxt : appendTxt
@@ -1661,11 +1664,11 @@
 		global GuiTrades, GuiTrades_Controls
 		global PROGRAM
 
-		resDPI := Get_DpiFactor()
+		windowsDPI := Get_DpiFactor()
 
 		hiddenWin := A_DetectHiddenWindows
 		DetectHiddenWindows, On
-		WinMove,% "ahk_id " GuiTrades.Handle, , , , ,% GuiTrades.Height_Maximized * resDPI ; change size first to avoid btn flicker
+		WinMove,% "ahk_id " GuiTrades.Handle, , , , ,% GuiTrades.Height_Maximized * windowsDPI ; change size first to avoid btn flicker
 		DetectHiddenWindows, %hiddenWin%
 
 		GuiControl, Trades:Show,% GuiTrades_Controls.hBTN_Minimize
@@ -1706,11 +1709,11 @@
 		global GuiTrades, GuiTrades_Controls
 		global PROGRAM
 
-		resDPI := Get_DpiFactor()
+		windowsDPI := Get_DpiFactor()
 
 		hiddenWin := A_DetectHiddenWindows
 		DetectHiddenWindows, On
-		WinMove,% "ahk_id " GuiTrades.Handle, , , , ,% GuiTrades.Height_Minimized * resDPI
+		WinMove,% "ahk_id " GuiTrades.Handle, , , , ,% GuiTrades.Height_Minimized * windowsDPI
 		DetectHiddenWindows, %hiddenWin%
 
 		GuiControl, Trades:Show,% GuiTrades_Controls.hBTN_Maximize

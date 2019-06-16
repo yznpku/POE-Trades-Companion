@@ -11,8 +11,6 @@
 		; GUI_TradesBuyCompact.DisableHotkeys()
 
 		scaleMult := PROGRAM.SETTINGS.SETTINGS_CUSTOMIZATION_SKINS.ScalingPercentage / 100
-		resDPI := Get_DpiFactor() 
-
 		; AppendToLogs("TradesBuyCompact GUI: Creating with max tabs """ _maxTabsToRender """.")
 
 		; Free ImageButton memory
@@ -24,6 +22,7 @@
 		; Initialize gui arrays
 		Gui, TradesBuyCompact:Destroy
 		Gui.New("TradesBuyCompact", "+AlwaysOnTop +ToolWindow +LastFound -SysMenu -Caption -Border +E0x08000000 +LabelGUI_TradesBuyCompact_ +HwndhGuiTradesBuyCompact", "POE TC - TradesBuyCompact")
+		windowsDPI := GuiTradesBuyCompact.Windows_DPI := Get_DpiFactor()
 		guiCreated := False
 
 		; Font name and size
@@ -81,7 +80,7 @@
 
 		; Background img
 		BackgroundImg_X := leftMost, BackgroundImg_Y := Header_Y+Header_H
-		BackgroundImg_W := Ceil( (guiWidth*reSDPI) ), BackgroundImg_H := (guiHeight-Header_H)*resDPI
+		BackgroundImg_W := Ceil( (guiWidth*windowsDPI) ), BackgroundImg_H := (guiHeight-Header_H)*windowsDPI
 
 		; Trade infos text pos + time slot auto size
 		; TradeInfos_X := leftMost+5, TradeInfos_Y := TabUnderline_Y+TabUnderline_H+5, TradeInfos_W := guiWidth-TradeInfos_X-5
@@ -332,7 +331,7 @@
 		SmallButton_X := CloseBtn_X-(SmallButton_Count* (SmallButton_W+SmallButton_Space))-(15*scaleMult), SmallButton_Y := CloseBtn_Y+CloseBtn_H-SmallButton_H-borderSize
 		Separation_X := leftMost, Separation_Y := SmallButton_Y+SmallButton_H+(2*scaleMult), Separation_W := guiWidth, Separation_H := borderSize
 		BackgroundImg_X := leftMost, BackgroundImg_Y := 0
-		BackgroundImg_W := Ceil( (guiWidth*resDPI) ), BackgroundImg_H := Separation_Y
+		BackgroundImg_W := Ceil( (guiWidth*windowsDPI) ), BackgroundImg_H := Ceil(Separation_Y*windowsDPI)
 		CloseBtn_H := Separation_Y
 
 		GuiTradesBuyCompact.PriceTxt_MaxW := SmallButton_X-3
@@ -386,10 +385,10 @@
 			Gui.Show("TradesBuyCompact_Slot" A_Index, "x0 y0 w" guiWidth+borderSize " h" Separation_Y+Separation_H " Hide")			
 		}
 		; calculate slot positions
-		GuiTradesBuyCompact["Slot1_Pos"] := Header2_Y+Header2_H
-		GuiTradesBuyCompact["Slot2_Pos"] := GuiTradesBuyCompact["Slot1_Pos"] + GuiTradesBuyCompact.Slot1.Height
-		GuiTradesBuyCompact["Slot3_Pos"] := GuiTradesBuyCompact["Slot2_Pos"] + GuiTradesBuyCompact.Slot1.Height
-		GuiTradesBuyCompact["Slot4_Pos"] := GuiTradesBuyCompact["Slot3_Pos"] + GuiTradesBuyCompact.Slot1.Height
+		GuiTradesBuyCompact["Slot1_Pos"] := (Header2_Y+Header2_H)*windowsDPI
+		GuiTradesBuyCompact["Slot2_Pos"] := GuiTradesBuyCompact["Slot1_Pos"] + (GuiTradesBuyCompact.Slot1.Height*windowsDPI)
+		GuiTradesBuyCompact["Slot3_Pos"] := GuiTradesBuyCompact["Slot2_Pos"] + (GuiTradesBuyCompact.Slot1.Height*windowsDPI)
+		GuiTradesBuyCompact["Slot4_Pos"] := GuiTradesBuyCompact["Slot3_Pos"] + (GuiTradesBuyCompact.Slot1.Height*windowsDPI)
 
 		
 		/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
@@ -409,7 +408,7 @@
 		}
 
 		savedXPos := PROGRAM.SETTINGS.SETTINGS_MAIN.Compact_Pos_X, savedYPos := PROGRAM.SETTINGS.SETTINGS_MAIN.Compact_Pos_Y
-		winXPos := IsNum(savedXPos) ? savedXPos : (A_ScreenWidth-guiFullWidth)*resDPI
+		winXPos := IsNum(savedXPos) ? savedXPos : (A_ScreenWidth-guiFullWidth)*windowsDPI
 		winYPos := IsNum(savedYPos) ? savedYPos : 0
 
 		Gui.Show("TradesBuyCompact", "x" winXPos " y" winYPos " h" guiMinimizedHeight " w" guiFullWidth " Hide")
@@ -485,7 +484,7 @@
 		Return
 
 		Gui_TradesBuyCompact_ContextMenu_ExpandUpwardsToggle:
-			ShowToolTip("""Expand upwards"": Feature not added yet","","",radiusX:=500,radiusY:=500)
+			TrayNotifications.Show("""Expand upwards""", "Feature not added yet")
 			SetTimer, RemoveToolTip, -2000
 		return
 
@@ -789,11 +788,11 @@
 		global GuiTradesBuyCompact, GuiTradesBuyCompact_Controls
 		global PROGRAM
 
-		resDPI := Get_DpiFactor()
+		windowsDPI := GuiTradesBuyCompact.Windows_DPI
 
 		hiddenWin := A_DetectHiddenWindows
 		DetectHiddenWindows, On
-		WinMove,% "ahk_id " GuiTradesBuyCompact.Handle, , , , ,% GuiTradesBuyCompact.Height_Minimized * resDPI
+		WinMove,% "ahk_id " GuiTradesBuyCompact.Handle, , , , ,% GuiTradesBuyCompact.Height_Minimized * windowsDPI
 		DetectHiddenWindows, %hiddenWin%
 
 		GuiControl, TradesBuyCompact:Show,% GuiTradesBuyCompact_Controls.hBTN_Maximize
@@ -814,11 +813,11 @@
 		global GuiTradesBuyCompact, GuiTradesBuyCompact_Controls
 		global PROGRAM
 
-		resDPI := Get_DpiFactor()
+		windowsDPI := GuiTradesBuyCompact.Windows_DPI
 
 		hiddenWin := A_DetectHiddenWindows
 		DetectHiddenWindows, On
-		WinMove,% "ahk_id " GuiTradesBuyCompact.Handle, , , , ,% GuiTradesBuyCompact.Height_Maximized * resDPI ; change size first to avoid btn flicker
+		WinMove,% "ahk_id " GuiTradesBuyCompact.Handle, , , , ,% GuiTradesBuyCompact.Height_Maximized * windowsDPI ; change size first to avoid btn flicker
 		DetectHiddenWindows, %hiddenWin%
 
 		GuiControl, TradesBuyCompact:Show,% GuiTradesBuyCompact_Controls.hBTN_Minimize
@@ -1105,6 +1104,7 @@
 		global PROGRAM
 		global GuiTradesBuyCompact, GuiTradesBuyCompact_Controls
 
+		windowsDPI := GuiTradesBuyCompact.Windows_DPI
 		cSlotCont := GUI_TradesBuyCompact.GetSlotContent(slotNum)
 
 		; Parsing infos
@@ -1190,12 +1190,12 @@
 		buyerSlotSizeMax := Get_ControlCoords("TradesBuyCompact_Slot" slotNum, GuiTradesBuyCompact["Slot" slotNum "_Controls"].hTEXT_SellerName).W
 		newBuyerTxtSize := Get_TextCtrlSize(txt:=newTabSeller, fontName:=GuiTradesBuyCompact.Font, fontSize:=GuiTradesBuyCompact.Font_Size).W
 
-		if (newItemTxtSize >= itemSlotSizeMax-5) {	
+		if (newItemTxtSize >= itemSlotSizeMax-10) {	
 			cutStr := newTabItem
 			Loop % Ceil( StrLen(newTabItem)/3 ) {
 				StringTrimRight, cutStr, cutStr, 3
 				newSize := Get_TextCtrlSize(txt:=cutStr "...", fontName:=GuiTradesBuyCompact.Font, fontSize:=GuiTradesBuyCompact.Font_Size).W
-				if !(newSize >= itemSlotSizeMax-5)
+				if !(newSize >= itemSlotSizeMax-10)
 					Break
 			}
 			newTabItem := cutStr "..."
@@ -1226,12 +1226,12 @@
 		GuiControl, ,% GuiTradesBuyCompact["Slot" slotNum "_Controls"].hTEXT_TimeSent,% newTabTimeSent
 		
 		; Set price count width
-		GuiControl, Move,% GuiTradesBuyCompact["Slot" slotNum "_Controls"].hTEXT_PriceCount,% "w" priceW
+		GuiControl, Move,% GuiTradesBuyCompact["Slot" slotNum "_Controls"].hTEXT_PriceCount,% "w" priceW*windowsDPI
 
 		; Move AdditionalMsg msg based on price count pos
 		ControlGetPos, x, y, w, h,,% "ahk_id " GuiTradesBuyCompact["Slot" slotNum "_Controls"].hTEXT_PriceCount
 		ControlGetPos, x2, y2, w2, h2,,% "ahk_id " GuiTradesBuyCompact["Slot" slotNum "_Controls"].hBTN_WhisperSeller
-		GuiControl, Move,% GuiTradesBuyCompact["Slot" slotNum "_Controls"].hTEXT_AdditionalMsg,% "x" x+w+10 " w" x2-( x+w+10 )-10
+		GuiControl, Move,% GuiTradesBuyCompact["Slot" slotNum "_Controls"].hTEXT_AdditionalMsg,% "x" (x+w+10)/windowsDPI " w" (x2-( x+w+10 )-10)/windowsDPI
 
 		addMsgSlotSizeMax := Get_ControlCoords("TradesBuyCompact_Slot" slotNum, GuiTradesBuyCompact["Slot" slotNum "_Controls"].hTEXT_AdditionalMsg).W
 		newAddMsgTxtSize := Get_TextCtrlSize(txt:=newTabAddMsg, fontName:=GuiTradesBuyCompact.Font, fontSize:=GuiTradesBuyCompact.Font_Size).W
@@ -1257,7 +1257,7 @@
 			coords := Get_ControlCoords("TradesBuyCompact_Slot" slotNum, GuiTradesBuyCompact["Slot" slotNum "_Controls"].hIMG_CurrencyIMG)
 			imgSlot_W := coords.W, imgSlot_H := coords.H
 			
-			hBitMap := Gdip_CreateResizedHBITMAP_FromFile(currencyPngFile, imgSlot_W, imgSlot_H, PreserveAspectRatio:=False)
+			hBitMap := Gdip_CreateResizedHBITMAP_FromFile(currencyPngFile, imgSlot_W*windowsDPI, imgSlot_H*windowsDPI, PreserveAspectRatio:=False)
 			SetImage(GuiTradesBuyCompact["Slot" slotNum "_Controls"].hIMG_CurrencyIMG, hBitmap)
 		}
 	}
@@ -1581,14 +1581,17 @@
 	ResetPositionIfOutOfBounds() {
 		global PROGRAM, GuiTradesBuyCompact ;, GuiTradesMinimized
 
+		if ( !GUI_TradesBuyCompact.Exists() )
+			return
+
 		; winHandle := GuiTrades.Is_Minimized ? GuiTradesMinimized.Handle : GuiTrades.Handle
 		winHandle := GuiTradesBuyCompact.Handle
 		
 		if !IsWindowInScreenBoundaries(_win:="ahk_id " winHandle, _screen:="All", _adv:=False) {
 			bounds := IsWindowInScreenBoundaries(_win:="ahk_id " winHandle, _screen:="All", _adv:=True)
+			appendTxtFinal := "Win_X: " bounds[index].Win_X " | Win_Y: " bounds[index].Win_Y " - Win_W: " bounds[index].Win_W " | Win_H: " bounds[index].Win_H
 			for index, nothing in bounds {
 				appendTxt := "Monitor ID: " index
-				. "`nWin_X: " bounds[index].Win_X " | Win_Y: " bounds[index].Win_Y " - Win_W: " bounds[index].Win_W " | Win_H: " bounds[index].Win_H
 				. "`nMon_L: " bounds[index].Mon_L " | Mon_T: " bounds[index].Mon_T " | Mon_R: " bounds[index].Mon_R " | Mon_B: " bounds[index].Mon_B
 				. "`nIsInBoundaries_H: " bounds[index].IsInBoundaries_H " | IsInBoundaries_V: " bounds[index].IsInBoundaries_V
 				appendTxtFinal := appendTxtFinal ? appendTxtFinal "`n" appendTxt : appendTxt
