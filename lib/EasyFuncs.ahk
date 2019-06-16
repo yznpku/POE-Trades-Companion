@@ -13,13 +13,13 @@
 	if (_screen="All") { ; get all mons wa into their own sub array
 		SysGet, monCount, MonitorCount
 		Loop %monCount% {
-			SysGet, monwa, MonitorWorkArea, %A_Index%
-			mons[A_Index] := {T:monwaTop,B:monwaBottom,L:monwaLeft,R:monwaRight}
+			SysGet, mon, Monitor, %A_Index%
+			mons[A_Index] := {T:monTop,B:monBottom,L:monLeft,R:monRight}
 		}	
 	}
 	else { ; only selected monitor into its own sub array
-		SysGet, monwa, MonitorWorkArea, %_screen%
-		mons.1 := {T:monwaTop,B:monwaBottom,L:monwaLeft,R:monwaRight}
+		SysGet, mon, Monitor, %_screen%
+		mons.1 := {T:monTop,B:monBottom,L:monLeft,R:monRight}
 	}
 
 	if (_adv)
@@ -38,14 +38,17 @@
 		else ; bottom
 			ver := IsBetween(win.y+win.h/3, mon.t, mon.b)
 
+		isInHor := hor=True?True:isInHor
+		isInVer := ver=True?True:isInVer
+
 		if (_adv)
 			advObj[monIndex] := {"Mon_T": mon.t, "Mon_B": mon.b, "Mon_L": mon.l, "Mon_R": mon.r
 				, "Win_X": win.x, "Win_Y": win.y, "Win_W": win.w, "Win_H": win.h
 				, "IsInBoundaries_H": hor, "IsInBoundaries_V": ver}
-		
-		if (hor && ver) && (_adv = False)
-			return True
 	}
+	if (isInHor=True && isInVer=True && _adv=False)
+		return True
+
 	if (_adv)
 		return advObj
 }
