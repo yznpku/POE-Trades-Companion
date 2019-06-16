@@ -1,4 +1,40 @@
 ﻿/*
+
+Modified Class_ImageButton.ahk by lemasato to include private fonts
+
+Private fonts (how to use example):
+   FGP_ by kon can be found here: https://github.com/ahkon/FGP-FileGetProperties
+   
+   1. Load your fonts privately and store the font family handle into a global object.
+      I recommend using the font title (can be retrieved using FPG_Value() by kon to access the font family handle.
+      This is so, if you store your GUI font name in a variable, you can use it in both AHK "Gui,Font" cmd and this function.
+
+         Loop, Files, %fontsFolder%\*.ttf
+      {
+               fontFile := A_LoopFileFullPath, fontTitle := FGP_Value(A_LoopFileFullPath, 21)	; 21 = Title
+
+      DllCall( "GDI32.DLL\AddFontResourceEx", Str, fontFile,UInt,(FR_PRIVATE:=0x10), Int,0)
+      DllCall("gdiplus\GdipPrivateAddFontFile", "uint", hCollection, "uint", &fontFile)
+      DllCall("gdiplus\GdipCreateFontFamilyFromName", "uint", &fontTitle, "uint", hCollection, "uint*", hFamily)
+      PrivateFonts[fontTitle] := hFamily
+   }
+
+   2. Create your ImageButton with your private font.
+      ImageButton.Create(Hwnd, Options, hFamily="", fontSize="", fontStyle="")
+      hFamily is the handle to your private font
+      fontSize is the size of the font you desire
+      fontStyle can be a combination of the following: Regular,Bold,Italic,Underline,Strike (eg: RegularBold or BoldUnderlineStrike or StrikeBoldItalic etc)
+
+         Gui, Add, Button, hwndhBTN, Hello
+         ImageButton.Create(hwndhBTN_Minimize, imgBtnStyle, PrivateFonts["Fontin SmallCaps"], 10)
+   
+   3. Freeing memory
+   3a.   When deleting your GUI, free your ImageButton controls individually by using:
+         ImageButton.DestroyBtnImgList(hBTN)
+   4a.   To free a font family and remove it from your private font resources, use:
+         Gdip_DeleteFontFamily(PROGRAM.FONTS[fontTitle])
+      DllCall( "GDI32.DLL\RemoveFontResourceEx",Str, A_LoopFileFullPath,UInt,(FR_PRIVATE:=0x10),Int,0)
+
 ======================================================================================================================
 Namespace:         ImageButton
 Function:          Create images and assign them to pushbuttons.
@@ -64,41 +100,6 @@ How to use:
                             -  Default: 1
        ---------------------------------------------------------------------------------------------------------------
        If the the button has a caption it will be drawn above the bitmap.
-
-
-Private fonts (how to use example):
-      FGP_ by kon can be found here: https://github.com/ahkon/FGP-FileGetProperties
-      
-      1. Load your fonts privately and store the font family handle into a global object.
-         I recommend using the font title (can be retrieved using FPG_Value() by kon to access the font family handle.
-         This is so, if you store your GUI font name in a variable, you can use it in both AHK "Gui,Font" cmd and this function.
-
-            Loop, Files, %fontsFolder%\*.ttf
-      	{
-                  fontFile := A_LoopFileFullPath, fontTitle := FGP_Value(A_LoopFileFullPath, 21)	; 21 = Title
-
-			DllCall( "GDI32.DLL\AddFontResourceEx", Str, fontFile,UInt,(FR_PRIVATE:=0x10), Int,0)
-			DllCall("gdiplus\GdipPrivateAddFontFile", "uint", hCollection, "uint", &fontFile)
-			DllCall("gdiplus\GdipCreateFontFamilyFromName", "uint", &fontTitle, "uint", hCollection, "uint*", hFamily)
-			PrivateFonts[fontTitle] := hFamily
-		}
-
-      2. Create your ImageButton with your private font.
-         ImageButton.Create(Hwnd, Options, hFamily="", fontSize="", fontStyle="")
-         hFamily is the handle to your private font
-         fontSize is the size of the font you desire
-         fontStyle can be a combination of the following: Regular,Bold,Italic,Underline,Strike (eg: RegularBold or BoldUnderlineStrike or StrikeBoldItalic etc)
-
-            Gui, Add, Button, hwndhBTN, Hello
-            ImageButton.Create(hwndhBTN_Minimize, imgBtnStyle, PrivateFonts["Fontin SmallCaps"], 10)
-      
-      3. Freeing memory
-      3a.   When deleting your GUI, free your ImageButton controls individually by using:
-            ImageButton.DestroyBtnImgList(hBTN)
-      4a.   To free a font family and remove it from your private font resources, use:
-            Gdip_DeleteFontFamily(PROGRAM.FONTS[fontTitle])
-	      DllCall( "GDI32.DLL\RemoveFontResourceEx",Str, A_LoopFileFullPath,UInt,(FR_PRIVATE:=0x10),Int,0)
-
 
 Credits:           THX tic     for GDIP.AHK     : http://www.autohotkey.com/forum/post-198949.html
                    THX tkoi    for ILBUTTON.AHK : http://www.autohotkey.com/forum/topic40468.html
@@ -255,6 +256,7 @@ Class ImageButton {
       if (hFamily || fontSize) { ; If specified a private fontfamily handle
          fontSize := !fontSize?8:fontSize, fontStyle := !fontStyle?0:fontStyle
          fontSize *= 1.35 ; Oddly font size is 35% smaller than normally, so we need to adjust it
+         fontSize *= A_ScreenDPI=96?1:A_ScreenDPI/96 ; Font size needs to be manually ajudsted to screen DPI
          usePrivateFont := True, fontStyleID := fontStyle
          if (fontStyle) {
             fontsStyleList := "Regular,Bold,Italic,Underline,Strike"
