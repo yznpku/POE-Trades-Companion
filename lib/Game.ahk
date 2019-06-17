@@ -705,8 +705,9 @@ Parse_GameLogs(strToParse) {
 				currencyName := currencyInfos.Is_Listed?currencyInfos.Name : tradePrice
 				currencyCount := RegExReplace(tradePrice, "\D")
 				tradePrice := currencyInfos.Is_Listed ? currencyCount " " currencyName : tradePrice
+				tradeOther := tradeOther?"[" A_Hour ":" A_Min "] @From: " tradeOther : ""
 				
-				tradeInfos := {Buyer:tradeBuyerName, Item:tradeItemFull, Price:tradePrice, Stash:tradeStashFull, Other:tradeOther
+				tradeInfos := {Buyer:tradeBuyerName, Item:tradeItemFull, Price:tradePrice, Stash:tradeStashFull, OtherFull:tradeOther
 					,BuyerGuild:tradeBuyerGuild, TimeStamp:timeStamp,PID:instancePID, IsInArea:False, HasNewMessage:False, WithdrawTally:0, Time: A_Hour ":" A_Min
 					,WhisperSite:tradeRegExName, UniqueID:GUI_Trades.GenerateUniqueID(), TradeVerify:"Grey", WhisperLang:whisperLang}
 				err := Gui_Trades.PushNewTab(tradeInfos)
@@ -769,7 +770,7 @@ Parse_GameLogs(strToParse) {
 				Loop % GuiTrades.Tabs_Count {
 					tabInfos := Gui_Trades.GetTabContent(A_Index)
 					if (tabInfos.Buyer = whispName) {
-						Gui_Trades.UpdateSlotContent(A_Index, "Other", "[" A_Hour ":" A_Min "] " whispMsg)
+						Gui_Trades.UpdateSlotContent(A_Index, "OtherFull", "[" A_Hour ":" A_Min "] @From: " whispMsg)
 						GUI_Trades.SetTabStyleWhisperReceived(whispName)
 					}
 				}
@@ -814,6 +815,12 @@ Parse_GameLogs(strToParse) {
 					tabInfos := GUI_TradesBuyCompact.GetSlotContent(A_Index)
 					if (tabInfos.Seller = whispName) {
 						GUI_TradesBuyCompact.UpdateSlotContent(A_Index, "AdditionalMsgFull", "[" A_Hour ":" A_Min "] @To: " whispMsg)
+					}
+				}
+				Loop % GuiTrades.Tabs_Count {
+					tabInfos := GUI_Trades.GetTabContent(A_Index)
+					if (tabInfos.Buyer = whispName) {
+						GUI_Trades.UpdateSlotContent(A_Index, "OtherFull", "[" A_Hour ":" A_Min "] @To: " whispMsg)
 					}
 				}
 			}

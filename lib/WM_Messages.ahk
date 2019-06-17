@@ -75,10 +75,9 @@ WM_LBUTTONDOWN() {
 		underMouseCtrl := Get_UnderMouse_CtrlHwnd()
 		if (underMouseCtrl = GuiTrades_Controls["hTEXT_TradeInfos" GuiTrades.Active_Tab]) {
 			tabContent := Gui_Trades.GetTabContent(GuiTrades.Active_Tab)
-			if (tabContent.Other) {
-				infosTextPos := Get_ControlCoords("Trades", GuiTrades_Controls["hTEXT_TradeInfos" GuiTrades.Active_Tab])
+			if (tabContent.OtherFull) {
 				GUITRADES_TOOLTIP := True
-				ShowToolTip(tabContent.Other, infosTextPos.X, infosTextPos.Y+infosTextPos.H, 20, 20, {Mouse:"Client", ToolTip:"Client"})
+				ShowToolTip( StrReplace(tabContent.OtherFull,"\n","`n") , , , 20, 20)
 			}
 		}
 		else if (underMouseCtrl = GuiTrades_Controls["hIMG_TradeVerify" GuiTrades.Active_Tab]) {
@@ -159,6 +158,7 @@ WM_MOUSEMOVE() {
 	global MOUSEDRAG_CTRL
 	static _mouseX, _mouseY, _prevMouseX, _prevMouseY, _prevInfos
 	static curControl, prevControl
+	static ctrlToolTip, underMouseCtrl
 
 	resDPI := Get_DpiFactor()
 
@@ -167,11 +167,29 @@ WM_MOUSEMOVE() {
 		Return
 
 	if (A_Gui = "Trades") {
-		underMouseCtrl := Get_UnderMouse_CtrlHwnd()
-		; tooltip % GuiTrades_Controls["hIMG_TradeVerify" GuiTrades.Active_Tab]
-		if (underMouseCtrl = GuiTrades_Controls["hIMG_TradeVerify" GuiTrades.Active_Tab]) {
-			infos := StrReplace( Gui_Trades.GetTabContent(GuiTrades.Active_Tab).TradeVerifyInfos, "\n", "`n")
-			ShowToolTip(infos, , , 5, 5)
+		underMouseCtrl := Get_UnderMouse_CtrlHwnd(), activeTab := GuiTrades.Active_Tab
+		tabInfos := GUI_Trades.GetTabContent(activeTab)
+		
+		ctrlToolTip := (underMouseCtrl = GuiTrades_Controls.hBTN_CloseTab) ? "Close this trade window"
+			: (underMouseCtrl = GuiTrades_Controls.hBTN_Minimize) ? "Minimize this interface"
+			: (underMouseCtrl = GuiTrades_Controls.hBTN_Maximize) ? "Maximize this interface"
+		; 	: (underMouseCtrl = GuiTrades_Controls.hBTN_Hideout) ? "Go to your hideout"
+		; 	: (underMouseCtrl = GuiTrades_Controls.hBTN_LeagueHelp) ? "See league informative sheets"
+			: (underMouseCtrl = GuiTrades_Controls.hBTN_LeftArrow) ? "Scroll to the left"
+			: (underMouseCtrl = GuiTrades_Controls.hBTN_RightArrow) ? "Scroll to the right"		
+			; : (underMouseCtrl = GuiTrades_Controls["hTEXT_TradeInfos" activeTab]) && (tabInfos.Other != tabInfos.OtherFull) ? StrReplace(tabInfos.OtherFull, "\n", "`n")
+			: (underMouseCtrl = GuiTrades_Controls["hIMG_TradeVerify" activeTab]) ? StrReplace( tabInfos.TradeVerifyInfos, "\n", "`n")
+			: ""
+		
+		If (underMouseCtrl != prevControl) {
+			if (ctrlToolTip) {
+				timer := (DEBUG.SETTINGS.instant_settings_tooltips)?(-10)
+					; : IsIn(underMouseCtrl, GuiTrades_Controls["hTEXT_TradeInfos" activeTab]) ? -10
+					: (-1000)
+				SetTimer, WM_MOUSEMOVE_DisplayToolTip,% timer
+			}
+
+			prevControl := underMouseCtrl
 		}
 
 	}
@@ -353,7 +371,6 @@ WM_MOUSEMOVE() {
 			slotInfos := GUI_TradesBuyCompact.GetSlotContent(slotNum)
 		underMouseCtrl := Get_UnderMouse_CtrlHwnd()
 
-		static ctrlToolTip
 		ctrlToolTip := (underMouseCtrl = GuiTradesBuyCompact["Slot" slotNum "_Controls"].hIMG_CurrencyIMG) ? GUI_TradesBuyCompact.GetSlotContent(slotNum).Currency
 			: (underMouseCtrl = GuiTradesBuyCompact["Slot" slotNum "_Controls"].hTEXT_ItemName) && (slotInfos.ItemIsCut) ? slotInfos.Item
 			: (underMouseCtrl = GuiTradesBuyCompact["Slot" slotNum "_Controls"].hTEXT_SellerName) && (slotInfos.SellerIsCut) ? slotInfos.Seller
@@ -378,7 +395,7 @@ WM_MOUSEMOVE() {
 				timer := (DEBUG.SETTINGS.instant_settings_tooltips)?(-10)
 					: IsIn(underMouseCtrl, GuiTradesBuyCompact["Slot" slotNum "_Controls"].hTEXT_SellerName "," GuiTradesBuyCompact["Slot" slotNum "_Controls"].hTEXT_AdditionalMsg "," GuiTradesBuyCompact["Slot" slotNum "_Controls"].hTEXT_ItemName "," GuiTradesBuyCompact["Slot" slotNum "_Controls"].hIMG_CurrencyIMG) ? -10
 					: (-1000)
-				SetTimer, WM_MOUSEMOVE_GuiTradesBuyCompact_DisplayToolTip,% timer
+				SetTimer, WM_MOUSEMOVE_DisplayToolTip,% timer
 			}
 
 			prevControl := underMouseCtrl
@@ -389,12 +406,18 @@ WM_MOUSEMOVE() {
 	_prevMouseX := _mouseX, _prevMouseY := _mouseY
 	return
 
-	WM_MOUSEMOVE_GuiTradesBuyCompact_DisplayToolTip:
+	WM_MOUSEMOVE_DisplayToolTip:
+		if (Get_UnderMouse_CtrlHwnd() != underMouseCtrl)
+			return
+
 		try ShowToolTip(ctrlToolTip)
 		SetTimer, WM_MOUSEMOVE_RemoveToolTip, -5000
 	return
 
 	WM_MOUSEMOVE_GuiSettings_DisplayToolTip:
+		if (Get_UnderMouse_CtrlHwnd() != underMouseCtrl)
+			return
+
 		controlTip := GUI_Settings.GetControlToolTip(curControl)
 		if ( controlTip ) {
 			try
