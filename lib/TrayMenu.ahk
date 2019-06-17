@@ -79,7 +79,7 @@ Tray_ToggleDisableBuyInterface() {
 	PROGRAM.SETTINGS.SETTINGS_MAIN.DisableBuyInterface := newToggle
 
 	if (newToggle="True")
-		Gui.Destroy("TradesBuyCompact")
+		GUI_TradesBuyCompact.Destroy()
 	else
 		GUI_TradesBuyCompact.RecreateGUI()
 }

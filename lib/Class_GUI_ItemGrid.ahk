@@ -387,14 +387,14 @@ class GUI_ItemGrid {
     }
 
     Destroy() {
-        Gui, ItemGrid:Destroy
-        Gui, ItemGridQuad:Destroy
-        Gui, ItemGridItemName:Destroy
-        Gui, ItemGridTabName:Destroy
-        Gui, ItemGridMap:Destroy
-        Gui, ItemGridMapTier:Destroy
-        Gui, ItemGridMapMap:Destroy
-        Gui, ItemGridMapArrow:Destroy
+        Gui.Destroy("ItemGrid")
+        Gui.Destroy("ItemGridQuad")
+        Gui.Destroy("ItemGridItemName")
+        Gui.Destroy("ItemGridTabName")
+        Gui.Destroy("ItemGridMap")
+        Gui.Destroy("ItemGridMapTier")
+        Gui.Destroy("ItemGridMapMap")
+        Gui.Destroy("ItemGridMapArrow")
     }
 
     Detect(_hw="Off") {

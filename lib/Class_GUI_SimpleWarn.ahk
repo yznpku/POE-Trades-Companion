@@ -79,7 +79,7 @@
 		Return
 
 		GUI_SimpleWarn_Close:
-			Gui.Destroy("SimpleWarn")
+			Gui_SimpleWarn.Destroy()
 		Return
 		GUI_SimpleWarn_Escape:
 			GoSub GUI_SimpleWarn_Close

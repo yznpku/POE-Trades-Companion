@@ -6,14 +6,8 @@
 
 		scaleMult := PROGRAM.SETTINGS.SETTINGS_CUSTOMIZATION_SKINS.ScalingPercentage / 100
 
-		; Free ImageButton memory
-		for key, value in GuiTradesMinimized_Controls
-			if IsIn(key, "hBTN_Minimize,hBTN_Maximize,hBTN_LeftArrow,hBTN_RightArrow,hBTN_CloseTab")
-			|| IsContaining(key, "hBTN_TabDefault,hBTN_TabJoinedArea,hBTN_TabWhisperReceived,hBTN_Custom,hBTN_Special")
-				ImageButton.DestroyBtnImgList(value)
-
 		; Initialize gui arrays
-		Gui, TradesMinimized:Destroy
+		GUI_TradesMinimized.Destroy()
 		Gui.New("TradesMinimized", "+AlwaysOnTop +ToolWindow +LastFound -SysMenu -Caption -Border +E0x08000000 +LabelGUI_TradesMinimized_ +HwndhGuiTradesMinimized", "POE TC - Trades")
 		guiCreated := False
 
@@ -224,5 +218,18 @@
 		
 		INI.Set(PROGRAM.INI_FILE, "SETTINGS_MAIN", "Pos_X", saveX)
 		INI.Set(PROGRAM.INI_FILE, "SETTINGS_MAIN", "Pos_Y", saveY)
-	}	
+	}
+
+	DestroyBtnImgList() {
+		global GuiTradesMinimized_Controls
+
+		for key, value in GuiTradesMinimized_Controls
+			if IsContaining(key, "hBTN_")
+				try ImageButton.DestroyBtnImgList(value)
+	}
+
+	Destroy() {
+		GUI_TradesMinimized.DestroyBtnImgList()
+		Gui.Destroy("TradesMinimized")
+	}
 }

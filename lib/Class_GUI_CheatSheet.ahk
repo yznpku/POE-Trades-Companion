@@ -13,6 +13,7 @@
             return
             
         global GuiCheatSheet, GuiCheatSheet_Controls
+        GUI_CheatSheet.Destroy()
         Gui.New("CheatSheet", "+AlwaysOnTop +ToolWindow +LastFound -SysMenu -Caption -Border +E0x08000000 +HwndhGuiCheatSheet", "POE TC - CheatSheet")
         Gui.Color("CheatSheet","EEAA99")
         WinSet, TransColor, EEAA99
@@ -28,6 +29,10 @@
     }
 
     CheatSheetRemove() {
+        GUI_CheatSheet.Destroy()
+    }
+
+    Destroy() {
         Gui.Destroy("CheatSheet")
     }
 }

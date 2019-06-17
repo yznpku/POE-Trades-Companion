@@ -2,7 +2,7 @@
     Create() {
         global GuiIntercom, GuiIntercom_Controls
         ; Creating GUI
-        Gui, Intercom:Destroy
+        GUI_Intercom.Destroy()
         Gui.New("Intercom", "+AlwaysOnTop +ToolWindow +LastFound -SysMenu -Caption -Border +LabelGUI_Intercom_ +HwndhGuiIntercom", "Intercom")
         ; Making 100 slots, setting SubRoutine
         Loop 100 {
@@ -107,4 +107,8 @@
 			Return GuiIntercom_Submit[ctrlName]
 		}
 	}
+
+    Destroy() {
+        Gui.Destroy("Intercom")
+    }
 }

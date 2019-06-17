@@ -13,14 +13,8 @@
 		scaleMult := PROGRAM.SETTINGS.SETTINGS_CUSTOMIZATION_SKINS.ScalingPercentage / 100
 		; AppendToLogs("TradesBuyCompact GUI: Creating with max tabs """ _maxTabsToRender """.")
 
-		; Free ImageButton memory
-		for key, value in GuiTradesBuyCompact_Controls
-			if IsIn(key, "hBTN_Minimize,hBTN_Maximize,hBTN_LeftArrow,hBTN_RightArrow,hBTN_CloseTab")
-			|| IsContaining(key, "hBTN_TabDefault,hBTN_TabJoinedArea,hBTN_TabWhisperReceived,hBTN_Custom,hBTN_Special")
-				ImageButton.DestroyBtnImgList(value)
-
 		; Initialize gui arrays
-		Gui, TradesBuyCompact:Destroy
+		GUI_TradesBuyCompact.Destroy()
 		Gui.New("TradesBuyCompact", "+AlwaysOnTop +ToolWindow +LastFound -SysMenu -Caption -Border +E0x08000000 +LabelGUI_TradesBuyCompact_ +HwndhGuiTradesBuyCompact", "POE TC - TradesBuyCompact")
 		windowsDPI := GuiTradesBuyCompact.Windows_DPI := Get_DpiFactor()
 		guiCreated := False
@@ -1492,11 +1486,27 @@
 	}
 
 	DestroyBtnImgList() {
-		global GuiTradesBuyCompact_Controls
+		global GuiTradesBuyCompact, GuiTradesBuyCompact_Controls
 
 		for key, value in GuiTradesBuyCompact_Controls
-			if IsIn(key, "hBTN_CloseGUI")
-				ImageButton.DestroyBtnImgList(value)
+			if IsContaining(key, "hBTN_")
+				try ImageButton.DestroyBtnImgList(value)
+		
+		Loop % GuiTradesBuyCompact.Tabs_Limit
+			for key, value in GuiTradesBuyCompact["Slot" A_Index "_Controls"]
+				if IsContaining(key, "hBTN_")
+					try ImageButton.DestroyBtnImgList(value)
+	}
+
+	Destroy() {
+		global GuiTradesBuyCompact
+		
+		GUI_TradesBuyCompact.DestroyBtnImgList()
+		Gui.Destroy("TradesBuyCompactSearch")
+		Gui.Destroy("TradesBuyCompactSearchHidden")
+		Loop % GuiTradesBuyCompact.Tabs_Limit
+			Gui.Destroy("TradesBuyCompact_Slot" A_Index)
+		Gui.Destroy("TradesBuyCompact")
 	}
 
 	Submit(CtrlName="") {

@@ -38,14 +38,8 @@
 
 		AppendToLogs("Trades GUI: Creating with max tabs """ _maxTabsToRender """.")
 
-		; Free ImageButton memory
-		for key, value in GuiTrades_Controls
-			if IsIn(key, "hBTN_Minimize,hBTN_Maximize,hBTN_LeftArrow,hBTN_RightArrow,hBTN_CloseTab")
-			|| IsContaining(key, "hBTN_TabDefault,hBTN_TabJoinedArea,hBTN_TabWhisperReceived,hBTN_Custom,hBTN_Special")
-				ImageButton.DestroyBtnImgList(value)
-
 		; Initialize gui arrays
-		Gui, Trades:Destroy
+		GUI_Trades.Destroy()
 		Gui.New("Trades", "+AlwaysOnTop +ToolWindow +LastFound -SysMenu -Caption -Border +E0x08000000 +LabelGUI_Trades_ +HwndhGuiTrades", "POE TC - Trades")
 		windowsDPI := GuiTrades.Windows_DPI := Get_DpiFactor()
 		guiCreated := False
@@ -1046,6 +1040,8 @@
 		Loop % tabsCount { ; Get all tabs content
 			tabInfos%A_Index% := GUI_Trades.GetTabContent(A_Index)
 		}
+
+		GUI_TradesMinimized.Create()
 		
 		if (tabsLimit)
 			Gui_Trades.Create(tabsLimit) ; Recreate GUI with more tabs
@@ -2242,6 +2238,19 @@
 				Hotkey,% "~" GuiTrades.HOTKEYS[A_Index], Off
 			}
 		}
+	}
+
+	DestroyBtnImgList() {
+		global GuiTrades_Controls
+
+		for key, value in GuiTrades_Controls
+			if IsContaining(key, "hBTN_")
+				try ImageButton.DestroyBtnImgList(value)
+	}
+
+	Destroy() {
+		GUI_Trades.DestroyBtnImgList()
+		Gui.Destroy("Trades")	
 	}
 }
 

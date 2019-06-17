@@ -5,7 +5,7 @@
 		global GuiMyStats, GuiMyStats_Controls, GuiMyStats_Submit
 		static guiCreated
 
-		Gui, MyStats:Destroy
+		GUI_MyStats.Destroy()
 		Gui.New("MyStats", "-Caption +Resize -MaximizeBox +MinSize720x480  +LabelGUI_MyStats_ +HwndhGuiMyStats", "POE TC - " PROGRAM.TRANSLATIONS.TrayMenu.Stats)
 		; Gui.New("MyStats", "-Caption -Border +LabelGUI_MyStats_ +HwndhGuiMyStats", "MyStats")
 		GuiMyStats.Is_Created := False
@@ -550,8 +550,13 @@
 		global GuiMyStats_Controls
 
 		for key, value in GuiMyStats_Controls
-			if IsIn(key, "hBTN_CloseGUI")
-				ImageButton.DestroyBtnImgList(value)
+			if IsContaining(key, "hBTN_")
+				try ImageButton.DestroyBtnImgList(value)
+	}
+
+	Destroy() {
+		GUI_MyStats.DestroyBtnImgList()
+		Gui.Destroy("MyStats")
 	}
 
 	SetDefaultListView(lvName) {

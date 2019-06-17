@@ -4,6 +4,7 @@
 		global GuiChooseInstance, GuiChooseInstance_Controls, GuiChooseInstance_Submit
 		static guiWidth, guiHeight
 
+		GUI_ChooseInstance.Destroy()
 		Gui.New("ChooseInstance", "+AlwaysOnTop +SysMenu -MinimizeBox -MaximizeBox +LabelGUI_ChooseInstance_ +HwndhGuiChooseInstance", "POE TC - Game Instances")
 
 		GameIcon_W := 48, GameIcon_H := 48
@@ -119,7 +120,7 @@
 			MsgBox(4096+16, , PROGRAM.TRANSLATIONS.MessageBoxes.ChooseInstance_NoGameInstanceChosen)
 		}
 		else
-			Gui, ChooseInstance:Destroy
+			GUI_ChooseInstance.Destroy()
 	}
 
 	OnInstanceClick(CtrlHwnd, instancesGroupArray, instanceGroupID, instanceSubGroupID) {
@@ -154,6 +155,10 @@
 
 		DllCall("FlashWindow", UInt, GuiChooseInstance.Instance.Hwnd, Int, 1)
 		WinActivate,% "ahk_id " GuiChooseInstance.Instance.Hwnd
+	}
+
+	Destroy() {
+		Gui.Destroy("ChooseInstance")
 	}
 }
 

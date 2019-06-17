@@ -5,7 +5,7 @@
 		global GuiChooseLang, GuiChooseLang_Controls, GuiChooseLang_Submit
 		static guiCreated
 
-		Gui, ChooseLang:Destroy
+		GUI_ChooseLang.Destroy()
 		Gui.New("ChooseLang", "-Caption -Border +AlwaysOnTop +LabelGUI_ChooseLang_ +HwndhGuiChooseLang", "POE TC - Language")
 		GuiChooseLang.Is_Created := False
 
@@ -98,7 +98,7 @@
 		INI.Set(PROGRAM.INI_FILE, "GENERAL", "AskForLanguage", "False")
 		PROGRAM.TRANSLATIONS := GetTranslations(lang)
 
-		Gui, ChooseLang:Destroy
+		GUI_ChooseLang.Destroy()
 	}
 
 	OnLanguageChange(lang, CtrlHwnd) {
@@ -200,8 +200,13 @@
 		global GuiChooseLang_Controls
 
 		for key, value in GuiChooseLang_Controls
-			if IsIn(key, "hBTN_CloseGUI")
-				ImageButton.DestroyBtnImgList(value)
+			if IsContaining(key, "hBTN_")
+				try ImageButton.DestroyBtnImgList(value)
+	}
+
+	Destroy() {
+		GUI_ChooseLang.DestroyBtnImgList()
+		Gui.Destroy("ChooseLang")
 	}
 
 	Submit(CtrlName="") {

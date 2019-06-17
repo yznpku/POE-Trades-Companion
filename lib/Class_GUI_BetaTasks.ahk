@@ -4,7 +4,7 @@
 		global GuiBetaTasks, GuiBetaTasks_Controls, GuiBetaTasks_Submit
 
         ; Initialize gui arrays
-        Gui, BetaTasks:Destroy
+        GUI_BetaTasks.Destroy()
         Gui.New("BetaTasks", "+LabelGUI_BetaTasks_ +HwndhGuiBetaTasks", "POE TC - Beta Tasks")
         Gui.Font("BetaTasks", "Segoe UI", "8")
 
@@ -75,6 +75,10 @@
 			GUI_BetaTasks.Create()
 			GUI_BetaTasks.Show()
 		}
+	}
+
+	Destroy() {
+		Gui.Destroy("BetaTasks")
 	}
 }
 

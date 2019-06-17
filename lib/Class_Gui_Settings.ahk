@@ -99,12 +99,9 @@ Class GUI_Settings {
 		global PROGRAM, GAME
 		global GuiSettings, GuiSettings_Controls, GuiSettings_Submit
 		static guiCreated
-
-		; Free ImageButton memory
-		GUI_Settings.DestroyBtnImgList()
-		
+	
 		; Initialize gui arrays
-		Gui, Settings:Destroy
+		GUI_Settings.Destroy()
 		Gui.New("Settings", "-Caption -Border +LabelGUI_Settings_ +HwndhGuiSettings", "POE TC - " PROGRAM.TRANSLATIONS.TrayMenu.Settings)
 		; Gui.New("Settings", "+AlwaysOnTop +ToolWindow +LabelGUI_Settings_ +HwndhGuiSettings", "Settings")
 		GuiSettings.Is_Created := False
@@ -4091,9 +4088,8 @@ Class GUI_Settings {
 		global GuiSettings_Controls
 
 		for key, value in GuiSettings_Controls
-			if IsIn(key, "hBTN_CloseGUI,hBTN_ResetToDefaultSettings")
-			|| IsContaining(key, "hBTN_Tab,hBTN_Section")
-				ImageButton.DestroyBtnImgList(value)
+			IsContaining(key, "hBTN_")
+				try ImageButton.DestroyBtnImgList(value)
 	}
 
 	Redraw() {
@@ -4106,6 +4102,11 @@ Class GUI_Settings {
         Gui, Settings:Default
         Gui, Settings:ListView,% GuiSettings_Controls[lvName]
     }
+
+	Destroy() {
+		GUI_Settings.DestroyBtnImgList()
+		Gui.Destroy("Settings")
+	}
 
 	SetTranslation(_lang="english", _ctrlName="") {
 		global PROGRAM, GuiSettings, GuiSettings_Controls
