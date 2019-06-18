@@ -1430,10 +1430,7 @@
 		newTabOtherFull		:= StrReplace(newTabOtherFull, "`n", "\n"), newTabOtherFull := StrReplace(newTabOtherFull, "`r", "\n")
 		; newTabOther 		:= RegExMatch( StrSplit(newTabOtherFull, "\n").1 , "O)\[\d+\:\d+\] \@(?:To|From)\: (.*)", outPat), newTabOther := outPat.1
 		numberOfMsgs := 0
-		Loop, Parse, newTabOtherFull, \n
-		{
-			numberOfMsgs := A_LoopField?numberOfMsgs+1:numberOfMsgs
-		}
+		otherSplit := StrSplit(newTabOtherFull, "\n"), numberOfMsgs := otherSplit.MaxIndex()
 		if (numberOfMsgs = 0 || numberOfMsgs=1 || numberOfMsgs="")
 			RegExMatch( StrSplit(newTabOtherFull, "\n").1 , "O)\[\d+\:\d+\] \@(?:To|From)\: (.*)", outPat), newTabOther := outPat.1
 		else
