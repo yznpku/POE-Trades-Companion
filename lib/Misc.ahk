@@ -6,8 +6,10 @@
 	isCurrencyListed := False
 
 	if RegExMatch(currency, "See Offer") {
-		Return {Name:currency, Is_Listed:isCurrencyListed}
+		Return {Name:currency, Is_Listed:False}
 	}
+	else if (!currency || currency = "" || currency = " ")
+		return {Name:currency, Is_Listed:False}
 
 	currency := RegExReplace(currency, "\d")
 	AutoTrimStr(currency) ; Remove whitespaces
