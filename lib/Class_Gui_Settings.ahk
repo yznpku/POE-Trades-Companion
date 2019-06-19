@@ -693,7 +693,7 @@ Class GUI_Settings {
 		Gui.Add("Settings", "Picture", "x+3 yp wp hp hwndhIMG_FlagChina", PROGRAM.IMAGES_FOLDER "\flag_china.png")
 		Gui.Add("Settings", "Picture", "x+3 yp wp hp hwndhIMG_FlagTaiwan", PROGRAM.IMAGES_FOLDER "\flag_taiwan.png")
 
-		Gui.Add("Settings", "Picture", "x" guiWidth-120 " y" guiHeight-45 " hwndhIMG_Paypal", PROGRAM.IMAGES_FOLDER "\DonatePaypal.png")
+		Gui.Add("Settings", "Picture", "x" guiWidth-120 " y" guiHeight-45 " w115 h40 hwndhIMG_Paypal", PROGRAM.IMAGES_FOLDER "\DonatePaypal.png")
 		Gui.Add("Settings", "Picture", "xp-70 yp w40 h40 hwndhIMG_Discord", PROGRAM.IMAGES_FOLDER "\Discord.png")
 		Gui.Add("Settings", "Picture", "xp-45 yp w40 h40 hwndhIMG_Reddit", PROGRAM.IMAGES_FOLDER "\Reddit.png")
 		Gui.Add("Settings", "Picture", "xp-45 yp w40 h40 hwndhIMG_PoE", PROGRAM.IMAGES_FOLDER "\PoE.png")
