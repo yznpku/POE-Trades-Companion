@@ -416,6 +416,8 @@
 
 		if ( !GUI_Trades.Exists() || !GUI_TradesMinimized.Exists() )
 			return
+		else if (PROGRAM.SETTINGS.SETTINGS_MAIN.TradesGUI_Mode = "Dock")
+			return
 
 		winHandle := GuiTrades.Is_Minimized ? GuiTradesMinimized.Handle : GuiTrades.Handle
 		
