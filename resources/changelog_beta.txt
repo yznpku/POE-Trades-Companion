@@ -1,3 +1,28 @@
+1.15.BETA_9 (19 June 2018)
+
+	Features:
+	- Added support for the Korean game executables.
+	
+	Changes:
+	- Use the real currency name on the interface instead of the one in the whisper.
+	This also fixes an issue where a trade added to the ignore list would still trigger a notification if the whisper was being sent from a different trading website.
+	- Improved the way the "Other" slot works on the Trades interface.
+	- Sending a whisper to one of your buyers will now add that message to the "Other" slot of the Trades interface.
+	- Added various tooltips on buttons hover, on the Trades interface.
+
+	Fixes:
+	- Memory leak issues when enabling and disabling the new Buying Interface.
+	- Various scaling and positioning issues related to having a Windows Scaling different than 100%.
+	- ImageButton font size would be incorrect with a Windows Scaling different than 100%.
+	- Various weird issues that could occur when parsing more than one line of chat logs at once.
+	- The interface position could be reset due to being deemed as "out of bounds" when part of it was covering the task bar.
+	This behaviour would appear more frequently if the taskbar would be positioned at the top or right of the monitor.
+	- Having "Mode: Dock" enabled could cause the interface position to be deemed out of bounds on application start.
+	- Added a warning message box if the user is using AHK v1.1.30.00.
+	This version of AHK is bugged and will cause crashes with the tool.
+	- Cheatsheets files wouldn't be extracted correctly with the executable.
+	If you have any file named Betrayal,Delve,Essence or Incursion at the root of your drive, they were made by this app and can be deleted.
+
 1.15.BETA_6/7/8 (11 June 2019)
 
 	1.15.BETA_8:
