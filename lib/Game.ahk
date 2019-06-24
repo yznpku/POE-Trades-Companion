@@ -761,9 +761,9 @@ Parse_GameLogs(strToParse) {
 				}
 			}
 			else if (isWhisperSent=True) {
-				currencyInfos := Get_CurrencyInfos(tradePrice, dontWriteLogs:=False)
-				currencyName := currencyInfos.Is_Listed?currencyInfos.Name : tradePrice
-				currencyCount := RegExReplace(tradePrice, "\D")
+				RegExMatch(tradePrice, "O)(\d+.\d+|\d+) (.*)", tradePricePat), currencyCount := tradePricePat.1, currencyName := tradePricePat.2
+				currencyInfos := Get_CurrencyInfos(currencyName, dontWriteLogs:=False)
+				currencyName := currencyInfos.Is_Listed?currencyInfos.Name : currencyName	
 				
 				tradeOther := tradeOther?"[" A_Hour ":" A_Min "] @To: " tradeOther : ""
 				tradeInfos := {Seller:tradeBuyerName, Item:tradeItemFull, Price:currencyCount, Currency:currencyName, Stash:tradeStashFull, AdditionalMsgFull:tradeOther
