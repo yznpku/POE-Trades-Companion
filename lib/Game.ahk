@@ -512,8 +512,12 @@ Parse_GameLogs(strToParse) {
 			if RegExMatch(parsedLogsMsg, "SO)" regexStr, joinedPat) {
 				instancePID := joinedPat.1, playerName := joinedPat.2
 				GUI_Trades.SetTabStyleJoinedArea(playerName)
-				if (PROGRAM.SETTINGS.SETTINGS_MAIN.BuyerJoinedAreaSFXToggle = "True") && FileExist(PROGRAM.SETTINGS.SETTINGS_MAIN.BuyerJoinedAreaSFXPath)
-					SoundPlay,% PROGRAM.SETTINGS.SETTINGS_MAIN.BuyerJoinedAreaSFXPath
+				if (PROGRAM.SETTINGS.SETTINGS_MAIN.BuyerJoinedAreaSFXToggle = "True") && FileExist(PROGRAM.SETTINGS.SETTINGS_MAIN.BuyerJoinedAreaSFXPath) {
+					try
+						SoundPlay,% PROGRAM.SETTINGS.SETTINGS_MAIN.BuyerJoinedAreaSFXPath
+					catch
+						PlaySound(PROGRAM.SETTINGS.SETTINGS_MAIN.BuyerJoinedAreaSFXPath)
+				}
 				break
 			}
 		}
@@ -713,9 +717,13 @@ Parse_GameLogs(strToParse) {
 				err := Gui_Trades.PushNewTab(tradeInfos)
 
 				if !(err) {
-					if (PROGRAM.SETTINGS.SETTINGS_MAIN.TradingWhisperSFXToggle = "True") && FileExist(PROGRAM.SETTINGS.SETTINGS_MAIN.TradingWhisperSFXPath)
-						SoundPlay,% PROGRAM.SETTINGS.SETTINGS_MAIN.TradingWhisperSFXPath
-
+					if (PROGRAM.SETTINGS.SETTINGS_MAIN.TradingWhisperSFXToggle = "True") && FileExist(PROGRAM.SETTINGS.SETTINGS_MAIN.TradingWhisperSFXPath) {
+						try 
+							SoundPlay,% PROGRAM.SETTINGS.SETTINGS_MAIN.TradingWhisperSFXPath
+						catch
+							PlaySound(PROGRAM.SETTINGS.SETTINGS_MAIN.TradingWhisperSFXPath)
+					}
+						
 					if !WinActive("ahk_pid " instancePID) { ; If the instance is not active
 						if ( PROGRAM.SETTINGS.SETTINGS_MAIN.ShowTabbedTrayNotificationOnWhisper = "True" ) {
 							trayTitle := StrReplace(PROGRAM.TRANSLATIONS.TrayNotifications.TradingWhisperReceived_Title, "%buyer%", whispName)
@@ -780,8 +788,12 @@ Parse_GameLogs(strToParse) {
 						GUI_TradesBuyCompact.UpdateSlotContent(A_Index, "AdditionalMsgFull", "[" A_Hour ":" A_Min "] @From: " whispMsg)
 					}
 				}
-				if (PROGRAM.SETTINGS.SETTINGS_MAIN.RegularWhisperSFXToggle = "True") && FileExist(PROGRAM.SETTINGS.SETTINGS_MAIN.RegularWhisperSFXPath)
-					SoundPlay,% PROGRAM.SETTINGS.SETTINGS_MAIN.RegularWhisperSFXPath
+				if (PROGRAM.SETTINGS.SETTINGS_MAIN.RegularWhisperSFXToggle = "True") && FileExist(PROGRAM.SETTINGS.SETTINGS_MAIN.RegularWhisperSFXPath) {
+					try 
+						SoundPlay,% PROGRAM.SETTINGS.SETTINGS_MAIN.RegularWhisperSFXPath
+					catch
+						PlaySound(PROGRAM.SETTINGS.SETTINGS_MAIN.RegularWhisperSFXPath)
+				}
 
 				if !WinActive("ahk_pid " instancePID) { ; If the instance is not active
 					if ( PROGRAM.SETTINGS.SETTINGS_MAIN.ShowTabbedTrayNotificationOnWhisper = "True" ) {

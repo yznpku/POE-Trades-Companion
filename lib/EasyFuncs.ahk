@@ -1,4 +1,9 @@
-﻿IsWindowInScreenBoundaries(_win, _screen="All", _adv=False) {
+﻿PlaySound(sndFile) {
+	; 0x1 allows sound to be interrupted by next one
+	return DllCall("winmm.dll\PlaySound", AStr, sndFile, UInt, 0, UInt, 0x1)
+}
+
+IsWindowInScreenBoundaries(_win, _screen="All", _adv=False) {
 /*	Returns whether at least 1/3 of the window is within the screen or not
 */
 	hiddenWin := A_DetectHiddenWindows
