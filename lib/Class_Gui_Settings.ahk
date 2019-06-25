@@ -2033,26 +2033,26 @@ Class GUI_Settings {
 			GoSub %thisFunc%_Get_Selected
 
 			try Menu, RClickMenu, DeleteAll
-			Menu, RClickMenu, Add,% PROGRAM.TRANSLATIONS.GUI_Settings.RMENU_MoveUp, TabCustomizationButtons_OnActionsListClick_Menu
-			Menu, RClickMenu, Add,% PROGRAM.TRANSLATIONS.GUI_Settings.RMENU_MoveDown, TabCustomizationButtons_OnActionsListClick_Menu
+			Menu, RClickMenu, Add,% PROGRAM.TRANSLATIONS.GUI_Settings.RMENU_MoveUp, GUI_Settings_TabCustomizationButtons_OnActionsListClick_RClickMenu_MoveUp
+			Menu, RClickMenu, Add,% PROGRAM.TRANSLATIONS.GUI_Settings.RMENU_MoveDown, GUI_Settings_TabCustomizationButtons_OnActionsListClick_RClickMenu_MoveDown
 			Menu, RClickMenu, Add
-			Menu, RClickMenu, Add,% PROGRAM.TRANSLATIONS.GUI_Settings.RMENU_RemoveThisAction, TabCustomizationButtons_OnActionsListClick_Menu
+			Menu, RClickMenu, Add,% PROGRAM.TRANSLATIONS.GUI_Settings.RMENU_RemoveThisAction, GUI_Settings_TabCustomizationButtons_OnActionsListClick_RClickMenu_Remove
 			Menu, RClickMenu, Show
 		}
 		Return
 
-		TabCustomizationButtons_OnActionsListClick_Menu:
+		GUI_Settings_TabCustomizationButtons_OnActionsListClick_RClickMenu_MoveUp:
 			GUI_Settings.SetDefaultListView("hLV_ButtonsActions")
-
-			if (A_ThisMenu = "RClickMenu") {
-				if (A_ThisMenuItem = "Remove this action")
-					GUI_Settings.TabCustomizationButtons_AddAction("Remove", GuiSettings.CustomButtons_LV_SelectedRow)
-				else if (A_ThisMenuItem = "Move up")
-					GUI_Settings.TabCustomizationButtons_MoveAction("Up", rowID)
-				else if (A_ThisMenuItem = "Move down")
-					GUI_Settings.TabCustomizationButtons_MoveAction("Down", rowID)
-			}
-		Return
+			GUI_Settings.TabCustomizationButtons_MoveAction("Up", rowID)
+		return
+		GUI_Settings_TabCustomizationButtons_OnActionsListClick_RClickMenu_MoveDown:
+			GUI_Settings.SetDefaultListView("hLV_ButtonsActions")
+			GUI_Settings.TabCustomizationButtons_MoveAction("Down", rowID)
+		return
+		GUI_Settings_TabCustomizationButtons_OnActionsListClick_RClickMenu_Remove:
+			GUI_Settings.SetDefaultListView("hLV_ButtonsActions")
+			GUI_Settings.TabCustomizationButtons_AddAction("Remove", GuiSettings.CustomButtons_LV_SelectedRow)
+		return
 
 		TabCustomizationButtons_OnActionsListClick_Get_Selected:
 		; LV_GetText(string, A_EventInfo) is unreliable. A_EventInfo will sometimes not contain the correct row ID.
@@ -3337,26 +3337,26 @@ Class GUI_Settings {
 			GoSub %thisFunc%_Get_Selected
 
 			try Menu, RClickMenu, DeleteAll
-			Menu, RClickMenu, Add,% PROGRAM.TRANSLATIONS.GUI_Settings.RMENU_MoveUp, TabHotkeysAdvanced_OnListClick_Menu
-			Menu, RClickMenu, Add,% PROGRAM.TRANSLATIONS.GUI_Settings.RMENU_MoveDown, TabHotkeysAdvanced_OnListClick_Menu
+			Menu, RClickMenu, Add,% PROGRAM.TRANSLATIONS.GUI_Settings.RMENU_MoveUp, GUI_Settings_TabHotkeysAdvanced_OnListClick_RClickMenu_MoveUp
+			Menu, RClickMenu, Add,% PROGRAM.TRANSLATIONS.GUI_Settings.RMENU_MoveDown, GUI_Settings_TabHotkeysAdvanced_OnListClick_RClickMenu_MoveDown
 			Menu, RClickMenu, Add
-			Menu, RClickMenu, Add,% PROGRAM.TRANSLATIONS.GUI_Settings.RMENU_RemoveThisAction, TabHotkeysAdvanced_OnListClick_Menu
+			Menu, RClickMenu, Add,% PROGRAM.TRANSLATIONS.GUI_Settings.RMENU_RemoveThisAction, GUI_Settings_TabHotkeysAdvanced_OnListClick_RClickMenu_Remove
 			Menu, RClickMenu, Show
 		}
 		Return
 
-		TabHotkeysAdvanced_OnListClick_Menu:
+		GUI_Settings_TabHotkeysAdvanced_OnListClick_RClickMenu_MoveUp:
 			GUI_Settings.SetDefaultListView("hLV_ButtonsActions")
-
-			if (A_ThisMenu = "RClickMenu") {
-				if (A_ThisMenuItem = "Remove this action")
-					GUI_Settings.TabHotkeysAdvanced_AddAction("Remove", GuiSettings.HotkeysAdvanced_Selected_LV_Row)
-				else if (A_ThisMenuItem = "Move up")
-					GUI_Settings.TabHotkeysAdvanced_MoveAction("Up", rowID)
-				else if (A_ThisMenuItem = "Move down")
-					GUI_Settings.TabHotkeysAdvanced_MoveAction("Down", rowID)
-			}
-		Return
+			GUI_Settings.TabHotkeysAdvanced_MoveAction("Up", rowID)
+		return
+		GUI_Settings_TabHotkeysAdvanced_OnListClick_RClickMenu_MoveDown:
+			GUI_Settings.SetDefaultListView("hLV_ButtonsActions")
+			GUI_Settings.TabHotkeysAdvanced_MoveAction("Down", rowID)
+		return
+		GUI_Settings_TabHotkeysAdvanced_OnListClick_RClickMenu_Remove:
+			GUI_Settings.SetDefaultListView("hLV_ButtonsActions")
+			GUI_Settings.TabHotkeysAdvanced_AddAction("Remove", GuiSettings.HotkeysAdvanced_Selected_LV_Row)
+		return
 
 		TabHotkeysAdvanced_OnListClick_Get_Selected:
 		; LV_GetText(string, A_EventInfo) is unreliable. A_EventInfo will sometimes not contain the correct row ID.
@@ -3960,15 +3960,15 @@ Class GUI_Settings {
 			btnSize := btnInfos.Size, btnSlot := btnInfos.Slot
 
 			try Menu, CBMenu, DeleteAll
-			Menu, CBMenu, Add,% CtrlName,Settings_ContextMenu_DoNothing
+			Menu, CBMenu, Add,% CtrlName, GUI_Settings_RClickMenu_DoNothing
 			Menu, CBMenu, Add
-			Menu, CBMenu, Add,% PROGRAM.TRANSLATIONS.GUI_Settings.RMENU_Rename, Settings_ContextMenu_Rename
+			Menu, CBMenu, Add,% PROGRAM.TRANSLATIONS.GUI_Settings.RMENU_Rename, GUI_Settings_RClickMenu_Rename
 			Menu, CBMenu, Add
-			Menu, CBMenu, Add,% PROGRAM.TRANSLATIONS.GUI_Settings.RMENU_SizeSmall, Settings_ContextMenu_Resize
-			Menu, CBMenu, Add,% PROGRAM.TRANSLATIONS.GUI_Settings.RMENU_SizeMedium, Settings_ContextMenu_Resize
-			Menu, CBMenu, Add,% PROGRAM.TRANSLATIONS.GUI_Settings.RMENU_SizeLarge, Settings_ContextMenu_Resize
+			Menu, CBMenu, Add,% PROGRAM.TRANSLATIONS.GUI_Settings.RMENU_SizeSmall, GUI_Settings_RClickMenu_Resize_Small
+			Menu, CBMenu, Add,% PROGRAM.TRANSLATIONS.GUI_Settings.RMENU_SizeMedium, GUI_Settings_RClickMenu_Resize_Medium
+			Menu, CBMenu, Add,% PROGRAM.TRANSLATIONS.GUI_Settings.RMENU_SizeLarge, GUI_Settings_RClickMenu_Resize_Large
 			Menu, CBMenu, Add
-			Menu, CBMenu, Add,% PROGRAM.TRANSLATIONS.GUI_Settings.RMENU_HideThisButton, Settings_ContextMenu_Resize
+			Menu, CBMenu, Add,% PROGRAM.TRANSLATIONS.GUI_Settings.RMENU_HideThisButton, GUI_Settings_RClickMenu_Resize_Hide
 
 			try Menu, CBMenu, Disable,% CtrlName
 
@@ -3976,7 +3976,7 @@ Class GUI_Settings {
 				Menu, CBMenu, Disable,% PROGRAM.TRANSLATIONS.GUI_Settings.RMENU_SizeMedium
 				Menu, CBMenu, Disable,% PROGRAM.TRANSLATIONS.GUI_Settings.RMENU_SizeLarge
 			}
-			else if IsContaining(btnInfos.Slot, "2,5,8") {
+			else if IsContaining(btnInfos.Slots, "2,5,8") {
 				Menu, CBMenu, Disable,% PROGRAM.TRANSLATIONS.GUI_Settings.RMENU_SizeLarge
 			}
 
@@ -3985,19 +3985,44 @@ Class GUI_Settings {
 		else if IsIn(CtrlHwnd, GuiSettings.UnicodeButtons_HandlesList) {
 
 			try Menu, UBMenu, DeleteAll
-			Menu, UBMenu, Add,% PROGRAM.TRANSLATIONS.GUI_Settings.RMENU_ActionClipboard, Settings_ContextMenu_SetSpecialButton
-			Menu, UBMenu, Add,% PROGRAM.TRANSLATIONS.GUI_Settings.RMENU_ActionWhisper, Settings_ContextMenu_SetSpecialButton
-			Menu, UBMenu, Add,% PROGRAM.TRANSLATIONS.GUI_Settings.RMENU_ActionInvite, Settings_ContextMenu_SetSpecialButton
-			Menu, UBMenu, Add,% PROGRAM.TRANSLATIONS.GUI_Settings.RMENU_ActionTrade, Settings_ContextMenu_SetSpecialButton
-			Menu, UBMenu, Add,% PROGRAM.TRANSLATIONS.GUI_Settings.RMENU_ActionKick, Settings_ContextMenu_SetSpecialButton
+			Menu, UBMenu, Add,% PROGRAM.TRANSLATIONS.GUI_Settings.RMENU_ActionClipboard, GUI_Settings_RClickMenu_SetSpecialButton_Clipboard
+			Menu, UBMenu, Add,% PROGRAM.TRANSLATIONS.GUI_Settings.RMENU_ActionWhisper, GUI_Settings_RClickMenu_SetSpecialButton_Whisper
+			Menu, UBMenu, Add,% PROGRAM.TRANSLATIONS.GUI_Settings.RMENU_ActionInvite, GUI_Settings_RClickMenu_SetSpecialButton_Invite
+			Menu, UBMenu, Add,% PROGRAM.TRANSLATIONS.GUI_Settings.RMENU_ActionTrade, GUI_Settings_RClickMenu_SetSpecialButton_Trade
+			Menu, UBMenu, Add,% PROGRAM.TRANSLATIONS.GUI_Settings.RMENU_ActionKick, GUI_Settings_RClickMenu_SetSpecialButton_Kick
 			Menu, UBMenu, Add
-			Menu, UBMenu, Add,% PROGRAM.TRANSLATIONS.GUI_Settings.RMENU_HideThisButton, Settings_ContextMenu_SetSpecialButton
+			Menu, UBMenu, Add,% PROGRAM.TRANSLATIONS.GUI_Settings.RMENU_HideThisButton, GUI_Settings_RClickMenu_SetSpecialButton_Hide
 
 			Menu, UBMenu, Show
 		}
 		Return
 
-		Settings_ContextMenu_Rename:
+		GUI_Settings_RClickMenu_SetSpecialButton_Clipboard:
+			GUI_Settings.TabCustomizationButtons_UnicodeButton_Rename(CtrlHwnd, 0)
+			GUI_Settings.TabCustomizationButtons_UnicodeButton_UpdateSlots()
+		return
+		GUI_Settings_RClickMenu_SetSpecialButton_Whisper:
+			GUI_Settings.TabCustomizationButtons_UnicodeButton_Rename(CtrlHwnd, 1)
+			GUI_Settings.TabCustomizationButtons_UnicodeButton_UpdateSlots()
+		return
+		GUI_Settings_RClickMenu_SetSpecialButton_Invite:
+			GUI_Settings.TabCustomizationButtons_UnicodeButton_Rename(CtrlHwnd, 2)
+			GUI_Settings.TabCustomizationButtons_UnicodeButton_UpdateSlots()
+		return
+		GUI_Settings_RClickMenu_SetSpecialButton_Trade:
+			GUI_Settings.TabCustomizationButtons_UnicodeButton_Rename(CtrlHwnd, 3)
+			GUI_Settings.TabCustomizationButtons_UnicodeButton_UpdateSlots()
+		return
+		GUI_Settings_RClickMenu_SetSpecialButton_Kick:
+			GUI_Settings.TabCustomizationButtons_UnicodeButton_Rename(CtrlHwnd, 4)
+			GUI_Settings.TabCustomizationButtons_UnicodeButton_UpdateSlots()
+		return
+		GUI_Settings_RClickMenu_SetSpecialButton_Hide:
+			GUI_Settings.TabCustomizationButtons_UnicodeButton_Hide(CtrlHwnd)
+			GUI_Settings.TabCustomizationButtons_UnicodeButton_UpdateSlots()
+		return
+
+		GUI_Settings_RClickMenu_Rename:
 			Gui, Settings:+OwnDialogs
 			InputBox, newBtnName,% PROGRAM.NAME,% "Input the new button name for """ CtrlName """:", , 300, 150
 			if (newBtnName && !ErrorLevel) {
@@ -4006,42 +4031,28 @@ Class GUI_Settings {
 			try Menu, CBMenu, DeleteAll
 		Return
 
-		Settings_ContextMenu_Resize:
-			menuItem := A_ThisMenuItem
-
-			if (menuItem = "Hide this button") {
-				GUI_Settings.TabCustomizationButtons_CustomButton_Resize(CtrlHwnd, "Hide")
-			}
-			else if IsIn(menuItem,"Size: Small,Size: Medium,Size: Large") {
-				splitSize := StrSplit(menuItem, ": "), btnNewSize := splitSize.2
-				GUI_Settings.TabCustomizationButtons_CustomButton_Resize(CtrlHwnd, btnNewSize)
-			}
-			try Menu, CBMenu, DeleteAll
-
+		GUI_Settings_RClickMenu_Resize_Small:
+			GUI_Settings.TabCustomizationButtons_CustomButton_Resize(CtrlHwnd, "Small")
 			GUI_Settings.TabHotkeysAdvanced_UpdateActionsList()
 			GUI_Settings.TabHotkeysBasic_UpdateActionsList()
-		Return
+		return
+		GUI_Settings_RClickMenu_Resize_Medium:
+			GUI_Settings.TabCustomizationButtons_CustomButton_Resize(CtrlHwnd, "Medium")
+			GUI_Settings.TabHotkeysAdvanced_UpdateActionsList()
+			GUI_Settings.TabHotkeysBasic_UpdateActionsList()
+		return
+		GUI_Settings_RClickMenu_Resize_Large:
+			GUI_Settings.TabCustomizationButtons_CustomButton_Resize(CtrlHwnd, "Large")
+			GUI_Settings.TabHotkeysAdvanced_UpdateActionsList()
+			GUI_Settings.TabHotkeysBasic_UpdateActionsList()
+		return
+		GUI_Settings_RClickMenu_Resize_Hide:
+			GUI_Settings.TabCustomizationButtons_CustomButton_Resize(CtrlHwnd, "Hide")
+			GUI_Settings.TabHotkeysAdvanced_UpdateActionsList()
+			GUI_Settings.TabHotkeysBasic_UpdateActionsList()
+		return
 
-		Settings_ContextMenu_SetSpecialButton:
-			if IsIn(A_ThisMenuItem, "Clipboard,Whisper,Invite,Trade,Kick") {
-				specialChar := A_ThisMenuItem = "Clipboard" ? "0"
-					: A_ThisMenuItem = "Whisper" ? "1"
-					: A_ThisMenuItem = "Invite" ? "2"
-					: A_ThisMenuItem = "Trade" ? "3"
-					: A_ThisMenuItem = "Kick" ? "4"
-					: ""
-				GUI_Settings.TabCustomizationButtons_UnicodeButton_Rename(CtrlHwnd, specialChar)
-			}
-			else {
-				GUI_Settings.TabCustomizationButtons_UnicodeButton_Hide(CtrlHwnd)
-			}
-
-			GUI_Settings.TabCustomizationButtons_UnicodeButton_UpdateSlots()
-
-			try Menu, CBMenu, DeleteAll
-		Return
-
-		Settings_ContextMenu_DoNothing:
+		GUI_Settings_RClickMenu_DoNothing:
 			try Menu, CBMenu, DeleteAll
 			GuiControl, Settings:,% CtrlHwnd,% A_ThisMenuItemPos-1
 		Return
