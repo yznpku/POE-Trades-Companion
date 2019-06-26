@@ -201,12 +201,12 @@
 		; Gui.Add("TradesBuyCompact", "Picture", "x" Header_X " y" Header_Y " w" Header_W " h" Header_H " hwndhIMG_Header BackgroundTrans", SKIN.Compact.Assets.Misc.Header) ; Title bar
 		Gui.Add("TradesBuyCompact", "Picture", "x" Header_X " y" Header_Y " w" Header_W " h" Header_H " hwndhIMG_Header BackgroundTrans", SKIN.Compact.Assets.Misc.Header) ; Title bar
 		; Gui.Add("TradesBuyCompact", "Picture", "x" Icon_X " y" Icon_Y " w" Icon_W " h" Icon_H " BackgroundTrans", SKIN.Compact.Assets.Misc.Icon) ; Icon
-		imageBtnLog .= Gui.Add("TradesBuyCompact", "ImageButton", "x" MinMax_X " y" MinMax_Y " w" MinMax_W " h" MinMax_H " BackgroundTrans hwndhBTN_Minimize", "", styles.Minimize) ; Min
-		imageBtnLog .= Gui.Add("TradesBuyCompact", "ImageButton", "x" MinMax_X " y" MinMax_Y " w" MinMax_W " h" MinMax_H " BackgroundTrans hwndhBTN_Maximize Hidden", "", styles.Maximize) ; Max
-		imageBtnLog .= Gui.Add("TradesBuyCompact", "ImageButton", "x" HideoutBtn_X " y" HideoutBtn_Y " w" HideoutBtn_W " h" HideoutBtn_H " BackgroundTrans hwndhBTN_Hideout", "", Styles.Toolbar_Hideout)
-		imageBtnLog .= Gui.Add("TradesBuyCompact", "ImageButton", "x+" SpaceBetweenBtns " yp wp hp BackgroundTrans hwndhBTN_LeagueHelp", "", styles.Toolbar_Sheet)
-		imageBtnLog .= Gui.Add("TradesBuyCompact", "ImageButton", "x+" SpaceBetweenBtns " yp wp hp BackgroundTrans hwndhBTN_What2 Hidden", "", styles.Toolbar_Hideout)
-		imageBtnLog .= Gui.Add("TradesBuyCompact", "ImageButton", "x+" SpaceBetweenBtns " yp wp hp BackgroundTrans hwndhBTN_What3 Hidden", "", styles.Toolbar_Hideout)
+		imageBtnLog .= Gui.Add("TradesBuyCompact", "ImageButton", "x" MinMax_X " y" MinMax_Y " w" MinMax_W " h" MinMax_H " BackgroundTrans hwndhBTN_Minimize", "", styles.Minimize, PROGRAM.FONTS[settings_fontName], settings_fontSize) ; Min
+		imageBtnLog .= Gui.Add("TradesBuyCompact", "ImageButton", "x" MinMax_X " y" MinMax_Y " w" MinMax_W " h" MinMax_H " BackgroundTrans hwndhBTN_Maximize Hidden", "", styles.Maximize, PROGRAM.FONTS[settings_fontName], settings_fontSize) ; Max
+		imageBtnLog .= Gui.Add("TradesBuyCompact", "ImageButton", "x" HideoutBtn_X " y" HideoutBtn_Y " w" HideoutBtn_W " h" HideoutBtn_H " BackgroundTrans hwndhBTN_Hideout", "", Styles.Toolbar_Hideout, PROGRAM.FONTS[settings_fontName], settings_fontSize)
+		imageBtnLog .= Gui.Add("TradesBuyCompact", "ImageButton", "x+" SpaceBetweenBtns " yp wp hp BackgroundTrans hwndhBTN_LeagueHelp", "", styles.Toolbar_Sheet, PROGRAM.FONTS[settings_fontName], settings_fontSize)
+		imageBtnLog .= Gui.Add("TradesBuyCompact", "ImageButton", "x+" SpaceBetweenBtns " yp wp hp BackgroundTrans hwndhBTN_What2 Hidden", "", styles.Toolbar_Hideout, PROGRAM.FONTS[settings_fontName], settings_fontSize)
+		imageBtnLog .= Gui.Add("TradesBuyCompact", "ImageButton", "x+" SpaceBetweenBtns " yp wp hp BackgroundTrans hwndhBTN_What3 Hidden", "", styles.Toolbar_Hideout, PROGRAM.FONTS[settings_fontName], settings_fontSize)
 
 		lastBtnCoords := Get_ControlCoords("TradesBuyCompact", GuiTradesBuyCompact_Controls.hBTN_What3)
 		minBtnCoords := Get_ControlCoords("TradesBuyCompact", GuiTradesBuyCompact_Controls.hBTN_Minimize)
@@ -273,8 +273,8 @@
 		; imageBtnLog .= Gui.Add("TradesBuyCompact", "ImageButton", "xp+" (SearchBox_W-( (two-one)/2 )) " yp w" 21 " h" 21 " hwndhBTN_SearchBarCross BackgroundTrans", "", styles.SearchBarCross, PROGRAM.FONTS[settings_fontName], settings_fontSize) ; Left Arrow
 		; imageBtnLog .= Gui.Add("TradesBuyCompact", "Picture", "xp+" (SearchBox_W-( (two-one)/2 )) " y" SearchBarCross_Y " w" SearchBarCross_W " h" SearchBarCross_H " hwndhIMG_SearchBarCross Hidden BackgroundTrans", SKIN.Compact.Assets.Misc.SearchBarCross)
 
-		imageBtnLog .= Gui.Add("TradesBuyCompact", "ImageButton", "x" LeftArrow_X " y" LeftArrow_Y " w" LeftArrow_W " h" LeftArrow_H " hwndhBTN_LeftArrow", "", styles.Arrow_Left) ; Left Arrow
-		imageBtnLog .= Gui.Add("TradesBuyCompact", "ImageButton", "x" RightArrow_X " y" RightArrow_Y " w" RightArrow_W " h" RightArrow_H " hwndhBTN_RightArrow", "", styles.Arrow_Right) ; Right Arrow
+		imageBtnLog .= Gui.Add("TradesBuyCompact", "ImageButton", "x" LeftArrow_X " y" LeftArrow_Y " w" LeftArrow_W " h" LeftArrow_H " hwndhBTN_LeftArrow", "", styles.Arrow_Left, PROGRAM.FONTS[settings_fontName], settings_fontSize) ; Left Arrow
+		imageBtnLog .= Gui.Add("TradesBuyCompact", "ImageButton", "x" RightArrow_X " y" RightArrow_Y " w" RightArrow_W " h" RightArrow_H " hwndhBTN_RightArrow", "", styles.Arrow_Right, PROGRAM.FONTS[settings_fontName], settings_fontSize) ; Right Arrow
 				
 		; SetEditCueBanner(GuiTradesBuyCompact_Controls.hEDIT_SearchBar, "Search Bar")
 		
@@ -347,13 +347,13 @@
 			Gui.Add("TradesBuyCompact_Slot" A_Index, "Text", "x0 y0" . PriceTxt_W " BackgroundTrans hwndhTEXT_PriceCount c" SKIN.Compact.Settings.COLORS.Trade_Info_2)
 			Gui.Add("TradesBuyCompact_Slot" A_Index, "Text", "x0 y0 w100 R1 BackgroundTrans  hwndhTEXT_AdditionalMsg c" SKIN.Compact.Settings.COLORS.Trade_Info_2)
 			Gui.Add("TradesBuyCompact_Slot" A_Index, "Text", TimeSent_X . TimeSent_Y . TimeSent_W " R1 BackgroundTrans hwndhTEXT_TimeSent c" SKIN.Compact.Settings.COLORS.Trade_Info_2)
-			imageBtnLog .= Gui.Add("TradesBuyCompact_Slot" A_Index, "ImageButton", "x" CloseBtn_X " y" CloseBtn_Y " w" CloseBtn_W " h" CloseBtn_H " hwndhBTN_Close", "", Styles.Close_Tab)
+			imageBtnLog .= Gui.Add("TradesBuyCompact_Slot" A_Index, "ImageButton", "x" CloseBtn_X " y" CloseBtn_Y " w" CloseBtn_W " h" CloseBtn_H " hwndhBTN_Close", "", Styles.Close_Tab, PROGRAM.FONTS[settings_fontName], settings_fontSize)
 			; Gui.Add("TradesBuyCompact_Slot" A_Index, "Progress", "x" Separation_X " y" Separation_Y " w" Separation_W " h" Separation_H " hwndhPROGRESS_Separation Background" SKIN.Compact.Settings.COLORS.Border)
 
-			imageBtnLog .= Gui.Add("TradesBuyCompact_Slot" A_Index, "ImageButton", "x" SmallButton_X " y" SmallButton_Y " w" SmallButton_W " h" SmallButton_H " hwndhBTN_WhisperSeller", "", Styles.Button_Whisper) ; write to seller
-			imageBtnLog .= Gui.Add("TradesBuyCompact_Slot" A_Index, "ImageButton", "x+5 yp wp hp hwndhBTN_HideoutSeller", "", Styles.Button_Hideout) ; hideout seller
-			imageBtnLog .= Gui.Add("TradesBuyCompact_Slot" A_Index, "ImageButton", "x+5 yp wp hp hwndhBTN_KickSelfSeller", "", Styles.Button_Kick) ; thanks seller
-			imageBtnLog .= Gui.Add("TradesBuyCompact_Slot" A_Index, "ImageButton", "x+5 yp wp hp hwndhBTN_ThankSeller", "", Styles.Button_Thanks) ; kick self
+			imageBtnLog .= Gui.Add("TradesBuyCompact_Slot" A_Index, "ImageButton", "x" SmallButton_X " y" SmallButton_Y " w" SmallButton_W " h" SmallButton_H " hwndhBTN_WhisperSeller", "", Styles.Button_Whisper, PROGRAM.FONTS[settings_fontName], settings_fontSize) ; write to seller
+			imageBtnLog .= Gui.Add("TradesBuyCompact_Slot" A_Index, "ImageButton", "x+5 yp wp hp hwndhBTN_HideoutSeller", "", Styles.Button_Hideout, PROGRAM.FONTS[settings_fontName], settings_fontSize) ; hideout seller
+			imageBtnLog .= Gui.Add("TradesBuyCompact_Slot" A_Index, "ImageButton", "x+5 yp wp hp hwndhBTN_KickSelfSeller", "", Styles.Button_Kick, PROGRAM.FONTS[settings_fontName], settings_fontSize) ; thanks seller
+			imageBtnLog .= Gui.Add("TradesBuyCompact_Slot" A_Index, "ImageButton", "x+5 yp wp hp hwndhBTN_ThankSeller", "", Styles.Button_Thanks, PROGRAM.FONTS[settings_fontName], settings_fontSize) ; kick self
 			; imageBtnLog .= Gui.Add("TradesBuyCompact_Slot" A_Index, "ImageButton", "x+5 yp wp hp hwndhBTN_QuickBtn5", "?", Styles.Button_Special, PROGRAM.FONTS[settings_fontName], settings_fontSize) ; hideout self
 			
 			priceImgPos := Get_ControlCoords("TradesBuyCompact_Slot" A_Index, GuiTradesBuyCompact_Slot%A_Index%_Controls.hIMG_CurrencyIMG)
@@ -1466,7 +1466,7 @@
 			}
 			
 			GuiControl, TradesBuyCompact:,% GuiTradesBuyCompact_Controls["hBTN_CloseGUI"],% "X"
-			ImageButton.Create(GuiTradesBuyCompact_Controls["hBTN_CloseGUI"], GuiTradesBuyCompact.Style_RedBtn, PROGRAM.FONTS[settings_fontName], settings_fontSize)						
+			ImageButton.Create(GuiTradesBuyCompact_Controls["hBTN_CloseGUI"], GuiTradesBuyCompact.Style_RedBtn, PROGRAM.FONTS[GuiTradesBuyCompact.Font], GuiTradesBuyCompact.FontSize)						
 		}
 
 		GUI_TradesBuyCompact.Redraw()
