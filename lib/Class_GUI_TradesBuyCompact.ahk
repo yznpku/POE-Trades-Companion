@@ -201,12 +201,12 @@
 		; Gui.Add("TradesBuyCompact", "Picture", "x" Header_X " y" Header_Y " w" Header_W " h" Header_H " hwndhIMG_Header BackgroundTrans", SKIN.Compact.Assets.Misc.Header) ; Title bar
 		Gui.Add("TradesBuyCompact", "Picture", "x" Header_X " y" Header_Y " w" Header_W " h" Header_H " hwndhIMG_Header BackgroundTrans", SKIN.Compact.Assets.Misc.Header) ; Title bar
 		; Gui.Add("TradesBuyCompact", "Picture", "x" Icon_X " y" Icon_Y " w" Icon_W " h" Icon_H " BackgroundTrans", SKIN.Compact.Assets.Misc.Icon) ; Icon
-		imageBtnLog .= Gui.Add("TradesBuyCompact", "ImageButton", "x" MinMax_X " y" MinMax_Y " w" MinMax_W " h" MinMax_H " BackgroundTrans hwndhBTN_Minimize", "", styles.Minimize, PROGRAM.FONTS[settings_fontName], settings_fontSize) ; Min
-		imageBtnLog .= Gui.Add("TradesBuyCompact", "ImageButton", "x" MinMax_X " y" MinMax_Y " w" MinMax_W " h" MinMax_H " BackgroundTrans hwndhBTN_Maximize Hidden", "", styles.Maximize, PROGRAM.FONTS[settings_fontName], settings_fontSize) ; Max
-		imageBtnLog .= Gui.Add("TradesBuyCompact", "ImageButton", "x" HideoutBtn_X " y" HideoutBtn_Y " w" HideoutBtn_W " h" HideoutBtn_H " BackgroundTrans hwndhBTN_Hideout", "", Styles.Button_Hideout, PROGRAM.FONTS[settings_fontName], settings_fontSize)
-		imageBtnLog .= Gui.Add("TradesBuyCompact", "ImageButton", "x+" SpaceBetweenBtns " yp wp hp BackgroundTrans hwndhBTN_LeagueHelp", "L", styles.Button_Special, PROGRAM.FONTS[settings_fontName], settings_fontSize)
-		imageBtnLog .= Gui.Add("TradesBuyCompact", "ImageButton", "x+" SpaceBetweenBtns " yp wp hp BackgroundTrans hwndhBTN_What2 Hidden", "?", styles.Button_Special, PROGRAM.FONTS[settings_fontName], settings_fontSize)
-		imageBtnLog .= Gui.Add("TradesBuyCompact", "ImageButton", "x+" SpaceBetweenBtns " yp wp hp BackgroundTrans hwndhBTN_What3 Hidden", "?", styles.Button_Special, PROGRAM.FONTS[settings_fontName], settings_fontSize)
+		imageBtnLog .= Gui.Add("TradesBuyCompact", "ImageButton", "x" MinMax_X " y" MinMax_Y " w" MinMax_W " h" MinMax_H " BackgroundTrans hwndhBTN_Minimize", "", styles.Minimize) ; Min
+		imageBtnLog .= Gui.Add("TradesBuyCompact", "ImageButton", "x" MinMax_X " y" MinMax_Y " w" MinMax_W " h" MinMax_H " BackgroundTrans hwndhBTN_Maximize Hidden", "", styles.Maximize) ; Max
+		imageBtnLog .= Gui.Add("TradesBuyCompact", "ImageButton", "x" HideoutBtn_X " y" HideoutBtn_Y " w" HideoutBtn_W " h" HideoutBtn_H " BackgroundTrans hwndhBTN_Hideout", "", Styles.Toolbar_Hideout)
+		imageBtnLog .= Gui.Add("TradesBuyCompact", "ImageButton", "x+" SpaceBetweenBtns " yp wp hp BackgroundTrans hwndhBTN_LeagueHelp", "", styles.Toolbar_Sheet)
+		imageBtnLog .= Gui.Add("TradesBuyCompact", "ImageButton", "x+" SpaceBetweenBtns " yp wp hp BackgroundTrans hwndhBTN_What2 Hidden", "", styles.Toolbar_Hideout)
+		imageBtnLog .= Gui.Add("TradesBuyCompact", "ImageButton", "x+" SpaceBetweenBtns " yp wp hp BackgroundTrans hwndhBTN_What3 Hidden", "", styles.Toolbar_Hideout)
 
 		lastBtnCoords := Get_ControlCoords("TradesBuyCompact", GuiTradesBuyCompact_Controls.hBTN_What3)
 		minBtnCoords := Get_ControlCoords("TradesBuyCompact", GuiTradesBuyCompact_Controls.hBTN_Minimize)
@@ -266,15 +266,15 @@
 
 		Gui.Add("TradesBuyCompact", "Picture", "x" Header2_X " y" Header2_Y " w" Header2_W " h" Header2_H " hwndhIMG_Header2 BackgroundTrans", SKIN.Compact.Assets.Misc.Header) ; Title bar
 		Gui.Add("TradesBuyCompact", "Picture", "x" Header2_X " y" Header2_Y " w" Header2_W " h" Header2_H " hwndhIMG_Header2 BackgroundTrans", SKIN.Compact.Assets.Misc.Header2) ; Title bar
-		Gui.Add("TradesBuyCompact", "Text", "x" SearchBox_X+( (two-one)/2 ) " y" SearchBox_Y " w" SearchBox_W-( (two-one)/2 ) " h" SearchBox_H " FontQuality5 BackgroundTrans +0x200 cfeeac5 hwndhTEXT_SearchBarFake", "Search Bar")
+		Gui.Add("TradesBuyCompact", "Text", "x" SearchBox_X+( (two-one)/2 ) " y" SearchBox_Y " w" SearchBox_W-( (two-one)/2 ) " h" SearchBox_H " FontQuality5 BackgroundTrans +0x200 c" SKIN.Compact.Settings.COLORS.SearchBar_Empty " hwndhTEXT_SearchBarFake", "...")
 
 		SearchBarCross_X := "_CUSTOM_", SearchBarCross_Y := SearchBox_Y, SearchBarCross_W := 21*scaleMult, SearchBarCross_H := 21*scaleMult
 		
 		; imageBtnLog .= Gui.Add("TradesBuyCompact", "ImageButton", "xp+" (SearchBox_W-( (two-one)/2 )) " yp w" 21 " h" 21 " hwndhBTN_SearchBarCross BackgroundTrans", "", styles.SearchBarCross, PROGRAM.FONTS[settings_fontName], settings_fontSize) ; Left Arrow
-		imageBtnLog .= Gui.Add("TradesBuyCompact", "Picture", "xp+" (SearchBox_W-( (two-one)/2 )) " y" SearchBarCross_Y " w" SearchBarCross_W " h" SearchBarCross_H " hwndhIMG_SearchBarCross BackgroundTrans", SKIN.Compact.Assets.Misc.SearchBarCross)
+		; imageBtnLog .= Gui.Add("TradesBuyCompact", "Picture", "xp+" (SearchBox_W-( (two-one)/2 )) " y" SearchBarCross_Y " w" SearchBarCross_W " h" SearchBarCross_H " hwndhIMG_SearchBarCross Hidden BackgroundTrans", SKIN.Compact.Assets.Misc.SearchBarCross)
 
-		imageBtnLog .= Gui.Add("TradesBuyCompact", "ImageButton", "x" LeftArrow_X " y" LeftArrow_Y " w" LeftArrow_W " h" LeftArrow_H " hwndhBTN_LeftArrow", styles.Arrow_Left_Use_Character = "True"?"<" : "", styles.Arrow_Left, PROGRAM.FONTS[settings_fontName], settings_fontSize) ; Left Arrow
-		imageBtnLog .= Gui.Add("TradesBuyCompact", "ImageButton", "x" RightArrow_X " y" RightArrow_Y " w" RightArrow_W " h" RightArrow_H " hwndhBTN_RightArrow", styles.Arrow_Right_Use_Character = "True"?">" : "", styles.Arrow_Right, PROGRAM.FONTS[settings_fontName], settings_fontSize) ; Right Arrow
+		imageBtnLog .= Gui.Add("TradesBuyCompact", "ImageButton", "x" LeftArrow_X " y" LeftArrow_Y " w" LeftArrow_W " h" LeftArrow_H " hwndhBTN_LeftArrow", "", styles.Arrow_Left) ; Left Arrow
+		imageBtnLog .= Gui.Add("TradesBuyCompact", "ImageButton", "x" RightArrow_X " y" RightArrow_Y " w" RightArrow_W " h" RightArrow_H " hwndhBTN_RightArrow", "", styles.Arrow_Right) ; Right Arrow
 				
 		; SetEditCueBanner(GuiTradesBuyCompact_Controls.hEDIT_SearchBar, "Search Bar")
 		
@@ -347,13 +347,13 @@
 			Gui.Add("TradesBuyCompact_Slot" A_Index, "Text", "x0 y0" . PriceTxt_W " BackgroundTrans hwndhTEXT_PriceCount c" SKIN.Compact.Settings.COLORS.Trade_Info_2)
 			Gui.Add("TradesBuyCompact_Slot" A_Index, "Text", "x0 y0 w100 R1 BackgroundTrans  hwndhTEXT_AdditionalMsg c" SKIN.Compact.Settings.COLORS.Trade_Info_2)
 			Gui.Add("TradesBuyCompact_Slot" A_Index, "Text", TimeSent_X . TimeSent_Y . TimeSent_W " R1 BackgroundTrans hwndhTEXT_TimeSent c" SKIN.Compact.Settings.COLORS.Trade_Info_2)
-			imageBtnLog .= Gui.Add("TradesBuyCompact_Slot" A_Index, "ImageButton", "x" CloseBtn_X " y" CloseBtn_Y " w" CloseBtn_W " h" CloseBtn_H " hwndhBTN_Close", "", Styles.Close_Tab, PROGRAM.FONTS[settings_fontName], settings_fontSize)
+			imageBtnLog .= Gui.Add("TradesBuyCompact_Slot" A_Index, "ImageButton", "x" CloseBtn_X " y" CloseBtn_Y " w" CloseBtn_W " h" CloseBtn_H " hwndhBTN_Close", "", Styles.Close_Tab)
 			; Gui.Add("TradesBuyCompact_Slot" A_Index, "Progress", "x" Separation_X " y" Separation_Y " w" Separation_W " h" Separation_H " hwndhPROGRESS_Separation Background" SKIN.Compact.Settings.COLORS.Border)
 
-			imageBtnLog .= Gui.Add("TradesBuyCompact_Slot" A_Index, "ImageButton", "x" SmallButton_X " y" SmallButton_Y " w" SmallButton_W " h" SmallButton_H " hwndhBTN_WhisperSeller", "", Styles.Button_Whisper, PROGRAM.FONTS[settings_fontName], settings_fontSize) ; write to seller
-			imageBtnLog .= Gui.Add("TradesBuyCompact_Slot" A_Index, "ImageButton", "x+5 yp wp hp hwndhBTN_HideoutSeller", "", Styles.Button_Hideout, PROGRAM.FONTS[settings_fontName], settings_fontSize) ; hideout seller
-			imageBtnLog .= Gui.Add("TradesBuyCompact_Slot" A_Index, "ImageButton", "x+5 yp wp hp hwndhBTN_KickSelfSeller", "", Styles.Button_Kick, PROGRAM.FONTS[settings_fontName], settings_fontSize) ; thanks seller
-			imageBtnLog .= Gui.Add("TradesBuyCompact_Slot" A_Index, "ImageButton", "x+5 yp wp hp hwndhBTN_ThankSeller", "", Styles.Button_Thanks, PROGRAM.FONTS[settings_fontName], settings_fontSize) ; kick self
+			imageBtnLog .= Gui.Add("TradesBuyCompact_Slot" A_Index, "ImageButton", "x" SmallButton_X " y" SmallButton_Y " w" SmallButton_W " h" SmallButton_H " hwndhBTN_WhisperSeller", "", Styles.Button_Whisper) ; write to seller
+			imageBtnLog .= Gui.Add("TradesBuyCompact_Slot" A_Index, "ImageButton", "x+5 yp wp hp hwndhBTN_HideoutSeller", "", Styles.Button_Hideout) ; hideout seller
+			imageBtnLog .= Gui.Add("TradesBuyCompact_Slot" A_Index, "ImageButton", "x+5 yp wp hp hwndhBTN_KickSelfSeller", "", Styles.Button_Kick) ; thanks seller
+			imageBtnLog .= Gui.Add("TradesBuyCompact_Slot" A_Index, "ImageButton", "x+5 yp wp hp hwndhBTN_ThankSeller", "", Styles.Button_Thanks) ; kick self
 			; imageBtnLog .= Gui.Add("TradesBuyCompact_Slot" A_Index, "ImageButton", "x+5 yp wp hp hwndhBTN_QuickBtn5", "?", Styles.Button_Special, PROGRAM.FONTS[settings_fontName], settings_fontSize) ; hideout self
 			
 			priceImgPos := Get_ControlCoords("TradesBuyCompact_Slot" A_Index, GuiTradesBuyCompact_Slot%A_Index%_Controls.hIMG_CurrencyIMG)
@@ -828,17 +828,22 @@
 	}
 
 	SetFakeSearch(makeEmpty=False) {
-		global GuiTradesBuyCompact, GuiTradesBuyCompact_Controls
+		global SKIN, GuiTradesBuyCompact, GuiTradesBuyCompact_Controls
 
 		GuiControlGet, search, TradesBuyCompactSearchHidden:,% GuiTradesBuyCompact_Controls.hEDIT_HiddenSearchBar
-		if (search!="")
+		if (search!="") {
+			GuiControl,% "TradesBuyCompact: +c" SKIN.Compact.Settings.COLORS.SearchBar_NotEmpty,% GuiTradesBuyCompact_Controls.hTEXT_SearchBarFake
 			GuiControl, TradesBuyCompact:,% GuiTradesBuyCompact_Controls.hTEXT_SearchBarFake,% search
-		else
-			GuiControl, TradesBuyCompact:,% GuiTradesBuyCompact_Controls.hTEXT_SearchBarFake,% "Search Bar"
+		}
+		else {
+			GuiControl,% "TradesBuyCompact: +c" SKIN.Compact.Settings.COLORS.SearchBar_Empty,% GuiTradesBuyCompact_Controls.hTEXT_SearchBarFake
+			GuiControl, TradesBuyCompact:,% GuiTradesBuyCompact_Controls.hTEXT_SearchBarFake,% "..."
+		}
 
 		if (makeEmpty=True) {
+			GuiControl,% "TradesBuyCompact: +c" SKIN.Compact.Settings.COLORS.SearchBar_Empty,% GuiTradesBuyCompact_Controls.hTEXT_SearchBarFake
 			GuiControl, TradesBuyCompactSearchHidden:,% GuiTradesBuyCompact_Controls.hEDIT_HiddenSearchBar,% ""
-			GuiControl, TradesBuyCompact:,% GuiTradesBuyCompact_Controls.hTEXT_SearchBarFake,% "Search Bar"
+			GuiControl, TradesBuyCompact:,% GuiTradesBuyCompact_Controls.hTEXT_SearchBarFake,% "..."
 		}
 
 		SetTimer, GUI_TradesBuyCompact_Search, -500
@@ -1337,79 +1342,61 @@
 		skinSettings := SKIN.Compact.Settings
 		skinAssets := SKIN.Compact.Assets
 
-		skinColors := skinSettings.COLORS
+		pngTransColor 		:= (skinAssets.Misc.Transparency_Color = "0x000000")?("Black"):(skinAssets.Misc.Transparency_Color)
+
+		Arrow_Left 			:=	[ [0, skinAssets.Arrow_Left.Normal, "", "", "", pngTransColor]
+		              			, [0, skinAssets.Arrow_Left.Hover, "", "", "", pngTransColor]
+		    	      			, [0, skinAssets.Arrow_Left.Press, "", "", "", pngTransColor] ]
+
+		Arrow_Right 		:=	[ [0, skinAssets.Arrow_Right.Normal, "", "", "", pngTransColor]
+		              			, [0, skinAssets.Arrow_Right.Hover, "", "", "", pngTransColor]
+		    	      			, [0, skinAssets.Arrow_Right.Press, "", "", "", pngTransColor] ]
+
+		Button_ToolBar	:=	[ [0, skinAssets.Button_ToolBar.Normal, "", "", "", pngTransColor]
+		              				, [0, skinAssets.Button_ToolBar.Hover, "", "", "", pngTransColor]
+		    	      				, [0, skinAssets.Button_ToolBar.Press, "", "", "", pngTransColor] ]
+
+		Toolbar_Hideout	:=	[ [0, skinAssets.Toolbar_Hideout.Normal, "", "", "", pngTransColor]
+		              				, [0, skinAssets.Toolbar_Hideout.Hover, "", "", "", pngTransColor]
+		    	      				, [0, skinAssets.Toolbar_Hideout.Press, "", "", "", pngTransColor] ]
 		
-		colorTitleActive 			:= (skinColors.Title_Trades = "0x000000")?("Black"):(skinColors.Title_Trades)
-		colorTitleInactive 			:= (skinColors.Title_No_Trades = "0x000000")?("Black"):(skinColors.Title_No_Trades)
-		colorTradesInfos1 			:= (skinColors.Trades_Infos_1 = "0x000000")?("Black"):(skinColors.Trades_Infos_1)
-		colorTradesInfos2 			:= (skinColors.Trades_Infos_2 = "0x000000")?("Black"):(skinColors.Trades_Infos_2)
-		colorBorder 				:= (skinColors.Border = "0x000000")?("Black"):(skinColors.Border)
+		Toolbar_Sheet	:=	[ [0, skinAssets.Toolbar_Sheet.Normal, "", "", "", pngTransColor]
+		              				, [0, skinAssets.Toolbar_Sheet.Hover, "", "", "", pngTransColor]
+		    	      				, [0, skinAssets.Toolbar_Sheet.Press, "", "", "", pngTransColor] ]
 
-		colorButtonNormal 			:= (skinColors.Button_Normal = "0x000000")?("Black"):(skinColors.Button_Normal)
-		colorButtonHover 			:= (skinColors.Button_Hover = "0x000000")?("Black"):(skinColors.Button_Hover)
-		colorButtonPress 			:= (skinColors.Button_Press = "0x000000")?("Black"):(skinColors.Button_Press)
+		Button_Hideout 		:=	[ [0, skinAssets.Button_Hideout.Normal, "", "", "", pngTransColor]
+		              			, [0, skinAssets.Button_Hideout.Hover, "", "", "", pngTransColor]
+		    	      			, [0, skinAssets.Button_Hideout.Press, "", "", "", pngTransColor] ]
 
-		colorTabActive 				:= (skinColors.Tab_Active = "0x000000")?("Black"):(skinColors.Tab_Active)
-		colorTabInactive 			:= (skinColors.Tab_Inactive = "0x000000")?("Black"):(skinColors.Tab_Inactive)
-		colorTabHover 				:= (skinColors.Tab_Hover = "0x000000")?("Black"):(skinColors.Tab_Hover)
-		colorTabPress 				:= (skinColors.Tab_Press = "0x000000")?("Black"):(skinColors.Tab_Press)
+		Button_Whisper 		:=	[ [0, skinAssets.Button_Whisper.Normal, "", "", "", pngTransColor]
+		              			, [0, skinAssets.Button_Whisper.Hover, "", "", "", pngTransColor]
+		    	      			, [0, skinAssets.Button_Whisper.Press, "", "", "", pngTransColor] ]
 
-		colorTabJoinedActive 		:= (skinColors.Tab_Joined_Active = "0x000000")?("Black"):(skinColors.Tab_Joined_Active)
-		colorTabJoinedInactive 		:= (skinColors.Tab_Joined_Inactive = "0x000000")?("Black"):(skinColors.Tab_Joined_Inactive)
-		colorTabJoinedHover 		:= (skinColors.Tab_Joined_Hover = "0x000000")?("Black"):(skinColors.Tab_Joined_Hover)
-		colorTabJoinedPress 		:= (skinColors.Tab_Joined_Press = "0x000000")?("Black"):(skinColors.Tab_Joined_Press)
+		Button_Kick 		:=	[ [0, skinAssets.Button_Kick.Normal, "", "", "", pngTransColor]
+		              			, [0, skinAssets.Button_Kick.Hover, "", "", "", pngTransColor]
+		    	      			, [0, skinAssets.Button_Kick.Press, "", "", "", pngTransColor] ]
 
-		colorTabWhisperActive 		:= (skinColors.Tab_Whisper_Active = "0x000000")?("Black"):(skinColors.Tab_Whisper_Active)
-		colorTabWhisperInactive 	:= (skinColors.Tab_Whisper_Inactive = "0x000000")?("Black"):(skinColors.Tab_Whisper_Inactive)
-		colorTabWhisperHover 		:= (skinColors.Tab_Whisper_Hover = "0x000000")?("Black"):(skinColors.Tab_Whisper_Hover)
-		colorTabWhisperPress 		:= (skinColors.Tab_Whisper_Press = "0x000000")?("Black"):(skinColors.Tab_Whisper_Press)
+		Button_Thanks 		:=	[ [0, skinAssets.Button_Thanks.Normal, "", "", "", pngTransColor]
+		              			, [0, skinAssets.Button_Thanks.Hover, "", "", "", pngTransColor]
+		    	      			, [0, skinAssets.Button_Thanks.Press, "", "", "", pngTransColor] ]
 
-		pngTransColor 				:= (skinAssets.Misc.Transparency_Color = "0x000000")?("Black"):(skinAssets.Misc.Transparency_Color)
+		Close_Tab 			:=	[ [0, skinAssets.Close_Tab.Normal, "", "", "", pngTransColor]
+		              			, [0, skinAssets.Close_Tab.Hover, "", "", "", pngTransColor]
+		    	      			, [0, skinAssets.Close_Tab.Press, "", "", "", pngTransColor] ]
 
-		Arrow_Left 			:=	[ [0, skinAssets.Arrow_Left.Normal, "", colorButtonNormal, "", pngTransColor]
-		              			, [0, skinAssets.Arrow_Left.Hover, "", colorButtonHover, "", pngTransColor]
-		    	      			, [0, skinAssets.Arrow_Left.Press, "", colorButtonPress, "", pngTransColor] ]
+		Minimize 			:=	[ [0, skinAssets.Minimize.Normal, "", "", "", pngTransColor]
+		              			, [0, skinAssets.Minimize.Hover, "", "", "", pngTransColor]
+		    	      			, [0, skinAssets.Minimize.Press, "", "", "", pngTransColor] ]
 
-		Arrow_Right 		:=	[ [0, skinAssets.Arrow_Right.Normal, "", colorButtonNormal, "", pngTransColor]
-		              			, [0, skinAssets.Arrow_Right.Hover, "", colorButtonHover, "", pngTransColor]
-		    	      			, [0, skinAssets.Arrow_Right.Press, "", colorButtonPress, "", pngTransColor] ]
-
-		Button_Special 		:=	[ [0, skinAssets.Button_Special.Normal, "", colorButtonNormal, "", pngTransColor]
-		              			, [0, skinAssets.Button_Special.Hover, "", colorButtonHover, "", pngTransColor]
-		    	      			, [0, skinAssets.Button_Special.Press, "", colorButtonPress, "", pngTransColor] ]
-
-		Button_Hideout 		:=	[ [0, skinAssets.Button_Hideout.Normal, "", colorButtonNormal, "", pngTransColor]
-		              			, [0, skinAssets.Button_Hideout.Hover, "", colorButtonHover, "", pngTransColor]
-		    	      			, [0, skinAssets.Button_Hideout.Press, "", colorButtonPress, "", pngTransColor] ]
-
-		Button_Whisper 		:=	[ [0, skinAssets.Button_Whisper.Normal, "", colorButtonNormal, "", pngTransColor]
-		              			, [0, skinAssets.Button_Whisper.Hover, "", colorButtonHover, "", pngTransColor]
-		    	      			, [0, skinAssets.Button_Whisper.Press, "", colorButtonPress, "", pngTransColor] ]
-
-		Button_Kick 		:=	[ [0, skinAssets.Button_Kick.Normal, "", colorButtonNormal, "", pngTransColor]
-		              			, [0, skinAssets.Button_Kick.Hover, "", colorButtonHover, "", pngTransColor]
-		    	      			, [0, skinAssets.Button_Kick.Press, "", colorButtonPress, "", pngTransColor] ]
-
-		Button_Thanks 		:=	[ [0, skinAssets.Button_Thanks.Normal, "", colorButtonNormal, "", pngTransColor]
-		              			, [0, skinAssets.Button_Thanks.Hover, "", colorButtonHover, "", pngTransColor]
-		    	      			, [0, skinAssets.Button_Thanks.Press, "", colorButtonPress, "", pngTransColor] ]
-
-		Close_Tab 			:=	[ [0, skinAssets.Close_Tab.Normal, "", colorButtonNormal, "", pngTransColor]
-		              			, [0, skinAssets.Close_Tab.Hover, "", colorButtonHover, "", pngTransColor]
-		    	      			, [0, skinAssets.Close_Tab.Press, "", colorButtonPress, "", pngTransColor] ]
-
-		Minimize 			:=	[ [0, skinAssets.Minimize.Normal, "", colorButtonNormal, "", pngTransColor]
-		              			, [0, skinAssets.Minimize.Hover, "", colorButtonHover, "", pngTransColor]
-		    	      			, [0, skinAssets.Minimize.Press, "", colorButtonPress, "", pngTransColor] ]
-
-		Maximize 			:=	[ [0, skinAssets.Maximize.Normal, "", colorButtonNormal, "", pngTransColor]
-		              			, [0, skinAssets.Maximize.Hover, "", colorButtonHover, "", pngTransColor]
-		    	      			, [0, skinAssets.Maximize.Press, "", colorButtonPress, "", pngTransColor] ]
+		Maximize 			:=	[ [0, skinAssets.Maximize.Normal, "", "", "", pngTransColor]
+		              			, [0, skinAssets.Maximize.Hover, "", "", "", pngTransColor]
+		    	      			, [0, skinAssets.Maximize.Press, "", "", "", pngTransColor] ]
 
 
 		returnArr := {Arrow_Left:Arrow_Left, Arrow_Right:Arrow_Right, Arrow_Left_Use_Character:skinAssets.Arrow_Left.Use_Character, Arrow_Right_Use_Character:skinAssets.Arrow_Right.Use_Character
 					, Button_Special:Button_Special, Minimize:Minimize,Maximize:Maximize
 					, Close_Tab:Close_Tab, Close_Tab_Use_Character:skinAssets.Close_Tab.Use_Character
+					, Toolbar_Hideout:Toolbar_Hideout, Toolbar_Sheet:Toolbar_Sheet
 					, Button_Hideout:Button_Hideout, Button_Whisper:Button_Whisper, Button_Kick:Button_Kick,Button_Thanks:Button_Thanks}
 
 		Return returnArr

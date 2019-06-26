@@ -261,12 +261,11 @@ Get_TabsSkinAssetsAndSettings() {
 		keysAndValues := INI.Get(skinAssetsFile, A_LoopField,, 1)
 
 		for key, value in keysAndValues	{
-			if IsIn(key, "Normal,Hover,Press,Active,Inactive,Background,Icon,Header,HeaderMin,Tabs_Background,Tabs_Underline") 
-			|| (A_LoopField = "Trade_Verify" && IsIn(key, "Grey,Orange,Green,Red"))
+			SplitPath, value, , , fileExt
+			if IsIn(fileExt, "jpg,png,ico,jpeg,gif,bmp") 
 				skinAssets[A_LoopField][key] := skinFolder "\" value
-			else {
+			else
 				skinAssets[A_LoopField][key] := value
-			}
 		}
 	}
 
@@ -318,11 +317,12 @@ Get_CompactSkinAssetsAndSettings() {
 	iniFile := PROGRAM.INI_FILE
 
 	presetName := INI.Get(iniFile, "SETTINGS_CUSTOMIZATION_SKINS",, 1).Preset
-	; skinName := INI.Get(iniFile, "SETTINGS_CUSTOMIZATION_SKINS",, 1).Skin
-	skinName := "Path of Exile" ; TO_DO assets for other skins
+	skinName := INI.Get(iniFile, "SETTINGS_CUSTOMIZATION_SKINS",, 1).Skin
+	if (skinName = "White")
+		skinName := "Path of Exile" ; TO_DO assets for other skins
 	skinFolder := PROGRAM.SKINS_FOLDER "\" skinName "\Compact"
-	skinAssetsFile := PROGRAM.SKINS_FOLDER "\" skinName "\Compact" "\Assets.ini"
-	skinSettingsFile := PROGRAM.SKINS_FOLDER "\" skinName "\Compact" "\Settings.ini"
+	skinAssetsFile := PROGRAM.SKINS_FOLDER "\" skinName "\Compact\Assets.ini"
+	skinSettingsFile := PROGRAM.SKINS_FOLDER "\" skinName "\Compact\Settings.ini"
 
 	skinAssets := {}
 	iniSections := Ini.Get(skinAssetsFile)
@@ -332,12 +332,11 @@ Get_CompactSkinAssetsAndSettings() {
 		keysAndValues := INI.Get(skinAssetsFile, A_LoopField,, 1)
 
 		for key, value in keysAndValues	{
-			if IsIn(key, "Normal,Hover,Press,Active,Inactive,Background,Icon,Header,HeaderMin,Header2,Tabs_Background,Tabs_Underline,SearchBarCross") 
-			|| (A_LoopField = "Trade_Verify" && IsIn(key, "Grey,Orange,Green,Red"))
+			SplitPath, value, , , fileExt
+			if IsIn(fileExt, "jpg,png,ico,jpeg,gif,bmp") 
 				skinAssets[A_LoopField][key] := skinFolder "\" value
-			else {
+			else
 				skinAssets[A_LoopField][key] := value
-			}
 		}
 	}
 
@@ -360,7 +359,7 @@ Get_CompactSkinAssetsAndSettings() {
 	; 	}
 	; }
 	; else {
-		skinSettingsFile := PROGRAM.SKINS_FOLDER "\" skinName "\Settings.ini"
+		skinSettingsFile := PROGRAM.SKINS_FOLDER "\" skinName "\Compact\Settings.ini"
 		iniSections := INI.Get(skinSettingsFile)
 		Loop, Parse, iniSections, `n, `r
 		{
