@@ -98,23 +98,23 @@
 
 		; Header pos
 		Header_X := leftMost, Header_Y := upMost, Header_W := guiWidth, Header_H := scaleMult*30
-		Icon_X := Header_X+(3*scaleMult), Icon_Y := Header_Y+(3*scaleMult), Icon_W := scaleMult*24, Icon_H := scaleMult*24
-		MinMax_X := rightMost-((scaleMult*20)+3), MinMax_Y := Header_Y+(5*scaleMult), MinMax_W := scaleMult*20, MinMax_H := scaleMult*20
+		Icon_X := Header_X+(3*scaleMult), Icon_Y := Header_Y+(3*scaleMult), Icon_W := scaleMult*21, Icon_H := scaleMult*21
+		MinMax_X := rightMost-((scaleMult*22)+3), MinMax_Y := Header_Y+(5*scaleMult), MinMax_W := scaleMult*22, MinMax_H := scaleMult*22
 		Title_X := Icon_X+Icon_W+5, Title_Y := Header_Y, Title_W := MinMax_X-Title_X-5, Title_H := Header_H
 
 		; Tab btn pos
 		Loop % maxTabsToRender {
 			indexMinusOne := A_Index-1
-			TabButton%A_Index%_X := (A_Index=1)?(leftMost):(A_Index > maxTabsPerRow)?(TabButton%maxTabsPerRow%_X):(TabButton%indexMinusOne%_X + TabButton%indexMinusOne%_W)
+			TabButton%A_Index%_X := (A_Index=1)?(leftMost):(A_Index > maxTabsPerRow)?(TabButton%maxTabsPerRow%_X):(TabButton%indexMinusOne%_X + TabButton%indexMinusOne%_W + (1*scaleMult))
 			TabButton%A_Index%_Y := Header_X+Header_H
-			TabButton%A_Index%_W := scaleMult*40
-			TabButton%A_Index%_H := scaleMult*25
+			TabButton%A_Index%_W := scaleMult*39
+			TabButton%A_Index%_H := scaleMult*22
 		}
-		TabBackground_X := TabButton1_X, TabBackground_Y := TabButton1_Y, TabBackground_W := (TabButton1_W*8), TabBackground_H := TabButton1_H
-		LeftArrow_Y := TabButton1_Y, LeftArrow_W := scaleMult*25, LeftArrow_H := TabButton1_H
+		LeftArrow_Y := TabButton1_Y, LeftArrow_W := scaleMult*25, LeftArrow_H := 22*scaleMult
 		RightArrow_Y := LeftArrow_Y, RightArrow_W := LeftArrow_W, RightArrow_H := LeftArrow_H
-		CloseTab_Y := RightArrow_Y, CloseTab_W := scaleMult*27, CloseTab_H := RightArrow_H
-		LeftArrow_X := guiWidth+borderSize-LeftArrow_W-RightArrow_W-CloseTab_W-1 ; 1=dont stick to border
+		CloseTab_Y := RightArrow_Y, CloseTab_W := scaleMult*25, CloseTab_H := RightArrow_H
+		TabBackground_X := TabButton1_X, TabBackground_Y := TabButton1_Y, TabBackground_W := guiWidth-LeftArrow_W-RightArrow_W-CloseTab_W, TabBackground_H := TabButton1_H
+		LeftArrow_X := guiWidth+borderSize-LeftArrow_W-RightArrow_W-CloseTab_W
 		RightArrow_X := LeftArrow_X+LeftArrow_W
 		CloseTab_X := RightArrow_X+RightArrow_W
 
@@ -192,7 +192,7 @@
 
 		; = = TITLE BAR = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 		Gui.Add("Trades", "Picture", "x" Header_X " y" Header_Y " w" Header_W " h" Header_H " hwndhIMG_Header BackgroundTrans", SKIN.Assets.Misc.Header) ; Title bar
-		Gui.Add("Trades", "Picture", "x" Icon_X " y" Icon_Y " w" Icon_W " h" Icon_H " BackgroundTrans", SKIN.Assets.Misc.Icon) ; Icon
+		; Gui.Add("Trades", "Picture", "x" Icon_X " y" Icon_Y " w" Icon_W " h" Icon_H " BackgroundTrans", SKIN.Assets.Misc.Icon) ; Icon
 		imageBtnLog .= Gui.Add("Trades", "ImageButton", "x" MinMax_X " y" MinMax_Y " w" MinMax_W " h" MinMax_H " BackgroundTrans hwndhBTN_Minimize", "", styles.Minimize, PROGRAM.FONTS[settings_fontName], settings_fontSize) ; Min
 		imageBtnLog .= Gui.Add("Trades", "ImageButton", "x" MinMax_X " y" MinMax_Y " w" MinMax_W " h" MinMax_H " BackgroundTrans hwndhBTN_Maximize Hidden", "", styles.Maximize, PROGRAM.FONTS[settings_fontName], settings_fontSize) ; Max
 
@@ -266,41 +266,53 @@
 
 		; = = SPECIAL BUTTONS = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 		Gui, Trades:Tab
-		specialBtnsChar := {Clipboard:"0", Whisper:"1", Invite:"2", Trade:"3", Kick:"4"}
 		if (btnRowsCount.Special > 0) {
-			for btnName, btnChar in specialBtnsChar {
-				btnX := (A_Index=1)?(SpecialButton_X):("+5"), btnY := (A_Index=1)?("+5"):("p")
-				Gui.Add("Trades", "Button", "x" btnX " y" btnY " w" SpecialButton_W " h" SpecialButton_H " hwndhBTN_Special" A_Index " FontTC_Symbols FontSize12 Hidden", btnChar)
+			Loop 5 { ; Max num of special btns
+				speIndex := A_Index
+				speSettings := INI.Get(PROGRAM.INI_FILE, "SETTINGS_SPECIAL_BUTTON_" speIndex,,1)
+				speSlot := speSettings.Slot, speType := speSettings.Type, speEnabled := speSettings.Enabled="True"?True:False
+				speStyle := styles["Button_" speType]
 
-				specialBtn%A_Index%Coords := Get_ControlCoords("Trades", GuiTrades_Controls["hBTN_Special" A_Index])
+				if (speEnabled) {
+					speNum := speNum?speNum+1:1
+					speX := speNum=1?SpecialButton_X:"+5", speY := speNum=1?"+5":"p"
+					
+					imageBtnLog .= Gui.Add("Trades", "ImageButton", "x" speX " y" speY " w" SpecialButton_W " h" SpecialButton_H " hwndhBTN_Special" speIndex " Hidden", "", speStyle, PROGRAM.FONTS[settings_fontName], settings_fontSize)
 
-				__f := GUI_Trades.DoTradeButtonAction.bind(GUI_Trades, A_Index, "Special")
-				GuiControl, Trades:+g,% GuiTrades_Controls["hBTN_Special" A_Index],% __f
+					__f := GUI_Trades.DoTradeButtonAction.bind(GUI_Trades, speIndex, "Special")
+					GuiControl, Trades:+g,% GuiTrades_Controls["hBTN_Special" speIndex],% __f
+				}
 			}
 		}
-
-		GuiTrades.SpecialButton1_X := specialBtn1Coords.X, GuiTrades.SpecialButton2_X := specialBtn2Coords.X
-		GuiTrades.SpecialButton3_X := specialBtn3Coords.X, GuiTrades.SpecialButton4_X := specialBtn4Coords.X, GuiTrades.SpecialButton5_X := specialBtn5Coords.X
 
 		; = = CUSTOM BUTTONS = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 		Gui, Trades:Tab
-
+		Loop 3 {
+			Gui.Add("Trades", "Button", "x0 y+5 w0 h" CustomButton_H " hwndhBTN_FakeCustomBtn" A_Index " Hidden")
+		}
+		custTopY := Get_ControlCoords("Trades", GuiTrades_Controls.hBTN_FakeCustomBtn1).Y
+		custMidY := Get_ControlCoords("Trades", GuiTrades_Controls.hBTN_FakeCustomBtn2).Y
+		custBotY := Get_ControlCoords("Trades", GuiTrades_Controls.hBTN_FakeCustomBtn3).Y
 		if (btnRowsCount.Custom > 0) {
-			Loop 9 {
-				btnX := IsIn(A_Index, "1,4,7")?CustomButtonLeft_X : IsIn(A_Index, "2,5,8")?CustomButtonMiddle_X : IsIn(A_Index, "3,6,9")?CustomButtonRight_X : "ERROR"
-				btnY := IsIn(A_Index, "1,4,7")?"y+5" : "yp"
-				Gui.Add("Trades", "Button", "x" btnX " " btnY " w" CustomButtonOneThird_W " h" CustomButton_H " hwndhBTN_Custom" A_Index " Hidden", A_Index)
+			Loop 9 { ; Max num of custom btns
+				custIndex := A_Index
+				custSettings := INI.Get(PROGRAM.INI_FILE, "SETTINGS_CUSTOM_BUTTON_" custIndex,,1)
+				custSlot := custSettings.Slot, custSize := custSettings.Size, custName := custSettings.Name, custEnabled := custSettings.Enabled="True"?True:False
+				custStyle := custSize="Small"?Styles.Button_OneThird : custSize="Medium"?Styles.Button_TwoThird : custSize="Large"?Styles.Button_ThreeThird : ""
 
-				customBtn%A_Index%Coords := Get_ControlCoords("Trades", GuiTrades_Controls["hBTN_Custom" A_Index])
+				if (custEnabled) {
+					custNum := custNum?custNum+1:1
+					custX := IsIn(custSlot, "1,4,7")?CustomButtonLeft_X : IsIn(custIndex, "2,5,8")?CustomButtonMiddle_X : IsIn(custSlot, "3,6,9")?CustomButtonRight_X : ""
+					custY := IsIn(custSlot, "1,2,3")?custTopY : IsIn(custSlot, "4,5,6")?custMidY : IsIn(custSlot, "7,8,9")?custBotY : ""
+					custW := custSize="Small"?CustomButtonOneThird_W : custSize="Medium"?CustomButtonTwoThird_W : custSize="Large"?CustomButtonThreeThird_W : ""
 
-				__f := GUI_Trades.DoTradeButtonAction.bind(GUI_Trades, A_Index, "Custom")
-				GuiControl, Trades:+g,% GuiTrades_Controls["hBTN_Custom" A_Index],% __f
+					imageBtnLog .= Gui.Add("Trades", "ImageButton", "x" custX " y" custY " w" custW " h" CustomButton_H " hwndhBTN_Custom" custSlot " Hidden", custName, custStyle, PROGRAM.FONTS[settings_fontName], settings_fontSize)
+
+					__f := GUI_Trades.DoTradeButtonAction.bind(GUI_Trades, custSlot, "Custom")
+					GuiControl, Trades:+g,% GuiTrades_Controls["hBTN_Custom" custSlot],% __f
+				}
 			}
 		}
-
-		GuiTrades.CustomButtonOneThird_W := CustomButtonOneThird_W,	GuiTrades.CustomButtonTwoThird_W := CustomButtonTwoThird_W,	GuiTrades.CustomButtonThreeThird_W := CustomButtonThreeThird_W
-		GuiTrades.CustomButtonLeft_X := CustomButtonLeft_X,	GuiTrades.CustomButtonMiddle_X := CustomButtonMiddle_X,	GuiTrades.CustomButtonRight_X := CustomButtonRight_X
-		GuiTrades.CustomButtonRow1_Y := customBtn1Coords.Y,	GuiTrades.CustomButtonRow2_Y := customBtn4Coords.Y,	GuiTrades.CustomButtonRow3_Y := customBtn7Coords.Y
 
 		; = = ERROR TEXT MSG = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 		Gui, Trades:Tab
@@ -340,7 +352,6 @@
 
 		Gui.Show("Trades", "x" winXPos " y" winYPos " h" guiFullHeight " w" guiFullWidth " Hide")
 
-		GUI_Trades.SetButtonsPositions()
 		GuiTrades.Is_Created := True
 		
 		OnMessage(0x200, "WM_MOUSEMOVE")
@@ -476,69 +487,6 @@
 				}
 			}
 			tabsToLoop--
-		}
-	}
-
-	SetButtonsPositions() {
-		global PROGRAM
-		global GuiTrades, GuiTrades_Controls
-		iniFile := PROGRAM.INI_FILE
-
-		oneThird := GuiTrades.CustomButtonOneThird_W, twoThird := GuiTrades.CustomButtonTwoThird_W, threeThird := GuiTrades.CustomButtonThreeThird_W
-		col1X := GuiTrades.CustomButtonLeft_X, col2X := GuiTrades.CustomButtonMiddle_X, col3X := GuiTrades.CustomButtonRight_X
-		row1Y := GuiTrades.CustomButtonRow1_Y, row2Y := GuiTrades.CustomButtonRow2_Y, row3Y := GuiTrades.CustomButtonRow3_Y
-
-		styles := Gui_Trades.Get_Styles()
-
-		Loop 5 {
-			specialBtnSettings := INI.Get(iniFile, "SETTINGS_SPECIAL_BUTTON_" A_Index,,1)
-			specialBtnHandle := GuiTrades_Controls["hBTN_Special" A_Index]
-			specialBtnSlot := specialBtnSettings.Slot
-			specialBtnType := specialBtnSettings.Type
-
-			specialBtnChar := specialBtnType="Clipboard" ? "0"
-				: specialBtnType="Whisper" ? "1"
-				: specialBtnType="Invite" ? "2"
-				: specialBtnType="Trade" ? "3"
-				: specialBtnType="Kick" ? "4"
-				: "ERROR"
-
-			btnX := GuiTrades["SpecialButton" specialBtnSlot "_X"]
-			specialBtnStyle := Styles.Button_Special
-
-			if (specialBtnSettings.Enabled = "True") {
-				GuiControl, Trades:Move,% specialBtnHandle, x%btnX%
-				GuiControl, Trades:,% specialBtnHandle,% specialBtnChar
-
-				ImageButton.Create(specialBtnHandle, specialBtnStyle, PROGRAM.FONTS["TC_Symbols"], GuiTrades.Font_Size)
-			}
-			else {
-				GuiControl, Trades:Hide,% specialBtnHandle
-				GuiTrades_Controls["hBTN_Special" A_Index] := ""
-			}
-		}
-
-		Loop 9 {
-			customBtnSettings := INI.Get(iniFile, "SETTINGS_CUSTOM_BUTTON_" A_Index,,1)
-			customBtnHandle := GuiTrades_Controls["hBTN_Custom" A_Index]
-			customBtnSlot := customBtnSettings.Slot
-			customBtnSize := customBtnSettings.Size
-
-			btnX := IsIn(customBtnSlot, "1,4,7")?col1X : IsIn(customBtnSlot, "2,5,8")?col2X : IsIn(customBtnSlot, "3,6,9")?col3X : "ERROR SLOT " A_Index " XPOS"
-			btnY := IsIn(customBtnSlot, "1,2,3")?row1Y : IsIn(customBtnSlot, "4,5,6")?row2Y : IsIn(customBtnSlot, "7,8,9")?row3Y : "ERROR SLOT " A_Index " YPOS"
-			btnW := customBtnSize="Small"?oneThird : customBtnSize="Medium"?twoThird : customBtnSize="Large"?threeThird : "ERROR SLOT " A_Index " WIDTH"
-			customBtnStyle := customBtnSize="Small"?Styles.Button_OneThird : customBtnSize="Medium"?Styles.Button_TwoThird : customBtnSize="Large"?Styles.Button_ThreeThird : "ERROR SLOT " A_Index " STYLE"
-
-			if (customBtnSettings.Enabled = "True") {
-				GuiControl, Trades:Move,% customBtnHandle, x%btnX% y%btnY% w%btnW%
-				GuiControl, Trades:,% customBtnHandle,% customBtnSettings.Name
-
-				ImageButton.Create(customBtnHandle, customBtnStyle, PROGRAM.FONTS[GuiTrades.Font], GuiTrades.Font_Size)
-			}
-			else {
-				GuiControl, Trades:Hide,% customBtnHandle
-				GuiTrades_Controls["hBTN_Custom" A_Index] := ""
-			}
 		}
 	}
 
@@ -797,12 +745,6 @@
 
 		skinColors := skinSettings.COLORS
 		
-		colorTitleActive 			:= (skinColors.Title_Trades = "0x000000")?("Black"):(skinColors.Title_Trades)
-		colorTitleInactive 			:= (skinColors.Title_No_Trades = "0x000000")?("Black"):(skinColors.Title_No_Trades)
-		colorTradesInfos1 			:= (skinColors.Trades_Infos_1 = "0x000000")?("Black"):(skinColors.Trades_Infos_1)
-		colorTradesInfos2 			:= (skinColors.Trades_Infos_2 = "0x000000")?("Black"):(skinColors.Trades_Infos_2)
-		colorBorder 				:= (skinColors.Border = "0x000000")?("Black"):(skinColors.Border)
-
 		colorButtonNormal 			:= (skinColors.Button_Normal = "0x000000")?("Black"):(skinColors.Button_Normal)
 		colorButtonHover 			:= (skinColors.Button_Hover = "0x000000")?("Black"):(skinColors.Button_Hover)
 		colorButtonPress 			:= (skinColors.Button_Press = "0x000000")?("Black"):(skinColors.Button_Press)
@@ -859,9 +801,25 @@
 		              			, [0, skinAssets.Button_ThreeThird.Hover, "", colorButtonHover, "", pngTransColor]
 		    	      			, [0, skinAssets.Button_ThreeThird.Press, "", colorButtonPress, "", pngTransColor] ]
 
-		Button_Special 		:=	[ [0, skinAssets.Button_Special.Normal, "", colorButtonNormal, "", pngTransColor]
-		              			, [0, skinAssets.Button_Special.Hover, "", colorButtonHover, "", pngTransColor]
-		    	      			, [0, skinAssets.Button_Special.Press, "", colorButtonPress, "", pngTransColor] ]
+		Button_Clipboard 	:=	[ [0, skinAssets.Button_Clipboard.Normal, "", colorButtonNormal, "", pngTransColor]
+		              			, [0, skinAssets.Button_Clipboard.Hover, "", colorButtonHover, "", pngTransColor]
+		    	      			, [0, skinAssets.Button_Clipboard.Press, "", colorButtonPress, "", pngTransColor] ]
+
+		Button_Whisper 		:=	[ [0, skinAssets.Button_Whisper.Normal, "", colorButtonNormal, "", pngTransColor]
+		              			, [0, skinAssets.Button_Whisper.Hover, "", colorButtonHover, "", pngTransColor]
+		    	      			, [0, skinAssets.Button_Whisper.Press, "", colorButtonPress, "", pngTransColor] ]
+		
+		Button_Invite 		:=	[ [0, skinAssets.Button_Invite.Normal, "", colorButtonNormal, "", pngTransColor]
+		              			, [0, skinAssets.Button_Invite.Hover, "", colorButtonHover, "", pngTransColor]
+		    	      			, [0, skinAssets.Button_Invite.Press, "", colorButtonPress, "", pngTransColor] ]
+
+		Button_Trade 		:=	[ [0, skinAssets.Button_Trade.Normal, "", colorButtonNormal, "", pngTransColor]
+		              			, [0, skinAssets.Button_Trade.Hover, "", colorButtonHover, "", pngTransColor]
+		    	      			, [0, skinAssets.Button_Trade.Press, "", colorButtonPress, "", pngTransColor] ]
+
+		Button_Kick 		:=	[ [0, skinAssets.Button_Kick.Normal, "", colorButtonNormal, "", pngTransColor]
+		              			, [0, skinAssets.Button_Kick.Hover, "", colorButtonHover, "", pngTransColor]
+		    	      			, [0, skinAssets.Button_Kick.Press, "", colorButtonPress, "", pngTransColor] ]
 
 		Close_Tab 			:=	[ [0, skinAssets.Close_Tab.Normal, "", colorButtonNormal, "", pngTransColor]
 		              			, [0, skinAssets.Close_Tab.Hover, "", colorButtonHover, "", pngTransColor]
@@ -875,8 +833,10 @@
 		              			, [0, skinAssets.Maximize.Hover, "", colorButtonHover, "", pngTransColor]
 		    	      			, [0, skinAssets.Maximize.Press, "", colorButtonPress, "", pngTransColor] ]
 
-		returnArr := {Tab:Tab, Tab_Joined:Tab_Joined, Tab_Whisper:Tab_Whisper, Arrow_Left:Arrow_Left, Arrow_Right:Arrow_Right, Button_OneThird:Button_OneThird
-					, Button_TwoThird:Button_TwoThird, Button_ThreeThird:Button_ThreeThird, Button_Special:Button_Special, Close_Tab:Close_Tab,Minimize:Minimize,Maximize:Maximize
+		returnArr := {Tab:Tab, Tab_Joined:Tab_Joined, Tab_Whisper:Tab_Whisper
+					, Arrow_Left:Arrow_Left, Arrow_Right:Arrow_Right, Close_Tab:Close_Tab, Minimize:Minimize, Maximize:Maximize
+					, Button_Clipboard:Button_Clipboard, Button_Whisper:Button_Whisper, Button_Invite:Button_Invite, Button_Trade:Button_Trade, Button_Kick:Button_Kick
+					, Button_OneThird:Button_OneThird, Button_TwoThird:Button_TwoThird, Button_ThreeThird:Button_ThreeThird
 					, Arrow_Left_Use_Character:skinAssets.Arrow_Left.Use_Character, Arrow_Right_Use_Character:skinAssets.Arrow_Right.Use_Character, Close_Tab_Use_Character:skinAssets.Close_Tab.Use_Character}
 
 		Return returnArr

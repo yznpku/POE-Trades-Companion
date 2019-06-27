@@ -35,8 +35,8 @@
 
 		; Header pos
 		Header_X := leftMost, Header_Y := upMost, Header_W := guiWidth, Header_H := scaleMult*30
-		Icon_X := Header_X+(3*scaleMult), Icon_Y := Header_Y+(3*scaleMult), Icon_W := scaleMult*24, Icon_H := scaleMult*24
-		MinMax_X := rightMost-((scaleMult*20)+3), MinMax_Y := Header_Y+(5*scaleMult), MinMax_W := scaleMult*20, MinMax_H := scaleMult*20
+		Icon_X := Header_X+(3*scaleMult), Icon_Y := Header_Y+(3*scaleMult), Icon_W := scaleMult*21, Icon_H := scaleMult*21
+		MinMax_X := rightMost-((scaleMult*22)+3), MinMax_Y := Header_Y+(5*scaleMult), MinMax_W := scaleMult*22, MinMax_H := scaleMult*22
 		Title_X := Icon_X+Icon_W+5, Title_Y := Header_Y, Title_W := MinMax_X-Title_X-5, Title_H := Header_H
 
 		; Trade infos text pos + time slot auto size
@@ -75,7 +75,7 @@
 
 		; = = TITLE BAR = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 		Gui.Add("TradesMinimized", "Picture", "x" Header_X " y" Header_Y " w" Header_W " h" Header_H " hwndhIMG_Header BackgroundTrans", SKIN.Assets.Misc.HeaderMin) ; Title bar
-		Gui.Add("TradesMinimized", "Picture", "x" Icon_X " y" Icon_Y " w" Icon_W " h" Icon_H " BackgroundTrans", SKIN.Assets.Misc.Icon) ; Icon
+		; Gui.Add("TradesMinimized", "Picture", "x" Icon_X " y" Icon_Y " w" Icon_W " h" Icon_H " BackgroundTrans", SKIN.Assets.Misc.Icon) ; Icon
 		imageBtnLog .= Gui.Add("TradesMinimized", "ImageButton", "x" MinMax_X " y" MinMax_Y " w" MinMax_W " h" MinMax_H " BackgroundTrans hwndhBTN_Maximize", "", styles.Maximize, PROGRAM.FONTS[settings_fontName], settings_fontSize) ; Max
 		Gui.Add("TradesMinimized", "Text", "x" Title_X " y" Title_Y " w" Title_W " h" Title_H " hwndhTEXT_Title Center BackgroundTrans +0x200 c" SKIN.Settings.COLORS.Title_No_Trades, "(0)")
 		Gui.Add("TradesMinimized", "Text", "x" Header_X " y" Header_Y " w" Header_W " h" Header_H " hwndhTXT_HeaderGhost BackgroundTrans", "") ; Empty text ctrl to allow moving the gui by dragging the title bar
