@@ -1248,16 +1248,23 @@
 
 		; Set currency IMG
 		if (newTabCurrency != cSlotCont.Currency) {
-			if FileExist(PROGRAM.CURRENCY_IMGS_FOLDER "\" newTabCurrency ".png")
-				currencyPngFile := PROGRAM.CURRENCY_IMGS_FOLDER "\" newTabCurrency ".png"
-			else 
-				currencyPngFile := PROGRAM.CURRENCY_IMGS_FOLDER "\Unknown.png"
+			if (newTabCurrency = "") {
+				GuiControl, ,% GuiTradesBuyCompact["Slot" slotNum "_Controls"].hIMG_CurrencyIMG,% newTabCurrency
+			}
+			else {
+				if FileExist(PROGRAM.CURRENCY_IMGS_FOLDER "\" newTabCurrency ".png")
+					currencyPngFile := PROGRAM.CURRENCY_IMGS_FOLDER "\" newTabCurrency ".png"
+				else 
+					currencyPngFile := PROGRAM.CURRENCY_IMGS_FOLDER "\Unknown.png"
 
-			coords := Get_ControlCoords("TradesBuyCompact_Slot" slotNum, GuiTradesBuyCompact["Slot" slotNum "_Controls"].hIMG_CurrencyIMG)
-			imgSlot_W := coords.W, imgSlot_H := coords.H
-			
-			hBitMap := Gdip_CreateResizedHBITMAP_FromFile(currencyPngFile, imgSlot_W*windowsDPI, imgSlot_H*windowsDPI, PreserveAspectRatio:=False)
-			SetImage(GuiTradesBuyCompact["Slot" slotNum "_Controls"].hIMG_CurrencyIMG, hBitmap)
+				coords := Get_ControlCoords("TradesBuyCompact_Slot" slotNum, GuiTradesBuyCompact["Slot" slotNum "_Controls"].hIMG_CurrencyIMG)
+				imgSlot_W := coords.W, imgSlot_H := coords.H
+				
+				hBitMap := Gdip_CreateResizedHBITMAP_FromFile(currencyPngFile, imgSlot_W*windowsDPI, imgSlot_H*windowsDPI, PreserveAspectRatio:=False)
+				SetImage(GuiTradesBuyCompact["Slot" slotNum "_Controls"].hIMG_CurrencyIMG, hBitmap)
+			}
+			GuiControl, Hide,% GuiTradesBuyCompact["Slot" slotNum "_Controls"].hIMG_CurrencyIMG ; basically "redraw", fixes old pic still there behind
+			GuiControl, Show,% GuiTradesBuyCompact["Slot" slotNum "_Controls"].hIMG_CurrencyIMG
 		}
 	}
 
