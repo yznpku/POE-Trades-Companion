@@ -60,7 +60,7 @@
 
 		; Gui size and positions
 		borderSize := Floor(1*scaleMult), borderSize := borderSize >= 1 ? borderSize : 1
-		guiHeightNoRow_NoSpecial := (30+25)*scaleMult + 2 + 5 + tradeInfoBox.H + 5 ; (header+tabs bar) + undertab line + 5 off + info + 5 off
+		guiHeightNoRow_NoSpecial := (30+22)*scaleMult + 5 + tradeInfoBox.H + 5 ; (header+tabs bar) + 5 off + info + 5 off
 		guiHeightNoRow := guiHeightNoRow_NoSpecial+(scaleMult*25)+5 ; 25 = SpecialButton_H
 
 		guiHeightOneRow_NoSpecial := guiHeightNoRow_NoSpecial+(scaleMult*35)+5 ; 35 = CustomButton_H, 5 = space between rows	
@@ -118,21 +118,19 @@
 		RightArrow_X := LeftArrow_X+LeftArrow_W
 		CloseTab_X := RightArrow_X+RightArrow_W
 
-		TabUnderline_X := leftMost, TabUnderline_Y := TabButton1_Y+TabButton1_H, TabUnderline_W := guiWidth, TabUnderline_H := 2 ; TO_DO why cant i scaleMult TabUnderline_H?
-
 		; Background img
 		BackgroundImg_X := leftMost, BackgroundImg_Y := Header_Y+Header_H
 		BackgroundImg_W := Ceil( (guiWidth*windowsDPI) ), BackgroundImg_H := (guiHeight-Header_H)*windowsDPI
 
 		; Trade infos text pos + time slot auto size
-		TradeInfos_X := leftMost+5, TradeInfos_Y := TabUnderline_Y+TabUnderline_H+5, TradeInfos_W := guiWidth-TradeInfos_X-5
+		TradeInfos_X := leftMost+5, TradeInfos_Y := LeftArrow_Y+LeftArrow_H+5, TradeInfos_W := guiWidth-TradeInfos_X-5
 		Loop 10 { ; from 0 to 9
 			num := (A_Index=10)?("0"):(A_Index)
 			txtCtrlSize := Get_TextCtrlSize(num num ":" num num, settings_fontName, settings_fontSize), thisW := txtCtrlSize.W, thisH := txtCtrlSize.H
 			timeSlotWidth := (timeSlotWidth > thisW)?(timeSlotWidth):(thisW)
 			timeSlotHeight := (timeSlotHeight > thisH)?(timeSlotHeight):(thisH)
 		}
-		TimeSlot_X := (guiWidth-timeSlotWidth)-5, TimeSlot_Y := TabUnderline_Y+TabUnderline_H, TimeSlot_W := timeSlotWidth
+		TimeSlot_X := (guiWidth-timeSlotWidth)-5, TimeSlot_Y := LeftArrow_Y+LeftArrow_H, TimeSlot_W := timeSlotWidth
 		TradeVerify_W := 10*scaleMult, TradeVerify_H := TradeVerify_W, TradeVerify_X := TimeSlot_X-5-TradeVerify_W, TradeVerify_Y := TimeSlot_Y+3
 		; TO_DO Proper Scalemult?
 		; Set TradeVerify_W same as TimeSlot_H? --Cant do. Height changes based on font type.
@@ -237,9 +235,6 @@
 		imageBtnLog .= Gui.Add("Trades", "ImageButton", "x" LeftArrow_X " y" LeftArrow_Y " w" LeftArrow_W " h" LeftArrow_H " hwndhBTN_LeftArrow Hidden", styles.Arrow_Left_Use_Character = "True"?"<" : "", styles.Arrow_Left, PROGRAM.FONTS[settings_fontName], settings_fontSize) ; Left Arrow
 		imageBtnLog .= Gui.Add("Trades", "ImageButton", "x" RightArrow_X " y" RightArrow_Y " w" RightArrow_W " h" RightArrow_H " hwndhBTN_RightArrow Hidden", styles.Arrow_Right_Use_Character = "True"?">" : "", styles.Arrow_Right, PROGRAM.FONTS[settings_fontName], settings_fontSize) ; Right Arrow
 		imageBtnLog .= Gui.Add("Trades", "ImageButton", "x" CloseTab_X " y" CloseTab_Y " w" CloseTab_W " h" CloseTab_H " hwndhBTN_CloseTab Hidden", styles.Close_Tab_Use_Character = "True"?"X" : "", styles.Close_Tab, PROGRAM.FONTS[settings_fontName], settings_fontSize) ; Close tab
-
-		Gui.Add("Trades", "Picture", "x" TabUnderline_X " y" TabUnderline_Y " w" TabUnderline_W " h" TabUnderline_H " hwndhIMG_TabsUnderline Hidden", SKIN.Assets.Misc.Tabs_Underline) ; Tab underline
-
 
 		__f := GUI_Trades.ScrollTabs.bind(GUI_Trades, "Left")
 		GuiControl, Trades:+g,% GuiTrades_Controls["hBTN_LeftArrow"],% __f
@@ -353,14 +348,13 @@
 		Gui.Show("Trades", "x" winXPos " y" winYPos " h" guiFullHeight " w" guiFullWidth " Hide")
 
 		GuiTrades.Is_Created := True
+		GUI_Trades.Minimize()
 		
 		OnMessage(0x200, "WM_MOUSEMOVE")
 		OnMessage(0x201, "WM_LBUTTONDOWN")
 		OnMessage(0x202, "WM_LBUTTONUP")
 
 		GUI_Trades.SetTransparency_Inactive()
-		if (PROGRAM.SETTINGS.SETTINGS_MAIN.AutoMinimizeOnAllTabsClosed = "True")
-			GUI_Trades.Minimize()
 		if (PROGRAM.SETTINGS.SETTINGS_MAIN.AllowClicksToPassThroughWhileInactive = "True")
 			GUI_Trades.Enable_ClickThrough()
 

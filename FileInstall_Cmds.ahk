@@ -4775,31 +4775,6 @@ if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile"), "D")
 	FileCreateDir,% PROGRAM.SKINS_FOLDER "\Path of Exile"
 
 if (A_IsCompiled) {
-	sourceFileSize := Get_ResourceSize("resources\skins\Path of Exile\TabsUnderline.png")
-	FileGetSize, destFileSize, % PROGRAM.SKINS_FOLDER "\Path of Exile\TabsUnderline.png"
-}
-else {
-	FileGetSize, sourceFileSize, resources\skins\Path of Exile\TabsUnderline.png
-	FileGetSize, destFileSize, % PROGRAM.SKINS_FOLDER "\Path of Exile\TabsUnderline.png"
-}
-if (sourceFileSize != destFileSize)
-	FileInstall, resources\skins\Path of Exile\TabsUnderline.png, % PROGRAM.SKINS_FOLDER "\Path of Exile\TabsUnderline.png", 1
-if (ErrorLevel) {
-	AppendToLogs("Failed to extract file!"
-	.	"`nSource: resources\skins\Path of Exile\TabsUnderline.png"
-	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\TabsUnderline.png"
-	.	"`nFlag: " 2)
-	errorLog .= "`n`n""Failed to extract file!"
-	.	"`nSource: resources\skins\Path of Exile\TabsUnderline.png"
-	.	"`nDest: " PROGRAM.SKINS_FOLDER "\Path of Exile\TabsUnderline.png"
-	.	"`nFlag: " 2
-}
-
-; ----------------------------
-if !InStr(FileExist(PROGRAM.SKINS_FOLDER "\Path of Exile"), "D")
-	FileCreateDir,% PROGRAM.SKINS_FOLDER "\Path of Exile"
-
-if (A_IsCompiled) {
 	sourceFileSize := Get_ResourceSize("resources\skins\Path of Exile\TabWhisperActive.png")
 	FileGetSize, destFileSize, % PROGRAM.SKINS_FOLDER "\Path of Exile\TabWhisperActive.png"
 }

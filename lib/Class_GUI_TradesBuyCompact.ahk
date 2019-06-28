@@ -409,14 +409,14 @@
 		Gui.Show("TradesBuyCompactSearch", "x" SearchBox_X " y" SearchBox_Y " Hide")
 		Gui.Show("TradesBuyCompactSearchHidden", "x0 y0 w0 h0 NoActivate") ; Not hidden on purpose so it can work with ShellMessage to empty on click
 
+		GUI_TradesBuyCompact.Minimize()
+
 		OnMessage(0x200, "WM_MOUSEMOVE")
 		OnMessage(0x20A, "WM_MOUSEWHEEL")
 		OnMessage(0x201, "WM_LBUTTONDOWN")
 		OnMessage(0x202, "WM_LBUTTONUP")
 
 		GUI_TradesBuyCompact.SetTransparency_Inactive()
-		; if (PROGRAM.SETTINGS.SETTINGS_MAIN.AutoMinimizeOnAllTabsClosed = "True")
-			; GUI_TradesBuyCompact.Minimize()
 		if (PROGRAM.SETTINGS.SETTINGS_MAIN.AllowClicksToPassThroughWhileInactive = "True")
 			GUI_TradesBuyCompact.Enable_ClickThrough()
 
