@@ -99,7 +99,7 @@
 		; Header pos
 		Header_X := leftMost, Header_Y := upMost, Header_W := guiWidth, Header_H := scaleMult*30
 		Icon_X := Header_X+(3*scaleMult), Icon_Y := Header_Y+(3*scaleMult), Icon_W := scaleMult*21, Icon_H := scaleMult*21
-		MinMax_X := rightMost-((scaleMult*22)+3), MinMax_Y := Header_Y+(5*scaleMult), MinMax_W := scaleMult*22, MinMax_H := scaleMult*22
+		MinMax_X := rightMost-((scaleMult*22)+3), MinMax_Y := Header_Y+(4*scaleMult), MinMax_W := scaleMult*22, MinMax_H := scaleMult*22
 		Title_X := Icon_X+Icon_W+5, Title_Y := Header_Y, Title_W := MinMax_X-Title_X-5, Title_H := Header_H
 
 		; Tab btn pos
