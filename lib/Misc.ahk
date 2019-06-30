@@ -194,8 +194,8 @@ Set_Clipboard(str) {
 	Clipboard := str
 	ClipWait, 2, 1
 	if (ErrorLevel) {
-		trayMsg := StrReplace(PROGRAM.TRANSLATIONS.TrayNotifications.ClipboardFailedToUpdate_Msg, "%message", str)
-		TrayNotifications.Show(PROGRAM.TRANSLATIONS.TrayNotifications.ClipboardFailedToUpdate_Title, PROGRAM.TRANSLATIONS.TrayNotifications.ClipboardFailedToUpdate_Msg)
+		trayMsg := StrReplace(PROGRAM.TRANSLATIONS.TrayNotifications.ClipboardFailedToUpdate_Msg, "%message%", str)
+		TrayNotifications.Show(PROGRAM.TRANSLATIONS.TrayNotifications.ClipboardFailedToUpdate_Title, trayMsg)
 		return 1
 	}
 	SET_CLIPBOARD_CONTENT := str
@@ -318,8 +318,6 @@ Get_CompactSkinAssetsAndSettings() {
 
 	presetName := INI.Get(iniFile, "SETTINGS_CUSTOMIZATION_SKINS",, 1).Preset
 	skinName := INI.Get(iniFile, "SETTINGS_CUSTOMIZATION_SKINS",, 1).Skin
-	if (skinName = "White")
-		skinName := "Path of Exile" ; TO_DO assets for other skins
 	skinFolder := PROGRAM.SKINS_FOLDER "\" skinName "\Compact"
 	skinAssetsFile := PROGRAM.SKINS_FOLDER "\" skinName "\Compact\Assets.ini"
 	skinSettingsFile := PROGRAM.SKINS_FOLDER "\" skinName "\Compact\Settings.ini"

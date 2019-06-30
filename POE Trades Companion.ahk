@@ -284,6 +284,7 @@ Start_Script() {
 		updChkTimer := (periodicUpdChk="OnStartOnly")?(0)
 			: (periodicUpdChk="OnStartAndEveryFiveHours")?(18000000)
 			: (periodicUpdChk="OnStartAndEveryDay")?(86400000)
+			: (0)
 		
 		if (updChkTimer)
 			SetTimer, UpdateCheck, %updChkTimer%
@@ -398,6 +399,7 @@ Return
 #Include PoeTrade.ahk
 #Include PushBullet.ahk
 #Include Reload.ahk
+#Include ShellMessage.ahk
 #Include ShowToolTip.ahk
 #Include SplashText.ahk
 #Include StackClick.ahk
