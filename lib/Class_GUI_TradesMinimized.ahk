@@ -167,13 +167,18 @@
 		else
 			xpos := gtmPos.X+gtmPos.W-gtPos.W, ypos := gtmPos.Y ; top right
 
-
 		xpos := IsNum(xpos) ? xpos : IsNum( A_ScreenWidth-gtPos.W ) ? A_ScreenWidth-gtPos.W : 0
 		ypos := IsNum(ypos) ? ypos : 0
 		if (isTradesWinActive)
 			Gui, Trades:Show, x%xpos% y%ypos%
 		else Gui, Trades:Show, x%xpos% y%ypos% NoActivate
 		Gui, TradesMinimized:Hide
+
+		/*
+		if (PROGRAM.SETTINGS.SETTINGS_MAIN.ShowItemGridWithoutInvite = "True")
+			GUI_Trades.ShowActiveTabItemGrid()
+		*/
+		GUI_Trades.ShowActiveTabItemGrid()
 
 		Gui_Trades.ResetPositionIfOutOfBounds()
 	}

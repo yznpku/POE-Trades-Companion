@@ -65,6 +65,7 @@ Get_LocalSettings_DefaultValues() {
 	settings.SETTINGS_MAIN.PushBulletOnlyWhenAfk										:= "True"
 	settings.SETTINGS_MAIN.PoeAccounts													:= ""
 	settings.SETTINGS_MAIN.MinimizeInterfaceToBottomLeft								:= "False"
+	; settings.SETTINGS_MAIN.ShowItemGridWithoutInvite									:= "True"
 	settings.SETTINGS_MAIN.ItemGridHideNormalTab										:= "False"
 	settings.SETTINGS_MAIN.ItemGridHideQuadTab											:= "False"
 	settings.SETTINGS_MAIN.ItemGridHideNormalTabAndQuadTabForMaps						:= "False"
@@ -150,8 +151,6 @@ Get_LocalSettings_DefaultValues() {
 	settings.SETTINGS_CUSTOM_BUTTON_3.Action_1_Content									:= """/invite %buyer%"""
 	settings.SETTINGS_CUSTOM_BUTTON_3.Action_2_Type										:= "SEND_TO_BUYER"
 	settings.SETTINGS_CUSTOM_BUTTON_3.Action_2_Content									:= """@%buyer% Ready to be picked up: %item% listed for %price%"""
-	settings.SETTINGS_CUSTOM_BUTTON_3.Action_3_Type										:= "SHOW_GRID"
-	settings.SETTINGS_CUSTOM_BUTTON_3.Action_3_Content									:= ""
 
 	settings.SETTINGS_CUSTOM_BUTTON_4 													:= {}
 	settings.SETTINGS_CUSTOM_BUTTON_4.Name												:= "Sold already"
@@ -315,7 +314,7 @@ LocalSettings_IsValueValid(iniSect, iniKey, iniValue) {
 			isValueValid := True
 		else if (iniKey = "MinimizeInterfaceToBottomLeft")
 			isValueValid := IsIn(iniValue, "True,False") ? True : False	
-		else if IsIn(iniKey, "ItemGridHideNormalTab,ItemGridHideQuadTab,ItemGridHideNormalTabAndQuadTabForMaps")
+		else if IsIn(iniKey, "ItemGridHideNormalTab,ItemGridHideQuadTab,ItemGridHideNormalTabAndQuadTabForMaps,ShowItemGridWithoutInvite")
 			isValueValid := IsIn(iniValue, "True,False") ? True : False	
 		else if (iniKey = "DisableBuyInterface")
 			isValueValid := IsIn(iniValue, "True,False") ? True : False	
@@ -495,6 +494,7 @@ Set_LocalSettings() {
 			if (!isValueValid) {
 				if (IsFirstTimeRunning != "True")
 				&& !IsIn(iniKey, "IsFirstTimeRunning,AddShowGridActionToInviteButtons,HasAskedForImport,RemoveCopyItemInfosIfGridActionExists,ReplaceOldTradeVariables,UpdateKickMyselfOutOfPartyHideoutHotkey,LastUpdateCheck,AskForLanguage")
+				&& (iniValue != "")
 					warnMsg .= "Section: " iniSect "`nKey: " iniKey "`nValue: " iniValue "`nDefault value: " defValue "`n`n"
 				Restore_LocalSettings(iniSect, iniKey)
 			}

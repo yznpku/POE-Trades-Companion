@@ -109,6 +109,7 @@ class GUI_ItemGrid {
     Create(gridItemX, gridItemY, gridItemName, gridItemTab, winX, winY, winH, winBorderSide="", winBorderTop="", itemType="", mapTier="") {
         global PROGRAM
         global GuiItemGrid, GuiItemGrid_Controls, GuiItemGrid_Submit
+        global GuiItemGridNormal, GuiItemGridNormal_Controls, GuiItemGridNormal_Submit
         global GuiItemGridQuad, GuiItemGridQuad_Controls, GuiItemGridQuad_Submit
         global GuiItemGridItemName, GuiItemGridItemName_Controls, GuiItemGridItemName_Submit
         global GuiItemGridTabName, GuiItemGridTabName_Controls, GuiItemGridTabName_Submit
@@ -162,13 +163,13 @@ class GUI_ItemGrid {
             tab_pointW := tab_caseW, tab_pointH := tab_caseH ; Make a square same size as stash square
             squareColor := "10c200"
 
-            Gui.New("ItemGrid", "-Border +LastFound +AlwaysOnTop -Caption +AlwaysOnTop +ToolWindow -SysMenu +HwndhGuiItemGrid", "ItemGrid")
-            Gui.Color("ItemGrid", "EEAA99")
+            Gui.New("ItemGridNormal", "+AlwaysOnTop +ToolWindow +LastFound -SysMenu -Caption -Border +E0x08000000 +HwndhGuiItemGridNormal", "ItemGridNormal")
+            Gui.Color("ItemGridNormal", "EEAA99")
             WinSet, TransColor, EEAA99 254 ; 254 = need to be trans to allow clickthrough style
-            Gui.Add("ItemGrid", "Progress", "x0 y0 w" tab_pointW " h" this.gridThicc " Background" squareColor) ; ^
-            Gui.Add("ItemGrid", "Progress", "x" tab_pointW - this.gridThicc " y0 w" this.gridThicc " h" tab_pointH " Background" squareColor) ; > 
-            Gui.Add("ItemGrid", "Progress", "x0 y" tab_pointH - this.gridThicc " w" tab_pointW " h" this.gridThicc " Background" squareColor) ; v 
-            Gui.Add("ItemGrid", "Progress", "x0 y0 w" this.gridThicc " h" tab_pointH " Background" squareColor) ; <
+            Gui.Add("ItemGridNormal", "Progress", "x0 y0 w" tab_pointW " h" this.gridThicc " Background" squareColor) ; ^
+            Gui.Add("ItemGridNormal", "Progress", "x" tab_pointW - this.gridThicc " y0 w" this.gridThicc " h" tab_pointH " Background" squareColor) ; > 
+            Gui.Add("ItemGridNormal", "Progress", "x0 y" tab_pointH - this.gridThicc " w" tab_pointW " h" this.gridThicc " Background" squareColor) ; v 
+            Gui.Add("ItemGridNormal", "Progress", "x0 y0 w" this.gridThicc " h" tab_pointH " Background" squareColor) ; <
             showNormalTabGrid := True 
         }
         ;= = = = = = = = = = = = Quad tab = = = = = = = = = = = = 
@@ -185,7 +186,7 @@ class GUI_ItemGrid {
             quad_pointW := quad_caseW, quad_pointH := quad_caseH ; Make a square same size as stash square
             squareColor := "10c200"
 
-            Gui.New("ItemGridQuad", "-Border +LastFound +AlwaysOnTop -Caption +AlwaysOnTop +ToolWindow -SysMenu +HwndhGuiItemGridQuad", "ItemGridQuad")
+            Gui.New("ItemGridQuad", "+AlwaysOnTop +ToolWindow +LastFound -SysMenu -Caption -Border +E0x08000000 +HwndhGuiItemGridQuad", "ItemGridQuad")
             Gui.Color("ItemGridQuad", "EEAA99")
             WinSet, TransColor, EEAA99 254
             Gui.Add("ItemGridQuad", "Progress", "x0 y0 w" quad_pointW " h" this.gridThicc " Background" squareColor) ; ^
@@ -207,7 +208,7 @@ class GUI_ItemGrid {
         itemNameX += winBorderSide, itemNameY += winBorderTop ; Add window border
         itemNameXRelative := itemNameX + winX, itemNameYRelative := itemNameY + winY ; Relative to win pos
        
-        Gui.New("ItemGridItemName", "-Border +LastFound +AlwaysOnTop -Caption +AlwaysOnTop +ToolWindow -SysMenu +HwndhGuiItemGridItemName", "ItemGridItemName")
+        Gui.New("ItemGridItemName", "+AlwaysOnTop +ToolWindow +LastFound -SysMenu -Caption -Border +E0x08000000 +HwndhGuiItemGridItemName", "ItemGridItemName")
         Gui.Font("ItemGridItemName", guiFont, guiFontSize)
         Gui.Color("ItemGridItemName", backgroundColor)
         Gui.Add("ItemGridItemName", "Progress", "x0 y0 w" itemName_guiW " h" this.itemThicc " Background" borderColor) ; ^
@@ -228,7 +229,7 @@ class GUI_ItemGrid {
         stashTabNameX += winBorderSide, stashTabNameY += winBorderTop ; Add window border
         stashTabNameXRelative := stashTabNameX + winX, stashTabNameYRelative := stashTabNameY + winY ; Relative to win pos
        
-        Gui.New("ItemGridTabName", "-Border +LastFound +AlwaysOnTop -Caption +AlwaysOnTop +ToolWindow -SysMenu +HwndhGuiItemGridTabName", "ItemGridTabName")
+        Gui.New("ItemGridTabName", "-Border +LastFound +AlwaysOnTop -Caption +AlwaysOnTop +ToolWindow +HwndhGuiItemGridTabName", "ItemGridTabName")
         Gui.Font("ItemGridTabName", guiFont, guiFontSize)
         Gui.Color("ItemGridTabName", backgroundColor)
         ; Gui.Add("ItemGridTabName", "Progress", "x0 y0 w" tabName_guiW " h" this.tabThicc " Background" borderColor) ; ^
@@ -247,7 +248,7 @@ class GUI_ItemGrid {
             map_pointW := map_caseW, map_pointH := map_caseH ; Make a square same size as stash square
             squareColor := "007ec2"
 
-            Gui.New("ItemGridMap", "-Border +LastFound +AlwaysOnTop -Caption +AlwaysOnTop +ToolWindow -SysMenu +HwndhGuiItemGridMap", "ItemGridMap")
+            Gui.New("ItemGridMap", "+AlwaysOnTop +ToolWindow +LastFound -SysMenu -Caption -Border +E0x08000000 +HwndhGuiItemGridMap", "ItemGridMap")
             Gui.Color("ItemGridMap", "EEAA99")
             WinSet, TransColor, EEAA99 254
             Gui.Add("ItemGridMap", "Progress", "x0 y0 w" map_pointW " h" this.gridThicc " Background" squareColor) ; ^
@@ -263,7 +264,7 @@ class GUI_ItemGrid {
             mapTier_pointW := mapTier_caseW, mapTier_pointH := mapTier_caseH ; Make a square same size as stash square
             squareColor := "007ec2"
 
-            Gui.New("ItemGridMapTier", "-Border +LastFound +AlwaysOnTop -Caption +AlwaysOnTop +ToolWindow -SysMenu +HwndhGuiItemGridMapTier", "ItemGridMapTier")
+            Gui.New("ItemGridMapTier", "+AlwaysOnTop +ToolWindow +LastFound -SysMenu -Caption -Border +E0x08000000 +HwndhGuiItemGridMapTier", "ItemGridMapTier")
             Gui.Color("ItemGridMapTier", "EEAA99")
             WinSet, TransColor, EEAA99 254
             Gui.Add("ItemGridMapTier", "Progress", "x0 y0 w" mapTier_pointW " h" this.gridThicc " Background" squareColor) ; ^
@@ -308,7 +309,7 @@ class GUI_ItemGrid {
                 mapMap_pointW := mapMap_caseW, mapMap_pointH := mapMap_caseH ; Make a square same size as stash square
                 squareColor := "007ec2"
 
-                Gui.New("ItemGridMapMap", "-Border +LastFound +AlwaysOnTop -Caption +AlwaysOnTop +ToolWindow -SysMenu +HwndhGuiItemGridMapMap", "ItemGridMapMap")
+                Gui.New("ItemGridMapMap", "+AlwaysOnTop +ToolWindow +LastFound -SysMenu -Caption -Border +E0x08000000 +HwndhGuiItemGridMapMap", "ItemGridMapMap")
                 Gui.Color("ItemGridMapMap", "EEAA99")
                 WinSet, TransColor, EEAA99 254
                 Gui.Add("ItemGridMapMap", "Progress", "x0 y0 w" mapMap_pointW " h" this.gridThicc " Background" squareColor) ; ^
@@ -328,7 +329,7 @@ class GUI_ItemGrid {
                 mapArrow_pointW := mapArrow_caseW + this.gridThicc*3, mapArrow_pointH := mapArrow_caseH + this.gridThicc*3 ; Make a square same size as stash square + around the element
                 squareColor := "007ec2"
 
-                Gui.New("ItemGridMapArrow", "-Border +LastFound +AlwaysOnTop -Caption +AlwaysOnTop +ToolWindow -SysMenu +HwndhGuiItemGridMapArrow", "ItemGridMapArrow")
+                Gui.New("ItemGridMapArrow", "+AlwaysOnTop +ToolWindow +LastFound -SysMenu -Caption -Border +E0x08000000 +HwndhGuiItemGridMapArrow", "ItemGridMapArrow")
                 Gui.Color("ItemGridMapArrow", "EEAA99")
                 WinSet, TransColor, EEAA99 254
                 Gui.Add("ItemGridMapArrow", "Progress", "x0 y0 w" mapArrow_pointW " h" this.gridThicc " Background" squareColor) ; ^
@@ -343,77 +344,64 @@ class GUI_ItemGrid {
         }
 
         ; = = = = = = = = = = = = Show = = = = = = = = = = = = 
-        if (showNormalTabGrid) {
-            Gui.Show("ItemGrid", "x" tab_stashXRelative*resDPI " y" tab_stashYRelative*resDPI " AutoSize NoActivate")
-            Gui, ItemGrid:+LastFound
-            WinSet, ExStyle, +0x20
-        }
-        if (showQuadTabGrid) {
+        if (showNormalTabGrid)
+            Gui.Show("ItemGridNormal", "x" tab_stashXRelative*resDPI " y" tab_stashYRelative*resDPI " AutoSize NoActivate")
+        if (showQuadTabGrid)
             Gui.Show("ItemGridQuad", "x" quad_stashXRelative*resDPI " y" quad_stashYRelative*resDPI " AutoSize NoActivate")
-            Gui, ItemGridQuad:+LastFound
-            WinSet, ExStyle, +0x20
-        }
-
         Gui.Show("ItemGridItemName", "x" itemNameXRelative*resDPI " y" itemNameYRelative*resDPI " w" itemName_guiW " h" itemName_guiH " NoActivate")
-        Gui, ItemGridItemName:+LastFound
-        WinSet, Transparent, 254
-        WinSet, ExStyle, +0x20
-
         Gui.Show("ItemGridTabName", "x" stashTabNameXRelative*resDPI " y" stashTabNameYRelative*resDPI " w" tabName_guiW " h" tabName_guiH " NoActivate")
-        Gui, ItemGridTabName:+LastFound
-        WinSet, Transparent, 254
-        WinSet, ExStyle, +0x20
-
         if (showMapTabGrid) {
             Gui.Show("ItemGridMap", "x" map_stashXRelative*resDPI " y" map_stashYRelative*resDPI " NoActivate")
-            Gui, ItemGridMap:+LastFound
-            WinSet, ExStyle, +0x20
-
             Gui.Show("ItemGridMapTier", "x" mapTier_stashXRelative*resDPI " y" mapTier_stashYRelative*resDPI " NoActivate")
-            Gui, ItemGridMapTier:+LastFound
-            WinSet, ExStyle, +0x20
-
-            if (showMapMapGrid) {
+            if (showMapMapGrid)
                 Gui.Show("ItemGridMapMap", "x" mapMap_stashXRelative*resDPI " y" mapMap_stashYRelative*resDPI " NoActivate")
-                Gui, ItemGridMapMap:+LastFound
-                WinSet, ExStyle, +0x20
-            }
-            if (showMapArrowGrid) {
+            if (showMapArrowGrid)
                 Gui.Show("ItemGridMapArrow", "x" mapArrow_stashXRelative*resDPI " y" mapArrow_stashYRelative*resDPI " NoActivate")
-                Gui, ItemGridMapArrow:+LastFound
+        }
+
+        guiNames := ["ItemGridNormal","ItemGridQuad","ItemGridItemName","ItemGridTabName","ItemGridMap","ItemGridMapTier","ItemGridMapMap","ItemGridMapArrow"]
+        GuiItemGrid := {Names:{}, Controls:{}, Submit:{}}
+        for index, guiName in guiNames {
+            hw := A_DetectHiddenWindows
+            DetectHiddenWindows, On
+            if WinExist("ahk_id " Gui%guiName%["Handle"]) {
+                GuiItemGrid.Names[guiName] := Gui%guiName%
+                GuiItemGrid.Controls[guiName] := Gui%guiName%_Controls
+                GuiItemGrid.Submit[guiName] := Gui%guiName%_Submit
+
+                Gui, %guiName%:+LastFound
+                if IsIn(guiName, "ItemGridItemName,ItemGridTabName")
+                    WinSet, Transparent, 254
                 WinSet, ExStyle, +0x20
             }
+            DetectHiddenWindows, %hw%
         }
     }
 
     Destroy() {
-        Gui.Destroy("ItemGrid")
-        Gui.Destroy("ItemGridQuad")
-        Gui.Destroy("ItemGridItemName")
-        Gui.Destroy("ItemGridTabName")
-        Gui.Destroy("ItemGridMap")
-        Gui.Destroy("ItemGridMapTier")
-        Gui.Destroy("ItemGridMapMap")
-        Gui.Destroy("ItemGridMapArrow")
+        global GuiItemGrid
+
+        for guiName, nothing in GuiItemGrid.Names
+            try Gui.Destroy(guiName)
     }
 
-    Detect(_hw="Off") {
-        global GuiItemGrid, GuiItemGridQuad, GuiItemGridItemName, GuiItemGridTabName, GuiItemGridMap, GuiItemGridMapTier, GuiItemGridMapMap, GuiItemGridMapArrow
+    Detect(_hw="Off", guiName="") {
+        global GuiItemGrid
 
         hw := A_DetectHiddenWindows
         DetectHiddenWindows, %_hw%
 
-        if WinExist("ahk_id " GuiItemGrid.Handle)
-        || WinExist("ahk_id " GuiItemGridQuad.Handle)
-        || WinExist("ahk_id " GuiItemGridItemName.Handle) 
-        || WinExist("ahk_id " GuiItemGridTabName.Handle) 
-        || WinExist("ahk_id " GuiItemGridMap.Handle) 
-        || WinExist("ahk_id " GuiItemGridMapTier.Handle) 
-        || WinExist("ahk_id " GuiItemGridMapMap.Handle) 
-        || WinExist("ahk_id " GuiItemGridMapArrow.Handle) 
-            exists := True
-        else
-            exists := False
+        exists := False
+        if (guiName) {
+            if WinExist("ahk_id " GuiItemGrid.Names[guiName].Handle)
+                exists := True
+        }
+        else {
+            for guiName, nothing in GuiItemGrid.Names {
+                if WinExist("ahk_id " GuiItemGrid.Names[guiName].Handle)
+                    exists := True
+            }
+        }
 
         DetectHiddenWindows, %hw%
         return exists
@@ -424,36 +412,31 @@ class GUI_ItemGrid {
         return isVisible
     }
 
+    ThisExists(guiName) {
+        exists := GUI_ItemGrid.Detect(_hw:="On", guiName)
+        return exists
+    }
+
     Exists() {
         exists := GUI_ItemGrid.Detect(_hw:="On")
         return exists
     }
 
     Hide() {
+        global GuiItemGrid
         if !GUI_ItemGrid.Exists()
             return
 
-        Gui, ItemGrid:Hide 
-        Gui, ItemGridQuad:Hide 
-        Gui, ItemGridItemName:Hide 
-        Gui, ItemGridTabName:Hide 
-        Gui, ItemGridMap:Hide 
-        Gui, ItemGridMapTier:Hide 
-        Gui, ItemGridMapMap:Hide 
-        Gui, ItemGridMapArrow:Hide 
+        for guiName, nothing in GuiItemGrid.Names
+            Gui, %guiName%:Hide
     }
 
     Show() {
+        global GuiItemGrid
         if !GUI_ItemGrid.Exists()
             return
 
-        Gui, ItemGrid:Show, NoActivate 
-        Gui, ItemGridQuad:Show, NoActivate 
-        Gui, ItemGridItemName:Show, NoActivate 
-        Gui, ItemGridTabName:Show, NoActivate 
-        Gui, ItemGridMap:Show, NoActivate 
-        Gui, ItemGridMapTier:Show, NoActivate 
-        Gui, ItemGridMapMap:Show, NoActivate 
-        Gui, ItemGridMapArrow:Show, NoActivate 
+        for guiName, nothing in GuiItemGrid.Names
+            Gui, %guiName%:Show, NoActivate
     }
 }

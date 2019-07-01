@@ -1529,7 +1529,6 @@
 		if IsNum(tabName) && !IsBetween(tabName, 1, tabsCount) {
 			if (skipError=False)
 				MsgBox(48, "", "Cannot select tab """ tabName """ because it exceed the tabs count (" tabsCount ")")
-
 			return
 		}
 
@@ -1556,11 +1555,18 @@
 				GuiControl, Trades:-Disabled,% GuiTrades["Tab_" A_Index]
 		}
 
+		/*
 		tabContent := GUI_Trades.GetTabContent(tabName)
 		if (tabContent.IsBuyerInvited = True)
 			GUI_Trades.ShowActiveTabItemGrid()
+		else if (GuiTrades.Is_Maximized = True && PROGRAM.SETTINGS.SETTINGS_MAIN.ShowItemGridWithoutInvite = "True")
+			GUI_Trades.ShowActiveTabItemGrid()
 		else
 			GUI_Trades.DestroyItemGrid()
+		*/
+		if (GuiTrades.Is_Maximized = True)
+			GUI_Trades.ShowActiveTabItemGrid()
+
 		; Don't do these if only the tab style changed.
 		; Avoid an issue where upon removing a tab, it would copy the item infos again due to the tab style func re-activating the tab
 		if (styleChanged=False) {
@@ -1621,8 +1627,7 @@
 		GUI_TradesMinimized.Show()
 		DetectHiddenWindows, %hiddenWin%
 
-		if ( GUI_ItemGrid.Exists() )
-			GUI_ItemGrid.Hide()
+		GUI_ItemGrid.Hide()
 
 		Gui_Trades.ResetPositionIfOutOfBounds()
 
@@ -2113,7 +2118,6 @@
 		if !IsNum(tabXPos) || !IsNum(tabYPos)
 			return
 
-		GUI_Trades.DestroyItemGrid()
 		if (tabXPos && tabYPos) && WinExist("ahk_pid " activeTabInfos.PID " ahk_group POEGameGroup") {
 			WinGetPos, winX, winY, winW, winH,% "ahk_pid " activeTabInfos.PID " ahk_group POEGameGroup"
 			clientInfos := GetWindowClientInfos("ahk_pid" activeTabInfos.PID " ahk_group POEGameGroup")
@@ -2127,18 +2131,19 @@
 			if (clientInfos.Y = 0) && IsIn(clientInfos.H, "606,774,870,726,806,966,1030,1056,1086,1206") ; Fix issue where +6 is added to res H
 				clientInfos.H -= 6	
 
-			isItemGridVisible := GUI_ItemGrid.IsVisible()
-			if !(isItemGridVisible) ; if not visible, or visible and one variable changed
-			|| (isItemGridVisible) && ( (prev_tabXPos != tabXPos) || (prev_tabYPos != tabYPos) || (prev_tabStashTab != tabStashTab)
+			itemGridExists := GUI_ItemGrid.Exists()
+			if !(itemGridExists) ; if not visible, or visible and one variable changed
+			 || (itemGridExists) && ( (prev_tabXPos != tabXPos) || (prev_tabYPos != tabYPos) || (prev_tabStashTab != tabStashTab)
 			 || (prev_winX != winX) || (prev_winY != winY)
 			 || (prev_clientInfos.X != clientInfos.X) || (prev_clientInfos.Y != clientInfos.Y) || (prev_clientInfos.H != clientInfos.H) ) {
 				Gui_Trades.UpdateSlotContent(activeTabID, "IsBuyerInvited", True)
 				GUI_ItemGrid.Create(tabXPos, tabYPos, tabStashItem, tabStashTab, winX, winY, clientInfos.H, clientInfos.X, clientInfos.Y, itemType, mapTier)
-				GuiTrades.ItemGrid_PID := activeTabInfos.PID
 			}
+			else
+				GUI_ItemGrid.Show()
 		}
 		else
-			GUI_Trades.DestroyItemGrid()
+			GUI_ItemGrid.Hide()
 
 		prev_tabXPos := tabXPos, prev_tabYPos := tabYPos, prev_tabStashTab := tabStashTab
 		prev_winX := winX, prev_winY := winY, prev_clientInfos := clientInfos
