@@ -141,6 +141,8 @@ Do_Action(actionType, actionContent="", isHotkey=False, uniqueNum="") {
 		GUI_Trades.Maximize()
 	else if (actionType = "SAVE_TRADE_STATS")
 		GUI_Trades.SaveStats(activeTab)
+	else if (actionType = "SHOW_LEAGUE_SHEETS")
+		GUI_TradesBuyCompact.HotBarButton("LeagueHelp")
 
 	else if (actionType = "SLEEP")
 		Sleep %actionContentWithVariables%

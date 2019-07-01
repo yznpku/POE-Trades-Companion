@@ -353,6 +353,7 @@
 			"IGNORE_SIMILAR_TRADE" : "Ignorer article de l'onglet pour 10mins",
 			"CLOSE_SIMILAR_TABS" : "Fermer autres onglets avec le même article",
 			"SHOW_GRID" : "Afficher la grille d'emplacement d'article",
+			"SHOW_LEAGUE_SHEETS" : "Afficher le menu d'aide-mémoire de leagues.",
 
 			"CMD_AFK" : "/afk",
 			"CMD_AUTOREPLY" : "/autoreply",
@@ -394,6 +395,7 @@
 			"IGNORE_SIMILAR_TRADE" : "Ignore les messages d'échanges pour les articles avec le même prix et emplacement pour 10mins.",
 			"CLOSE_SIMILAR_TABS" : "Ferme tout autre onglet ayant le même article, prix et emplacement.",
 			"SHOW_GRID" : "Affiche la grille d'emplacement d'article.",
+			"SHOW_LEAGUE_SHEETS" : "Afficher le menu d'aide-mémoire de leagues.",
 
 			"CMD_AFK" : "Envoie la commande /ahk dans le chat. Vous pouvez customiser votre message en ajoutant votre texte après la commande.",
 			"CMD_AUTOREPLY" : "Envoie la commande /autoreply dans le chat. Vous pouvez customiser votre message en ajoutant votre texte après la commande.",

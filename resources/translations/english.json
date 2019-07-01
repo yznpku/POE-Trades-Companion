@@ -353,6 +353,7 @@
 			"IGNORE_SIMILAR_TRADE" : "Ignore tab item for 10mins",
 			"CLOSE_SIMILAR_TABS" : "Close other tabs for same item",
 			"SHOW_GRID" : "Show item location grid",
+			"SHOW_LEAGUE_SHEETS" : "Show league sheets menu",
 
 			"CMD_AFK" : "/afk",
 			"CMD_AUTOREPLY" : "/autoreply",
@@ -394,6 +395,7 @@
 			"IGNORE_SIMILAR_TRADE" : "Ignore whispers for items with the same price and stash for 10 minutes.",
 			"CLOSE_SIMILAR_TABS" : "Close any other tab matching the same item, price and stash location.",
 			"SHOW_GRID" : "Show the item location grid.",
+			"SHOW_LEAGUE_SHEETS" : "Show the league sheets menu.",
 
 			"CMD_AFK" : "Send the /afk command into chat. You can write anything next to the command to customize your AFK message.",
 			"CMD_AUTOREPLY" : "Send the /autoreply command into chat. You can write anything next to the command to customize your autoreply message",

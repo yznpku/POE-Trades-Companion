@@ -357,6 +357,7 @@
 			"IGNORE_SIMILAR_TRADE" : "忽略當前面板物品10分鐘",
 			"CLOSE_SIMILAR_TABS" : "關閉相同物品面板",
 			"SHOW_GRID" : "顯示物品位置",
+			"SHOW_LEAGUE_SHEETS" : "Show league sheets menu",
 
 			"CMD_AFK" : "/afk",
 			"CMD_AUTOREPLY" : "/autoreply",
@@ -398,6 +399,7 @@
 			"IGNORE_SIMILAR_TRADE" : "忽略相同倉庫相同價格的物品10分鐘.",
 			"CLOSE_SIMILAR_TABS" : "關閉同價格同倉庫的多個物品面板.",
 			"SHOW_GRID" : "展示物品所在倉庫位置.",
+			"SHOW_LEAGUE_SHEETS" : "Show the league sheets menu.",
 
 			"CMD_AFK" : "輸入 /afk 到聊天框中. 您可以在後面繼續輸入消息作為您的AFK回复.",
 			"CMD_AUTOREPLY" : "輸入 /autoreply 到聊天框中. 您可以在後面繼續輸入消息作為您的自動回复.",
