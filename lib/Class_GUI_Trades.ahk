@@ -297,7 +297,7 @@
 
 				if (custEnabled) {
 					custNum := custNum?custNum+1:1
-					custX := IsIn(custSlot, "1,4,7")?CustomButtonLeft_X : IsIn(custIndex, "2,5,8")?CustomButtonMiddle_X : IsIn(custSlot, "3,6,9")?CustomButtonRight_X : ""
+					custX := IsIn(custSlot, "1,4,7")?CustomButtonLeft_X : IsIn(custSlot, "2,5,8")?CustomButtonMiddle_X : IsIn(custSlot, "3,6,9")?CustomButtonRight_X : ""
 					custY := IsIn(custSlot, "1,2,3")?custTopY : IsIn(custSlot, "4,5,6")?custMidY : IsIn(custSlot, "7,8,9")?custBotY : ""
 					custW := custSize="Small"?CustomButtonOneThird_W : custSize="Medium"?CustomButtonTwoThird_W : custSize="Large"?CustomButtonThreeThird_W : ""
 
