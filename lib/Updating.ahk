@@ -32,7 +32,7 @@
 
 	; Determine if stable or beta is better
 	stableSplit := StrSplit(stableTag, "."), stable_main := stableSplit.1, stable_patch := stableSplit.2, stable_fix := stableSplit.3
-    betaSplit := StrSplit(betaTag, "."), beta_main := betaSplit.1, beta_patch := betaSplit.2, beta_fix := betaSplit.3
+    betaSplit := StrSplit(betaTag, "."), beta_main := betaSplit.1, beta_patch := betaSplit.2, beta_fix := StrSplit(betaSplit.3, "BETA_").2
 	
 	stableBetter := (stable_main > beta_main) ? True
 		: (stable_main = beta_main) && (stable_patch >= beta_patch) ? True
