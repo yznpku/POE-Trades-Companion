@@ -40,8 +40,8 @@
 
 	; Determine if update is better than current ver
 	betterRelTag := stableBetter=True?stableTag:betaTag
-	currentSplit := StrSplit(PROGRAM.VERSION, "."), current_main := currentSplit.1, current_patch := currentSplit.2, current_fix := currentSplit.3
-	betterTagSplit := StrSplit(betterRelTag, "."), better_main := betterTagSplit.1, better_patch := betterTagSplit.2, better_fix := betterTagSplit.3
+	currentSplit := StrSplit(PROGRAM.VERSION, "."), current_main := currentSplit.1, current_patch := currentSplit.2, current_fix := IsContaining(currentSplit.3, "BETA_") ? StrSplit(currentSplit.3, "BETA_").2 : currentSplit.3
+	betterTagSplit := StrSplit(betterRelTag, "."), better_main := betterTagSplit.1, better_patch := betterTagSplit.2, better_fix := IsContaining(betterTagSplit.3, "BETA_") ? StrSplit(betterTagSplit.3, "BETA_").2 : betterTagSplit.3
 	
 	updBetterThanCurrent := (better_main > current_main) ? True
 		: (better_main = current_main) && (better_patch > current_patch) ? True
