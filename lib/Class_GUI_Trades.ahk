@@ -683,6 +683,7 @@
 				: whisLang = "THA" ? "ล" ; เลเวล
 				: whisLang = "GER" ? "e" ; Stufe
 				: whisLang = "SPA" ? "l" ; Nivel
+				: whisLang = "KOR" ? "벨" ; 레벨
 				: "l"
 			searchQualPrefix := whisLang = "ENG" ? "y" ; quality
 				: whisLang = "RUS" ? "о" ; Качество
@@ -691,6 +692,7 @@
 				: whisLang = "THA" ? "พ" ; คุณภาพ
 				: whisLang = "GER" ? "t" ; Qualität
 				: whisLang = "SPA" ? "d" ; Calidad
+				: whisLang = "KOR" ? "티" ; 퀄리티
 				: "y"
 
 			searchGemStr := """" gemName """"
@@ -708,15 +710,20 @@
 		}
 		else if (mapName) {
 			Gui_Trades_CopyItemInfos_MapString:
+			if RegExMatch(mapName, "O)^\d+ (.*)", mapNameOut)
+				mapName := mapNameOut.1
+			/*	Disabled tier:x doesn't work on map tab map section
 			searchMapStr := mapName, searchTierStr := "tier:" mapTier
 			searchString := searchMapStr
 			searchString .= (mapTier)?(" " searchTierStr):("")
+			*/
+			searchString := mapName
 
 			searchStrLen := StrLen(searchString)
 			if (searchStrLen > 50) {
 				charsToRemove := searchStrLen-50
 				StringTrimRight, mapName, mapName, %charsToRemove%
-				GoTo Gui_Trades_CopyItemInfos_MapString
+				GoTo, Gui_Trades_CopyItemInfos_MapString
 			}
 		}
 		else { ; Remove numbers from str, so we only keep item name
