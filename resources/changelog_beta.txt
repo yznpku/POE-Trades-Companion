@@ -1,4 +1,29 @@
-1.15.BETA_9 (19 June 2018)
+1.15.BETA_10 (1 July 2019)
+
+	New:
+	- Added the Dark Blue and White skin variants of the Buying interface.
+	- Added an action to bind an hotkey to the league sheets menu: "Show league sheets menu".
+
+	Changes:
+	- The Item location grid will now show without having to invite your buyer.
+	Note that, for convenience, the location grid will only appear while the interface is maximized.
+	- Changed the hideout icon to a proper, more intuitive, icon.
+	- Changed the Sheet button to have its own proper icon.
+	- Updated the POE Skin to be more in harmony with the game color scheme.
+	- Both the Dark Blue and White themes have seen some changes.
+	- Removed the cross on the search bar used to clear it.
+	Clicking on the search bar automatically clears it anyway.
+	- Both the Buying and Selling interface will now start minimized regardless of having "Auto minimize once all tabs are closed?" enabled or not.
+
+	Fixes:
+	- Having "Check for updates..." set to "On start + every 5 hours" or "On start + every day" would still only check on start and not every 5hours/day.
+	- When using a language other than English, actions couldn't be moved or removed and buttons couldn't be renamed.
+	- On the Buying interface, after replacing a tab, the old currency picture would still be shown behind the new one.
+	- On the Buying interface, prices containing a decimal wouldn't be parsed properly.
+	- Notification sounds would not play for some users.
+	- Various scaling issues related to having a Windows Scaling different than 100%.
+	
+1.15.BETA_9 (19 June 2019)
 
 	Features:
 	- Added support for the Korean game executables.
