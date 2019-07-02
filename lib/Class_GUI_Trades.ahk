@@ -261,6 +261,11 @@
 
 		; = = SPECIAL BUTTONS = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 		Gui, Trades:Tab
+		Loop 5 {
+			speX := A_Index=1?SpecialButton_X:"+5", speY := A_Index=1?"+5":"p"
+			Gui.Add("Trades", "Button", "x" speX " y" speY " w" SpecialButton_W " h0 hwndhBTN_FakeSpecialBtn" A_Index " Hidden")
+			spe%A_Index%X := Get_ControlCoords("Trades", GuiTrades_Controls["hBTN_FakeSpecialBtn" A_Index]).X
+		}
 		if (btnRowsCount.Special > 0) {
 			Loop 5 { ; Max num of special btns
 				speIndex := A_Index
@@ -270,7 +275,7 @@
 
 				if (speEnabled) {
 					speNum := speNum?speNum+1:1
-					speX := speNum=1?SpecialButton_X:"+5", speY := speNum=1?"+5":"p"
+					speX := spe%speSlot%X, speY := "p"
 					
 					imageBtnLog .= Gui.Add("Trades", "ImageButton", "x" speX " y" speY " w" SpecialButton_W " h" SpecialButton_H " hwndhBTN_Special" speIndex " Hidden", "", speStyle, PROGRAM.FONTS[settings_fontName], settings_fontSize)
 
@@ -303,7 +308,7 @@
 
 					imageBtnLog .= Gui.Add("Trades", "ImageButton", "x" custX " y" custY " w" custW " h" CustomButton_H " hwndhBTN_Custom" custSlot " Hidden", custName, custStyle, PROGRAM.FONTS[settings_fontName], settings_fontSize)
 
-					__f := GUI_Trades.DoTradeButtonAction.bind(GUI_Trades, custSlot, "Custom")
+					__f := GUI_Trades.DoTradeButtonAction.bind(GUI_Trades, custIndex, "Custom")
 					GuiControl, Trades:+g,% GuiTrades_Controls["hBTN_Custom" custSlot],% __f
 				}
 			}
