@@ -1,8 +1,10 @@
-1.15.BETA_90 (1 July 2019)
+1.15.BETA_90/91 (1 July 2019)
+	
+	1.15.BETA_91
+		Fix: Custom and special buttons would do another button's actions if their position was other than default (broken by 1.15.BETA_10)
 
 	Why is this version named BETA_9x?
 	Due to a bug with previous versions, BETA_9 would be considered as "better" than BETA_10 (and onwards).
-	To make sure that everyone gets the update automatically, I decided to name future update as BETA_9x.
 	This trick makes sure that anyone still on BETA_9 will get the update normally as "BETA_90" is considered better than "BETA_9" on those versions.
 	
 	Changes:
@@ -17,7 +19,7 @@
 1.15.BETA_10/11 (1 July 2019)
 	
 	1.15.BETA_11
-		Fix: Custom button n°8 wouldn't fail to be created.
+		Fix: Custom button n°8 would fail to be created.
 
 	New:
 	- Added the Dark Blue and White skin variants of the Buying interface.
