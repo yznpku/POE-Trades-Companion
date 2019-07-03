@@ -62,7 +62,7 @@
 			. "`nrawFile: """ rawFile """")
 			rawFile := ""
 		}
-		gitLeagues := ""		
+		gitLeagues := ""
 		Loop, Parse, rawFile,% "`n",% "`r"
 			if (A_LoopField)
 				gitLeagues .= A_LoopField ","
@@ -147,7 +147,7 @@ Send_GameMessage(actionType, msgString, gamePID="") {
 				Sleep 50
 			}
 			if (!err)
-				SendEvent, ^{sc02F}
+				SendEvent, ^V
 			else
 				TrayNotifications.Show(PROGRAM.TRANSLATIONS.TrayNotifications.FailedToSendMessage_Title, PROGRAM.TRANSLATIONS.TrayNotifications.FailedToSendMessage_Msg)
 			; SetTimer, Reset_Clipboard, -700
@@ -174,7 +174,7 @@ Send_GameMessage(actionType, msgString, gamePID="") {
 				Sleep 50
 			}
 			if (!err)
-				SendEvent, ^{sc02F}
+				SendEvent, ^V
 			else
 				TrayNotifications.Show(PROGRAM.TRANSLATIONS.TrayNotifications.FailedToSendMessage_Title, PROGRAM.TRANSLATIONS.TrayNotifications.FailedToSendMessage_Msg)
 			; SetTimer, Reset_Clipboard, -700
@@ -202,7 +202,7 @@ Send_GameMessage(actionType, msgString, gamePID="") {
 				Sleep 50
 			}
 			if (!err)
-				SendEvent, ^{sc02F}
+				SendEvent, ^V
 			else
 				TrayNotifications.Show(PROGRAM.TRANSLATIONS.TrayNotifications.FailedToSendMessage_Title, PROGRAM.TRANSLATIONS.TrayNotifications.FailedToSendMessage_Msg)
 			; SetTimer, Reset_Clipboard, -700
@@ -271,7 +271,7 @@ Get_RunningInstances() {
 		runningInstances[A_Index]["File"] := pFile
 		runningInstances[A_Index]["PID"] := pPID
 	}
-	
+
 	return runningInstances
 }
 
@@ -404,7 +404,7 @@ Parse_GameLogs(strToParse) {
 	static GER_gggStashRegEx		:= {String:"\(Truhenfach ""(.*)""; Position: (\d+). von links, (\d+). von oben\)(.*)"
 										, Tab:1, Left:2, Top:3, Other:4}
 	static GER_gggQualityRegEx		:= {String:"Stufe (\d+) (\d+)% (.*)"
-										, Level:1, Quality:2, Item:3} 
+										, Level:1, Quality:2, Item:3}
 
 	static FRE_gggRegEx				:= {String:"(.*)Bonjour, je souhaiterais t'acheter (.*) pour (.*) dans la ligue (.*)"
 										, Other:1, Item:2, Price:3, League:4}
@@ -452,41 +452,41 @@ Parse_GameLogs(strToParse) {
 		allTradingRegex["ggg_" A_LoopField] := %A_LoopField%_gggRegEx
 		allTradingRegex["ggg_" A_LoopField "_unpriced"] := %A_LoopField%_gggUnpricedRegEx
 		allTradingRegex["ggg_" A_LoopField "_currency"] := %A_LoopField%_gggCurrencyRegEx
-	}	
+	}
 
-	static ENG_areaJoinedRegexStr := ("^(?:[^ ]+ ){6}(\d+)\] : (.*?) has joined the area.*") 
-	static ENG_areaLeftRegexStr := ("^(?:[^ ]+ ){6}(\d+)\] : (.*?) has left the area.*") 
-	static ENG_afkOnRegexStr := ("^(?:[^ ]+ ){6}(\d+)\] : AFK mode is now ON.*") 
-	static ENG_afkOffRegexStr := ("^(?:[^ ]+ ){6}(\d+)\] : AFK mode is now OFF.*") 
+	static ENG_areaJoinedRegexStr := ("^(?:[^ ]+ ){6}(\d+)\] : (.*?) has joined the area.*")
+	static ENG_areaLeftRegexStr := ("^(?:[^ ]+ ){6}(\d+)\] : (.*?) has left the area.*")
+	static ENG_afkOnRegexStr := ("^(?:[^ ]+ ){6}(\d+)\] : AFK mode is now ON.*")
+	static ENG_afkOffRegexStr := ("^(?:[^ ]+ ){6}(\d+)\] : AFK mode is now OFF.*")
 
-	static FRE_areaJoinedRegexStr := ("^(?:[^ ]+ ){6}(\d+)\] : (.*?) a rejoint la zone.*") 
-	static FRE_areaLeftRegexStr := ("^(?:[^ ]+ ){6}(\d+)\] : (.*?) a quitté la zone.*") 
-	static FRE_afkOnRegexStr := ("^(?:[^ ]+ ){6}(\d+)\] : Le mode Absent \(AFK\) est désormais activé.*") 
-	static FRE_afkOffRegexStr := ("^(?:[^ ]+ ){6}(\d+)\] : Le mode Absent \(AFK\) est désactivé.*") 
+	static FRE_areaJoinedRegexStr := ("^(?:[^ ]+ ){6}(\d+)\] : (.*?) a rejoint la zone.*")
+	static FRE_areaLeftRegexStr := ("^(?:[^ ]+ ){6}(\d+)\] : (.*?) a quitté la zone.*")
+	static FRE_afkOnRegexStr := ("^(?:[^ ]+ ){6}(\d+)\] : Le mode Absent \(AFK\) est désormais activé.*")
+	static FRE_afkOffRegexStr := ("^(?:[^ ]+ ){6}(\d+)\] : Le mode Absent \(AFK\) est désactivé.*")
 
-	static GER_areaJoinedRegexStr := ("^(?:[^ ]+ ){6}(\d+)\] : (.*?) hat das Gebiet betreten.*") 
+	static GER_areaJoinedRegexStr := ("^(?:[^ ]+ ){6}(\d+)\] : (.*?) hat das Gebiet betreten.*")
 	static GER_areaLeftRegexStr := ("^(?:[^ ]+ ){6}(\d+)\] : (.*?) hat das Gebiet verlassen.*")
-	static GER_afkOnRegexStr := ("^(?:[^ ]+ ){6}(\d+)\] : AFK-Modus ist nun AN.*") 
-	static GER_afkOffRegexStr := ("^(?:[^ ]+ ){6}(\d+)\] : AFK-Modus ist nun AUS.*") 
+	static GER_afkOnRegexStr := ("^(?:[^ ]+ ){6}(\d+)\] : AFK-Modus ist nun AN.*")
+	static GER_afkOffRegexStr := ("^(?:[^ ]+ ){6}(\d+)\] : AFK-Modus ist nun AUS.*")
 
-	static POR_areaJoinedRegexStr := ("^(?:[^ ]+ ){6}(\d+)\] : (.*?) entrou na área.*") 
-	static POR_areaLeftRegexStr := ("^(?:[^ ]+ ){6}(\d+)\] : (.*?) saiu da área.*") 
-	static POR_afkOnRegexStr := ("^(?:[^ ]+ ){6}(\d+)\] : Modo LDT Ativado.*") 
-	static POR_afkOffRegexStr := ("^(?:[^ ]+ ){6}(\d+)\] : Modo LDT Desativado.*") 
+	static POR_areaJoinedRegexStr := ("^(?:[^ ]+ ){6}(\d+)\] : (.*?) entrou na área.*")
+	static POR_areaLeftRegexStr := ("^(?:[^ ]+ ){6}(\d+)\] : (.*?) saiu da área.*")
+	static POR_afkOnRegexStr := ("^(?:[^ ]+ ){6}(\d+)\] : Modo LDT Ativado.*")
+	static POR_afkOffRegexStr := ("^(?:[^ ]+ ){6}(\d+)\] : Modo LDT Desativado.*")
 
-	static RUS_areaJoinedRegexStr := ("^(?:[^ ]+ ){6}(\d+)\] : (.*?) присоединился.*") 
-	static RUS_areaLeftRegexStr := ("^(?:[^ ]+ ){6}(\d+)\] : (.*?) покинул область.*") 
-	static RUS_afkOnRegexStr := ("^(?:[^ ]+ ){6}(\d+)\] : Режим ""отошёл"" включён.*") 
-	static RUS_afkOffRegexStr := ("^(?:[^ ]+ ){6}(\d+)\] : Режим ""отошёл"" выключен.*") 
+	static RUS_areaJoinedRegexStr := ("^(?:[^ ]+ ){6}(\d+)\] : (.*?) присоединился.*")
+	static RUS_areaLeftRegexStr := ("^(?:[^ ]+ ){6}(\d+)\] : (.*?) покинул область.*")
+	static RUS_afkOnRegexStr := ("^(?:[^ ]+ ){6}(\d+)\] : Режим ""отошёл"" включён.*")
+	static RUS_afkOffRegexStr := ("^(?:[^ ]+ ){6}(\d+)\] : Режим ""отошёл"" выключен.*")
 
-	static THA_areaJoinedRegexStr := ("^(?:[^ ]+ ){6}(\d+)\] : (.*?) เข้าสู่พื้นที่.*") 
-	static THA_areaLeftRegexStr := ("^(?:[^ ]+ ){6}(\d+)\] : (.*?) ออกจากพื้นที่.*") 
-	static THA_afkOnRegexStr := ("^(?:[^ ]+ ){6}(\d+)\] : เปิดโหมด AFK แล้ว.*") 
-	static THA_afkOffRegexStr := ("^(?:[^ ]+ ){6}(\d+)\] : ปิดโหมด AFK แล้ว.*") 
+	static THA_areaJoinedRegexStr := ("^(?:[^ ]+ ){6}(\d+)\] : (.*?) เข้าสู่พื้นที่.*")
+	static THA_areaLeftRegexStr := ("^(?:[^ ]+ ){6}(\d+)\] : (.*?) ออกจากพื้นที่.*")
+	static THA_afkOnRegexStr := ("^(?:[^ ]+ ){6}(\d+)\] : เปิดโหมด AFK แล้ว.*")
+	static THA_afkOffRegexStr := ("^(?:[^ ]+ ){6}(\d+)\] : ปิดโหมด AFK แล้ว.*")
 
-	static SPA_areaJoinedRegexStr := ("^(?:[^ ]+ ){6}(\d+)\] : (.*?) se unió al área.*") 
-	static SPA_areaLeftRegexStr := ("^(?:[^ ]+ ){6}(\d+)\] : (.*?) abandonó el área.*") 
-	static SPA_afkOnRegexStr := ("^(?:[^ ]+ ){6}(\d+)\] : El modo Ausente está habilitado.*") 
+	static SPA_areaJoinedRegexStr := ("^(?:[^ ]+ ){6}(\d+)\] : (.*?) se unió al área.*")
+	static SPA_areaLeftRegexStr := ("^(?:[^ ]+ ){6}(\d+)\] : (.*?) abandonó el área.*")
+	static SPA_afkOnRegexStr := ("^(?:[^ ]+ ){6}(\d+)\] : El modo Ausente está habilitado.*")
 	static SPA_afkOffRegexStr := ("^(?:[^ ]+ ){6}(\d+)\] : El modo Ausente está deshabilitado.*")
 
 	static KOR_areaJoinedRegexStr := ("^(?:[^ ]+ ){6}(\d+)\] : (.*?)(이)가 구역에 들어왔습니다.*") 
@@ -755,7 +755,7 @@ Parse_GameLogs(strToParse) {
 						pbTxt := StrReplace(pbTxt, "`n", "\n"), pbTxt := StrReplace(pbTxt, "`r", "\r"), pbTxt := StrReplace(pbTxt, "`t", "\t"), pbTxt := StrReplace(pbTxt, A_Tab, "\t")
 
 						cmdLineParamsObj.PB_Message := pbTxt
-						
+
 						GoSub, Parse_GameLogs_PushBulletNotifications_SA
 					}
 				}
@@ -818,7 +818,7 @@ Parse_GameLogs(strToParse) {
 					pbTxt := whispMsg
 					pbTxt := StrReplace(pbTxt, "`n", "\n"), pbTxt := StrReplace(pbTxt, "`r", "\r"), pbTxt := StrReplace(pbTxt, "`t", "\t"), pbTxt := StrReplace(pbTxt, A_Tab, "\t")
 					cmdLineParamsObj.PB_Message := pbTxt
-					
+
 					GoSub, Parse_GameLogs_PushBulletNotifications_SA
 				}
 			}
@@ -860,7 +860,7 @@ Parse_GameLogs(strToParse) {
 		.		" /IntercomHandle=" """" GuiIntercom.Handle """"
 		.		" /IntercomSlotHandle=" """" intercomSlotHandle """"
 		.		" /ProgramLogsFile=" """" PROGRAM.LOGS_FILE """"
-		
+
 		Run,% saFile_run_cmd,% A_ScriptDir
 	return
 }
@@ -877,7 +877,7 @@ Read_GameLogs(logsFile) {
 
 	if ( logsFileObj.pos < logsFileObj.length ) {
 		newFileContent := logsFileObj.Read()
-		return newFileContent 
+		return newFileContent
 	}
 	else if (logsFileObj.pos > logsFileObj.length) || (logsFileObj.pos < 0) && (logsFileObj) {
 		AppendToLogs(A_ThisFunc "(logsFile=" logsFile "): Restarting logs file monitor."
@@ -976,7 +976,7 @@ IsTradingWhisper(str) {
 
 Is_Tool_Elevation_SameLevel_As_GameInstance(gamePID) {
 	isElevated := Is_Game_Elevated(gamePID)
-	
+
 	isSameLevel := (isElevated = True) && (A_IsAdmin) ? True
 		: (isElevated = False) ? True
 		: (isElevated = True) ? False
@@ -986,7 +986,7 @@ Is_Tool_Elevation_SameLevel_As_GameInstance(gamePID) {
 }
 
 Is_Game_Elevated(gamePID) {
-	
+
 	WinGet, pName, ProcessName, ahk_pid %gamePID%
 	processInfos := Get_ProcessInfos(pName, gamePID)
 	isProcessElevated := (processInfos[1]["TokenIsElevated"])?(True):(processInfos=2)?(True):(False)
