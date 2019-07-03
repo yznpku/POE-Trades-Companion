@@ -988,6 +988,7 @@
 				Gui_Trades.Minimize("True")
 			GUI_Trades.SetTransparency_Inactive()
 			Gui_Trades.Redraw()
+			GUI_Trades.DestroyItemGrid()
 		}
 		else {
 			GuiControl,Trades:,% GuiTrades_Controls["hTEXT_Title"],% "POE Trades Companion (" GuiTrades.Tabs_Count ")"
