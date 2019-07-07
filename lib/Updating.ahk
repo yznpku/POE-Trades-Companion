@@ -174,48 +174,61 @@ DownloadAndRunUpdater(dl="") {
 	}
 
 	if (!A_IsCompiled) {
-		success := Download(dl, PROGRAM.MAIN_FOLDER "\Source.zip")
+		SplitPath, dl, dlFileName
+		if FileExist(PROGRAM.MAIN_FOLDER "\Source.zip")
+			FileDelete,% PROGRAM.MAIN_FOLDER "\Source.zip"
+		if FileExist(PROGRAM.MAIN_FOLDER "\" dlFileName)
+			FileDelete,% PROGRAM.MAIN_FOLDER "\" dlFileName
+
+		success := Download(dl, PROGRAM.MAIN_FOLDER "\" dlFileName)
 		if !(success) {
 			MsgBox(4096+16, "", "Failed to download update!")
 			return
 		}
 
 		updateFolder := PROGRAM.MAIN_FOLDER "\_UPDATE"
-		FileRemoveDir,% updateFolder, 1
-		Extract2Folder(PROGRAM.MAIN_FOLDER "\Source.zip", updateFolder)
-		if FileExist(PROGRAM.MAIN_FOLDER "\_UPDATE\POE Trades Companion.ahk") {
-			folder := updateFolder
-		}
-		else {
-			Loop, Files,% updateFolder "\*", RD
-			{
-				if FileExist(A_LoopFileFullPath "\POE Trades Companion.ahk") {
-					folder := A_LoopFileFullPath
-					Break
-				}
+		if FolderExist(updateFolder) {
+			FileRemoveDir,% updateFolder, 1
+			if (ErrorLevel) {
+				MsgBox(4096+16, "", "Failed to delete the old _UPDATE folder!"
+				. "`n" updateFolder)
+				return
 			}
 		}
 
-		if !(folder) {
+		FileCreateDir,% updateFolder
+		Extract2Folder(PROGRAM.MAIN_FOLDER "\" dlFileName, updateFolder)
+		FileDelete,% PROGRAM.MAIN_FOLDER "\" dlFileName
+		Loop, Files,% updateFolder "\*", RD
+		{
+			if FileExist(A_LoopFileFullPath "\POE Trades Companion.ahk") {
+				extractedFolder := A_LoopFileFullPath
+				Break
+			}
+		}
+
+		if !(extractedFolder) {
 			MsgBox(4096+16, "", "Couldn't locate the folder containing updated files.`nPlease try updating manually.")
 			FileRemoveDir,% updateFolder, 1
 			return
 		}
 
 		UnloadFonts()
+		if FolderExist(A_ScriptDir "_backup")
+			FileRemoveDir,% A_ScriptDir "_backup", 1
 		FileCopyDir,% A_ScriptDir,% A_ScriptDir "_backup", 1 ; Make backup
-		FileCopyDir,% folder,% A_ScriptDir, 1
+		FileCopyDir,% updateFolder,% A_ScriptDir, 1 ; Copy new files into current folder
 		if (ErrorLevel) {
 			MsgBox(4096+16, "", "Failed to copy the new files into the folder.`nPlease try updating manually.")
+			FileRemoveDir,% A_ScriptDir ; Delete folder
 			FileCopyDir,% A_ScriptDir "_backup", A_ScriptDir, 1 ; Restore backup
 			FileRemoveDir,% A_ScriptDir "_backup", 1
 			FileRemoveDir,% updateFolder, 1
 			LoadFonts()
 			return
 		}
-		FileRemoveDir,% A_ScriptDir "_backup", 1
-
 		INI.Set(PROGRAM.INI_FILE, "GENERAL", "ShowChangelog", "True")
+		FileRemoveDir,% A_ScriptDir "_backup", 1
 		FileRemoveDir,% updateFolder, 1
 		Reload()
 	}
