@@ -1,4 +1,81 @@
-﻿PlaySound(sndFile) {
+﻿GetGlobalVar(var) {
+	global
+	local retValue
+	retValue := %var%
+	return retValue
+}
+
+BindFunctionToControl(guiClass="", guiName="", ctrlName="", funcName="") {
+		; global
+		; local __f
+		msgbox % guiClass "`n" guiName "`n" ctrlName "`n" funcName
+
+		; __f := %guiClass%[funcName].Bind(guiClass, params*)
+		; GuiControl, %guiName%:+g,% %guiName%_Controls[ctrlName],% __f
+	}
+
+ObjMerge(obj1, obj2) {
+/*  Modified version of ObjFullyClone to allow merging two objects
+	In case value exists both in obj1 and obj2, obj1 will be prioritary
+*/
+	if IsObject(obj1) && !IsObject(obj2)
+		return obj1
+	else if !IsObject(obj1) && IsObject(obj2)
+		return obj2 
+
+    nobj1 := obj1.Clone()
+    nobj2 := obj2.Clone()
+    nobj3 := obj1.Clone()
+
+    for k,v in nobj1 {
+        if IsObject(v) && !IsObject(nobj3[k]) && (!nobj3[k])
+            nobj3[k] := ObjFullyClone(v)
+        else if IsObject(v) && IsObject(nobj3[k])
+            nobj3[k] := A_ThisFunc.(nobj3[k], obj1[k])
+        else {
+            if !(nobj3[k])
+                nobj3[k] := v   
+            for k2,v2 in v
+                if !(nobj3[k][k2])
+                    nobj3[k][k2] := v2         
+        }
+    }
+ 
+    for k,v in nobj2 {
+        if IsObject(v) && !IsObject(nobj3[k]) && (!nobj3[k])
+            nobj3[k] := ObjFullyClone(v)
+        else if IsObject(v) && IsObject(nobj3[k])
+            nobj3[k] := A_ThisFunc.(nobj3[k], obj2[k])
+        else {
+            if !(nobj3[k])
+                nobj3[k] := v   
+            for k2,v2 in v
+                if !(nobj3[k][k2])
+                    nobj3[k][k2] := v2        
+        }
+    }
+
+	return nobj3
+}
+
+ObjFullyClone(obj) {
+/*	Credits: fincs
+	autohotkey.com/board/topic/69542-objectclone-doesnt-create-a-copy-keeps-references/?p=440435
+*/
+	nobj := obj.Clone()
+	for k,v in nobj
+		if IsObject(v)
+			nobj[k] := A_ThisFunc.(v)
+	return nobj
+}
+
+
+FolderExist(folder) {
+	if InStr(FileExist(folder), "D")
+		return True
+}
+
+PlaySound(sndFile) {
 	; 0x1 allows sound to be interrupted by next one
 	return DllCall("winmm.dll\PlaySound", AStr, sndFile, UInt, 0, UInt, 0x1)
 }
@@ -334,6 +411,10 @@ MsgBox(_opts="", _title="", _text="", _timeout="") {
 }
 
 Detect_HiddenWindows(state="") {
+	return DetectHiddenWindows(state)
+}
+
+DetectHiddenWindows(state="") {
 	static previousState
 	if (state = "" && previousState) {
 		DetectHiddenWindows, %previousState%
