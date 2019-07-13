@@ -1,3 +1,17 @@
+1.15.BETA_92 (13 July 2018)
+
+	- Fixes:
+		The item location grid wouldn't disappear upon closing the last tab, if the "Auto minimize once all tabs are closed?" setting was not enabled.
+	
+	I seriously apology for the delay of this update, and am now working on the next "big" one.
+	The fix had been ready for ten days, but I didn't have the opportunity to push the update sooner.
+	The next update will be kind of big on term of coding, so it'll take a while until it's pushed and will mostly consist of:
+	- Overhaul of the current "Selling" interface.
+	- Making the price verify work with the ggg trade website instead of poe.trade, allowing it to be more reliable.
+	- A fix where some internet-related features could not work for some users (Updating, Price verify, Self kicking, etc.)
+
+= = = = = = = = = = = = =	
+
 1.15.BETA_90/91 (1 July 2019)
 	
 	1.15.BETA_91
