@@ -104,7 +104,7 @@ UpdateCheck(checkType="normal", notifOrBox="notif") {
 	autoupdate := INI.Get(iniFile, "UPDATING", "DownloadUpdatesAutomatically")
 	lastUpdateCheck := INI.Get(iniFile, "UPDATING", "LastUpdateCheck")
 	if (checkType="forced") ; Fake the last update check, so it's higher than set limit
-		lastUpdateCheck := 1994042612310000
+		lastUpdateCheck := 1994010101010101
 
 	timeDif := A_Now
 	timeDif -= lastUpdateCheck, Minutes

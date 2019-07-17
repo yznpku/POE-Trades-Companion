@@ -33,11 +33,11 @@ Handle_CmdLineParameters() {
 			RUNTIME_PARAMETERS["InstanceName"] := found.1, found := ""
 		}
 		else if RegExMatch(param, "iO)/GamePath=(.*)", found) || RegExMatch(param, "iO)/GameFolder=(.*)", found) {
-			if FileExist(found.1 "\logs\Client.txt") {
+			if FileExist(found.1 "\Client.exe") || FileExist(found.1 "\PathOfExile*.exe") {
 				RUNTIME_PARAMETERS["GameFolder"] := found.1, found := ""
 			}
 			else
-				Msgbox(4096+16, "", "Parameter invalid: Client.txt not found in logs subfolder."
+				Msgbox(4096+16, "", "Parameter invalid: Client.exe or PathOfExile*.exe not found in the folder."
 				. "`n`nParam: " param "`nFolder: " found.1)
 		}
 		else if RegExMatch(param, "iO)/Screen_DPI=(.*)", found) {
