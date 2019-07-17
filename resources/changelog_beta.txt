@@ -1,5 +1,9 @@
-1.15.BETA_93 (17 July 2018)
+1.15.BETA_93/94 (17 July 2018)
 
+	1.15.BETA_94:
+	- Fix: Updating would copy the whole folder instead of only its files (broken by 1.15.BETA_92).	
+		
+	1.15.BETA_93:
 	Improvements:
 	- Can now read logs from KakaoClient.txt.
 	- Can now read multiple Client.txt logs file located in different folders at once.
@@ -32,20 +36,20 @@
 1.15.BETA_90/91 (1 July 2019)
 	
 	1.15.BETA_91
-		Fix: Custom and special buttons would do another button's actions if their position was other than default (broken by 1.15.BETA_10)
+	- Fix: Custom and special buttons would do another button's actions if their position was other than default (broken by 1.15.BETA_10)
 
 	Why is this version named BETA_9x?
 	Due to a bug with previous versions, BETA_9 would be considered as "better" than BETA_10 (and onwards).
 	This trick makes sure that anyone still on BETA_9 will get the update normally as "BETA_90" is considered better than "BETA_9" on those versions.
 	
 	Changes:
-		- Added support for Korean quality/level gem search when clicking on the "Clipboard / Copy item infos" button.
-		- Removed the map tier from the map search when clicking on the "Clipboard / Copy item infos" button.
-		This change is due to the fact that searching by "tier:x" along with a map name on the map tab doesn't highlight the map category.
-		- Reduced Cheat Sheet png files size.
+	- Added support for Korean quality/level gem search when clicking on the "Clipboard / Copy item infos" button.
+	- Removed the map tier from the map search when clicking on the "Clipboard / Copy item infos" button.
+	This change is due to the fact that searching by "tier:x" along with a map name on the map tab doesn't highlight the map category.
+	- Reduced Cheat Sheet png files size.
 		
 	Fixes:
-		- Would consider BETA_9 as "better" than BETA_10 and onwards, due to bad version comparison.
+	- Would consider BETA_9 as "better" than BETA_10 and onwards, due to bad version comparison.
 
 1.15.BETA_10/11 (1 July 2019)
 	
