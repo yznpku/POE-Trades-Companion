@@ -1,7 +1,24 @@
+1.15.BETA_93 (17 July 2018)
+
+	Improvements:
+	- Can now read logs from KakaoClient.txt.
+	- Can now read multiple Client.txt logs file located in different folders at once.
+	Previously, if you had multiple game instance running in different folders, you would have to choose which one to monitor on start.
+	- Checks for possible new game instances running in different folders, every ten minutes.
+	If a match is found, it will be added to the list of logs to monitor trigger a notification.
+	- After closing the game, the logs file will be checked every five seconds (up from 500ms previously).
+	
+	Changes:
+	- Upon starting the app, if no game instance is found, it will be checked again after 5s (down from 10s previously).
+	
+	Fixes:
+	- The item location grid would appear when receiving a whisper while being tabbed out of the game.
+	Ideally, it should only appear while in game, and if the interface is maximized.
+
 1.15.BETA_92 (13 July 2018)
 
-	- Fixes:
-		The item location grid wouldn't disappear upon closing the last tab, if the "Auto minimize once all tabs are closed?" setting was not enabled.
+	Fixes:
+	- The item location grid wouldn't disappear upon closing the last tab, if the "Auto minimize once all tabs are closed?" setting was not enabled.
 	
 	I seriously apology for the delay of this update, and am now working on the next "big" one.
 	The fix had been ready for ten days, but I didn't have the opportunity to push the update sooner.
