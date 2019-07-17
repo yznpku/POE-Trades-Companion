@@ -2130,6 +2130,8 @@
 
 		if !IsNum(tabXPos) || !IsNum(tabYPos)
 			return
+		if !WinActive("ahk_group POEGameGroup")
+			return
 
 		if (tabXPos && tabYPos) && WinExist("ahk_pid " activeTabInfos.PID " ahk_group POEGameGroup") {
 			WinGetPos, winX, winY, winW, winH,% "ahk_pid " activeTabInfos.PID " ahk_group POEGameGroup"
