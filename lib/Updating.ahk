@@ -217,11 +217,11 @@ DownloadAndRunUpdater(dl="") {
 		if FolderExist(A_ScriptDir "_backup")
 			FileRemoveDir,% A_ScriptDir "_backup", 1
 		FileCopyDir,% A_ScriptDir,% A_ScriptDir "_backup", 1 ; Make backup
-		FileCopyDir,% updateFolder,% A_ScriptDir, 1 ; Copy new files into current folder
+		FileCopyDir,% extractedFolder,% A_ScriptDir, 1 ; Copy new files into current folder
 		if (ErrorLevel) {
 			MsgBox(4096+16, "", "Failed to copy the new files into the folder.`nPlease try updating manually.")
 			FileRemoveDir,% A_ScriptDir ; Delete folder
-			FileCopyDir,% A_ScriptDir "_backup", A_ScriptDir, 1 ; Restore backup
+			FileCopyDir,% A_ScriptDir "_backup",% A_ScriptDir, 1 ; Restore backup
 			FileRemoveDir,% A_ScriptDir "_backup", 1
 			FileRemoveDir,% updateFolder, 1
 			LoadFonts()
