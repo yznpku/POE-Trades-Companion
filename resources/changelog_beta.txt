@@ -3,6 +3,8 @@
 	Changes:
 	- As of 1.15.BETA_93, AutoHotKey v1.1.30.03 or newer is required to run the script.
 	Added multiple message boxes asking the user to update in case they are running an older version of AutoHotKey.
+	
+	If the tool isn't monitoring your logs file since 1.15.BETA_93, then this the the cause. You need to update your AutoHotkey installation: https://www.autohotkey.com/
 
 1.15.BETA_93/94 (17 July 2018)
 
