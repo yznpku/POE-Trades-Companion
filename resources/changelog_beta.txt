@@ -1,3 +1,9 @@
+1.15.BETA_95 (19 July 2018)
+	
+	Changes:
+	- As of 1.15.BETA_93, AutoHotKey v1.1.30.03 or newer is required to run the script.
+	Added multiple message boxes asking the user to update in case they are running an older version of AutoHotKey.
+
 1.15.BETA_93/94 (17 July 2018)
 
 	1.15.BETA_94:
