@@ -1,6 +1,6 @@
 ﻿class GUI_ChooseInstance {
 	Create(instancesInfos, mode) {
-		global PROGRAM
+		global PROGRAM, CHOOSEN_INSTANCE
 		global GuiChooseInstance, GuiChooseInstance_Controls, GuiChooseInstance_Submit
 		static guiWidth, guiHeight
 
@@ -101,7 +101,9 @@
 		Gui.Show("ChooseInstance", "w" guiWidth+5 " h" guiHeight+5)
 		WinWait,% "ahk_id " GuiChooseInstance.Handle
 		WinWaitClose,% "ahk_id " GuiChooseInstance.Handle
-		Return GuiChooseInstance.Instance
+		chosenInstance := ObjFullyClone(CHOOSEN_INSTANCE)
+		CHOOSEN_INSTANCE := ""
+		Return chosenInstance
 
 		GUI_ChooseInstance_Close:
 			GUI_ChooseInstance.OnGUIClose()
@@ -113,14 +115,15 @@
 	}
 
 	OnGUIClose() {
-		global PROGRAM, GuiChooseInstance
-		chosenInstance := GuiChooseInstance.Instance
+		global PROGRAM, GuiChooseInstance, CHOOSEN_INSTANCE
+		CHOOSEN_INSTANCE := ObjFullyClone(GuiChooseInstance.Instance)
 
-		if !(chosenInstance.Folder) {
+		if !(CHOOSEN_INSTANCE.Folder) {
 			MsgBox(4096+16, , PROGRAM.TRANSLATIONS.MessageBoxes.ChooseInstance_NoGameInstanceChosen)
 		}
-		else
+		else {
 			GUI_ChooseInstance.Destroy()
+		}
 	}
 
 	OnInstanceClick(CtrlHwnd, instancesGroupArray, instanceGroupID, instanceSubGroupID) {
