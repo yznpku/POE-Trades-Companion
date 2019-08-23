@@ -1,3 +1,9 @@
+1.15.BETA_96 (23 Aug 2018)
+
+	Fixes:
+	- Wouldn't be able to select a new game instance if the one correponding to the tab was not existing anymore.
+	- Wouldn't be able to open the chat if the chat key was a mouse button.
+
 1.15.BETA_95 (19 July 2018)
 	
 	Changes:
