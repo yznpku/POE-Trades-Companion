@@ -227,16 +227,33 @@ Send_GameMessage(actionType, msgString, gamePID="") {
 
 	Send_GameMessage_OpenChat:
 		if IsIn(chatVK, "0x1,0x2,0x4,0x5,0x6,0x9C,0x9D,0x9E,0x9F") { ; Mouse buttons
-			keyDelay := A_KeyDelay, keyDuration := A_KeyDuration
+			keyDelay := A_KeyDelay, keyDuration := A_KeyDuration, titleMatchMode := A_TitleMatchMode, controlDelay := A_ControlDelay
+			keyName := chatVK="0x1"?"L" : chatVk="0x2"?"R" : chatVK="0x4"?"M" ; Left,Right,Middle
+				: chatVK="0x5"?"X1" : chatVK="0x6"?"X2" ; XButton1,XButton2
+				: chatVK="0x9C"?"WL" : chatVK="0x9D"?"WR" ; WheelLeft,WheelRight
+				: chatVK="0x9E"?"WD" : chatVK="0x9F"?"WU" ; WheelDown,WheelUp
+				: ""
 			SetKeyDelay, 10, 10
-			if (gamePID)
-				ControlSend, ,{VK%keyVK%}, [a-zA-Z0-9_] ahk_groupe POEGameGroup ahk_pid %gamePID% ; Mouse buttons tend to activate the window under the cursor.
-																	  						  	  ; Therefore, we need to send the key to the actual game window.
+			SetTitleMatchMode, RegEx
+			SetControlDelay, -1
+			if (gamePID) {
+				ControlClick, ,  [a-zA-Z0-9_] ahk_group POEGameGroup ahk_pid %gamePID%, ,%keyName%, 1
+				/* Old way that seemed to be a bit buggy for some reason after creating the Settings GUI.
+				Sending the hotkey before the Settings GUI was created would make things work correctly.
+				But sending it after would effectively send the chat key, but not keep the chat window activated.
+				Probably related to some internal ahk variable or something. Doesn't matter, ControlClick is more reliable.
+				
+				ControlSend, ,{VK%chatVK%}, [a-zA-Z0-9_] ahk_group POEGameGroup ahk_pid %gamePID% ; Mouse buttons tend to activate the window under the cursor.
+																								  ;  Therefore, we need to send the key to the actual game window.
+				*/
+			}
 			else {
 				WinGet, activeWinHandle, ID, A
-				ControlSend, ,{VK%keyVK%}, [a-zA-Z0-9_] ahk_groupe POEGameGroup ahk_pid %activeWinHandle%
+				ControlSend, ,{VK%chatVK%}, [a-zA-Z0-9_] ahk_group POEGameGroup ahk_pid %activeWinHandle%
 			}
 			SetKeyDelay,% keyDelay,% keyDuration
+			SetTitleMatchMode,% titleMatchMode
+			SetControlDelay,% controlDelay
 		}
 		else
 			SendEvent,{VK%chatVK%}
