@@ -701,7 +701,12 @@ Parse_GameLogs(strToParse) {
 			leagueMatches := [], leagueMatchesIndex := 0
 			leaguesList := LEAGUES
 			if (GAME.CHALLENGE_LEAGUE_TRANS[whisperLang])
-				leaguesList .= "," GAME.CHALLENGE_LEAGUE_TRANS[whisperLang]
+				for index in GAME.CHALLENGE_LEAGUE_TRANS[whisperLang]
+					leaguesList .= "," GAME.CHALLENGE_LEAGUE_TRANS[whisperLang][index]
+			if (GAME.STANDARD_LEAGUE_TRANS[whisperLang])
+				for index in GAME.STANDARD_LEAGUE_TRANS[whisperLang]
+					leaguesList .= "," GAME.STANDARD_LEAGUE_TRANS[whisperLang][index]
+			
 			Loop, Parse, leaguesList,% ","
 			{
 				parsedLeague := A_LoopField
