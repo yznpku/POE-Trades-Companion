@@ -57,7 +57,7 @@ PoeNinja_CreateMapDataFile(league) {
     */
     mapsJSON := PoeNinja_GetMapOverview(league)
     uniqueMapsJSON := PoeNinja_GetUniqueMapOverview(league)
-    excludeList := "Elder,Shaped"
+    excludeList := "Elder,Shaped,Blighted"
     excludeListUnique := "The Beachhead"
     maps := {}
 
