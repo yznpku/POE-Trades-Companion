@@ -59,14 +59,15 @@
 		Gui.Add("ChooseLang", "Text", "x" leftMost+10 " y+20 w" guiWidth-20 " Center hwndhTEXT_TopText", "Thank you for using POE Trades Companion!`nBefore you can start trading,`nplease select your language below:")
 		; * * FLAGS
 		; Calculate the space between each
-		iconW := 35, iconH := 24, iconMax := 4
-		spaceBetweenIcons := ( (guiWidth-20) /iconMax), iconsPerRow := 4
+		iconW := 35, iconH := 24, iconMax := 5
+		spaceBetweenIcons := ( (guiWidth-20) /iconMax), iconsPerRow := 5
 		firstIconX := (guiWidth-(spaceBetweenIcons*(iconsPerRow-1)+iconW))/2 ; We retrieve the blank space after the lastest icon in the row
 																				 ;	then divide this space in two so icons are centered
 		Gui.Add("ChooseLang", "Picture", "x" firstIconX " y+35 w" iconW " h" iconH " hwndhIMG_FlagUK", PROGRAM.IMAGES_FOLDER "\flag_uk.png")
 		Gui.Add("ChooseLang", "Picture", "xp+" spaceBetweenIcons " yp wp hp hwndhIMG_FlagFrance", PROGRAM.IMAGES_FOLDER "\flag_france.png")
 		Gui.Add("ChooseLang", "Picture", "xp+" spaceBetweenIcons " yp wp hp hwndhIMG_FlagChina", PROGRAM.IMAGES_FOLDER "\flag_china.png")
 		Gui.Add("ChooseLang", "Picture", "xp+" spaceBetweenIcons " yp wp hp hwndhIMG_FlagTaiwan", PROGRAM.IMAGES_FOLDER "\flag_taiwan.png")
+		Gui.Add("ChooseLang", "Picture", "xp+" spaceBetweenIcons " yp wp hp hwndhIMG_FlagRussia", PROGRAM.IMAGES_FOLDER "\flag_russia.png")
 
 		__f := GUI_ChooseLang.OnLanguageChange.bind(GUI_ChooseLang, "english")
 		GuiControl, ChooseLang:+g,% GuiChooseLang_Controls["hIMG_FlagUK"],% __f
@@ -76,6 +77,8 @@
 		GuiControl, ChooseLang:+g,% GuiChooseLang_Controls["hIMG_FlagChina"],% __f
 		__f := GUI_ChooseLang.OnLanguageChange.bind(GUI_ChooseLang, "chinese_traditional")
 		GuiControl, ChooseLang:+g,% GuiChooseLang_Controls["hIMG_FlagTaiwan"],% __f
+		__f := GUI_ChooseLang.OnLanguageChange.bind(GUI_ChooseLang, "russian")
+		GuiControl, ChooseLang:+g,% GuiChooseLang_Controls["hIMG_FlagRussia"],% __f
 
 		Gui.Add("ChooseLang", "Button", "x" leftMost+10 " y+15 w" guiWidth-20 " h30 hwndhBTN_AcceptLang", "Continue with: English")
 		__f := GUI_ChooseLang.AcceptLang.bind(GUI_ChooseLang)
