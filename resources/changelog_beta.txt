@@ -1,10 +1,22 @@
-1.15.BETA_96 (23 Aug 2018)
+1.15.BETA_97 (08 Sept 2019)
+
+	Small league-start update. I am still actively working on the next big update.
+	If you are interested to see the progress, join the discord server!
+
+	Features:
+	- Added Russian translation.
+	- Added support for the Standard and Hardcore league names for Russian and Korean (other languages do not have league names translated).
+	
+	Changes:
+	- Updated various data files.
+	
+1.15.BETA_96 (23 Aug 2019)
 
 	Fixes:
-	- Wouldn't be able to select a new game instance if the one correponding to the tab was not existing anymore.
+	- Wouldn't be able to select a new game instance if the one corresponding to the tab was not existing anymore.
 	- Wouldn't be able to open the chat if the chat key was a mouse button.
 
-1.15.BETA_95 (19 July 2018)
+1.15.BETA_95 (19 July 2019)
 	
 	Changes:
 	- As of 1.15.BETA_93, AutoHotKey v1.1.30.03 or newer is required to run the script.
@@ -12,7 +24,7 @@
 	
 	If the tool isn't monitoring your logs file since 1.15.BETA_93, then this the the cause. You need to update your AutoHotkey installation: https://www.autohotkey.com/
 
-1.15.BETA_93/94 (17 July 2018)
+1.15.BETA_93/94 (17 July 2019)
 
 	1.15.BETA_94:
 	- Fix: Updating would copy the whole folder instead of only its files (broken by 1.15.BETA_92).	
@@ -33,7 +45,7 @@
 	- The item location grid would appear when receiving a whisper while being tabbed out of the game.
 	Ideally, it should only appear while in game, and if the interface is maximized.
 
-1.15.BETA_92 (13 July 2018)
+1.15.BETA_92 (13 July 2019)
 
 	Fixes:
 	- The item location grid wouldn't disappear upon closing the last tab, if the "Auto minimize once all tabs are closed?" setting was not enabled.
