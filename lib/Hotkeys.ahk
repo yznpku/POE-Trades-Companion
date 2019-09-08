@@ -7,9 +7,9 @@
 	isHKBasic := hkSettings.Type ? True : False
 	isHKAdvanced := hkSettings.Action_1_Type ? True : False
 
-	KeyWait, Ctrl, U
-	KeyWait, Shift, U
-	KeyWait, Alt, U
+	KeyWait, Ctrl, L
+	KeyWait, Shift, L
+	KeyWait, Alt, L
 	keysState := GetKeyStateFunc("Ctrl,LCtrl,RCtrl")
 	if (isHKBasic) {
 		Do_Action(hkSettings.Type, hkSettings.Content, True)

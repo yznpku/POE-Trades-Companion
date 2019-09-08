@@ -10,11 +10,11 @@
 	*Space::
 	*Tab::
 	modifiers := ""
-	if GetKeyState("Shift","P")
+	if GetKeyState("Shift")
 		modifiers .= "+"
-	if GetKeyState("Ctrl","P")
+	if GetKeyState("Ctrl")
 		modifiers .= "^"
-	if GetKeyState("Alt","P")
+	if GetKeyState("Alt")
 		modifiers .= "!"
 
 	modLen := StrLen(modifiers)
@@ -1609,7 +1609,7 @@ Class GUI_Settings {
 		if (GuiSettings.Is_Changing_Preset)
 			Return
 
-		KeyWait, LButton, U
+		KeyWait, LButton, L
 		SetTimer, GUI_Settings_TabCustomizationSkins_OnScalePercentageChange_Sub, -500
 
 		; scalePercent := GUI_Settings.Submit("hEDIT_SkinScalingPercentage")
@@ -1767,8 +1767,8 @@ Class GUI_Settings {
 		ShowToolTip(contentPlaceholder)
 
 		if IsContaining(actionType, "-> ") || (!actionType) {
-			GetKeyState, isUpArrowPressed, Up, P
-			GetKeyState, isDownArrowPressed, Down, P
+			GetKeyState, isUpArrowPressed, Up
+			GetKeyState, isDownArrowPressed, Down
 
 			GuiControl, Settings:+AltSubmit,% CtrlHwnd
 			chosenItemNum := GUI_Settings.Submit("hDDL_ActionType")
@@ -2745,8 +2745,8 @@ Class GUI_Settings {
 		ShowToolTip(contentPlaceholder)
 
 		if IsContaining(actionType, "-> ") {
-			GetKeyState, isUpArrowPressed, Up, P
-			GetKeyState, isDownArrowPressed, Down, P
+			GetKeyState, isUpArrowPressed, Up
+			GetKeyState, isDownArrowPressed, Down
 
 			GuiControl, Settings:+AltSubmit,% CtrlHwnd
 			chosenItemNum := GUI_Settings.Submit("hDDL_HotkeyActionType" CtrlNum)
@@ -3227,8 +3227,8 @@ Class GUI_Settings {
 		ShowToolTip(contentPlaceholder)
 
 		if IsContaining(actionType, "-> ") || (!actionType) {
-			GetKeyState, isUpArrowPressed, Up, P
-			GetKeyState, isDownArrowPressed, Down, P
+			GetKeyState, isUpArrowPressed, Up
+			GetKeyState, isDownArrowPressed, Down
 
 			GuiControl, Settings:+AltSubmit,% CtrlHwnd
 			chosenItemNum := GUI_Settings.Submit("hDDL_HotkeyAdvActionType")
