@@ -1,3 +1,9 @@
+1.15.BETA_98 (09 Sept 2019)
+
+	Changes:
+	- Features that were based on physical key state are now based on logical key state instead.
+	This fixes a compatibility issue with the Windows On-Screen Keyboard, where pressing CTRL on it when copying a trading whisper wouldn't instantly send it in-game.
+
 1.15.BETA_97 (08 Sept 2019)
 
 	Small league-start update. I am still actively working on the next big update.
