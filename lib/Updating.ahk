@@ -250,7 +250,7 @@ Run_Updater(downloadLink) {
 	INI.Set(iniFile, "UPDATING", "LastUpdate", A_Now)
 	Run,% PROGRAM.UPDATER_FILENAME 
 	. " /Name=""" PROGRAM.NAME  """"
-	. " /File_Name=""" A_ScriptDir "\" PROGRAM.NAME ".exe" """"
+	. " /File_Name=""" A_ScriptFullPath """"
 	. " /Local_Folder=""" PROGRAM.MAIN_FOLDER """"
 	. " /Ini_File=""" PROGRAM.INI_FILE """"
 	. " /NewVersion_Link=""" downloadLink """"
