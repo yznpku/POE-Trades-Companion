@@ -1,3 +1,12 @@
+1.15.BETA_99 (10 Sept 2019)
+
+	Changes:
+	- No longer rename the executable back to "POE Trades Companion.exe" when updating.
+
+	Fixes:
+	- Further fixed "Wouldn't be able to open the chat if the chat key was a mouse button." from BETA_96.
+	(The fix would only apply on Hotkeys)
+
 1.15.BETA_98 (09 Sept 2019)
 
 	Changes:
