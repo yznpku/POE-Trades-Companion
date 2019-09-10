@@ -233,11 +233,16 @@ Send_GameMessage(actionType, msgString, gamePID="") {
 				: chatVK="0x9C"?"WL" : chatVK="0x9D"?"WR" ; WheelLeft,WheelRight
 				: chatVK="0x9E"?"WD" : chatVK="0x9F"?"WU" ; WheelDown,WheelUp
 				: ""
+				
 			SetKeyDelay, 10, 10
 			SetTitleMatchMode, RegEx
 			SetControlDelay, -1
-			if (gamePID) {
-				ControlClick, ,  [a-zA-Z0-9_] ahk_group POEGameGroup ahk_pid %gamePID%, ,%keyName%, 1
+			if WinExist("[a-zA-Z0-9_] ahk_group POEGameGroup ahk_pid " gamePID) {
+				if !WinActive("[a-zA-Z0-9_] ahk_group POEGameGroup ahk_pid " gamePID) {
+					WinActivate, [a-zA-Z0-9_] ahk_group POEGameGroup ahk_pid %gamePID%
+					WinWaitActive, [a-zA-Z0-9_] ahk_group POEGameGroup ahk_pid %gamePID%, , 3
+				}
+				ControlClick, , [a-zA-Z0-9_] ahk_group POEGameGroup ahk_pid %gamePID%, ,%keyName%, 1, NA
 				/* Old way that seemed to be a bit buggy for some reason after creating the Settings GUI.
 				Sending the hotkey before the Settings GUI was created would make things work correctly.
 				But sending it after would effectively send the chat key, but not keep the chat window activated.
@@ -249,7 +254,9 @@ Send_GameMessage(actionType, msgString, gamePID="") {
 			}
 			else {
 				WinGet, activeWinHandle, ID, A
-				ControlSend, ,{VK%chatVK%}, [a-zA-Z0-9_] ahk_group POEGameGroup ahk_pid %activeWinHandle%
+				WinActivate, [a-zA-Z0-9_] ahk_group POEGameGroup ahk_id %activeWinHandle%
+				WinWaitActive, [a-zA-Z0-9_] ahk_group POEGameGroup ahk_id %activeWinHandle%, , 3
+				ControlClick, , [a-zA-Z0-9_] ahk_group POEGameGroup ahk_id %activeWinHandle%, ,%keyName%, 1, NA
 			}
 			SetKeyDelay,% keyDelay,% keyDuration
 			SetTitleMatchMode,% titleMatchMode
@@ -257,6 +264,7 @@ Send_GameMessage(actionType, msgString, gamePID="") {
 		}
 		else
 			SendEvent,{VK%chatVK%}
+		Sleep 10
 	Return
 }
 
