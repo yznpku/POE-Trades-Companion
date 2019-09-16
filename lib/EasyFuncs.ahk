@@ -1,18 +1,42 @@
-﻿GetGlobalVar(var) {
+﻿GetScanCodes() {
+	; Credits to TradeMacro for the IDs
+	; example results: 0xF0020809/0xF01B0809/0xF01A0809
+	; 0809 is for "English United Kingdom"
+	; 0xF002 = "Dvorak"
+	; 0xF01B = "Dvorak right handed"
+	; 0xF01A = "Dvorak left handed"
+	; 0xF01C0809 = some other Dvorak layout
+	; 0xF01C0409 = programmer's dvorak
+
+	kbLayoutID := GetKeyboardLayout()
+	if RegExMatch(kbLayoutID, "i)^(0xF002|0xF01B|0xF01A|0xF01C0809|0xF01C0409).*") { ; dvorak
+		scanCodes := {"c": "sc017", "v": "sc034", "f": "sc015", "a": "sc01E", "Enter": "sc01C"}
+	}
+	else { ; default
+		scanCodes := {"c": "sc02E", "v": "sc02f", "f": "sc021", "a": "sc01E", "Enter": "sc01C"}
+	}
+	return scanCodes
+}
+
+GetKeyboardLayout() {
+	; Credits: YMP
+	; https://autohotkey.com/board/topic/43043-get-current-keyboard-layout/?p=268123
+	formatInteger := A_FormatInteger
+	SetFormat, Integer, H
+	WinGet, WinID, , A
+	ThreadID := DllCall("GetWindowThreadProcessId", "UInt", WinID, "UInt", 0)
+	InputLocaleID := DllCall("GetKeyboardLayout", "UInt", ThreadID, "UInt")	
+	SetFormat, Integer,% formatInteger
+
+	return InputLocaleID
+}
+
+GetGlobalVar(var) {
 	global
 	local retValue
 	retValue := %var%
 	return retValue
 }
-
-BindFunctionToControl(guiClass="", guiName="", ctrlName="", funcName="") {
-		; global
-		; local __f
-		msgbox % guiClass "`n" guiName "`n" ctrlName "`n" funcName
-
-		; __f := %guiClass%[funcName].Bind(guiClass, params*)
-		; GuiControl, %guiName%:+g,% %guiName%_Controls[ctrlName],% __f
-	}
 
 ObjMerge(obj1, obj2) {
 /*  Modified version of ObjFullyClone to allow merging two objects
