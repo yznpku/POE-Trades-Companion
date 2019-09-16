@@ -325,6 +325,10 @@ Start_Script() {
 
 	Declare_SkinAssetsAndSettings()
 
+	if RegExMatch(GetKeyboardLayout(), "i)^(0xF002|0xF01B|0xF01A|0xF01C0809|0xF01C0409).*")
+		TrayNotifications.Show(PROGRAM.NAME, "Dvorak keyboard layout detected, scancode fix applied.")
+	PROGRAM.SCANCODES := GetScanCodes()
+
 	; Update checking
 	if !(DEBUG.settings.skip_update_check) {
 		periodicUpdChk := PROGRAM.SETTINGS.UPDATE.CheckForUpdatePeriodically

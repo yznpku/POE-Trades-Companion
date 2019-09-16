@@ -1,6 +1,7 @@
 ﻿StackClick() {
 	global PROGRAM, GuiTrades
 	static lastAvailable, lastTime
+	static scanCode_Enter := PROGRAM.SCANCODES.Enter
 
 	activeTab := GUI_Trades.GetActiveTab()
 	tabContent := GUI_Trades.GetTabContent(activeTab)
@@ -86,7 +87,7 @@
 	StackClick_ShiftClickPlus:
 		Gosub %A_ThisFunc%_GetModifiersStates
 		SendInput {Shift Down}{LButton}{Shift Up}
-		SendInput, %amount%{Enter}
+		SendInput, %amount%{%scanCode_Enter%}
 		Gosub %A_ThisFunc%_ReturnModifiersStates
 	return
 	StackClick_GetModifiersStates:

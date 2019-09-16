@@ -88,6 +88,7 @@
 Send_GameMessage(actionType, msgString, gamePID="") {
 	global PROGRAM, GAME
 	global MyDocuments
+	scanCode_v := PROGRAM.SCANCODES.v, scanCode_Enter := PROGRAM.SCANCODES.Enter
 
 	Thread, NoTimers
 
@@ -146,8 +147,9 @@ Send_GameMessage(actionType, msgString, gamePID="") {
 				}
 				Sleep 50
 			}
-			if (!err)
-				SendEvent, ^{sc02F}
+			if (!err) {
+				SendEvent, ^{%scanCode_v%}
+			}
 			else
 				TrayNotifications.Show(PROGRAM.TRANSLATIONS.TrayNotifications.FailedToSendMessage_Title, PROGRAM.TRANSLATIONS.TrayNotifications.FailedToSendMessage_Msg)
 			; SetTimer, Reset_Clipboard, -700
@@ -157,7 +159,7 @@ Send_GameMessage(actionType, msgString, gamePID="") {
 		else if (sendMsgMode = "SendEvent")
 			SendEvent,%msgString%
 
-		SendEvent,{Enter}
+		SendEvent,{%scanCode_Enter%}
 	}
 	else if (actionType = "WRITE_DONT_SEND") {
 		if (sendMsgMode = "Clipboard") {
@@ -174,7 +176,7 @@ Send_GameMessage(actionType, msgString, gamePID="") {
 				Sleep 50
 			}
 			if (!err)
-				SendEvent, ^{sc02F}
+				SendEvent, ^{%scanCode_v%}
 			else
 				TrayNotifications.Show(PROGRAM.TRANSLATIONS.TrayNotifications.FailedToSendMessage_Title, PROGRAM.TRANSLATIONS.TrayNotifications.FailedToSendMessage_Msg)
 			; SetTimer, Reset_Clipboard, -700
@@ -202,7 +204,7 @@ Send_GameMessage(actionType, msgString, gamePID="") {
 				Sleep 50
 			}
 			if (!err)
-				SendEvent, ^{sc02F}
+				SendEvent, ^{%scanCode_v%}
 			else
 				TrayNotifications.Show(PROGRAM.TRANSLATIONS.TrayNotifications.FailedToSendMessage_Title, PROGRAM.TRANSLATIONS.TrayNotifications.FailedToSendMessage_Msg)
 			; SetTimer, Reset_Clipboard, -700
