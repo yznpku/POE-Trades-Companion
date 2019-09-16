@@ -988,6 +988,7 @@
 				Gui_Trades.Minimize("True")
 			GUI_Trades.SetTransparency_Inactive()
 			Gui_Trades.Redraw()
+			GUI_Trades.DestroyItemGrid()
 		}
 		else {
 			GuiControl,Trades:,% GuiTrades_Controls["hTEXT_Title"],% "POE Trades Companion (" GuiTrades.Tabs_Count ")"
@@ -1677,7 +1678,7 @@
 		if ( PROGRAM.SETTINGS.SETTINGS_MAIN.TradesGUI_Mode = "Window" && PROGRAM.SETTINGS.SETTINGS_MAIN.TradesGUI_Locked = "False" ) {
 			PostMessage, 0xA1, 2,,,% "ahk_id " GuiHwnd
 		}
-		KeyWait, LButton, Up
+		KeyWait, LButton, L
 		Gui_Trades.SavePosition()
 		; Gui_Trades.RemoveButtonFocus()
 		Gui_Trades.ResetPositionIfOutOfBounds()
@@ -2128,6 +2129,8 @@
 		tabXPos := tabStashPos.1, tabYPos := tabStashPos.2, tabStashTab := activeTabInfos.StashTab, tabStashItem := activeTabInfos.Item
 
 		if !IsNum(tabXPos) || !IsNum(tabYPos)
+			return
+		if !WinActive("ahk_group POEGameGroup")
 			return
 
 		if (tabXPos && tabYPos) && WinExist("ahk_pid " activeTabInfos.PID " ahk_group POEGameGroup") {

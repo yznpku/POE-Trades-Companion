@@ -10,11 +10,11 @@
 	*Space::
 	*Tab::
 	modifiers := ""
-	if GetKeyState("Shift","P")
+	if GetKeyState("Shift")
 		modifiers .= "+"
-	if GetKeyState("Ctrl","P")
+	if GetKeyState("Ctrl")
 		modifiers .= "^"
-	if GetKeyState("Alt","P")
+	if GetKeyState("Alt")
 		modifiers .= "!"
 
 	modLen := StrLen(modifiers)
@@ -675,7 +675,7 @@ Class GUI_Settings {
 		Gui, Settings:Tab, Misc About
 
 		Gui.Add("Settings", "GroupBox", "x" leftMost2 " y" upMost2 " cBlack w525 h115 hwndhGB_About")
-		Gui.Add("Settings", "Text", "x" leftMost2+10 " y" upMost2+15 " w505 Center hwndhTEXT_About" , "POE Trades Companion is a tool meant to enhance your trading experience. "
+		Gui.Add("Settings", "Text", "x" leftMost2+10 " y" upMost2+15 " w505 Center BackgroundTrans hwndhTEXT_About" , "POE Trades Companion is a tool meant to enhance your trading experience. "
 			. "`n`nUpon receiving a trading whisper (poe.trade / poeapp.com),"
 			. "`nthe most important informations from the trade will be shown in a convenient interface."
 			. "`n`nUp to nine custom buttons to interact with your buyer, five special smaller buttons to do the strict minimum, and many hotkeys are available to make trading more enjoyable.")
@@ -694,6 +694,7 @@ Class GUI_Settings {
 		Gui.Add("Settings", "Picture", "x+3 yp wp hp hwndhIMG_FlagFrance", PROGRAM.IMAGES_FOLDER "\flag_france.png")
 		Gui.Add("Settings", "Picture", "x+3 yp wp hp hwndhIMG_FlagChina", PROGRAM.IMAGES_FOLDER "\flag_china.png")
 		Gui.Add("Settings", "Picture", "x+3 yp wp hp hwndhIMG_FlagTaiwan", PROGRAM.IMAGES_FOLDER "\flag_taiwan.png")
+		Gui.Add("Settings", "Picture", "x+3 yp wp hp hwndhIMG_FlagRussia", PROGRAM.IMAGES_FOLDER "\flag_russia.png")
 
 		Gui.Add("Settings", "Picture", "x" guiWidth-120 " y" guiHeight-45 " w115 h40 hwndhIMG_Paypal", PROGRAM.IMAGES_FOLDER "\DonatePaypal.png")
 		Gui.Add("Settings", "Picture", "xp-70 yp w40 h40 hwndhIMG_Discord", PROGRAM.IMAGES_FOLDER "\Discord.png")
@@ -709,6 +710,8 @@ Class GUI_Settings {
 		GuiControl, Settings:+g,% GuiSettings_Controls["hIMG_FlagChina"],% __f
 		__f := GUI_Settings.OnLanguageChange.bind(GUI_Settings, "chinese_traditional")
 		GuiControl, Settings:+g,% GuiSettings_Controls["hIMG_FlagTaiwan"],% __f
+		__f := GUI_Settings.OnLanguageChange.bind(GUI_Settings, "russian")
+		GuiControl, Settings:+g,% GuiSettings_Controls["hIMG_FlagRussia"],% __f
 
 		__f := GUI_Settings.OnPictureLinkClick.bind(GUI_Settings, "Paypal")
 		GuiControl, Settings:+g,% GuiSettings_Controls["hIMG_Paypal"],% __f
@@ -1606,7 +1609,7 @@ Class GUI_Settings {
 		if (GuiSettings.Is_Changing_Preset)
 			Return
 
-		KeyWait, LButton, U
+		KeyWait, LButton, L
 		SetTimer, GUI_Settings_TabCustomizationSkins_OnScalePercentageChange_Sub, -500
 
 		; scalePercent := GUI_Settings.Submit("hEDIT_SkinScalingPercentage")
@@ -1764,8 +1767,8 @@ Class GUI_Settings {
 		ShowToolTip(contentPlaceholder)
 
 		if IsContaining(actionType, "-> ") || (!actionType) {
-			GetKeyState, isUpArrowPressed, Up, P
-			GetKeyState, isDownArrowPressed, Down, P
+			GetKeyState, isUpArrowPressed, Up
+			GetKeyState, isDownArrowPressed, Down
 
 			GuiControl, Settings:+AltSubmit,% CtrlHwnd
 			chosenItemNum := GUI_Settings.Submit("hDDL_ActionType")
@@ -2742,8 +2745,8 @@ Class GUI_Settings {
 		ShowToolTip(contentPlaceholder)
 
 		if IsContaining(actionType, "-> ") {
-			GetKeyState, isUpArrowPressed, Up, P
-			GetKeyState, isDownArrowPressed, Down, P
+			GetKeyState, isUpArrowPressed, Up
+			GetKeyState, isDownArrowPressed, Down
 
 			GuiControl, Settings:+AltSubmit,% CtrlHwnd
 			chosenItemNum := GUI_Settings.Submit("hDDL_HotkeyActionType" CtrlNum)
@@ -3224,8 +3227,8 @@ Class GUI_Settings {
 		ShowToolTip(contentPlaceholder)
 
 		if IsContaining(actionType, "-> ") || (!actionType) {
-			GetKeyState, isUpArrowPressed, Up, P
-			GetKeyState, isDownArrowPressed, Down, P
+			GetKeyState, isUpArrowPressed, Up
+			GetKeyState, isDownArrowPressed, Down
 
 			GuiControl, Settings:+AltSubmit,% CtrlHwnd
 			chosenItemNum := GUI_Settings.Submit("hDDL_HotkeyAdvActionType")

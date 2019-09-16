@@ -754,6 +754,31 @@ if !InStr(FileExist(PROGRAM.IMAGES_FOLDER ""), "D")
 	FileCreateDir,% PROGRAM.IMAGES_FOLDER ""
 
 if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\imgs\flag_russia.png")
+	FileGetSize, destFileSize, % PROGRAM.IMAGES_FOLDER "\flag_russia.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\imgs\flag_russia.png
+	FileGetSize, destFileSize, % PROGRAM.IMAGES_FOLDER "\flag_russia.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\imgs\flag_russia.png, % PROGRAM.IMAGES_FOLDER "\flag_russia.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\imgs\flag_russia.png"
+	.	"`nDest: " PROGRAM.IMAGES_FOLDER "\flag_russia.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\imgs\flag_russia.png"
+	.	"`nDest: " PROGRAM.IMAGES_FOLDER "\flag_russia.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.IMAGES_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.IMAGES_FOLDER ""
+
+if (A_IsCompiled) {
 	sourceFileSize := Get_ResourceSize("resources\imgs\flag_taiwan.png")
 	FileGetSize, destFileSize, % PROGRAM.IMAGES_FOLDER "\flag_taiwan.png"
 }
@@ -8717,6 +8742,31 @@ if (ErrorLevel) {
 }
 
 ; ----------------------------
+if !InStr(FileExist(PROGRAM.TRANSLATIONS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.TRANSLATIONS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\translations\russian.json")
+	FileGetSize, destFileSize, % PROGRAM.TRANSLATIONS_FOLDER "\russian.json"
+}
+else {
+	FileGetSize, sourceFileSize, resources\translations\russian.json
+	FileGetSize, destFileSize, % PROGRAM.TRANSLATIONS_FOLDER "\russian.json"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\translations\russian.json, % PROGRAM.TRANSLATIONS_FOLDER "\russian.json", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\translations\russian.json"
+	.	"`nDest: " PROGRAM.TRANSLATIONS_FOLDER "\russian.json"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\translations\russian.json"
+	.	"`nDest: " PROGRAM.TRANSLATIONS_FOLDER "\russian.json"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
 if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
 	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
 
@@ -10738,6 +10788,256 @@ if (ErrorLevel) {
 	errorLog .= "`n`n""Failed to extract file!"
 	.	"`nSource: resources\currency_imgs\Stacked Deck.png"
 	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Stacked Deck.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Timeless Eternal Emblem.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Timeless Eternal Emblem.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Timeless Eternal Emblem.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Timeless Eternal Emblem.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Timeless Eternal Emblem.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Timeless Eternal Emblem.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Timeless Eternal Emblem.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Timeless Eternal Emblem.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Timeless Eternal Emblem.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Timeless Eternal Emblem.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Timeless Eternal Empire Splinter.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Timeless Eternal Empire Splinter.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Timeless Eternal Empire Splinter.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Timeless Eternal Empire Splinter.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Timeless Eternal Empire Splinter.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Timeless Eternal Empire Splinter.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Timeless Eternal Empire Splinter.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Timeless Eternal Empire Splinter.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Timeless Eternal Empire Splinter.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Timeless Eternal Empire Splinter.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Timeless Karui Emblem.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Timeless Karui Emblem.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Timeless Karui Emblem.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Timeless Karui Emblem.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Timeless Karui Emblem.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Timeless Karui Emblem.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Timeless Karui Emblem.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Timeless Karui Emblem.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Timeless Karui Emblem.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Timeless Karui Emblem.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Timeless Karui Splinter.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Timeless Karui Splinter.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Timeless Karui Splinter.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Timeless Karui Splinter.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Timeless Karui Splinter.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Timeless Karui Splinter.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Timeless Karui Splinter.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Timeless Karui Splinter.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Timeless Karui Splinter.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Timeless Karui Splinter.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Timeless Maraketh Emblem.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Timeless Maraketh Emblem.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Timeless Maraketh Emblem.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Timeless Maraketh Emblem.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Timeless Maraketh Emblem.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Timeless Maraketh Emblem.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Timeless Maraketh Emblem.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Timeless Maraketh Emblem.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Timeless Maraketh Emblem.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Timeless Maraketh Emblem.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Timeless Maraketh Splinter.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Timeless Maraketh Splinter.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Timeless Maraketh Splinter.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Timeless Maraketh Splinter.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Timeless Maraketh Splinter.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Timeless Maraketh Splinter.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Timeless Maraketh Splinter.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Timeless Maraketh Splinter.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Timeless Maraketh Splinter.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Timeless Maraketh Splinter.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Timeless Templar Emblem.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Timeless Templar Emblem.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Timeless Templar Emblem.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Timeless Templar Emblem.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Timeless Templar Emblem.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Timeless Templar Emblem.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Timeless Templar Emblem.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Timeless Templar Emblem.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Timeless Templar Emblem.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Timeless Templar Emblem.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Timeless Templar Splinter.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Timeless Templar Splinter.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Timeless Templar Splinter.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Timeless Templar Splinter.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Timeless Templar Splinter.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Timeless Templar Splinter.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Timeless Templar Splinter.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Timeless Templar Splinter.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Timeless Templar Splinter.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Timeless Templar Splinter.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Timeless Vaal Emblem.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Timeless Vaal Emblem.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Timeless Vaal Emblem.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Timeless Vaal Emblem.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Timeless Vaal Emblem.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Timeless Vaal Emblem.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Timeless Vaal Emblem.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Timeless Vaal Emblem.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Timeless Vaal Emblem.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Timeless Vaal Emblem.png"
+	.	"`nFlag: " 2
+}
+
+; ----------------------------
+if !InStr(FileExist(PROGRAM.CURRENCY_IMGS_FOLDER ""), "D")
+	FileCreateDir,% PROGRAM.CURRENCY_IMGS_FOLDER ""
+
+if (A_IsCompiled) {
+	sourceFileSize := Get_ResourceSize("resources\currency_imgs\Timeless Vaal Splinter.png")
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Timeless Vaal Splinter.png"
+}
+else {
+	FileGetSize, sourceFileSize, resources\currency_imgs\Timeless Vaal Splinter.png
+	FileGetSize, destFileSize, % PROGRAM.CURRENCY_IMGS_FOLDER "\Timeless Vaal Splinter.png"
+}
+if (sourceFileSize != destFileSize)
+	FileInstall, resources\currency_imgs\Timeless Vaal Splinter.png, % PROGRAM.CURRENCY_IMGS_FOLDER "\Timeless Vaal Splinter.png", 1
+if (ErrorLevel) {
+	AppendToLogs("Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Timeless Vaal Splinter.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Timeless Vaal Splinter.png"
+	.	"`nFlag: " 2)
+	errorLog .= "`n`n""Failed to extract file!"
+	.	"`nSource: resources\currency_imgs\Timeless Vaal Splinter.png"
+	.	"`nDest: " PROGRAM.CURRENCY_IMGS_FOLDER "\Timeless Vaal Splinter.png"
 	.	"`nFlag: " 2
 }
 

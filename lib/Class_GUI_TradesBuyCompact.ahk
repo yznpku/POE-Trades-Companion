@@ -1518,7 +1518,7 @@
 		if (PROGRAM.SETTINGS.SETTINGS_MAIN.TradesGUI_Locked = "False")
 			PostMessage, 0xA1, 2,,,% "ahk_id " GuiHwnd
 
-		KeyWait, LButton, Up
+		KeyWait, LButton, L
 		GUI_TradesBuyCompact.SavePosition()
 		; Gui_Trades.RemoveButtonFocus()
 		GUI_TradesBuyCompact.ResetPositionIfOutOfBounds()

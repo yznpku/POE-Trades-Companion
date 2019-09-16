@@ -1,4 +1,13 @@
-Legion
-Hardcore Legion
+Blight
+Hardcore Blight
 Standard
 Hardcore
+
+Скверна
+Стандарт
+Одна жизнь
+
+역병
+하드코어 역병
+스탠다드
+하드코어

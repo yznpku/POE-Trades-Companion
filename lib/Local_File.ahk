@@ -253,7 +253,7 @@ LocalSettings_IsValueValid(iniSect, iniKey, iniValue) {
 		if IsIn(iniKey, "IsFirstTimeRunning,AddShowGridActionToInviteButtons,HasAskedForImport,RemoveCopyItemInfosIfGridActionExists,ReplaceOldTradeVariables,UpdateKickMyselfOutOfPartyHideoutHotkey,AskForLanguage")
 			isValueValid := IsIn(iniValue, "True,False") ? True : False	
 		if (iniKey = "Language")
-			isValueValid := IsIn(iniValue, "english,french,chinese_simplified,chinese_traditional") ? True : False
+			isValueValid := IsIn(iniValue, "english,french,chinese_simplified,chinese_traditional,russian") ? True : False
 	}
 
 	if (iniSect = "SETTINGS_MAIN") {

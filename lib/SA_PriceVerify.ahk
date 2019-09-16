@@ -139,13 +139,13 @@ VerifyItemPrice(cmdLineParams) {
                         vColor := "Green"
                         Break
                     }
-                    else if (matchingObj[A_Index].sellBuyRatio > cmdLineParamsObj.SellBuyRatio) { ; ratio is higher (OK)
+                    else if (matchingObj[A_Index].sellBuyRatio < cmdLineParamsObj.SellBuyRatio) { ; ratio is higher (OK)
                         vInfos := "Ratio is better"
                         . "\n" ratioTxt
                         vColor := "Green"
                         Break
                     }
-                    else if (matchingObj[A_Index].sellBuyRatio < cmdLineParamsObj.SellBuyRatio) { ; ratio is lower (NOTOK)
+                    else if (matchingObj[A_Index].sellBuyRatio > cmdLineParamsObj.SellBuyRatio) { ; ratio is lower (NOTOK)
                         vInfos := "/!\ Ratio is lower"
                         . "\n" ratioTxt
                         vColor := "Red"

@@ -49,14 +49,6 @@ Hotkey, ~*Space, SpaceRoutine
 
 Hotkey, IfWinActive,% "ahk_pid " DllCall("GetCurrentProcessId")
 
-if (!A_IsUnicode) {
-	MsgBox(4096+48, "POE Trades Companion", "This tool does not support ANSI versions of AutoHotKey."
-	. "`nPlease download and install AutoHotKey Unicode 32/64 or use the compiled executable."
-	. "`nAutoHotKey's official website will open upon closing this box.")
-	Run,% "https://www.autohotkey.com/"
-	ExitApp
-}
-
 ; try {
 	Start_Script()
 ; }
@@ -103,7 +95,7 @@ Start_Script() {
 
 	; Set global - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	PROGRAM.NAME					:= "POE Trades Companion"
-	PROGRAM.VERSION 				:= "1.15.BETA_91"
+	PROGRAM.VERSION 				:= "1.15.BETA_99"
 	PROGRAM.IS_BETA					:= IsContaining(PROGRAM.VERSION, "beta")?"True":"False"
 
 	PROGRAM.GITHUB_USER 			:= "lemasato"
@@ -154,8 +146,9 @@ Start_Script() {
 	GAME.INI_FILE 					:= GAME.MAIN_FOLDER "\production_Config.ini"
 	GAME.INI_FILE_COPY 		 		:= PROGRAM.MAIN_FOLDER "\production_Config.ini"
 	GAME.EXECUTABLES 				:= "PathOfExile.exe,PathOfExile_x64.exe,PathOfExileSteam.exe,PathOfExile_x64Steam.exe"
-	GAME.CHALLENGE_LEAGUE 			:= "Legion"
-	GAME.CHALLENGE_LEAGUE_TRANS		:= {"RUS":"Легион","KOR":"군단"} ; Rest doesn't have translations. Translated whispers suck and are inconsistent
+	GAME.CHALLENGE_LEAGUE 			:= "Blight"
+	GAME.STANDARD_LEAGUE_TRANS		:= {RUS:["Стандарт","Одна жизнь"], KOR:["스탠다드","하드코어"]}
+	GAME.CHALLENGE_LEAGUE_TRANS		:= {RUS:["Скверна"], KOR:["역병","하드코어 역병"]} ; Rest don't have translations. Translated whispers suck and are inconsistent
 
 	PROGRAM.SETTINGS.SUPPORT_MESSAGE 	:= "@%buyerName% " PROGRAM.NAME ": view-thread/1755148"
 
@@ -206,15 +199,69 @@ Start_Script() {
 		AssetsExtract()
 
 	if !FileExist(PROGRAM.TRANSLATIONS_FOLDER "\english.json") {
-		MsgBox(4096+48,"ERROR","/!\ PLEASE READ CAREFULLY /!\"
-		. "`n`nUnable to find translation files. Please re-download the tool."
-		. "`nThe GitHub releases page will open upon closing this box."
-		. "`nDetails are included on the post.")
-		Run,% "https://github.com/lemasato/POE-Trades-Companion/releases"
+		Run,% PROGRAM.LINK_GITHUB "/releases"
+		MsgBox(4096+48,PROGRAM.NAME " - IMPORTANT"
+		, "/!\ PLEASE READ CAREFULLY /!\"
+		. "`n"
+		. "`n" "Unable to find translation files."
+		. "`n" "The GitHub releases page has been opened, please re-download the application."
+		. "`n" "Details are included on the post of 1.15.BETA_1 release."
+		. "`n"
+		. "`n" "If you need help, you can contact me on GitHub / Discord / POE Forums. Links are available on the GitHub repository."
+		. "`n" "The application will terminate upon closing this box."
+		. "`n"
+		. "`n" PROGRAM.LINK_GITHUB)
+		ExitApp
 	}
-	if (A_AhkVersion = "1.1.30.00") {
+	requiredVer := "1.1.30.03", unicodeOrAnsi := A_IsUnicode?"Unicode":"ANSI", 32or64bits := A_PtrSize=4?"32bits":"64bits"
+	if (!A_IsUnicode) {
 		Run,% "https://www.autohotkey.com/"
-		Msgbox,% 4096+16, POE Trades Companion, You are using AHK v%A_AhkVersion% which contains a bug making the application crash. Please update your AHK to the latest version.	
+		MsgBox(4096+48, "POE Trades Companion - Wrong AutoHotKey Version"
+		, "/!\ PLEASE READ CAREFULLY /!\"
+		. "`n"
+		. "`n" "This application isn't compatible with ANSI versions of AutoHotKey."
+		. "`n" "You are using v" A_AhkVersion " " unicodeOrAnsi " " 32or64bits
+		. "`n" "Please download and install AutoHotKey Unicode 32/64 or use the compiled executable."
+		. "`n"
+		. "`n" "If you need help, you can contact me on GitHub / Discord / POE Forums. Links are available on the GitHub repository."
+		. "`n" "The application will terminate upon closing this box."
+		. "`n"
+		. "`n" PROGRAM.LINK_GITHUB)
+		ExitApp
+	}
+	if (A_AhkVersion < "1.1") ; Smaller than 1.1.00.00
+	|| (A_AhkVersion < "1.1.00.00")
+	|| (A_AhkVersion < requiredVer) { ; Smaller than required
+		Run,% "https://www.autohotkey.com/"
+		MsgBox(4096+48,PROGRAM.NAME " - Wrong AutoHotKey Version"
+		, "/!\ PLEASE READ CAREFULLY /!\"
+		. "`n"
+		. "`n" "This application requires AutoHotKey v" requiredVer " or higher."
+		. "`n" "You are using v" A_AhkVersion " " unicodeOrAnsi " " 32or64bits
+		. "`n" "AutoHotKey website has been opened, please update to the latest version."
+		. "`n"
+		. "`n" "If you need help, you can contact me on GitHub / Discord / POE Forums. Links are available on the GitHub repository."
+		. "`n" "The application will terminate upon closing this box."
+		. "`n"
+		. "`n" PROGRAM.LINK_GITHUB)
+		ExitApp
+	}
+	if (A_AhkVersion >= "2.0")
+	|| (A_AhkVersion >= "2.0.00.00") { ; Higher or equal to 2.0.00.00
+		Run,% "https://www.autohotkey.com/"
+		MsgBox(4096+48,PROGRAM.NAME " - Wrong AutoHotKey Version"
+		, "/!\ PLEASE READ CAREFULLY /!\"
+		. "`n"
+		. "`n" "This application isn't compatible with AutoHotKey v2."
+		. "`n" "You are using v" A_AhkVersion " " unicodeOrAnsi " " 32or64bits
+		. "`n" "AutoHotKey v" requiredVer " or higher is required."
+		. "`n" "Please downgrade, or compile the executable with v" requiredVer "."
+		. "`n" "AutoHotKey website has been opened, please update to the latest version."
+		. "`n"
+		. "`n" "If you need help, you can contact me on GitHub / Discord / POE Forums. Links are available on the GitHub repository."
+		. "`n" "The application will terminate upon closing this box."
+		. "`n"
+		. "`n" PROGRAM.LINK_GITHUB)
 		ExitApp
 	}
 
@@ -277,6 +324,10 @@ Start_Script() {
 	Declare_GameSettings(gameSettings)
 
 	Declare_SkinAssetsAndSettings()
+
+	if RegExMatch(GetKeyboardLayout(), "i)^(0xF002|0xF01B|0xF01A|0xF01C0809|0xF01C0409).*")
+		TrayNotifications.Show(PROGRAM.NAME, "Dvorak keyboard layout detected, scancode fix applied.")
+	PROGRAM.SCANCODES := GetScanCodes()
 
 	; Update checking
 	if !(DEBUG.settings.skip_update_check) {

@@ -30,7 +30,7 @@
 	}
 
 
-	isModKeyDown := GetKeyState("VK" modKeyVK, "P")
+	isModKeyDown := GetKeyState("VK" modKeyVK)
 	if !(isModKeyDown) {
 		GoSub OnClipboardChange_Func_Finished
 		Return
@@ -42,7 +42,7 @@
 	}
 	ShowToolTip(PROGRAM.NAME "`nThis whisper will be sent upon releasing CTRL.`nPress [ SPACE ] to cancel.")
 	AUTOWHISPER_WAITKEYUP := True
-	KeyWait, VK%modKeyVK%, U
+	KeyWait, VK%modKeyVK%, L
 	RemoveToolTip()
 	AUTOWHISPER_WAITKEYUP := False
 

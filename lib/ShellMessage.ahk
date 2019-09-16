@@ -113,7 +113,7 @@ ShellMessage(wParam,lParam) {
 				GUI_Trades.DockMode_SetPosition()
 
 			WinGet, activePID, PID, ahk_id %lParam%
-			if (activePID = GUI_Trades.GetTabContent(Gui_Trades.GetActiveTab()).PID && GUI_ItemGrid.Exists() && GuiTrades.Is_Maximized = True)
+			if (activePID = GUI_Trades.GetTabContent(Gui_Trades.GetActiveTab()).PID && GuiTrades.Is_Maximized = True)
 				GUI_Trades.ShowActiveTabItemGrid() ; Recreate. In case window moved.
 				; GUI_ItemGrid.Show() ; Just show at same pos.
 			else {

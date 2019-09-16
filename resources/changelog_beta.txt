@@ -1,20 +1,96 @@
+1.15.BETA_99 (10 Sept 2019)
+
+	Changes:
+	- No longer rename the executable back to "POE Trades Companion.exe" when updating.
+
+	Fixes:
+	- Further fixed "Wouldn't be able to open the chat if the chat key was a mouse button." from BETA_96.
+	(The fix would only apply on Hotkeys)
+
+1.15.BETA_98 (09 Sept 2019)
+
+	Changes:
+	- Features that were based on physical key state are now based on logical key state instead.
+	This fixes a compatibility issue with the Windows On-Screen Keyboard, where pressing CTRL on it when copying a trading whisper wouldn't instantly send it in-game.
+
+1.15.BETA_97 (08 Sept 2019)
+
+	Small league-start update. I am still actively working on the next big update.
+	If you are interested to see the progress, join the discord server!
+
+	Features:
+	- Added Russian translation.
+	- Added support for the Standard and Hardcore league names for Russian and Korean (other languages do not have league names translated).
+	
+	Changes:
+	- Updated various data files.
+	
+1.15.BETA_96 (23 Aug 2019)
+
+	Fixes:
+	- Wouldn't be able to select a new game instance if the one corresponding to the tab was not existing anymore.
+	- Wouldn't be able to open the chat if the chat key was a mouse button.
+
+1.15.BETA_95 (19 July 2019)
+	
+	Changes:
+	- As of 1.15.BETA_93, AutoHotKey v1.1.30.03 or newer is required to run the script.
+	Added multiple message boxes asking the user to update in case they are running an older version of AutoHotKey.
+	
+	If the tool isn't monitoring your logs file since 1.15.BETA_93, then this the the cause. You need to update your AutoHotkey installation: https://www.autohotkey.com/
+
+1.15.BETA_93/94 (17 July 2019)
+
+	1.15.BETA_94:
+	- Fix: Updating would copy the whole folder instead of only its files (broken by 1.15.BETA_92).	
+		
+	1.15.BETA_93:
+	Improvements:
+	- Can now read logs from KakaoClient.txt.
+	- Can now read multiple Client.txt logs file located in different folders at once.
+	Previously, if you had multiple game instance running in different folders, you would have to choose which one to monitor on start.
+	- Checks for possible new game instances running in different folders, every ten minutes.
+	If a match is found, it will be added to the list of logs to monitor trigger a notification.
+	- After closing the game, the logs file will be checked every five seconds (up from 500ms previously).
+	
+	Changes:
+	- Upon starting the app, if no game instance is found, it will be checked again after 5s (down from 10s previously).
+	
+	Fixes:
+	- The item location grid would appear when receiving a whisper while being tabbed out of the game.
+	Ideally, it should only appear while in game, and if the interface is maximized.
+
+1.15.BETA_92 (13 July 2019)
+
+	Fixes:
+	- The item location grid wouldn't disappear upon closing the last tab, if the "Auto minimize once all tabs are closed?" setting was not enabled.
+	
+	I seriously apology for the delay of this update, and am now working on the next "big" one.
+	The fix had been ready for ten days, but I didn't have the opportunity to push the update sooner.
+	The next update will be kind of big on term of coding, so it'll take a while until it's pushed and will mostly consist of:
+	- Overhaul of the current "Selling" interface.
+	- Making the price verify work with the ggg trade website instead of poe.trade, allowing it to be more reliable.
+	- A fix where some internet-related features could not work for some users (Updating, Price verify, Self kicking, etc.)
+
+= = = = = = = = = = = = =	
+
 1.15.BETA_90/91 (1 July 2019)
 	
 	1.15.BETA_91
-		Fix: Custom and special buttons would do another button's actions if their position was other than default (broken by 1.15.BETA_10)
+	- Fix: Custom and special buttons would do another button's actions if their position was other than default (broken by 1.15.BETA_10)
 
 	Why is this version named BETA_9x?
 	Due to a bug with previous versions, BETA_9 would be considered as "better" than BETA_10 (and onwards).
 	This trick makes sure that anyone still on BETA_9 will get the update normally as "BETA_90" is considered better than "BETA_9" on those versions.
 	
 	Changes:
-		- Added support for Korean quality/level gem search when clicking on the "Clipboard / Copy item infos" button.
-		- Removed the map tier from the map search when clicking on the "Clipboard / Copy item infos" button.
-		This change is due to the fact that searching by "tier:x" along with a map name on the map tab doesn't highlight the map category.
-		- Reduced Cheat Sheet png files size.
+	- Added support for Korean quality/level gem search when clicking on the "Clipboard / Copy item infos" button.
+	- Removed the map tier from the map search when clicking on the "Clipboard / Copy item infos" button.
+	This change is due to the fact that searching by "tier:x" along with a map name on the map tab doesn't highlight the map category.
+	- Reduced Cheat Sheet png files size.
 		
 	Fixes:
-		- Would consider BETA_9 as "better" than BETA_10 and onwards, due to bad version comparison.
+	- Would consider BETA_9 as "better" than BETA_10 and onwards, due to bad version comparison.
 
 1.15.BETA_10/11 (1 July 2019)
 	
