@@ -148,7 +148,7 @@ Send_GameMessage(actionType, msgString, gamePID="") {
 				Sleep 50
 			}
 			if (!err) {
-				SendEvent, ^{%scanCode_v%}
+				SendEvent, {Ctrl Down}{%scanCode_v%}{Ctrl Up}
 			}
 			else
 				TrayNotifications.Show(PROGRAM.TRANSLATIONS.TrayNotifications.FailedToSendMessage_Title, PROGRAM.TRANSLATIONS.TrayNotifications.FailedToSendMessage_Msg)
@@ -176,7 +176,7 @@ Send_GameMessage(actionType, msgString, gamePID="") {
 				Sleep 50
 			}
 			if (!err)
-				SendEvent, ^{%scanCode_v%}
+				SendEvent, {Ctrl Down}{%scanCode_v%}{Ctrl Up}
 			else
 				TrayNotifications.Show(PROGRAM.TRANSLATIONS.TrayNotifications.FailedToSendMessage_Title, PROGRAM.TRANSLATIONS.TrayNotifications.FailedToSendMessage_Msg)
 			; SetTimer, Reset_Clipboard, -700
@@ -204,7 +204,7 @@ Send_GameMessage(actionType, msgString, gamePID="") {
 				Sleep 50
 			}
 			if (!err)
-				SendEvent, ^{%scanCode_v%}
+				SendEvent, {Ctrl Down}{%scanCode_v%}{Ctrl Up}
 			else
 				TrayNotifications.Show(PROGRAM.TRANSLATIONS.TrayNotifications.FailedToSendMessage_Title, PROGRAM.TRANSLATIONS.TrayNotifications.FailedToSendMessage_Msg)
 			; SetTimer, Reset_Clipboard, -700
