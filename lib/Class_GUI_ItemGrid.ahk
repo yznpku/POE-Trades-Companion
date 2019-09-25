@@ -371,8 +371,8 @@ class GUI_ItemGrid {
 
                 Gui, %guiName%:+LastFound
                 if IsIn(guiName, "ItemGridItemName,ItemGridTabName")
-                    WinSet, Transparent, 254
-                WinSet, ExStyle, +0x20
+                    WinSet, Transparent,% (255/100)*65
+                WinSet, ExStyle, +0x20 ; Clickthrough
             }
             DetectHiddenWindows, %hw%
         }
