@@ -357,12 +357,21 @@ Monitor_GameLogs() {
 					if (loopedFolder = folder)
 						hasThisFolder := True
 
-				if (!hasThisFolder)
+				if (!hasThisFolder) {
 					gameFoldersObj[gameFoldersObj.Count()+1] := loopedFolder, hasANewFolder := True
+					allLogsObj[loopedFolder] := {}
+					Loop % gameLogsFileNames.Count() { ; For every logs file name we know
+						loopedLogFile := gameLogsFileNames[A_Index], loopedLogsLocation := loopedFolder "\logs\" loopedLogFile
+						if FileExist(loopedLogsLocation) { ; Make a sub array for this logs file in this folder
+							allLogsObj[loopedFolder][loopedLogFile] := FileOpen(loopedLogsLocation, "r")
+							allLogsObj[loopedFolder][loopedLogFile].Read()
+						}
+					}
+				}
 			}
 		}
 
-		if gameFoldersObj.Count() && (hasANewFolder=True) {
+		if ( gameFoldersObj.Count() ) && (hasANewFolder=True) {
 			 ; Show a notification about folders being monitored
 			Loop % gameFoldersObj.Count() {
 				gameFoldersStr .= "`n" """" gameFoldersObj[A_Index] """"
@@ -377,7 +386,7 @@ Monitor_GameLogs() {
 			TrayNotifications.Show(PROGRAM.TRANSLATIONS.TrayNotifications.MonitoringGameLogsFileSuccess_Title, trayMsg)
 		}
 
-		if gameInstances.Count ; Game is running, check every 500ms
+		if (gameInstances.Count) ; Game is running, check every 500ms
 			SetTimer,% A_ThisFunc, 500
 		else ; No game, check every 5s
 			SetTimer,% A_ThisFunc, 5000
@@ -385,21 +394,11 @@ Monitor_GameLogs() {
 
 	Loop % gameFoldersObj.Count() { ; For every folder we have
 		loopedFolder := gameFoldersObj[A_Index]
-		if !IsObject(allLogsObj[loopedFolder]) { ; Make a sub obj for this folder
-			allLogsObj[loopedFolder] := {}
-			Loop % gameLogsFileNames.Count() { ; For every logs file name we know
-				loopedLogFile := gameLogsFileNames[A_Index], loopedLogsLocation := loopedFolder "\logs\" loopedLogFile
-				if FileExist(loopedLogsLocation) { ; Make a sub array for this logs file in this folder
-					allLogsObj[loopedFolder][loopedLogFile] := FileOpen(loopedLogsLocation, "r")
-					allLogsObj[loopedFolder][loopedLogFile].Read()
-				}
-			}
-		}
-
-		for logsFileName, nothing in allLogsObj[loopedFolder] { ; Checking new logs from files we know
+		for logsFileName in allLogsObj[loopedFolder] { ; Checking new logs from files we know
 			loopedLogsFile := allLogsObj[loopedFolder][logsFileName]
 			if ( loopedLogsFile.pos < loopedLogsFile.length )
 				newFileContent := loopedLogsFile.Read()
+				
 			if (newFileContent)
 				Loop, Parse,% newFileContent,`n,`r
 					Parse_GameLogs(A_LoopField)
