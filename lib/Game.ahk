@@ -338,18 +338,27 @@ Monitor_GameLogs() {
 	minsElapsedSinceLastCheck -= lastCheckTime, Minutes
 	
 	if !gameFoldersObj.Count() || (minsElapsedSinceLastCheck > 5) {
-		; Retrieve running game folders if no known folders or 5 mins elapsed
-		lastCheckTime := A_Now
-
+		; Retrieve running game folders if no known folders or 5 mins elapse
 		gameInstances := Get_RunningInstances(), hasANewFolder := False
 		if (RUNTIME_PARAMETERS.GameFolder) {
+			lastCheckTime := 2050010101010101 ; So that it never checks again
 			; Make the GameFolder param the only folder to scan
 			if !gameFoldersObj.Count() {
 				gameFoldersObj[gameFoldersObj.Count()+1] := RUNTIME_PARAMETERS.GameFolder
 				hasANewFolder := True
+
+				allLogsObj[RUNTIME_PARAMETERS.GameFolder] := {}
+				Loop % gameLogsFileNames.Count() { ; For every logs file name we know
+					loopedLogFile := gameLogsFileNames[A_Index], loopedLogsLocation := RUNTIME_PARAMETERS.GameFolder "\logs\" loopedLogFile
+					if FileExist(loopedLogsLocation) { ; Make a sub array for this logs file in this folder
+						allLogsObj[RUNTIME_PARAMETERS.GameFolder][loopedLogFile] := FileOpen(loopedLogsLocation, "r")
+						allLogsObj[RUNTIME_PARAMETERS.GameFolder][loopedLogFile].Read()
+					}
+				}
 			}
 		}
 		else {
+			lastCheckTime := A_Now
 			; Add folders we have to scan if we don't have them yt
 			Loop % gameInstances.Count {
 				loopedFolder := gameInstances[A_Index].Folder, hasThisFolder := False
