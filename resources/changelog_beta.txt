@@ -1,3 +1,9 @@
+1.15.BETA_992 (26 Sept 2019)
+
+	Fixes:
+	- Broken /GameFolder parameter, not monitoring any logs (broken by 1.15.BETA_991).
+
+= = = = = = = = = = = = =
 1.15.BETA_991 (26 Sept 2019)
 
 	Changes:
