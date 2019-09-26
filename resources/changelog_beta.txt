@@ -1,3 +1,24 @@
+1.15.BETA_991 (26 Sept 2019)
+
+	Changes:
+	- Minor improvements to the logs monitoring function.
+	Some users reported that Trades Companion is sometimes "missing" trading whispers.
+	If this happens to you, please make sure that:
+	1) The whisper is being logged in your /logs/Client.txt file from your Path of Exile folder.
+	1a) If the whisper is not being logged, then the message came from a Korean player and GGG is not allowed to log those due to privacy reasons (See Issue #236).
+	2) The whisper is not about an item you ignored. By default, pressing on the "Sold it" button will ignore the item for ten minutes.
+	
+	If the whisper is indeed being logged in Client.txt and you are 100% positive that you didn't ignore this item recently	then please try the following: (Notepad++ recommended)
+	Open Client.txt, find the "missed" whisper line, copy the whole line and paste it at the bottom of the file, then save the file.
+	If Trades Companion detects the whisper now, then it means it was indeed "missed". Please let me know.
+	
+	- Added transparency to the item name and stash tab name from the item location grid.
+	
+	Fixes:
+	- An user reported the tool not being able to paste messages since the previous update.
+	A minor change has been made to prevent this from happening.
+
+= = = = = = = = = = = = =
 1.15.BETA_990 (17 Sept 2019)
 	
 	Changes:
@@ -6,7 +27,8 @@
 	
 	Fixes:
 	- The price checking ratio, when trading currency, would be inverted.
-
+	
+= = = = = = = = = = = = =
 1.15.BETA_99 (10 Sept 2019)
 
 	Changes:
@@ -15,13 +37,15 @@
 	Fixes:
 	- Further fixed "Wouldn't be able to open the chat if the chat key was a mouse button." from BETA_96.
 	(The fix would only apply on Hotkeys)
-
+	
+= = = = = = = = = = = = =
 1.15.BETA_98 (09 Sept 2019)
 
 	Changes:
 	- Features that were based on physical key state are now based on logical key state instead.
 	This fixes a compatibility issue with the Windows On-Screen Keyboard, where pressing CTRL on it when copying a trading whisper wouldn't instantly send it in-game.
-
+	
+= = = = = = = = = = = = =
 1.15.BETA_97 (08 Sept 2019)
 
 	Small league-start update. I am still actively working on the next big update.
@@ -34,12 +58,14 @@
 	Changes:
 	- Updated various data files.
 	
+= = = = = = = = = = = = =
 1.15.BETA_96 (23 Aug 2019)
 
 	Fixes:
 	- Wouldn't be able to select a new game instance if the one corresponding to the tab was not existing anymore.
 	- Wouldn't be able to open the chat if the chat key was a mouse button.
-
+	
+= = = = = = = = = = = = =
 1.15.BETA_95 (19 July 2019)
 	
 	Changes:
@@ -47,7 +73,8 @@
 	Added multiple message boxes asking the user to update in case they are running an older version of AutoHotKey.
 	
 	If the tool isn't monitoring your logs file since 1.15.BETA_93, then this the the cause. You need to update your AutoHotkey installation: https://www.autohotkey.com/
-
+	
+= = = = = = = = = = = = =
 1.15.BETA_93/94 (17 July 2019)
 
 	1.15.BETA_94:
@@ -68,7 +95,8 @@
 	Fixes:
 	- The item location grid would appear when receiving a whisper while being tabbed out of the game.
 	Ideally, it should only appear while in game, and if the interface is maximized.
-
+	
+= = = = = = = = = = = = =	
 1.15.BETA_92 (13 July 2019)
 
 	Fixes:
@@ -82,7 +110,6 @@
 	- A fix where some internet-related features could not work for some users (Updating, Price verify, Self kicking, etc.)
 
 = = = = = = = = = = = = =	
-
 1.15.BETA_90/91 (1 July 2019)
 	
 	1.15.BETA_91
@@ -101,6 +128,7 @@
 	Fixes:
 	- Would consider BETA_9 as "better" than BETA_10 and onwards, due to bad version comparison.
 
+= = = = = = = = = = = = =
 1.15.BETA_10/11 (1 July 2019)
 	
 	1.15.BETA_11
@@ -128,7 +156,8 @@
 	- On the Buying interface, prices containing a decimal wouldn't be parsed properly.
 	- Notification sounds would not play for some users.
 	- Various scaling issues related to having a Windows Scaling different than 100%.
-	
+
+= = = = = = = = = = = = =	
 1.15.BETA_9 (19 June 2019)
 
 	Features:
@@ -154,6 +183,7 @@
 	- Cheatsheets files wouldn't be extracted correctly with the executable.
 	If you have any file named Betrayal,Delve,Essence or Incursion at the root of your drive, they were made by this app and can be deleted.
 
+= = = = = = = = = = = = =
 1.15.BETA_6/7/8 (11 June 2019)
 
 	1.15.BETA_8:
@@ -173,7 +203,7 @@
 	Fixes:
 	- Pushbullet could bug due to the translations update.
 	
-
+= = = = = = = = = = = = =
 1.15.BETA_5 (10 June 2019)
 
 	Changes:
@@ -188,14 +218,14 @@
 	- Compact buy interface: Would show "Unknown" instead of the currency name from the whisper, when the currency is unknown.
 	- Wouldn't re-create the new compact buy interface when clicking on the "Preview" button from the Settings, and when closing the Settings interface.
 	
-
+= = = = = = = = = = = = =
 1.15.BETA_4 (09 June 2019)
 	
 	Fixes:
 	- The script would hang when using a skin other than the Path of Exile one.
 	The new interface is only available with the PoE skin right now, and it wasn't being forced correctly.
 	
-
+= = = = = = = = = = = = =
 1.15.BETA_3 (08 June 2019)
 
 	Changes:
@@ -206,7 +236,7 @@
 	- Moving the transparency sliders in the Settings interface allows to preview the change.
 	This preview wasn't working with the Trades interface while it was minimized.
 	
-
+= = = = = = = = = = = = =
 1.15.BETA_2 (07 June 2019)
 
 	Finally, an interface to buy items, just in time before the new league.
@@ -232,7 +262,7 @@
 	Fixes:
 	- PushBullet notifications would only show the seller name, and not the trade informations.
 	
-
+= = = = = = = = = = = = =
 1.15.BETA_1 (31 May 2019)
 	Features:
 	- French, Traditional Chinese, Simplified Chinese translated interfaces.
