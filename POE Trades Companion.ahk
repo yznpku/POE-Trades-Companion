@@ -145,7 +145,7 @@ Start_Script() {
 	GAME.MAIN_FOLDER 				:= MyDocuments "\my games\Path of Exile"
 	GAME.INI_FILE 					:= GAME.MAIN_FOLDER "\production_Config.ini"
 	GAME.INI_FILE_COPY 		 		:= PROGRAM.MAIN_FOLDER "\production_Config.ini"
-	GAME.EXECUTABLES 				:= "PathOfExile.exe,PathOfExile_x64.exe,PathOfExileSteam.exe,PathOfExile_x64Steam.exe"
+	GAME.EXECUTABLES 				:= "PathOfExile.exe,PathOfExile_x64.exe,PathOfExileSteam.exe,PathOfExile_x64Steam.exe,PathOfExile_KG.exe,PathOfExile_x64_KG.exe"
 	GAME.CHALLENGE_LEAGUE 			:= "Blight"
 	GAME.STANDARD_LEAGUE_TRANS		:= {RUS:["Стандарт","Одна жизнь"], KOR:["스탠다드","하드코어"]}
 	GAME.CHALLENGE_LEAGUE_TRANS		:= {RUS:["Скверна"], KOR:["역병","하드코어 역병"]} ; Rest don't have translations. Translated whispers suck and are inconsistent
