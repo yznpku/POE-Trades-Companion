@@ -330,81 +330,121 @@ Get_GameLogsFile() {
 }
 
 Monitor_GameLogs() {
-	global PROGRAM, RUNTIME_PARAMETERS
+	global PROGRAM, POEGameArr, RUNTIME_PARAMETERS
 	static gameLogsFileNames := ["Client.txt","KakaoClient.txt"]
-	static lastCheckTime := 1994010101010101
-	static allLogsObj := {}, gameFoldersObj := {}
-	minsElapsedSinceLastCheck := A_Now
-	minsElapsedSinceLastCheck -= lastCheckTime, Minutes
-	
-	if !gameFoldersObj.Count() || (minsElapsedSinceLastCheck > 5) {
-		; Retrieve running game folders if no known folders or 5 mins elapsed
-		lastCheckTime := A_Now
+	static lastCheckTime, prevTimer
+	static allLogsObj, gameFoldersObj
+	if !(lastCheckTime)
+		lastCheckTime := 1994010101010101
+	if !IsObject(gameFoldersObj)
+		gameFoldersObj := []
+	if !IsObject(allLogsObj)
+		allLogsObj := {}
 
-		gameInstances := Get_RunningInstances(), hasANewFolder := False
-		if (RUNTIME_PARAMETERS.GameFolder) {
-			; Make the GameFolder param the only folder to scan
-			if !gameFoldersObj.Count() {
-				gameFoldersObj[gameFoldersObj.Count()+1] := RUNTIME_PARAMETERS.GameFolder
-				hasANewFolder := True
+	; Retrieve new folders if it has been more than 5 mins
+	minsSinceLast := A_Now
+	minsSinceLast -= lastCheckTime, Minutes
+	if (minsSinceLast >= 5) {
+		GoSub Monitor_GameLogs_GetFolders
+	}
+
+	; Parse all logs file
+	Loop % allLogsObj.Count() {
+		allLogsObjIndex := A_Index
+		Loop % allLogsObj[allLogsObjIndex].Count() {
+			allLogsObjSubIndex := A_Index
+			tempFileObj := FileOpen(allLogsObj[allLogsObjIndex][allLogsObjSubIndex].FilePath, "r", "UTF-8")
+			tempFileObj.Pos := allLogsObj[allLogsObjIndex][allLogsObjSubIndex].Pos
+			newFileContent := tempFileObj.Read(), allLogsObj[allLogsObjIndex][allLogsObjSubIndex].Pos := tempFileObj.Pos
+			if (newFileContent) {
+				Loop, Parse,% newFileContent,`n,`r
+				{
+					if !(A_LoopField)
+						Continue
+					Parse_GameLogs(A_LoopField)
+				}
+			}
+			tempFileObj.Close(), tempFileObj := ""
+		}
+	}
+	return
+
+	Monitor_GameLogs_GetFolders:
+		foldersObjCount := gameFoldersObj.Count()
+
+		; Add instance folders to gameFoldersObj
+		if (RUNTIME_PARAMETERS.GameFolder) { ; Detected GameFolder parameter, use that folder only
+			lastCheckTime := 2050010101010101 ; So that it never checks again
+			gameFoldersObj[foldersObjCount+1] := RUNTIME_PARAMETERS.GameFolder
+		}
+		else { ; No param detected, loop all running instances
+			lastCheckTime := A_Now, gameInstances := Get_RunningInstances() 
+			Loop % gameInstances.Count { ; Going through folders of all running instances
+				gameInstances_loopIndex := A_Index, gameInstances_loopFolder := gameInstances[gameInstances_loopIndex].Folder
+				Loop % loopEndIndex := foldersObjCount ? foldersObjCount : 1 { ; Make sure to loop at least once
+					gameFolders_loopIndex := A_Index, gameFolders_loopFolder := gameFoldersObj[gameFolders_loopIndex]
+					if (gameInstances_loopFolder = gameFolders_loopFolder) ; Already has the folder, skip to next
+						break
+					else if (gameFolders_loopIndex = loopEndIndex) ; Reached end of loop and no match, add to obj
+						gameFoldersObj.Push(gameInstances_loopFolder)
+				}
 			}
 		}
-		else {
-			; Add folders we have to scan if we don't have them yt
-			Loop % gameInstances.Count {
-				loopedFolder := gameInstances[A_Index].Folder, hasThisFolder := False
-				for index, folder in gameFoldersObj
-					if (loopedFolder = folder)
-						hasThisFolder := True
 
-				if (!hasThisFolder)
-					gameFoldersObj[gameFoldersObj.Count()+1] := loopedFolder, hasANewFolder := True
+		newFoldersObjCount := gameFoldersObj.Count()
+		if (newFoldersObjCount > foldersObjCount) {
+			; Add logs file to allLogsObj
+			loopIndex := foldersObjCount+1
+			Loop % newFoldersObjCount-foldersObjCount { ; Only newly added matches
+				loopedLogsFolder := gameFoldersObj[loopIndex]
+				allLogsObjNextIndex := allLogsObj.Count()+1
+				Loop % gameLogsFileNames.Count() { ; For every logs file name we know
+					loopedLogFileName := gameLogsFileNames[A_Index], loopedLogsFullPath := loopedLogsFolder "\logs\" loopedLogFileName
+					if FileExist(loopedLogsFullPath) { ; Make a sub array for this logs file in this folder
+						if !IsObject(allLogsObj[allLogsObjNextIndex])
+							allLogsObj[allLogsObjNextIndex] := {}
+						thisSubObjCount := allLogsObj[allLogsObjNextIndex].Count()
+						allLogsObj[allLogsObjNextIndex][thisSubObjCount+1] := {}
+						allLogsObj[allLogsObjNextIndex][thisSubObjCount+1].FilePath := loopedLogsFullPath
+						tempFileObj := FileOpen(loopedLogsFullPath, "r", "UTF-8"), tempFileObj.Read()
+						allLogsObj[allLogsObjNextIndex][thisSubObjCount+1].Pos := tempFileObj.Pos
+						tempFileObj.Close(), tempFileObj := ""
+					}
+				}
+				loopIndex++
 			}
-		}
 
-		if gameFoldersObj.Count() && (hasANewFolder=True) {
-			 ; Show a notification about folders being monitored
-			Loop % gameFoldersObj.Count() {
+			; Show a notification about folders being monitored
+			Loop % newFoldersObjCount {
 				gameFoldersStr .= "`n" """" gameFoldersObj[A_Index] """"
 			}
 			if ( SubStr(gameFoldersStr, 1, 2) = "`n" )
 				StringTrimLeft, gameFoldersStr, gameFoldersStr, 2
 
-			if (PROGRAM.SETTINGS.SETTINGS_MAIN.TradesGUI_Mode = "Dock")
+			if (PROGRAM.SETTINGS.SETTINGS_MAIN.TradesGUI_Mode = "Dock" && !foldersObjCount) ; Cycle dock mode if its the first time
 				GUI_Trades.DockMode_Cycle()
 
 			trayMsg := StrReplace(PROGRAM.TRANSLATIONS.TrayNotifications.MonitoringGameLogsFileSuccess_Msg, "%file%", gameFoldersStr) ; TO_DO change to folder instead of file
 			TrayNotifications.Show(PROGRAM.TRANSLATIONS.TrayNotifications.MonitoringGameLogsFileSuccess_Title, trayMsg)
 		}
 
-		if gameInstances.Count ; Game is running, check every 500ms
-			SetTimer,% A_ThisFunc, 500
-		else ; No game, check every 5s
-			SetTimer,% A_ThisFunc, 5000
-	}
-
-	Loop % gameFoldersObj.Count() { ; For every folder we have
-		loopedFolder := gameFoldersObj[A_Index]
-		if !IsObject(allLogsObj[loopedFolder]) { ; Make a sub obj for this folder
-			allLogsObj[loopedFolder] := {}
-			Loop % gameLogsFileNames.Count() { ; For every logs file name we know
-				loopedLogFile := gameLogsFileNames[A_Index], loopedLogsLocation := loopedFolder "\logs\" loopedLogFile
-				if FileExist(loopedLogsLocation) { ; Make a sub array for this logs file in this folder
-					allLogsObj[loopedFolder][loopedLogFile] := FileOpen(loopedLogsLocation, "r")
-					allLogsObj[loopedFolder][loopedLogFile].Read()
-				}
+		; Deciding on timer based on if game is running or not
+		processExists := False
+		Loop,% POEGameArr.Count() {
+			Process, Exist,% POEGameArr[A_Index]
+			if (ErrorLevel) {
+				processExists := True
+				Break
 			}
 		}
-
-		for logsFileName, nothing in allLogsObj[loopedFolder] { ; Checking new logs from files we know
-			loopedLogsFile := allLogsObj[loopedFolder][logsFileName]
-			if ( loopedLogsFile.pos < loopedLogsFile.length )
-				newFileContent := loopedLogsFile.Read()
-			if (newFileContent)
-				Loop, Parse,% newFileContent,`n,`r
-					Parse_GameLogs(A_LoopField)
+		timer := processExists?500:5000
+		if (timer != prevTimer) || (!prevTimer) {
+			try SetTimer,% A_ThisFunc, Delete
+			SetTimer,% A_ThisFunc,% timer
+			; TO_DO_V2 tray notification
 		}
-	}
+		prevTimer := timer
+	return
 }
 
 Parse_GameLogs(strToParse) {
